@@ -13,6 +13,9 @@ sent and asks for actions the view says are legal.
 - Each connection is rate limited (default burst 40, 20 messages/s). A
   `rate_limited` error means the message was dropped: resend it. A client that
   keeps flooding (25 refused messages in a row) is disconnected.
+- **A `rate_limited` message is dropped and nothing else happens**, so no
+  update follows: wait a moment and send it again. Likewise a `stale_state` error
+  means the next update is on its way; choose again from that one.
 - The server pings every 30 s; use any WebSocket library's default pong.
 
 Plain HTTP endpoints:
