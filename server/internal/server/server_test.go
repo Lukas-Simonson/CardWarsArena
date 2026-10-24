@@ -639,3 +639,41 @@ func TestBotDeckDefaultsToTheOtherStarter(t *testing.T) {
 		t.Errorf("the bot should play Jake's Cornfield deck, got %s", m.View.Players[1].Lanes[0].Landscape)
 	}
 }
+
+func TestCORSForSeparateWebClients(t *testing.T) {
+	get := func(h *harness, origin string) http.Header {
+		req, _ := http.NewRequest("GET", h.ts.URL+"/api/decks", nil)
+		if origin != "" {
+			req.Header.Set("Origin", origin)
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		return resp.Header
+	}
+	open := newHarness(t, func(c *Config) { c.OriginPatterns = []string{"localhost:*", "game.example.com"} })
+	if got := get(open, "http://localhost:5173").Get("Access-Control-Allow-Origin"); got != "http://localhost:5173" {
+		t.Errorf("allowed origin: %q", got)
+	}
+	if got := get(open, "https://game.example.com").Get("Access-Control-Allow-Origin"); got != "https://game.example.com" {
+		t.Errorf("exact host pattern: %q", got)
+	}
+	if got := get(open, "https://evil.example").Get("Access-Control-Allow-Origin"); got != "" {
+		t.Errorf("unlisted origin must not be allowed: %q", got)
+	}
+	if got := get(open, "").Get("Access-Control-Allow-Origin"); got != "" {
+		t.Errorf("no Origin header: %q", got)
+	}
+	if got := get(open, "").Values("Vary"); len(got) == 0 {
+		t.Error("responses must declare Vary: Origin")
+	}
+	closed := newHarness(t)
+	if got := get(closed, "http://localhost:5173").Get("Access-Control-Allow-Origin"); got != "" {
+		t.Errorf("no patterns configured, but %q was allowed", got)
+	}
+	if got := get(closed, closed.ts.URL).Get("Access-Control-Allow-Origin"); got != closed.ts.URL {
+		t.Errorf("same-origin: %q", got)
+	}
+}

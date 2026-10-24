@@ -8,8 +8,8 @@ sent and asks for actions the view says are legal.
 
 - WebSocket at `/ws`; every message is one JSON **text** frame (max 16 KiB).
 - Browsers must connect from the server's own origin, or from one listed in
-  `-origins` (e.g. `localhost:*`). Non-browser clients send no `Origin` and are
-  always allowed.
+  `-origins` (e.g. `localhost:*`). The same list controls which origins may read
+  the JSON API (CORS). Non-browser clients send no `Origin` and are always allowed.
 - Each connection is rate limited (default burst 40, 20 messages/s). A
   `rate_limited` error means the message was dropped: resend it. A client that
   keeps flooding (25 refused messages in a row) is disconnected.
