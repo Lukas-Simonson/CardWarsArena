@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -124,4 +125,26 @@ func (g *Game) play(t *testing.T, p PlayerID, id string, lane int) {
 	g.must(t, p, Action{Kind: ActPlayCard, Card: g.uid(t, p, id), Lane: lane})
 }
 
-func (g *Game) String() string { return fmt.Sprintf("%+v", g.State) }
+// String is a canonical dump of the state, for equality checks.
+func (g *Game) String() string {
+	b, err := json.Marshal(g.State)
+	if err != nil {
+		return err.Error()
+	}
+	return string(b)
+}
+
+// cardCount is every card player p owns, wherever it is.
+func (g *Game) cardCount(p PlayerID) int {
+	pl := g.State.Players[p]
+	n := len(pl.Deck) + len(pl.Hand) + len(pl.Discard)
+	for _, l := range pl.Lanes {
+		if l.Creature != nil {
+			n++
+		}
+		if l.Building != nil {
+			n++
+		}
+	}
+	return n
+}
