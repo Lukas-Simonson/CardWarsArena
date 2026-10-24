@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"path"
 	"sort"
 	"strings"
 	"sync"
@@ -37,8 +39,8 @@ type Config struct {
 	// (their text is ignored). Development only.
 	AllowUnmodelled bool
 	// OriginPatterns lists extra browser origins allowed to open a WebSocket
-	// (host patterns such as "localhost:*"). Same-origin and non-browser
-	// clients are always allowed.
+	// and to read the JSON API (host patterns such as "localhost:*").
+	// Same-origin and non-browser clients are always allowed.
 	OriginPatterns []string
 	Logger         *slog.Logger
 }
@@ -245,7 +247,37 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/cards", s.handleCards)
 	mux.HandleFunc("GET /ws", s.handleWS)
 	mux.HandleFunc("GET /{$}", s.handleDebugPage)
-	return mux
+	return s.withCORS(mux)
+}
+
+// originAllowed reports whether a browser origin may read our API: the same
+// host, or one matching OriginPatterns ("localhost:*").
+func (s *Server) originAllowed(origin, host string) bool {
+	u, err := url.Parse(origin)
+	if err != nil || u.Host == "" {
+		return false
+	}
+	if strings.EqualFold(u.Host, host) {
+		return true
+	}
+	for _, p := range s.cfg.OriginPatterns {
+		if ok, _ := path.Match(strings.ToLower(p), strings.ToLower(u.Host)); ok {
+			return true
+		}
+	}
+	return false
+}
+
+// withCORS lets pages served from an allowed origin (a separate web client)
+// read the JSON API. WebSocket origins are checked by the upgrade itself.
+func (s *Server) withCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Vary", "Origin")
+		if o := r.Header.Get("Origin"); o != "" && s.originAllowed(o, r.Host) {
+			w.Header().Set("Access-Control-Allow-Origin", o)
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func writeJSON(w http.ResponseWriter, v any) {
