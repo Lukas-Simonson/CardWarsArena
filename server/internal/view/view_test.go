@@ -125,14 +125,59 @@ func TestMulliganViewShowsBothPlayersWaiting(t *testing.T) {
 	}
 }
 
-func TestEventsHideOpponentDraws(t *testing.T) {
-	evs := []engine.Event{{Kind: engine.EvDraw, Player: 1, Card: 77}, {Kind: engine.EvDraw, Player: 0, Card: 5}, {Kind: engine.EvPlay, Player: 1, Card: 9}}
-	got := FilterEvents(0, evs)
-	if got[0].Card != 0 || got[1].Card != 5 || got[2].Card != 9 {
-		t.Errorf("filtered: %+v", got)
+func TestEventsHideOpponentDrawsAndNameEverythingElse(t *testing.T) {
+	g := newGame(t, 1)
+	hand0, hand1 := g.State.Players[0].Hand[0], g.State.Players[1].Hand[0]
+	evs := []engine.Event{
+		{Kind: engine.EvDraw, Player: 1, Card: hand1.UID},
+		{Kind: engine.EvDraw, Player: 0, Card: hand0.UID},
+		{Kind: engine.EvPlay, Player: 1, Card: hand1.UID},
+		{Kind: engine.EvHPLoss, Player: 0, Amount: 3},
 	}
-	if evs[0].Card != 77 {
+	got := FilterEvents(g, 0, evs)
+	if got[0].Card != 0 || got[0].CardID != "" {
+		t.Errorf("an opponent's draw must not name the card: %+v", got[0])
+	}
+	if got[1].Card != hand0.UID || got[1].CardID != hand0.CardID {
+		t.Errorf("own draw: %+v", got[1])
+	}
+	if got[2].CardID != hand1.CardID {
+		t.Errorf("a card the opponent played is public, even if it later left play: %+v", got[2])
+	}
+	if got[3].CardID != "" || got[3].Amount != 3 {
+		t.Errorf("events without a card: %+v", got[3])
+	}
+	if evs[0].Card != hand1.UID {
 		t.Error("the original events must not be modified")
+	}
+	b, _ := json.Marshal(got[2])
+	if !strings.Contains(string(b), `"card_id":"`+hand1.CardID+`"`) || !strings.Contains(string(b), `"kind":"play"`) {
+		t.Errorf("JSON should flatten the engine event and add card_id: %s", b)
+	}
+}
+
+func TestLegalActionsNeverContainNullSlots(t *testing.T) {
+	// Psionic Architect and Legion of Earlings have optional targets, which
+	// the engine represents with nil slices.
+	g := newGame(t, 1)
+	g.Apply(0, engine.Action{Kind: engine.ActKeepHand})
+	g.Apply(1, engine.Action{Kind: engine.ActKeepHand})
+	who := g.State.Active
+	if _, err := g.Give(who, "psionic-architect"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := g.Give(who, "legion-of-earlings"); err != nil {
+		t.Fatal(err)
+	}
+	b, err := json.Marshal(Build(g, who).Legal)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(b), "null") {
+		t.Errorf("legal actions contain null: %s", b)
+	}
+	if !strings.Contains(string(b), `"targets":[[]]`) {
+		t.Errorf("an empty optional slot should be [[]]: %.300s", b)
 	}
 }
 

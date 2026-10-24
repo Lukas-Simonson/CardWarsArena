@@ -76,9 +76,9 @@ type ServerMsg struct {
 	VsBot bool     `json:"vs_bot,omitempty"`
 	Names []string `json:"names,omitempty"` // joined/update: seat display names
 
-	Seq    int            `json:"seq,omitempty"`    // update: increases by one per change
-	View   *view.View     `json:"view,omitempty"`   // update
-	Events []engine.Event `json:"events,omitempty"` // update: what just happened, as this seat may see it
+	Seq    int          `json:"seq,omitempty"`    // update: increases by one per change
+	View   *view.View   `json:"view,omitempty"`   // update
+	Events []view.Event `json:"events,omitempty"` // update: what just happened, as this seat may see it
 
 	Connected *bool  `json:"connected,omitempty"` // opponent
 	Name      string `json:"name,omitempty"`      // opponent

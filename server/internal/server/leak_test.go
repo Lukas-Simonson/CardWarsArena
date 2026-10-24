@@ -15,6 +15,11 @@ type checkSink struct {
 	t    *testing.T
 	room *Room
 	seat engine.PlayerID
+	// public holds every card that has ever been shown to both players (on the
+	// board, in a discard pile, or named by an event). Such a card may be sent
+	// again even if it is now in a hidden zone, e.g. a Creature that returned
+	// to its owner's hand.
+	public map[int]bool
 
 	mu   sync.Mutex
 	msgs []ServerMsg
@@ -28,6 +33,27 @@ func (c *checkSink) Send(m ServerMsg) {
 		return
 	}
 	// Send is called with the room lock held, so reading the game is safe.
+	if c.public == nil {
+		c.public = map[int]bool{}
+	}
+	for _, pl := range c.room.g.State.Players {
+		for _, in := range pl.Discard {
+			c.public[in.UID] = true
+		}
+		for _, lane := range pl.Lanes {
+			if lane.Creature != nil {
+				c.public[lane.Creature.UID] = true
+			}
+			if lane.Building != nil {
+				c.public[lane.Building.UID] = true
+			}
+		}
+	}
+	for _, e := range m.Events {
+		if e.Kind != engine.EvDraw && e.Card != 0 {
+			c.public[e.Card] = true
+		}
+	}
 	hidden := map[int]bool{}
 	for _, in := range c.room.g.State.Players[c.seat.Opp()].Hand {
 		hidden[in.UID] = true
@@ -36,6 +62,9 @@ func (c *checkSink) Send(m ServerMsg) {
 		for _, in := range c.room.g.State.Players[p].Deck {
 			hidden[in.UID] = true
 		}
+	}
+	for uid := range c.public {
+		delete(hidden, uid)
 	}
 	b, err := json.Marshal(m)
 	if err != nil {
@@ -63,7 +92,7 @@ func (c *checkSink) Send(m ServerMsg) {
 	walk(doc)
 	// Events must not name an opponent's drawn card either.
 	for _, e := range m.Events {
-		if e.Kind == engine.EvDraw && e.Player != c.seat && e.Card != 0 {
+		if e.Kind == engine.EvDraw && e.Player != c.seat && (e.Card != 0 || e.CardID != "") {
 			c.t.Errorf("seat %d was told which card the opponent drew", c.seat)
 		}
 	}

@@ -91,7 +91,7 @@ func (r *Room) broadcastLocked(events []engine.Event) {
 		}
 		p := engine.PlayerID(i)
 		v := view.Build(r.g, p)
-		s.sink.Send(ServerMsg{Type: MsgUpdate, Seq: r.seq, View: &v, Events: view.FilterEvents(p, events), Names: r.names()})
+		s.sink.Send(ServerMsg{Type: MsgUpdate, Seq: r.seq, View: &v, Events: view.FilterEvents(r.g, p, events), Names: r.names()})
 	}
 }
 
