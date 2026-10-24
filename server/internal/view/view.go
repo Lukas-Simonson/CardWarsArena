@@ -89,7 +89,9 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	for _, p := range g.Awaiting() {
 		v.Awaiting = append(v.Awaiting, int(p))
 		if p == viewer {
-			v.Legal = g.LegalActions(viewer)
+			for _, a := range g.LegalActions(viewer) {
+				v.Legal = append(v.Legal, noNullSlots(a))
+			}
 		}
 	}
 	if st.Pending != nil {
@@ -135,15 +137,49 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	return v
 }
 
-// FilterEvents returns the events a viewer may see: an opponent's draws do not
-// say which card was drawn.
-func FilterEvents(viewer engine.PlayerID, events []engine.Event) []engine.Event {
-	out := make([]engine.Event, len(events))
+// noNullSlots makes every target slot a real (possibly empty) list. Go encodes
+// a nil slice as null, which clients should never have to special-case.
+func noNullSlots(a engine.Action) engine.Action {
+	fix := func(slots [][]engine.TargetRef) [][]engine.TargetRef {
+		if slots == nil {
+			return nil
+		}
+		out := make([][]engine.TargetRef, len(slots))
+		for i, s := range slots {
+			if s == nil {
+				s = []engine.TargetRef{}
+			}
+			out[i] = s
+		}
+		return out
+	}
+	a.Targets = fix(a.Targets)
+	a.CostTargets = fix(a.CostTargets)
+	return a
+}
+
+// Event is an engine event as sent to a client. CardID names the card, so a
+// client can describe cards it never sees in a view (a Creature that entered
+// play and went straight back to a hand).
+type Event struct {
+	engine.Event
+	CardID string `json:"card_id,omitempty"`
+}
+
+// FilterEvents returns the events a viewer may see. An opponent's draws say
+// nothing about which card was drawn; every other card an event mentions has
+// been shown to both players, so it is named.
+func FilterEvents(g *engine.Game, viewer engine.PlayerID, events []engine.Event) []Event {
+	names := g.Instances()
+	out := make([]Event, len(events))
 	for i, e := range events {
 		if e.Kind == engine.EvDraw && e.Player != viewer {
 			e.Card = 0
 		}
-		out[i] = e
+		out[i] = Event{Event: e}
+		if e.Card != 0 {
+			out[i].CardID = names[e.Card]
+		}
 	}
 	return out
 }

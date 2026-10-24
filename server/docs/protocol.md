@@ -137,7 +137,7 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `attack` | fight | `lane` |
 | `play_pending` | after Silo of Truth | `lane`, `targets` |
 
-`targets` is a list of target slots, each a list of references
+`targets` is a list of target slots (an empty optional slot is `[]`, never `null`), each a list of references
 `{"kind":"creature|building|landscape|lane|discard_card|hand_card","player":0,"lane":1,"card":0}`
 (`player` = whose side, `lane` for board things, `card` = uid for card piles).
 
@@ -149,12 +149,14 @@ query is planned.
 
 ## Events
 
-`events[]` entries are `{ "kind", "player", "card"?, "lane"?, "amount"? }`.
+`events[]` entries are `{ "kind", "player", "card"?, "card_id"?, "lane"?, "amount"? }`.
+`card` is the instance uid and `card_id` names it, so you can describe a card you
+never see in a view (a Creature that entered play and returned to a hand in the
+same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`. `card` is an instance uid; resolve names from the
-view (a card that just left play is in a discard pile or hand). Events are for
+`discard`, `steal`, `abilities`. Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Running
