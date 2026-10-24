@@ -1,1 +1,186 @@
-<!doctype html><title>Card Wars</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Wars Debug Client</title>
+<style>
+  :root { --bg:#fafaf7; --fg:#1d1d1b; --muted:#6b6b66; --card:#fff; --line:#d8d6cf; --accent:#2b6cb0; --bad:#b83232; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#17181a; --fg:#e8e6e1; --muted:#9a9890; --card:#222427; --line:#3a3d41; --accent:#6aa7ee; --bad:#ef6b6b; } }
+  * { box-sizing: border-box; }
+  body { font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 16px; max-width: 1100px; margin-inline: auto; }
+  h1 { font-size: 18px; margin: 0 0 12px; }
+  fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 0 0 12px; padding: 10px 12px; }
+  legend { color: var(--muted); padding: 0 6px; }
+  input, select, button { font: inherit; padding: 5px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); }
+  button { cursor: pointer; } button:hover { border-color: var(--accent); } button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .status { color: var(--muted); } .error { color: var(--bad); }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-bottom: 6px; }
+  td, th { border: 1px solid var(--line); padding: 4px 6px; vertical-align: top; font-size: 13px; background: var(--card); overflow-wrap: anywhere; }
+  th { color: var(--muted); font-weight: normal; width: 52px; }
+  .creature b { display: block; } .tags { color: var(--muted); font-size: 12px; }
+  .hand div { padding: 3px 0; border-bottom: 1px dotted var(--line); }
+  .actions button { display: block; width: 100%; text-align: left; margin-bottom: 4px; }
+  #log { height: 180px; overflow: auto; font: 12px/1.5 ui-monospace, monospace; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+  .side { margin: 8px 0 2px; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>Card Wars debug client <span class="status" id="conn">connecting…</span></h1>
+
+<fieldset id="lobby"><legend>Lobby</legend>
+  <div class="row">
+    <input id="name" placeholder="your name" value="Tester" size="12">
+    <select id="deck"></select>
+    <button id="vsbot">Play vs bot</button>
+    <button id="create">Create room</button>
+    <input id="code" placeholder="ROOM" size="6" maxlength="6" style="text-transform:uppercase">
+    <button id="join">Join</button>
+    <button id="leave" disabled>Leave</button>
+  </div>
+  <div class="status" id="roominfo"></div>
+  <div class="error" id="err"></div>
+</fieldset>
+
+<div id="game" hidden>
+  <div class="status" id="summary"></div>
+  <div class="side" id="oppline"></div><div id="oppboard"></div>
+  <div class="side" id="meline"></div><div id="meboard"></div>
+  <div class="row" style="align-items:flex-start; gap:16px">
+    <fieldset style="flex:1; min-width:260px"><legend>Your hand</legend><div class="hand" id="hand"></div></fieldset>
+    <fieldset style="flex:2; min-width:300px"><legend>Your actions</legend><div class="actions" id="actions"></div></fieldset>
+  </div>
+</div>
+<fieldset><legend>Log</legend><div id="log"></div></fieldset>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+let ws, cards = {}, room = null, token = null, seat = null, names = [], view = null, seq = 0;
+
+const log = (s, cls) => { const d = document.createElement("div"); if (cls) d.className = cls; d.textContent = s; $("log").append(d); $("log").scrollTop = 1e9; };
+const send = m => ws.readyState === 1 && ws.send(JSON.stringify(m));
+const cname = id => (cards[id] && cards[id].name) || id;
+
+async function init() {
+  const [decks, list] = await Promise.all([fetch("/api/decks").then(r => r.json()), fetch("/api/cards").then(r => r.json())]);
+  list.forEach(c => cards[c.id] = c);
+  decks.filter(d => d.playable).forEach(d => { const o = document.createElement("option"); o.value = d.set + " " + d.name; o.textContent = d.set + " · " + d.name; $("deck").append(o); });
+  connect();
+}
+
+function connect() {
+  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws");
+  ws.onopen = () => { $("conn").textContent = "connected"; const s = sessionStorage.getItem("cw"); if (s) { const r = JSON.parse(s); send({ type: "rejoin", room: r.room, token: r.token }); } };
+  ws.onclose = () => { $("conn").textContent = "disconnected — reload to reconnect"; };
+  ws.onmessage = e => handle(JSON.parse(e.data));
+}
+
+function handle(m) {
+  switch (m.type) {
+    case "hello": log("server protocol " + m.protocol); break;
+    case "joined": room = m.room; token = m.token; seat = m.seat; names = m.names || names; sessionStorage.setItem("cw", JSON.stringify({ room, token })); $("err").textContent = ""; $("leave").disabled = false; $("roominfo").textContent = "Room " + room + " · you are seat " + seat + (m.vs_bot ? " · vs bot" : ""); log("joined room " + room + " as seat " + seat); break;
+    case "waiting": log("waiting for an opponent — share code " + m.room); break;
+    case "opponent": log("opponent " + m.name + (m.connected ? " connected" : " disconnected")); break;
+    case "update": seq = m.seq; view = m.view; names = m.names || names; (m.events || []).forEach(e => log(describeEvent(e))); render(); break;
+    case "room_closed": log("room closed: " + m.message, "error"); sessionStorage.removeItem("cw"); room = token = null; $("leave").disabled = true; $("game").hidden = true; $("roominfo").textContent = ""; break;
+    case "error": $("err").textContent = m.code + ": " + m.message; log("error " + m.code + ": " + m.message, "error"); if (m.code === "bad_token" || m.code === "room_not_found") sessionStorage.removeItem("cw"); break;
+  }
+}
+
+const who = p => names[p] || ("Seat " + p);
+
+function render() {
+  const v = view; $("game").hidden = false;
+  const turn = v.phase === "mulligan" ? "Opening hands" : "Turn " + v.turn + " · " + who(v.active) + "'s turn · " + v.phase + (v.phase === "main" ? " · Actions " + v.actions_left : "");
+  $("summary").textContent = turn + (v.over ? " · GAME OVER, " + who(v.winner) + " wins" : "") + (v.pending ? " · stolen card must be played: " + cname(v.pending.card) : "");
+  const opp = 1 - v.you, me = v.you;
+  $("oppline").textContent = who(opp) + " (opponent)  HP " + v.players[opp].hp + " · hand " + v.players[opp].hand_count + " · deck " + v.players[opp].deck_count + " · discard " + v.players[opp].discard.length;
+  $("meline").textContent = who(me) + " (you)  HP " + v.players[me].hp + " · deck " + v.players[me].deck_count + " · discard " + v.players[me].discard.length;
+  $("oppboard").replaceChildren(board(v.players[opp], true));
+  $("meboard").replaceChildren(board(v.players[me], false));
+  $("hand").replaceChildren(...v.players[me].hand.map((c, i) => { const d = document.createElement("div"); const k = cards[c.card] || {}; d.textContent = (i + 1) + ". " + k.name + "  [" + (k.cost ?? "-") + " · " + k.type + "]  " + (k.text || ""); return d; }));
+  const box = $("actions"); box.replaceChildren();
+  if (!v.legal.length) { box.textContent = v.over ? "Game over." : "Waiting for " + v.awaiting.map(who).join(" and ") + "…"; return; }
+  v.legal.forEach(a => { const b = document.createElement("button"); b.textContent = describe(a); b.onclick = () => send({ type: "action", action: a, seq }); box.append(b); });
+}
+
+function board(p, top) {
+  const t = document.createElement("table");
+  const rows = [["land", l => (l.face_down ? "▼ face down" : l.landscape)], ["bldg", l => l.building ? cname(l.building.card) + (l.building.status === "flooped" ? " (flooped)" : "") : "·"], ["crea", l => creature(l.creature)]];
+  if (!top) rows.reverse();
+  const head = document.createElement("tr"); head.append(th(""), ...p.lanes.map((_, i) => th("lane " + (i + 1)))); t.append(head);
+  rows.forEach(([label, f]) => { const tr = document.createElement("tr"); tr.append(th(label)); p.lanes.forEach(l => { const td = document.createElement("td"); const r = f(l); if (r instanceof Node) td.append(r); else td.textContent = r; tr.append(td); }); t.append(tr); });
+  return t;
+}
+const th = s => { const e = document.createElement("th"); e.textContent = s; return e; };
+function creature(c) {
+  if (!c) return "·";
+  const d = document.createElement("div"); d.className = "creature";
+  const b = document.createElement("b"); b.textContent = cname(c.card); d.append(b);
+  const tags = [c.status]; if (c.damage) tags.push("dmg " + c.damage); if (c.protected) tags.push("protected"); if (c.stolen) tags.push("stolen"); if (c.silenced) tags.push(c.lent ? "lent " + cname(c.lent) : "silenced");
+  const s = document.createElement("div"); s.textContent = c.attack + "/" + c.defense; d.append(s);
+  const t = document.createElement("div"); t.className = "tags"; t.textContent = tags.join(" · "); d.append(t);
+  return d;
+}
+
+// ----- descriptions
+function ref(r) {
+  const side = r.player === view.you ? "your" : "opp's", l = (view.players[r.player].lanes[r.lane]) || {};
+  switch (r.kind) {
+    case "creature": return (l.creature ? cname(l.creature.card) : "creature") + " (" + side + ", lane " + (r.lane + 1) + ")";
+    case "building": return (l.building ? cname(l.building.card) : "building") + " (" + side + ", lane " + (r.lane + 1) + ")";
+    case "landscape": return (l.face_down ? "face-down " : "") + l.landscape + " landscape (" + side + ", lane " + (r.lane + 1) + ")";
+    case "lane": return "lane " + (r.lane + 1) + " (" + side + " side)";
+    default: return findCard(r.card);
+  }
+}
+function findCard(uid) {
+  const v = view; if (v.pending && v.pending.uid === uid) return cname(v.pending.card);
+  for (const p of v.players) {
+    for (const c of (p.hand || []).concat(p.discard)) if (c.uid === uid) return cname(c.card);
+    for (const l of p.lanes) for (const c of [l.creature, l.building]) if (c && c.uid === uid) return cname(c.card);
+  }
+  return "card #" + uid;
+}
+const tg = (label, slots) => slots && slots.length ? "  [" + label + ": " + slots.map(s => s.length ? s.map(ref).join(" + ") : "none").join("; ") + "]" : "";
+function describe(a) {
+  const me = view.players[view.you];
+  switch (a.kind) {
+    case "keep_hand": return "Keep your opening hand";
+    case "mulligan": return "Mulligan (redraw 5, once)";
+    case "draw": return "Spend 1 Action to draw a card";
+    case "end_main": return view.turn === 1 ? "End your turn (no Fight on the first turn)" : "Go to the Fight phase";
+    case "play_card": { const c = me.hand.find(x => x.uid === a.card), k = cards[c.card]; return (k.type === "spell" ? "Cast " : "Play ") + k.name + " (cost " + k.cost + ")" + (k.type === "spell" ? "" : " into lane " + ((a.lane || 0) + 1)) + tg("discard", a.cost_targets) + tg("targets", a.targets); }
+    case "play_pending": return "Play " + cname(view.pending.card) + " for free" + (cards[view.pending.card].type === "spell" ? "" : " into lane " + ((a.lane || 0) + 1)) + tg("targets", a.targets);
+    case "attack": return "Fight in lane " + ((a.lane || 0) + 1);
+    case "floop": case "activate": { const l = me.lanes[a.lane || 0], src = a.source === "building" ? l.building : l.creature; return (a.kind === "floop" ? "Floop " : "Use ability of ") + cname(src.card) + " (lane " + ((a.lane || 0) + 1) + ")" + tg("targets", a.targets); }
+  }
+  return JSON.stringify(a);
+}
+function describeEvent(e) {
+  const nm = uid => findCard(uid), p = who(e.player), n = e.amount;
+  switch (e.kind) {
+    case "turn_start": return "── " + p + "'s turn ──";
+    case "draw": return p + " draws " + (e.card ? nm(e.card) : "a card");
+    case "play": return p + " plays " + nm(e.card);
+    case "attack": return p + " fights with " + nm(e.card) + " (lane " + ((e.lane || 0) + 1) + ")";
+    case "damage": return nm(e.card) + " takes " + n + " damage";
+    case "hp_loss": return p + " loses " + n + " HP";
+    case "die": return nm(e.card) + " is destroyed";
+    case "game_over": return "*** " + p + " wins ***";
+    default: return e.kind + (e.card ? " " + nm(e.card) : "");
+  }
+}
+
+// ----- lobby
+const deck = () => $("deck").value, nm = () => $("name").value;
+$("vsbot").onclick = () => send({ type: "create", name: nm(), deck: deck(), vs_bot: true });
+$("create").onclick = () => send({ type: "create", name: nm(), deck: deck() });
+$("join").onclick = () => send({ type: "join", room: $("code").value, name: nm(), deck: deck() });
+$("leave").onclick = () => send({ type: "leave" });
+init();
+</script>
+</body>
+</html>
