@@ -25,6 +25,32 @@ func starterGame(t testing.TB, seed uint64) *Game {
 	return g
 }
 
+// strictStarterGame is the same match using only cards whose rules are fully
+// modelled; the few still-unimplemented cards are left out of the decks.
+func strictStarterGame(t testing.TB, seed uint64) *Game {
+	t.Helper()
+	cat, err := card.Load("../../data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	keep := func(ids []string) []string {
+		var out []string
+		for _, id := range ids {
+			if cat[id].Implemented() {
+				out = append(out, id)
+			}
+		}
+		return out
+	}
+	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, keep(cat.Deck("CP1", "Finn's Blue Plains Deck"))}
+	jake := DeckSpec{cornfields, keep(cat.Deck("CP1", "Jake's Cornfield Deck"))}
+	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2), SkipDeckRules: true}, [2]DeckSpec{finn, jake})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return g
+}
+
 // checkInvariants returns a description of the first broken invariant.
 func (g *Game) checkInvariants(total [2]int) error {
 	st := &g.State
@@ -87,6 +113,11 @@ func (g *Game) checkInvariants(total [2]int) error {
 // playRandom plays a game choosing uniformly among legal actions. It returns
 // the number of actions taken and whether the game finished.
 func playRandom(t testing.TB, g *Game, rng *rand.Rand, maxActions int) (int, bool) {
+	return playRandomSeen(t, g, rng, maxActions, nil)
+}
+
+// playRandomSeen is playRandom, also tallying the kinds of events produced.
+func playRandomSeen(t testing.TB, g *Game, rng *rand.Rand, maxActions int, seen map[EventKind]int) (int, bool) {
 	t.Helper()
 	var total [2]int
 	for p := range total {
@@ -110,8 +141,14 @@ func playRandom(t testing.TB, g *Game, rng *rand.Rand, maxActions int) (int, boo
 			t.Fatalf("no legal actions for anyone in phase %s", g.State.Phase)
 		}
 		a := legal[rng.IntN(len(legal))]
-		if _, err := g.Apply(p, a); err != nil {
+		evs, err := g.Apply(p, a)
+		if err != nil {
 			t.Fatalf("legal action %s failed: %v", a, err)
+		}
+		for _, e := range evs {
+			if seen != nil {
+				seen[e.Kind]++
+			}
 		}
 		if err := g.checkInvariants(total); err != nil {
 			t.Fatalf("after %s by %d (turn %d): %v", a, p, g.State.Turn, err)
@@ -169,5 +206,49 @@ func TestCloneDiverges(t *testing.T) {
 	playRandom(t, c, rand.New(rand.NewPCG(5, 5)), 500)
 	if g.String() != snap {
 		t.Error("playing on a clone changed the original")
+	}
+}
+
+func TestStrictRandomPlayoutsExerciseCardEffects(t *testing.T) {
+	games := 300
+	if testing.Short() {
+		games = 30
+	}
+	seen := map[EventKind]int{}
+	finished := 0
+	for seed := uint64(1); seed <= uint64(games); seed++ {
+		g := strictStarterGame(t, seed)
+		if _, done := playRandomSeen(t, g, rand.New(rand.NewPCG(seed, 7)), 20000, seen); done {
+			finished++
+		}
+	}
+	if finished < games*95/100 {
+		t.Errorf("only %d of %d games finished", finished, games)
+	}
+	t.Logf("events across %d games: %v", games, seen)
+	if !testing.Short() {
+		for _, k := range []EventKind{EvFloop, EvActivate, EvMove, EvFlip, EvBounce, EvReady, EvReturn, EvDeckTop, EvDestroy, EvActions} {
+			if seen[k] == 0 {
+				t.Errorf("no %s events in %d random games: that effect path is untested", k, games)
+			}
+		}
+	}
+}
+
+// The starter decks are fully modelled except for four cards whose rules need
+// features the engine does not have yet (see docs/effects.md). Fails when one
+// of them gets modelled, as a reminder to shrink this list and the docs.
+func TestOnlyKnownStarterCardsAreUnmodeled(t *testing.T) {
+	cat, err := card.Load("../../data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]bool{"schoolhouse": true, "woad-mobile-home": true, "field-reaper": true, "silo-of-truth": true}
+	for _, deck := range [][]string{cat.Deck("CP1", "Finn's Blue Plains Deck"), cat.Deck("CP1", "Jake's Cornfield Deck")} {
+		for _, id := range deck {
+			if cat[id].Implemented() == want[id] {
+				t.Errorf("%s: implemented=%v, expected %v", id, cat[id].Implemented(), !want[id])
+			}
+		}
 	}
 }
