@@ -31,6 +31,12 @@ test("optional empty target slots read as none", () => {
   assert.match(describeAction(ctx, a), /\[targets: none\]$/);
 });
 
+test("a null target slot (how Go encodes an empty list) is read as none", () => {
+  const a = { kind: "play_card", card: 10, lane: 1, targets: [null] };
+  assert.match(describeAction(ctx, a), /\[targets: none\]$/);
+  assert.equal(isKnownAction(ctx, a), true);
+});
+
 test("additional costs and several slots", () => {
   const a = {
     kind: "play_card", card: 10, lane: 0,

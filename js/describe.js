@@ -46,7 +46,8 @@ export function describeRef(ctx, r) {
 
 function withTargets(ctx, text, label, slots) {
   if (!slots || slots.length === 0) return text;
-  const parts = slots.map((s) => (s.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none"));
+  // An optional slot with nothing chosen may arrive as null or [].
+  const parts = slots.map((s) => (s?.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none"));
   return `${text}  [${label}: ${parts.join("; ")}]`;
 }
 
