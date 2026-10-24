@@ -16,6 +16,7 @@ created with `AllowUnimplemented`.
 | `floop`     | `FLOOP >>>` ability: exhaust (Ready only), then run `do` |
 | `activate`  | `Pay N Action(s) >>>` ability, usable any number of times |
 | `spell`     | Resolved when the Spell is played, then the Spell is discarded |
+| `additional_cost` | Paid when the card is played (Field Reaper discards a card); its targets travel in the action's `cost_targets` |
 
 ## Pieces
 
@@ -29,15 +30,16 @@ created with `AllowUnimplemented`.
   `self`, `lane_ally` (my creature in this Lane), `adjacent_allies`, `your`,
   `opposing`, `any`.
 - **Cond** `{opposing_creature_in_lane?, landscapes?{type,min?,max?}, building_in_lane?}`.
-- **TargetSpec**: one choice slot. `what` = `creature|building|landscape|lane|discard_card`,
+- **TargetSpec**: one choice slot. `what` = `creature|building|landscape|lane|discard_card|hand_card`,
   `side` = `you|opponent|any`, `in_lane`, `adjacent_lane`, `landscape`, `face_down`,
   `without` (for lanes: `creature` or `building`), `card_type`, `optional`, and
   `count` (a Value: choose up to that many *distinct* targets).
 - **Op**: one step of `do`: `draw`, `damage_creature`, `damage_hero`,
   `mod_creature`, `move_creature`, `move_building`, `flip_landscape`,
   `ready_creature`, `bounce`, `destroy_building`, `gain_actions`,
-  `return_from_discard`, `put_on_deck`. Ops reference target slots by index and
-  may carry an `if` condition.
+  `return_from_discard`, `put_on_deck`, `discard`, `copy_floop` (Schoolhouse),
+  `steal_play` (Silo of Truth). Ops reference target slots by index and may
+  carry an `if` condition.
 
 ## Targets are chosen up front
 
@@ -49,7 +51,41 @@ spec. Rules from the rulebook:
 - A trigger whose mandatory target has no legal choice simply does nothing.
 - `optional` slots may be left empty ("you may ...").
 
-## Not modelled yet (kept unimplemented on purpose)
+## Owner versus controller
 
-Field Reaper and Silo of Truth need control to change hands, Schoolhouse copies
-abilities between cards, and Woad Mobile Home's printed text is ambiguous.
+Every card instance has an `owner` (whose deck it came from). Control follows
+the side of the board a card sits on. Cards that die, are replaced, destroyed
+or returned go to their **owner's** discard pile or hand, so a Creature taken
+with Field Reaper dies back to its original player. A Creature moved onto the
+opposing side changes controller and stays exhausted until its new
+controller's next turn.
+
+## Abilities are per-creature state
+
+All reads of a Creature's rules go through `effectsOf`. A Creature can be
+`silenced` (no abilities) and, with `lent`, given only the Floop ability of
+another card until end of turn (Schoolhouse). Statics, triggers and Floops all
+respect that, so a silenced Husker Knight is a 0/0 and dies.
+
+## Pending free plays
+
+Silo of Truth takes a random card from the opponent's hand. Because the card is
+unknown until then, its Lane and targets are chosen afterwards: the game enters
+a pending state in which only `play_pending` is legal. The card is played for
+free (no Actions, Landscapes or additional costs). A card that cannot legally
+be played anywhere goes to its owner's discard pile so the game cannot get
+stuck.
+
+## Rulings chosen where the rulebook is silent
+
+- Schoolhouse with no Creature that has a Floop in the discard pile does
+  nothing (its own Floop is still spent).
+- Field Reaper targets any Creature in its Lane (so it may move itself); with
+  no empty adjacent Lane on your side the trigger does nothing.
+- A moved opposing Creature is exhausted (not Flooped) until its new
+  controller's next turn.
+- Woad Mobile Home moves one of *your* Creatures from an adjacent Lane into its
+  own Lane if that Lane has no Creature.
+- Silo of Truth "no cost" waives the additional cost too.
+
+All 40-card starter decks are fully modelled.
