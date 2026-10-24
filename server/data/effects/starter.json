@@ -761,5 +761,30 @@
         }
       ]
     }
+  ],
+  "woad-mobile-home": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "creature",
+          "side": "you",
+          "adjacent_lane": true
+        },
+        {
+          "what": "lane",
+          "side": "you",
+          "in_lane": true,
+          "without": "creature"
+        }
+      ],
+      "do": [
+        {
+          "do": "move_creature",
+          "slot": 0,
+          "slot2": 1
+        }
+      ]
+    }
   ]
 }

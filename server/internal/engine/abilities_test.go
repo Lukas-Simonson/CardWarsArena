@@ -308,3 +308,37 @@ func TestLegalActionsIncludeAbilities(t *testing.T) {
 		t.Errorf("floop %d, activate %d", counts[ActFloop], counts[ActActivate])
 	}
 }
+
+func TestWoadMobileHomeMovesAnAdjacentCreatureHere(t *testing.T) {
+	g := realGame(t)
+	home := &Building{Instance: g.newInstance("woad-mobile-home"), Status: Ready}
+	g.State.Players[1].Lanes[1].Building = home
+	mover := g.put(1, 0, "the-pig")
+	far := g.put(1, 3, "evil-eye")
+	bf := Action{Kind: ActFloop, Lane: 1, Source: "building"}
+
+	with := func(c, l TargetRef) Action {
+		a := bf
+		a.Targets = [][]TargetRef{{c}, {l}}
+		return a
+	}
+	g.mustFail(t, 1, with(creatureRef(1, 3), laneRef(1, 1)), ErrBadTarget) // not adjacent
+	g.mustFail(t, 1, with(creatureRef(0, 0), laneRef(1, 1)), ErrBadTarget) // not yours
+	g.must(t, 1, with(creatureRef(1, 0), laneRef(1, 1)))
+	if g.State.Players[1].Lanes[1].Creature != mover || g.State.Players[1].Lanes[0].Creature != nil || !mover.ChangedLanes {
+		t.Error("the adjacent Creature should have moved into this Lane")
+	}
+	if home.Status != Flooped || far.Status != Ready {
+		t.Error("only the Building exhausts")
+	}
+}
+
+func TestWoadMobileHomeNeedsAnEmptyLaneAndAnAdjacentCreature(t *testing.T) {
+	g := realGame(t)
+	g.State.Players[1].Lanes[1].Building = &Building{Instance: g.newInstance("woad-mobile-home"), Status: Ready}
+	bf := Action{Kind: ActFloop, Lane: 1, Source: "building"}
+	g.mustFail(t, 1, bf, ErrNoTarget) // nobody adjacent
+	g.put(1, 0, "the-pig")
+	g.put(1, 1, "the-pig") // "if empty": this Lane is occupied
+	g.mustFail(t, 1, bf, ErrNoTarget)
+}

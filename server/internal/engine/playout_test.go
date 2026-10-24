@@ -243,7 +243,7 @@ func TestOnlyKnownStarterCardsAreUnmodeled(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := map[string]bool{"schoolhouse": true, "woad-mobile-home": true, "field-reaper": true, "silo-of-truth": true}
+	want := map[string]bool{"schoolhouse": true, "field-reaper": true, "silo-of-truth": true}
 	for _, deck := range [][]string{cat.Deck("CP1", "Finn's Blue Plains Deck"), cat.Deck("CP1", "Jake's Cornfield Deck")} {
 		for _, id := range deck {
 			if cat[id].Implemented() == want[id] {
