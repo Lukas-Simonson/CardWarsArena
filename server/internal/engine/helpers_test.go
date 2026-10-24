@@ -134,24 +134,39 @@ func (g *Game) String() string {
 	return string(b)
 }
 
-// cardCount is every card player p owns, wherever it is.
-func (g *Game) cardCount(p PlayerID) int {
-	pl := g.State.Players[p]
-	n := len(pl.Deck) + len(pl.Hand) + len(pl.Discard)
-	for _, l := range pl.Lanes {
-		if l.Creature != nil {
+// ownedCount is every card player p owns, wherever it is.
+func (g *Game) ownedCount(p PlayerID) int {
+	n := 0
+	tally := func(in Instance) {
+		if in.Owner == p {
 			n++
 		}
-		if l.Building != nil {
-			n++
+	}
+	for q := range g.State.Players {
+		pl := g.State.Players[q]
+		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard} {
+			for _, in := range list {
+				tally(in)
+			}
 		}
+		for _, l := range pl.Lanes {
+			if l.Creature != nil {
+				tally(l.Creature.Instance)
+			}
+			if l.Building != nil {
+				tally(l.Building.Instance)
+			}
+		}
+	}
+	if pe := g.State.Pending; pe != nil {
+		tally(pe.Card)
 	}
 	return n
 }
 
 // give puts a new copy of a card into p's hand (test helper).
 func (g *Game) give(p PlayerID, id string) int {
-	in := g.newInstance(id)
+	in := g.newInstance(id, p)
 	g.State.Players[p].Hand = append(g.State.Players[p].Hand, in)
 	return in.UID
 }

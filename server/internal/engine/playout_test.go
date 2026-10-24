@@ -25,57 +25,54 @@ func starterGame(t testing.TB, seed uint64) *Game {
 	return g
 }
 
-// strictStarterGame is the same match using only cards whose rules are fully
-// modelled; the few still-unimplemented cards are left out of the decks.
+// strictStarterGame is the same match under the full deck rules, with no
+// unmodelled cards allowed: it fails to build if any card is not implemented.
 func strictStarterGame(t testing.TB, seed uint64) *Game {
 	t.Helper()
 	cat, err := card.Load("../../data")
 	if err != nil {
 		t.Fatal(err)
 	}
-	keep := func(ids []string) []string {
-		var out []string
-		for _, id := range ids {
-			if cat[id].Implemented() {
-				out = append(out, id)
-			}
-		}
-		return out
-	}
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, keep(cat.Deck("CP1", "Finn's Blue Plains Deck"))}
-	jake := DeckSpec{cornfields, keep(cat.Deck("CP1", "Jake's Cornfield Deck"))}
-	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2), SkipDeckRules: true}, [2]DeckSpec{finn, jake})
+	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("CP1", "Finn's Blue Plains Deck")}
+	jake := DeckSpec{cornfields, cat.Deck("CP1", "Jake's Cornfield Deck")}
+	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2)}, [2]DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)
 	}
 	return g
 }
 
-// checkInvariants returns a description of the first broken invariant.
+// checkInvariants returns a description of the first broken invariant. total
+// is how many cards each player owned at the start.
 func (g *Game) checkInvariants(total [2]int) error {
 	st := &g.State
 	seen := map[int]bool{}
+	owned := [2]int{}
+	count := func(in Instance, where string) error {
+		if seen[in.UID] {
+			return fmt.Errorf("uid %d appears twice (%s)", in.UID, where)
+		}
+		seen[in.UID] = true
+		owned[in.Owner]++
+		return nil
+	}
 	for p := range st.Players {
 		pl := &st.Players[p]
-		n := 0
-		count := func(in Instance) error {
-			n++
-			if seen[in.UID] {
-				return fmt.Errorf("uid %d appears twice", in.UID)
-			}
-			seen[in.UID] = true
-			return nil
-		}
-		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard} {
+		for name, list := range map[string][]Instance{"deck": pl.Deck, "hand": pl.Hand, "discard": pl.Discard} {
 			for _, in := range list {
-				if err := count(in); err != nil {
+				if err := count(in, name); err != nil {
 					return err
 				}
 			}
 		}
+		for _, in := range pl.Discard {
+			if in.Owner != PlayerID(p) {
+				return fmt.Errorf("player %d discard holds a card owned by player %d", p, in.Owner)
+			}
+		}
 		for i, l := range pl.Lanes {
 			if l.Creature != nil {
-				if err := count(l.Creature.Instance); err != nil {
+				if err := count(l.Creature.Instance, "creature"); err != nil {
 					return err
 				}
 				if l.Creature.Damage >= g.def(pos{PlayerID(p), i}) {
@@ -86,13 +83,10 @@ func (g *Game) checkInvariants(total [2]int) error {
 				}
 			}
 			if l.Building != nil {
-				if err := count(l.Building.Instance); err != nil {
+				if err := count(l.Building.Instance, "building"); err != nil {
 					return err
 				}
 			}
-		}
-		if n != total[p] {
-			return fmt.Errorf("player %d has %d cards, started with %d", p, n, total[p])
 		}
 		if pl.HP > StartingHP {
 			return fmt.Errorf("player %d HP %d above start", p, pl.HP)
@@ -100,6 +94,14 @@ func (g *Game) checkInvariants(total [2]int) error {
 		if st.Phase != PhaseOver && pl.HP <= 0 {
 			return fmt.Errorf("player %d at %d HP but game not over", p, pl.HP)
 		}
+	}
+	if st.Pending != nil {
+		if err := count(st.Pending.Card, "pending"); err != nil {
+			return err
+		}
+	}
+	if owned != total {
+		return fmt.Errorf("cards by owner %v, started with %v", owned, total)
 	}
 	if st.ActionsLeft < 0 { // effects such as Ancient Scholar can grant extra Actions
 		return fmt.Errorf("actions left %d", st.ActionsLeft)
@@ -121,7 +123,7 @@ func playRandomSeen(t testing.TB, g *Game, rng *rand.Rand, maxActions int, seen 
 	t.Helper()
 	var total [2]int
 	for p := range total {
-		total[p] = g.cardCount(PlayerID(p))
+		total[p] = g.ownedCount(PlayerID(p))
 	}
 	for n := 0; n < maxActions; n++ {
 		if g.State.Phase == PhaseOver {
@@ -227,7 +229,7 @@ func TestStrictRandomPlayoutsExerciseCardEffects(t *testing.T) {
 	}
 	t.Logf("events across %d games: %v", games, seen)
 	if !testing.Short() {
-		for _, k := range []EventKind{EvFloop, EvActivate, EvMove, EvFlip, EvBounce, EvReady, EvReturn, EvDeckTop, EvDestroy, EvActions} {
+		for _, k := range []EventKind{EvFloop, EvActivate, EvMove, EvFlip, EvBounce, EvReady, EvReturn, EvDeckTop, EvDestroy, EvActions, EvDiscard, EvAbilities, EvSteal} {
 			if seen[k] == 0 {
 				t.Errorf("no %s events in %d random games: that effect path is untested", k, games)
 			}
@@ -235,19 +237,20 @@ func TestStrictRandomPlayoutsExerciseCardEffects(t *testing.T) {
 	}
 }
 
-// The starter decks are fully modelled except for four cards whose rules need
-// features the engine does not have yet (see docs/effects.md). Fails when one
-// of them gets modelled, as a reminder to shrink this list and the docs.
-func TestOnlyKnownStarterCardsAreUnmodeled(t *testing.T) {
+// Every card in the two starter decks has its rules modelled, so those decks
+// can be played in strict mode (no AllowUnimplemented).
+func TestStarterDecksAreFullyModeled(t *testing.T) {
 	cat, err := card.Load("../../data")
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := map[string]bool{"schoolhouse": true, "woad-mobile-home": true, "field-reaper": true, "silo-of-truth": true}
 	for _, deck := range [][]string{cat.Deck("CP1", "Finn's Blue Plains Deck"), cat.Deck("CP1", "Jake's Cornfield Deck")} {
+		if len(deck) != 40 {
+			t.Errorf("deck has %d cards", len(deck))
+		}
 		for _, id := range deck {
-			if cat[id].Implemented() == want[id] {
-				t.Errorf("%s: implemented=%v, expected %v", id, cat[id].Implemented(), !want[id])
+			if !cat[id].Implemented() {
+				t.Errorf("%s is not modelled", id)
 			}
 		}
 	}

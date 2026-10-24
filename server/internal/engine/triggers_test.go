@@ -215,7 +215,7 @@ func TestEnterTriggerTargetsAreListedByLegalActions(t *testing.T) {
 
 func TestTriggersDoNotFireForCardsOutOfPlay(t *testing.T) {
 	g := realGame(t)
-	g.State.Players[0].Hand = append(g.State.Players[0].Hand, g.newInstance("field-stalker"))
+	g.State.Players[0].Hand = append(g.State.Players[0].Hand, g.newInstance("field-stalker", 0))
 	h0 := len(g.State.Players[0].Hand)
 	g.must(t, 1, endMain)
 	if got := len(g.State.Players[0].Hand); got != h0+1 {

@@ -55,7 +55,7 @@ func NewGame(cat card.Catalog, cfg Config, decks [2]DeckSpec) (*Game, error) {
 			pl.Lanes[i].Landscape = ls
 		}
 		for _, id := range decks[p].Cards {
-			pl.Deck = append(pl.Deck, g.newInstance(id))
+			pl.Deck = append(pl.Deck, g.newInstance(id, PlayerID(p)))
 		}
 		g.shuffle(pl.Deck)
 		g.draw(PlayerID(p), StartingHand)
@@ -118,9 +118,9 @@ func (g *Game) Clone() *Game {
 // Card returns the catalog entry for an instance.
 func (g *Game) Card(i Instance) *card.Card { return g.cat[i.CardID] }
 
-func (g *Game) newInstance(id string) Instance {
+func (g *Game) newInstance(id string, owner PlayerID) Instance {
 	g.State.NextUID++
-	return Instance{UID: g.State.NextUID, CardID: id}
+	return Instance{UID: g.State.NextUID, CardID: id, Owner: owner}
 }
 
 func (g *Game) shuffle(s []Instance) {
@@ -163,6 +163,8 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 		ev = append(ev, g.doAttack(p, a)...)
 	case ActFloop, ActActivate:
 		ev = append(ev, g.doAbility(p, a)...)
+	case ActPlayPending:
+		ev = append(ev, g.doPending(p, a)...)
 	}
 	// State-based rules hold after every action, not just after combat.
 	ev = append(ev, g.settle()...)
@@ -180,6 +182,9 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 	}
 	if p != 0 && p != 1 {
 		return ErrNotYourTurn
+	}
+	if st.Pending != nil && a.Kind != ActPlayPending {
+		return ErrPending
 	}
 	switch a.Kind {
 	case ActKeepHand, ActMulligan:
@@ -204,6 +209,8 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 		return g.validateAttack(p, a)
 	case ActFloop, ActActivate:
 		return g.validateAbility(p, a)
+	case ActPlayPending:
+		return g.validatePending(p, a)
 	}
 	return ErrUnknownAction
 }

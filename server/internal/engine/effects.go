@@ -12,6 +12,7 @@ type effCtx struct {
 	at       pos       // where the source card sits (only if hasSrc)
 	hasSrc   bool      // false for Spells
 	creature *Creature // the source, when it is a Creature
+	playing  int       // UID of the card being played (not a legal hand_card choice)
 }
 
 func (c effCtx) source() source { return source{pos: c.at, creature: c.creature} }
@@ -29,6 +30,15 @@ func sidesFor(side string, p PlayerID) []PlayerID {
 // candidates lists every legal choice for one target slot.
 func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
 	var out []TargetRef
+	if spec.What == "hand_card" {
+		// Only ever the controller's own hand (discard costs).
+		for _, in := range g.State.Players[c.p].Hand {
+			if in.UID != c.playing {
+				out = append(out, TargetRef{Kind: spec.What, Player: c.p, Card: in.UID})
+			}
+		}
+		return out
+	}
 	if spec.What == "discard_card" {
 		for _, p := range sidesFor(spec.Side, c.p) {
 			for _, in := range g.State.Players[p].Discard {
@@ -289,7 +299,19 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "move_creature":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
 			if len(from) == 1 && len(to) == 1 {
-				ev = append(ev, g.moveCreature(pos{from[0].Player, from[0].Lane}, to[0].Lane)...)
+				ev = append(ev, g.moveCreature(pos{from[0].Player, from[0].Lane}, pos{to[0].Player, to[0].Lane})...)
+			}
+		case "discard":
+			for _, r := range slotRefs(op.Slot, given) {
+				pl := &g.State.Players[r.Player]
+				for i, in := range pl.Hand {
+					if in.UID == r.Card {
+						pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
+						g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+						ev = append(ev, Event{Kind: EvDiscard, Player: r.Player, Card: in.UID})
+						break
+					}
+				}
 			}
 		case "move_building":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
@@ -306,11 +328,15 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			for _, r := range slotRefs(op.Slot, given) {
 				l := &g.State.Players[r.Player].Lanes[r.Lane]
 				if b := l.Building; b != nil {
-					g.State.Players[r.Player].Discard = append(g.State.Players[r.Player].Discard, b.Instance)
+					g.State.Players[b.Owner].Discard = append(g.State.Players[b.Owner].Discard, b.Instance)
 					l.Building = nil
 					ev = append(ev, Event{Kind: EvDestroy, Player: r.Player, Card: b.UID, Lane: r.Lane})
 				}
 			}
+		case "steal_play":
+			ev = append(ev, g.stealPlay(c)...)
+		case "copy_floop":
+			ev = append(ev, g.copyFloop(c)...)
 		case "gain_actions":
 			g.State.ActionsLeft += amt
 			ev = append(ev, Event{Kind: EvActions, Player: c.p, Amount: amt})
@@ -389,32 +415,39 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 		return nil
 	}
 	l.Creature = nil
-	pl := &g.State.Players[at.P]
+	owner := &g.State.Players[cr.Owner]
 	var ev []Event
 	switch to {
 	case toHand:
-		pl.Hand = append(pl.Hand, cr.Instance)
-		ev = append(ev, Event{Kind: EvBounce, Player: at.P, Card: cr.UID, Lane: at.Lane})
+		owner.Hand = append(owner.Hand, cr.Instance)
+		ev = append(ev, Event{Kind: EvBounce, Player: cr.Owner, Card: cr.UID, Lane: at.Lane})
 	default:
-		pl.Discard = append(pl.Discard, cr.Instance)
+		owner.Discard = append(owner.Discard, cr.Instance)
 	}
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
-	return append(ev, g.fire(card.OnLeavePlay, ctx, cr.Instance, nil)...)
+	return append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
 }
 
-// moveCreature moves a Creature to an empty Lane on its controller's side.
-func (g *Game) moveCreature(from pos, lane int) []Event {
-	pl := &g.State.Players[from.P]
-	cr := pl.Lanes[from.Lane].Creature
-	if cr == nil || lane == from.Lane || pl.Lanes[lane].Creature != nil {
+// moveCreature moves a Creature to an empty Lane. Within one side that is a
+// plain Lane change; onto the other player's side it changes control: the
+// Creature stays owned by its owner but is now exhausted until its new
+// controller's next turn (Field Reaper).
+func (g *Game) moveCreature(from, to pos) []Event {
+	src := &g.State.Players[from.P].Lanes[from.Lane]
+	dst := &g.State.Players[to.P].Lanes[to.Lane]
+	cr := src.Creature
+	if cr == nil || dst.Creature != nil || src == dst {
 		return nil
 	}
-	pl.Lanes[from.Lane].Creature = nil
-	pl.Lanes[lane].Creature = cr
+	src.Creature = nil
+	dst.Creature = cr
 	cr.ChangedLanes = true
-	ev := []Event{{Kind: EvMove, Player: from.P, Card: cr.UID, Lane: lane}}
-	ctx := effCtx{p: from.P, at: pos{from.P, lane}, hasSrc: true, creature: cr}
-	return append(ev, g.fire(card.OnChangeLanes, ctx, cr.Instance, nil)...)
+	if from.P != to.P {
+		cr.Status = Fought
+	}
+	ev := []Event{{Kind: EvMove, Player: to.P, Card: cr.UID, Lane: to.Lane}}
+	ctx := effCtx{p: to.P, at: to, hasSrc: true, creature: cr}
+	return append(ev, g.fire(card.OnChangeLanes, ctx, g.effectsOf(cr), nil)...)
 }
 
 // moveBuilding moves a Building to a Lane on its controller's side that has none.
@@ -427,4 +460,59 @@ func (g *Game) moveBuilding(from pos, lane int) []Event {
 	pl.Lanes[from.Lane].Building = nil
 	pl.Lanes[lane].Building = b
 	return []Event{{Kind: EvMove, Player: from.P, Card: b.UID, Lane: lane}}
+}
+
+// copyFloop (Schoolhouse): the controller's Creature in the source's Lane
+// loses all abilities and gains the FLOOP ability of a random Creature with
+// one from the controller's discard pile, until end of turn. With no such
+// Creature in the discard pile nothing happens.
+func (g *Game) copyFloop(c effCtx) []Event {
+	if !c.hasSrc {
+		return nil
+	}
+	at := pos{c.p, c.at.Lane}
+	cr := g.creatureAt(at)
+	if cr == nil {
+		return nil
+	}
+	var donors []string
+	for _, in := range g.State.Players[c.p].Discard {
+		cd := g.Card(in)
+		if cd.Type != card.Creature {
+			continue
+		}
+		for _, e := range cd.Effects {
+			if e.Kind == card.KindFloop {
+				donors = append(donors, in.CardID)
+				break
+			}
+		}
+	}
+	if len(donors) == 0 {
+		return nil
+	}
+	cr.Silenced = true
+	cr.Lent = donors[rand.New(&g.rng).IntN(len(donors))]
+	return []Event{{Kind: EvAbilities, Player: c.p, Card: cr.UID, Lane: at.Lane}}
+}
+
+// stealPlay (Silo of Truth) takes a random card from the opponent's hand. The
+// controller must then play it for free. A card that cannot legally be played
+// anywhere goes to its owner's discard pile instead.
+func (g *Game) stealPlay(c effCtx) []Event {
+	opp := &g.State.Players[c.p.Opp()]
+	if len(opp.Hand) == 0 {
+		return nil
+	}
+	i := rand.New(&g.rng).IntN(len(opp.Hand))
+	in := opp.Hand[i]
+	opp.Hand = append(opp.Hand[:i:i], opp.Hand[i+1:]...)
+	ev := []Event{{Kind: EvSteal, Player: c.p, Card: in.UID}}
+	g.State.Pending = &Pending{Card: in}
+	if len(g.pendingActions(c.p)) == 0 {
+		g.State.Pending = nil
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+		ev = append(ev, Event{Kind: EvDiscard, Player: in.Owner, Card: in.UID})
+	}
+	return ev
 }

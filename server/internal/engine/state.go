@@ -40,6 +40,10 @@ const (
 type Instance struct {
 	UID    int    `json:"uid"`
 	CardID string `json:"card"`
+	// Owner is the player whose deck the card came from. Discarded or
+	// returned cards always go to their owner, even when someone else
+	// controls them (a Creature controlled by the player whose side it is on).
+	Owner PlayerID `json:"owner"`
 }
 
 // Creature is a Creature in play.
@@ -51,6 +55,11 @@ type Creature struct {
 	TempATK      int  `json:"temp_atk,omitempty"`
 	TempDEF      int  `json:"temp_def,omitempty"`
 	ChangedLanes bool `json:"changed_lanes,omitempty"`
+	// Silenced means the Creature has lost all its printed abilities this
+	// turn. If Lent is set it instead has only the FLOOP ability of that
+	// card (Schoolhouse).
+	Silenced bool   `json:"silenced,omitempty"`
+	Lent     string `json:"lent,omitempty"`
 }
 
 // Building is a Building in play.
@@ -88,6 +97,15 @@ type State struct {
 	ActionsLeft int       `json:"actions_left"`
 	Winner      PlayerID  `json:"winner"` // meaningful only when Phase == PhaseOver
 	NextUID     int       `json:"next_uid"`
+	// Pending, when set, is a decision the active player must make before
+	// anything else can happen.
+	Pending *Pending `json:"pending,omitempty"`
 	// SpellsThisTurn counts Spells the active player has played this turn.
 	SpellsThisTurn int `json:"spells_this_turn"`
+}
+
+// Pending is a card taken from the opponent that must be played for free
+// (Silo of Truth). The card is not in any zone while it waits.
+type Pending struct {
+	Card Instance `json:"card"`
 }

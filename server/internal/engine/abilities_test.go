@@ -48,7 +48,7 @@ func TestFirstPlayerCannotFloopOnTheFirstTurn(t *testing.T) {
 	g.start(t)
 	cat := realGame(t).cat
 	g.cat = cat
-	g.State.Players[0].Lanes[0].Creature = &Creature{Instance: g.newInstance("the-pig"), Status: Ready}
+	g.State.Players[0].Lanes[0].Creature = &Creature{Instance: g.newInstance("the-pig", 0), Status: Ready}
 	g.mustFail(t, 0, floop(0, []TargetRef{lsRef(0, 0)}), ErrFirstTurn)
 }
 
@@ -130,9 +130,9 @@ func TestHeavenlyGazerNeedsASpellInDiscard(t *testing.T) {
 	g := realGame(t)
 	g.put(1, 0, "heavenly-gazer")
 	g.mustFail(t, 1, floop(0), ErrNoTarget)
-	g.State.Players[1].Discard = []Instance{g.newInstance("evil-eye")}
+	g.State.Players[1].Discard = []Instance{g.newInstance("evil-eye", 1)}
 	g.mustFail(t, 1, floop(0), ErrNoTarget) // a Creature is not a Spell
-	spell := g.newInstance("gnome-snot")
+	spell := g.newInstance("gnome-snot", 1)
 	g.State.Players[1].Discard = append(g.State.Players[1].Discard, spell)
 	g.must(t, 1, floop(0, []TargetRef{{Kind: "discard_card", Player: 1, Card: spell.UID}}))
 	if top := g.State.Players[1].Deck[0]; top.UID != spell.UID {
@@ -146,8 +146,8 @@ func TestHeavenlyGazerNeedsASpellInDiscard(t *testing.T) {
 func TestAncientScholarReturnsARandomRainbowCard(t *testing.T) {
 	g := realGame(t)
 	g.put(1, 0, "ancient-scholar")
-	rainbow := g.newInstance("teleport")
-	g.State.Players[1].Discard = []Instance{g.newInstance("cool-dog"), rainbow} // Cool Dog is Blue Plains
+	rainbow := g.newInstance("teleport", 1)
+	g.State.Players[1].Discard = []Instance{g.newInstance("cool-dog", 1), rainbow} // Cool Dog is Blue Plains
 	hand := len(g.State.Players[1].Hand)
 	g.must(t, 1, floop(0))
 	h := g.State.Players[1].Hand
@@ -162,7 +162,7 @@ func TestAncientScholarReturnsARandomRainbowCard(t *testing.T) {
 func TestAncientScholarWithBuildingGainsAnAction(t *testing.T) {
 	g := realGame(t)
 	g.put(1, 0, "ancient-scholar")
-	g.State.Players[1].Lanes[0].Building = &Building{Instance: g.newInstance("blood-fortress")}
+	g.State.Players[1].Lanes[0].Building = &Building{Instance: g.newInstance("blood-fortress", 1)}
 	g.must(t, 1, floop(0)) // empty discard pile: nothing to return, still gains the Action
 	if g.State.ActionsLeft != 3 {
 		t.Errorf("actions = %d, want 3", g.State.ActionsLeft)
@@ -174,8 +174,8 @@ func TestArcherDanDestroysABuildingInHisLane(t *testing.T) {
 	g.State.Active = 0
 	g.put(0, 0, "archer-dan")
 	g.mustFail(t, 0, floop(0), ErrNoTarget)
-	g.State.Players[1].Lanes[0].Building = &Building{Instance: g.newInstance("celestial-castle")}
-	g.State.Players[1].Lanes[1].Building = &Building{Instance: g.newInstance("blood-fortress")}
+	g.State.Players[1].Lanes[0].Building = &Building{Instance: g.newInstance("celestial-castle", 1)}
+	g.State.Players[1].Lanes[1].Building = &Building{Instance: g.newInstance("blood-fortress", 1)}
 	g.mustFail(t, 0, floop(0, []TargetRef{{Kind: "building", Player: 1, Lane: 1}}), ErrBadTarget) // other Lane
 	g.must(t, 0, floop(0, []TargetRef{{Kind: "building", Player: 1, Lane: 0}}))
 	if g.State.Players[1].Lanes[0].Building != nil {
@@ -277,7 +277,7 @@ func TestBuildingsCanFloop(t *testing.T) {
 	}
 	g.start(t)
 	g.must(t, 0, endMain)
-	g.State.Players[1].Lanes[0].Building = &Building{Instance: g.newInstance("Well"), Status: Ready}
+	g.State.Players[1].Lanes[0].Building = &Building{Instance: g.newInstance("Well", 1), Status: Ready}
 	hand := len(g.State.Players[1].Hand)
 	a := Action{Kind: ActFloop, Lane: 0, Source: "building"}
 	g.must(t, 1, a)
@@ -307,4 +307,38 @@ func TestLegalActionsIncludeAbilities(t *testing.T) {
 	if counts[ActFloop] != 1+3 || counts[ActActivate] != 1 {
 		t.Errorf("floop %d, activate %d", counts[ActFloop], counts[ActActivate])
 	}
+}
+
+func TestWoadMobileHomeMovesAnAdjacentCreatureHere(t *testing.T) {
+	g := realGame(t)
+	home := &Building{Instance: g.newInstance("woad-mobile-home", 1), Status: Ready}
+	g.State.Players[1].Lanes[1].Building = home
+	mover := g.put(1, 0, "the-pig")
+	far := g.put(1, 3, "evil-eye")
+	bf := Action{Kind: ActFloop, Lane: 1, Source: "building"}
+
+	with := func(c, l TargetRef) Action {
+		a := bf
+		a.Targets = [][]TargetRef{{c}, {l}}
+		return a
+	}
+	g.mustFail(t, 1, with(creatureRef(1, 3), laneRef(1, 1)), ErrBadTarget) // not adjacent
+	g.mustFail(t, 1, with(creatureRef(0, 0), laneRef(1, 1)), ErrBadTarget) // not yours
+	g.must(t, 1, with(creatureRef(1, 0), laneRef(1, 1)))
+	if g.State.Players[1].Lanes[1].Creature != mover || g.State.Players[1].Lanes[0].Creature != nil || !mover.ChangedLanes {
+		t.Error("the adjacent Creature should have moved into this Lane")
+	}
+	if home.Status != Flooped || far.Status != Ready {
+		t.Error("only the Building exhausts")
+	}
+}
+
+func TestWoadMobileHomeNeedsAnEmptyLaneAndAnAdjacentCreature(t *testing.T) {
+	g := realGame(t)
+	g.State.Players[1].Lanes[1].Building = &Building{Instance: g.newInstance("woad-mobile-home", 1), Status: Ready}
+	bf := Action{Kind: ActFloop, Lane: 1, Source: "building"}
+	g.mustFail(t, 1, bf, ErrNoTarget) // nobody adjacent
+	g.put(1, 0, "the-pig")
+	g.put(1, 1, "the-pig") // "if empty": this Lane is occupied
+	g.mustFail(t, 1, bf, ErrNoTarget)
 }

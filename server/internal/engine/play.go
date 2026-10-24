@@ -91,6 +91,24 @@ func (g *Game) validatePlay(p PlayerID, a Action) error {
 	if err != nil {
 		return err
 	}
+	// An additional cost (Field Reaper discards a card) is chosen with the play.
+	if ce := costEffect(c); ce != nil {
+		usable, err := g.checkTargets(ce.Targets, a.CostTargets, effCtx{p: p, playing: a.Card})
+		if !usable {
+			return ErrNoTarget
+		}
+		if err != nil {
+			return err
+		}
+	} else if len(a.CostTargets) > 0 {
+		return ErrBadTarget
+	}
+	return g.validatePlayTargets(p, in, c, a)
+}
+
+// validatePlayTargets checks the lane-dependent target choices of a play: a
+// Spell's targets or an enter-play trigger's.
+func (g *Game) validatePlayTargets(p PlayerID, in Instance, c *card.Card, a Action) error {
 	switch c.Type {
 	case card.Spell:
 		if e := spellEffect(c); e != nil {
@@ -134,7 +152,7 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 	var ev []Event
 	if g.Card(in).Type == card.Building {
 		if old := lane.Building; old != nil {
-			pl.Discard = append(pl.Discard, old.Instance)
+			g.State.Players[old.Owner].Discard = append(g.State.Players[old.Owner].Discard, old.Instance)
 			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
 		}
 		lane.Building = &Building{Instance: in, Status: Ready}
@@ -162,7 +180,15 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	pl.Hand = append(pl.Hand[:idx:idx], pl.Hand[idx+1:]...)
 	c := g.Card(in)
 	g.State.ActionsLeft -= *c.Cost
+	var costEv []Event
+	if ce := costEffect(c); ce != nil {
+		costEv = g.runOps(ce.Do, effCtx{p: p, playing: a.Card}, a.CostTargets)
+	}
+	return append(costEv, g.resolvePlay(p, in, c, a)...)
+}
 
+// resolvePlay puts a paid-for card into play, or resolves a Spell.
+func (g *Game) resolvePlay(p PlayerID, in Instance, c *card.Card, a Action) []Event {
 	if c.Type == card.Spell {
 		// Spells never enter play: resolve, then discard. The Spell counts as
 		// played before it resolves (Woadic Chief counts it) but is not in the
@@ -172,18 +198,28 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 		if e := spellEffect(c); e != nil {
 			ev = append(ev, g.runOps(e.Do, effCtx{p: p, at: pos{p, 0}}, a.Targets)...)
 		}
-		pl.Discard = append(pl.Discard, in)
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
 		return ev
 	}
 	ev := g.place(p, in, a.Lane)
 	ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: a.Lane})
-	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), in, a.Targets)...)
+	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), c.Effects, a.Targets)...)
 }
 
 // spellEffect returns a Spell's resolution effect, if it has one.
 func spellEffect(c *card.Card) *card.Effect {
 	for i := range c.Effects {
 		if c.Effects[i].Kind == card.KindSpell {
+			return &c.Effects[i]
+		}
+	}
+	return nil
+}
+
+// costEffect returns a card's additional cost, if it has one.
+func costEffect(c *card.Card) *card.Effect {
+	for i := range c.Effects {
+		if c.Effects[i].Kind == card.KindAdditionalCost {
 			return &c.Effects[i]
 		}
 	}
@@ -220,4 +256,75 @@ func (g *Game) doDraw(p PlayerID) []Event {
 		ev = append(ev, Event{Kind: EvDraw, Player: p, Card: c.UID})
 	}
 	return ev
+}
+
+// validatePending checks playing the card taken by Silo of Truth. It is
+// played for free: no Action cost, no Landscape requirement, no additional cost.
+func (g *Game) validatePending(p PlayerID, a Action) error {
+	if g.State.Pending == nil {
+		return ErrNoPending
+	}
+	if p != g.State.Active {
+		return ErrNotYourTurn
+	}
+	in := g.State.Pending.Card
+	c := g.Card(in)
+	if len(a.CostTargets) > 0 {
+		return ErrBadTarget
+	}
+	if c.Type != card.Spell {
+		if a.Lane < 0 || a.Lane >= NumLanes {
+			return ErrBadLane
+		}
+		if old := g.State.Players[p].Lanes[a.Lane].Creature; c.Type == card.Creature && old != nil && old.Status == Flooped {
+			return ErrFlooped
+		}
+	}
+	return g.validatePlayTargets(p, in, c, a)
+}
+
+func (g *Game) doPending(p PlayerID, a Action) []Event {
+	in := g.State.Pending.Card
+	g.State.Pending = nil
+	return g.resolvePlay(p, in, g.Card(in), a)
+}
+
+// pendingActions lists every legal way to play the pending card.
+func (g *Game) pendingActions(p PlayerID) []Action {
+	if g.State.Pending == nil {
+		return nil
+	}
+	in := g.State.Pending.Card
+	c := g.Card(in)
+	var cands []Action
+	if c.Type == card.Spell {
+		choices := [][][]TargetRef{nil}
+		if e := spellEffect(c); e != nil && len(e.Targets) > 0 {
+			choices = g.targetCombos(e.Targets, effCtx{p: p}, maxTargetCombos)
+		}
+		for _, t := range choices {
+			cands = append(cands, Action{Kind: ActPlayPending, Targets: t})
+		}
+	} else {
+		for lane := 0; lane < NumLanes; lane++ {
+			choices := [][][]TargetRef{nil}
+			if e := enterEffect(c); e != nil && len(e.Targets) > 0 {
+				h := g.Clone()
+				h.place(p, in, lane)
+				if combos := h.targetCombos(e.Targets, h.placedCtx(p, lane), maxTargetCombos); len(combos) > 0 {
+					choices = combos
+				}
+			}
+			for _, t := range choices {
+				cands = append(cands, Action{Kind: ActPlayPending, Lane: lane, Targets: t})
+			}
+		}
+	}
+	var legal []Action
+	for _, a := range cands {
+		if g.validatePending(p, a) == nil {
+			legal = append(legal, a)
+		}
+	}
+	return legal
 }

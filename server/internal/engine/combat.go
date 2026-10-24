@@ -133,6 +133,7 @@ func (g *Game) endTurn(p PlayerID) []Event {
 		for _, l := range g.State.Players[i].Lanes {
 			if c := l.Creature; c != nil {
 				c.TempATK, c.TempDEF, c.ChangedLanes = 0, 0, false
+				c.Silenced, c.Lent = false, ""
 			}
 		}
 	}

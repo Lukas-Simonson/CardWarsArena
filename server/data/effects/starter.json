@@ -761,5 +761,90 @@
         }
       ]
     }
+  ],
+  "woad-mobile-home": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "creature",
+          "side": "you",
+          "adjacent_lane": true
+        },
+        {
+          "what": "lane",
+          "side": "you",
+          "in_lane": true,
+          "without": "creature"
+        }
+      ],
+      "do": [
+        {
+          "do": "move_creature",
+          "slot": 0,
+          "slot2": 1
+        }
+      ]
+    }
+  ],
+  "field-reaper": [
+    {
+      "kind": "additional_cost",
+      "targets": [
+        {
+          "what": "hand_card"
+        }
+      ],
+      "do": [
+        {
+          "do": "discard",
+          "slot": 0
+        }
+      ]
+    },
+    {
+      "kind": "trigger",
+      "on": "enter_play",
+      "targets": [
+        {
+          "what": "creature",
+          "in_lane": true
+        },
+        {
+          "what": "lane",
+          "side": "you",
+          "adjacent_lane": true,
+          "without": "creature"
+        }
+      ],
+      "do": [
+        {
+          "do": "move_creature",
+          "slot": 0,
+          "slot2": 1
+        }
+      ]
+    }
+  ],
+  "schoolhouse": [
+    {
+      "kind": "floop",
+      "do": [
+        {
+          "do": "copy_floop"
+        }
+      ]
+    }
+  ],
+  "silo-of-truth": [
+    {
+      "kind": "activate",
+      "cost": 2,
+      "do": [
+        {
+          "do": "steal_play"
+        }
+      ]
+    }
   ]
 }
