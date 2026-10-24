@@ -1,22 +1,20 @@
 package engine
 
-// baseStat reads a printed ATK/DEF; variable stats (nil) count as 0 until the
-// effect system models them. All stat reads go through attack/defense so that
-// continuous effects have exactly one place to plug in.
-func baseStat(v *int) int {
-	if v == nil {
-		return 0
+// canAttack reports whether p's Creature in lane may start a Fight right now.
+func (g *Game) canAttack(p PlayerID, lane int) bool {
+	cr := g.State.Players[p].Lanes[lane].Creature
+	if cr == nil || cr.Status != Ready {
+		return false
 	}
-	return *v
+	opp := pos{p.Opp(), lane}
+	return g.creatureAt(opp) == nil || g.attackable(opp)
 }
 
-func (g *Game) attack(c *Creature) int  { return baseStat(g.Card(c.Instance).Attack) }
-func (g *Game) defense(c *Creature) int { return baseStat(g.Card(c.Instance).Defense) }
-
-// hasReadyCreature reports whether p still has a Creature that must Fight.
-func (g *Game) hasReadyCreature(p PlayerID) bool {
-	for _, l := range g.State.Players[p].Lanes {
-		if l.Creature != nil && l.Creature.Status == Ready {
+// hasAttacker reports whether p still has a Creature that can Fight. Ready
+// Creatures that cannot (their target is protected) simply stay Ready.
+func (g *Game) hasAttacker(p PlayerID) bool {
+	for lane := 0; lane < NumLanes; lane++ {
+		if g.canAttack(p, lane) {
 			return true
 		}
 	}
@@ -33,7 +31,7 @@ func (g *Game) doEndMain(p PlayerID) []Event {
 		return g.endTurn(p)
 	}
 	g.State.Phase = PhaseFight
-	if !g.hasReadyCreature(p) {
+	if !g.hasAttacker(p) {
 		return g.endTurn(p)
 	}
 	return nil
@@ -52,6 +50,9 @@ func (g *Game) validateAttack(p PlayerID, a Action) error {
 	if c := g.State.Players[p].Lanes[a.Lane].Creature; c == nil || c.Status != Ready {
 		return ErrNoAttacker
 	}
+	if !g.canAttack(p, a.Lane) {
+		return ErrCannotAttack
+	}
 	return nil
 }
 
@@ -65,13 +66,13 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	def := g.State.Players[opp].Lanes[a.Lane].Creature
 	if def == nil {
 		// Nothing in the way: the Creature hits the opposing Hero.
-		if dmg := g.attack(att); dmg > 0 {
+		if dmg := g.atk(pos{p, a.Lane}); dmg > 0 {
 			g.State.Players[opp].HP -= dmg
 			ev = append(ev, Event{Kind: EvHPLoss, Player: opp, Lane: a.Lane, Amount: dmg})
 		}
 	} else {
 		// Both Creatures deal damage to each other simultaneously.
-		toDef, toAtt := g.attack(att), g.attack(def)
+		toDef, toAtt := g.atk(pos{p, a.Lane}), g.atk(pos{opp, a.Lane})
 		def.Damage += toDef
 		att.Damage += toAtt
 		if toDef > 0 {
@@ -86,23 +87,30 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	if g.State.Phase == PhaseOver {
 		return ev
 	}
-	if !g.hasReadyCreature(p) {
+	if !g.hasAttacker(p) {
 		ev = append(ev, g.endTurn(p)...)
 	}
 	return ev
 }
 
 // settle applies state-based rules: Creatures with damage >= DEF are
-// discarded, and a player at 0 Hit Points loses.
+// discarded (repeating, since leaving play can trigger more damage), and a
+// player at 0 Hit Points loses.
 func (g *Game) settle() []Event {
+	if g.State.Phase == PhaseOver {
+		return nil // already decided; do not announce the result twice
+	}
 	var ev []Event
-	for p := range g.State.Players {
-		pl := &g.State.Players[p]
-		for i := range pl.Lanes {
-			if c := pl.Lanes[i].Creature; c != nil && c.Damage >= g.defense(c) {
-				pl.Discard = append(pl.Discard, c.Instance) // the owner's discard pile
-				pl.Lanes[i].Creature = nil
-				ev = append(ev, Event{Kind: EvDie, Player: PlayerID(p), Card: c.UID, Lane: i})
+	for changed := true; changed; {
+		changed = false
+		for p := range g.State.Players {
+			for i := range g.State.Players[p].Lanes {
+				at := pos{PlayerID(p), i}
+				if c := g.creatureAt(at); c != nil && c.Damage >= g.def(at) {
+					ev = append(ev, Event{Kind: EvDie, Player: PlayerID(p), Card: c.UID, Lane: i})
+					ev = append(ev, g.removeCreature(at, toDiscard)...) // owner's discard pile
+					changed = true
+				}
 			}
 		}
 	}
@@ -117,7 +125,16 @@ func (g *Game) settle() []Event {
 	return ev
 }
 
-// endTurn passes the turn to p's opponent. Unspent Actions are lost.
+// endTurn passes the turn to p's opponent. Unspent Actions are lost and every
+// "this turn" effect ends.
 func (g *Game) endTurn(p PlayerID) []Event {
+	g.State.SpellsThisTurn = 0
+	for i := range g.State.Players {
+		for _, l := range g.State.Players[i].Lanes {
+			if c := l.Creature; c != nil {
+				c.TempATK, c.TempDEF, c.ChangedLanes = 0, 0, false
+			}
+		}
+	}
 	return g.startTurn(p.Opp())
 }

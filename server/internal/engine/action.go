@@ -15,6 +15,8 @@ const (
 	ActDraw     ActionKind = "draw"      // main phase: spend 1 Action to draw 1 card
 	ActEndMain  ActionKind = "end_main"  // main phase: move on to the Fight phase
 	ActAttack   ActionKind = "attack"    // fight phase: Activate the Creature in Lane to Fight
+	ActFloop    ActionKind = "floop"     // main phase: Floop the card in Lane (Source: creature or building)
+	ActActivate ActionKind = "activate"  // main phase: pay Actions for an ability of the card in Lane (Index picks which)
 )
 
 // Action is a single player decision. It is the unit sent over the wire.
@@ -22,6 +24,24 @@ type Action struct {
 	Kind ActionKind `json:"kind"`
 	Card int        `json:"card,omitempty"` // Instance.UID
 	Lane int        `json:"lane,omitempty"`
+	// Source is "creature" (default) or "building": which card in Lane a
+	// floop or activate action refers to. Index picks among a card's
+	// activated abilities.
+	Source string `json:"source,omitempty"`
+	Index  int    `json:"index,omitempty"`
+	// Targets holds one list of choices per target slot of the effect being
+	// used (the Spell, enter-play trigger, Floop or activated ability).
+	Targets [][]TargetRef `json:"targets,omitempty"`
+}
+
+// TargetRef names one chosen target. Kind is the TargetSpec "what":
+// creature, building, landscape and lane use Player and Lane; discard_card
+// uses Player and Card (the UID).
+type TargetRef struct {
+	Kind   string   `json:"kind"`
+	Player PlayerID `json:"player"`
+	Lane   int      `json:"lane,omitempty"`
+	Card   int      `json:"card,omitempty"`
 }
 
 func (a Action) String() string {
@@ -30,6 +50,8 @@ func (a Action) String() string {
 		return fmt.Sprintf("play_card(uid=%d, lane=%d)", a.Card, a.Lane)
 	case ActAttack:
 		return fmt.Sprintf("attack(lane=%d)", a.Lane)
+	case ActFloop, ActActivate:
+		return fmt.Sprintf("%s(%s lane=%d idx=%d)", a.Kind, a.Source, a.Lane, a.Index)
 	}
 	return string(a.Kind)
 }
@@ -49,6 +71,16 @@ const (
 	EvHPLoss    EventKind = "hp_loss" // a player lost Hit Points
 	EvDie       EventKind = "die"
 	EvGameOver  EventKind = "game_over"
+	EvMove      EventKind = "move"     // a Creature or Building changed Lanes (Lane = destination)
+	EvFlip      EventKind = "flip"     // a Landscape was turned over
+	EvReady     EventKind = "ready"    // a Creature was readied
+	EvBounce    EventKind = "bounce"   // a Creature returned to its owner's hand
+	EvDestroy   EventKind = "destroy"  // a Building was destroyed
+	EvReturn    EventKind = "return"   // a card came back from a discard pile to hand
+	EvDeckTop   EventKind = "deck_top" // a card was put on top of a deck
+	EvActions   EventKind = "actions"  // Actions were gained
+	EvFloop     EventKind = "floop"    // a card Flooped
+	EvActivate  EventKind = "activate" // an activated ability was used
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.
@@ -77,4 +109,9 @@ var (
 	ErrNoAttacker     = errors.New("no Ready Creature in that Lane")
 	ErrFirstTurn      = errors.New("the first player may not Floop or Fight on the first turn")
 	ErrNotPlayable    = errors.New("card cannot be played")
+	ErrCannotAttack   = errors.New("that Creature cannot be attacked")
+	ErrNoTarget       = errors.New("no legal target")
+	ErrNotReady       = errors.New("that card is not Ready")
+	ErrNoAbility      = errors.New("that card has no such ability")
+	ErrBadTarget      = errors.New("invalid target choice")
 )

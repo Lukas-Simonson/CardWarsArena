@@ -243,3 +243,20 @@ func TestLosingACreatureOnYourTurnExposesYou(t *testing.T) {
 		t.Errorf("HP = %d, want direct damage of 4", hp)
 	}
 }
+
+func TestGameOverIsAnnouncedOnce(t *testing.T) {
+	g := midGame(t)
+	g.put(1, 0, "Brute")
+	g.State.Players[0].HP = 1
+	g.must(t, 1, endMain)
+	ev := g.must(t, 1, attack(0))
+	n := 0
+	for _, e := range ev {
+		if e.Kind == EvGameOver {
+			n++
+		}
+	}
+	if n != 1 {
+		t.Errorf("game_over events = %d, want 1", n)
+	}
+}

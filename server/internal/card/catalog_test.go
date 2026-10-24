@@ -3,7 +3,7 @@ package card
 import "testing"
 
 func TestLoadDirAndStarterDeck(t *testing.T) {
-	cat, err := LoadDir("../../data/cards")
+	cat, err := Load("../../data")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -20,7 +20,7 @@ func TestLoadDirAndStarterDeck(t *testing.T) {
 }
 
 func TestLoadDirMissing(t *testing.T) {
-	if _, err := LoadDir(t.TempDir()); err == nil {
+	if _, err := Load(t.TempDir()); err == nil {
 		t.Error("expected error for empty directory")
 	}
 }
