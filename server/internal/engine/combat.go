@@ -97,6 +97,9 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 // discarded (repeating, since leaving play can trigger more damage), and a
 // player at 0 Hit Points loses.
 func (g *Game) settle() []Event {
+	if g.State.Phase == PhaseOver {
+		return nil // already decided; do not announce the result twice
+	}
 	var ev []Event
 	for changed := true; changed; {
 		changed = false
