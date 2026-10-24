@@ -13,7 +13,8 @@ import (
 
 const (
 	maxMessageBytes = 16 << 10
-	sendBuffer      = 64
+	sendBuffer      = 256
+	maxViolations   = 25 // consecutive rate-limited messages before we hang up
 	writeTimeout    = 10 * time.Second
 	pingInterval    = 30 * time.Second
 )
@@ -29,7 +30,8 @@ type client struct {
 	room  *Room
 	token string
 
-	bucket tokenBucket
+	bucket     tokenBucket
+	violations int // consecutive rate-limited messages
 }
 
 // Send queues a message without blocking. A client too slow to keep up is
@@ -127,9 +129,16 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		if !c.bucket.allow() {
+			// A small overshoot gets an error; a client that keeps flooding is
+			// disconnected rather than answered forever.
+			if c.violations++; c.violations >= maxViolations {
+				conn.Close(websocket.StatusPolicyViolation, "rate limit exceeded")
+				return
+			}
 			c.fail(fail(ErrRateLimited, "slow down"))
 			continue
 		}
+		c.violations = 0
 		var m ClientMsg
 		if err := json.Unmarshal(data, &m); err != nil {
 			c.fail(fail(ErrBadRequest, "invalid JSON: "+err.Error()))

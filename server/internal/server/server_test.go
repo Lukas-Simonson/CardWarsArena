@@ -565,27 +565,42 @@ func TestSeedControl(t *testing.T) {
 func TestRateLimit(t *testing.T) {
 	h := newHarness(t, func(c *Config) { c.MessagesPerSecond, c.Burst = 20, 40 })
 	c := h.dial()
-	for i := 0; i < 200; i++ {
+	// A modest overshoot: the first 40 messages pass, a few more are refused.
+	for i := 0; i < 55; i++ {
 		c.send(ClientMsg{Type: MsgPing})
 	}
-	limited := 0
-	deadline := time.After(3 * time.Second)
-	got := 0
-loop:
-	for got < 200 {
-		select {
-		case m := <-c.in:
-			<-c.raw
-			got++
-			if m.Type == MsgError && m.Code == ErrRateLimited {
-				limited++
-			}
-		case <-deadline:
-			break loop
+	pongs, limited := 0, 0
+	for pongs+limited < 55 {
+		switch m := c.next(); {
+		case m.Type == MsgPong:
+			pongs++
+		case m.Type == MsgError && m.Code == ErrRateLimited:
+			limited++
 		}
 	}
-	if limited == 0 {
-		t.Errorf("200 rapid pings should hit the rate limit (got %d replies)", got)
+	if limited == 0 || pongs < 40 {
+		t.Errorf("pongs %d, rate-limited %d: the burst of 40 should pass and the rest be refused", pongs, limited)
+	}
+	// The connection survives, and recovers once the bucket refills.
+	time.Sleep(300 * time.Millisecond)
+	c.send(ClientMsg{Type: MsgPing})
+	c.expect(MsgPong)
+}
+
+func TestSustainedFloodingIsDisconnected(t *testing.T) {
+	h := newHarness(t, func(c *Config) { c.MessagesPerSecond, c.Burst = 20, 40 })
+	c := h.dial()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	for i := 0; i < 400; i++ {
+		if err := c.conn.Write(ctx, websocket.MessageText, []byte(`{"type":"ping"}`)); err != nil {
+			break // the server hung up part way through: expected
+		}
+	}
+	select {
+	case <-c.done:
+	case <-time.After(3 * time.Second):
+		t.Error("a client that keeps flooding should be disconnected")
 	}
 }
 
