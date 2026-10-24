@@ -148,3 +148,10 @@ func (g *Game) cardCount(p PlayerID) int {
 	}
 	return n
 }
+
+// give puts a new copy of a card into p's hand (test helper).
+func (g *Game) give(p PlayerID, id string) int {
+	in := g.newInstance(id)
+	g.State.Players[p].Hand = append(g.State.Players[p].Hand, in)
+	return in.UID
+}

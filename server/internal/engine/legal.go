@@ -13,8 +13,8 @@ func (g *Game) LegalActions(p PlayerID) []Action {
 	case PhaseMain:
 		cands = append(cands, Action{Kind: ActDraw}, Action{Kind: ActEndMain})
 		for _, in := range g.State.Players[p].Hand {
-			if g.Card(in).Type == card.Spell {
-				cands = append(cands, Action{Kind: ActPlayCard, Card: in.UID})
+			if c := g.Card(in); c.Type == card.Spell {
+				cands = append(cands, g.spellActions(p, in, c)...)
 				continue
 			}
 			for lane := 0; lane < NumLanes; lane++ {
@@ -33,4 +33,21 @@ func (g *Game) LegalActions(p PlayerID) []Action {
 		}
 	}
 	return legal
+}
+
+// maxTargetCombos caps how many target choices LegalActions lists per card.
+// Clients choose targets interactively and are not limited by this.
+const maxTargetCombos = 64
+
+// spellActions proposes the plays of a Spell, one per target choice.
+func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
+	e := spellEffect(c)
+	if e == nil || len(e.Targets) == 0 {
+		return []Action{{Kind: ActPlayCard, Card: in.UID}}
+	}
+	var out []Action
+	for _, targets := range g.targetCombos(e.Targets, effCtx{p: p}, maxTargetCombos) {
+		out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Targets: targets})
+	}
+	return out
 }

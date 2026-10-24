@@ -22,6 +22,19 @@ type Action struct {
 	Kind ActionKind `json:"kind"`
 	Card int        `json:"card,omitempty"` // Instance.UID
 	Lane int        `json:"lane,omitempty"`
+	// Targets holds one list of choices per target slot of the effect being
+	// used (the Spell, enter-play trigger, Floop or activated ability).
+	Targets [][]TargetRef `json:"targets,omitempty"`
+}
+
+// TargetRef names one chosen target. Kind is the TargetSpec "what":
+// creature, building, landscape and lane use Player and Lane; discard_card
+// uses Player and Card (the UID).
+type TargetRef struct {
+	Kind   string   `json:"kind"`
+	Player PlayerID `json:"player"`
+	Lane   int      `json:"lane,omitempty"`
+	Card   int      `json:"card,omitempty"`
 }
 
 func (a Action) String() string {
@@ -49,6 +62,14 @@ const (
 	EvHPLoss    EventKind = "hp_loss" // a player lost Hit Points
 	EvDie       EventKind = "die"
 	EvGameOver  EventKind = "game_over"
+	EvMove      EventKind = "move"     // a Creature or Building changed Lanes (Lane = destination)
+	EvFlip      EventKind = "flip"     // a Landscape was turned over
+	EvReady     EventKind = "ready"    // a Creature was readied
+	EvBounce    EventKind = "bounce"   // a Creature returned to its owner's hand
+	EvDestroy   EventKind = "destroy"  // a Building was destroyed
+	EvReturn    EventKind = "return"   // a card came back from a discard pile to hand
+	EvDeckTop   EventKind = "deck_top" // a card was put on top of a deck
+	EvActions   EventKind = "actions"  // Actions were gained
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.
@@ -78,4 +99,6 @@ var (
 	ErrFirstTurn      = errors.New("the first player may not Floop or Fight on the first turn")
 	ErrNotPlayable    = errors.New("card cannot be played")
 	ErrCannotAttack   = errors.New("that Creature cannot be attacked")
+	ErrNoTarget       = errors.New("no legal target")
+	ErrBadTarget      = errors.New("invalid target choice")
 )

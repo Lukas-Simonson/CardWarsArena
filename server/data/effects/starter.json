@@ -260,5 +260,195 @@
   ],
   "drooling-dude": [],
   "evil-eye": [],
-  "phyllis": []
+  "phyllis": [],
+  "cerebral-bloodstorm": [
+    {
+      "kind": "spell",
+      "do": [
+        {
+          "do": "damage_creature",
+          "all": {
+            "rel": "opposing"
+          },
+          "amount": {
+            "n": 1
+          }
+        }
+      ]
+    }
+  ],
+  "gnome-snot": [
+    {
+      "kind": "spell",
+      "do": [
+        {
+          "do": "draw",
+          "who": "you",
+          "amount": {
+            "n": 3
+          }
+        }
+      ]
+    }
+  ],
+  "teleport": [
+    {
+      "kind": "spell",
+      "targets": [
+        {
+          "what": "creature",
+          "side": "you"
+        },
+        {
+          "what": "lane",
+          "side": "you",
+          "without": "creature"
+        }
+      ],
+      "do": [
+        {
+          "do": "move_creature",
+          "slot": 0,
+          "slot2": 1
+        }
+      ]
+    }
+  ],
+  "woad-blood": [
+    {
+      "kind": "spell",
+      "do": [
+        {
+          "do": "mod_creature",
+          "all": {
+            "rel": "any",
+            "changed_lanes": true
+          },
+          "stat": "atk",
+          "amount": {
+            "n": 2
+          }
+        }
+      ]
+    }
+  ],
+  "woad-talisman": [
+    {
+      "kind": "spell",
+      "targets": [
+        {
+          "what": "creature",
+          "side": "you",
+          "landscape": "blue_plains"
+        }
+      ],
+      "do": [
+        {
+          "do": "mod_creature",
+          "slot": 0,
+          "stat": "atk",
+          "amount": {
+            "n": 2
+          }
+        }
+      ]
+    }
+  ],
+  "cross-pollination": [
+    {
+      "kind": "spell",
+      "do": [
+        {
+          "do": "mod_creature",
+          "all": {
+            "rel": "your",
+            "landscape": "cornfield"
+          },
+          "stat": "atk",
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscape_types"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "corn-scepter": [
+    {
+      "kind": "spell",
+      "targets": [
+        {
+          "what": "creature"
+        }
+      ],
+      "do": [
+        {
+          "do": "damage_creature",
+          "slot": 0,
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "field-of-nightmares": [
+    {
+      "kind": "spell",
+      "do": [
+        {
+          "do": "damage_hero",
+          "who": "opponent",
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "opponent_hand"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "reclaim-landscape": [
+    {
+      "kind": "spell",
+      "targets": [
+        {
+          "what": "landscape",
+          "side": "you",
+          "face_down": true,
+          "optional": true
+        },
+        {
+          "what": "building",
+          "side": "you",
+          "optional": true
+        },
+        {
+          "what": "lane",
+          "side": "you",
+          "without": "building",
+          "optional": true
+        }
+      ],
+      "do": [
+        {
+          "do": "flip_landscape",
+          "slot": 0,
+          "face": "up"
+        },
+        {
+          "do": "move_building",
+          "slot": 1,
+          "slot2": 2
+        }
+      ]
+    }
+  ]
 }

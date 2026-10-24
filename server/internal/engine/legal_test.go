@@ -1,6 +1,9 @@
 package engine
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func kinds(as []Action) map[ActionKind]int {
 	m := map[ActionKind]int{}
@@ -50,7 +53,7 @@ func TestLegalActionsFightPhase(t *testing.T) {
 	g.put(1, 3, "Grunt")
 	g.must(t, 1, endMain)
 	acts := g.LegalActions(1)
-	if len(acts) != 2 || acts[0] != attack(0) || acts[1] != attack(3) {
+	if len(acts) != 2 || !reflect.DeepEqual(acts[0], attack(0)) || !reflect.DeepEqual(acts[1], attack(3)) {
 		t.Errorf("fight: %v", acts)
 	}
 }

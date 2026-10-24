@@ -77,6 +77,17 @@ func (g *Game) validatePlay(p PlayerID, a Action) error {
 	if err := g.canAfford(p, c); err != nil {
 		return err
 	}
+	if c.Type == card.Spell {
+		if e := spellEffect(c); e != nil {
+			usable, err := g.checkTargets(e.Targets, a.Targets, effCtx{p: p})
+			if !usable {
+				return ErrNoTarget
+			}
+			if err != nil {
+				return err
+			}
+		}
+	}
 	if c.Type == card.Creature {
 		// A Flooped Creature must be Ready before it can be replaced.
 		if old := g.State.Players[p].Lanes[a.Lane].Creature; old != nil && old.Status == Flooped {
@@ -101,8 +112,8 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 		lane := &pl.Lanes[a.Lane]
 		if old := lane.Creature; old != nil {
 			// Replaced Creatures go to their owner's discard; damage is dropped.
-			pl.Discard = append(pl.Discard, old.Instance)
 			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: a.Lane})
+			ev = append(ev, g.removeCreature(pos{p, a.Lane}, toDiscard)...)
 		}
 		lane.Creature = &Creature{Instance: in, Status: Ready}
 	case card.Building:
@@ -113,11 +124,28 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 		}
 		lane.Building = &Building{Instance: in, Status: Ready}
 	case card.Spell:
-		// Spells never enter play. Their effects are resolved by the effect
-		// system; a spell the engine cannot resolve is rejected at deck build.
+		// Spells never enter play: resolve, then discard. The Spell counts as
+		// played before it resolves (Woadic Chief counts it) but is not in the
+		// discard pile while it does.
+		ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID})
+		g.State.SpellsThisTurn++
+		if e := spellEffect(c); e != nil {
+			ev = append(ev, g.runOps(e.Do, effCtx{p: p, at: pos{p, 0}}, a.Targets)...)
+		}
 		pl.Discard = append(pl.Discard, in)
+		return ev
 	}
 	return append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: a.Lane})
+}
+
+// spellEffect returns a Spell's resolution effect, if it has one.
+func spellEffect(c *card.Card) *card.Effect {
+	for i := range c.Effects {
+		if c.Effects[i].Kind == card.KindSpell {
+			return &c.Effects[i]
+		}
+	}
+	return nil
 }
 
 func (g *Game) validateDraw(p PlayerID) error {

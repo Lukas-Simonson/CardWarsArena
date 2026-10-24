@@ -101,9 +101,8 @@ func (g *Game) settle() []Event {
 		pl := &g.State.Players[p]
 		for i := range pl.Lanes {
 			if c := pl.Lanes[i].Creature; c != nil && c.Damage >= g.def(pos{PlayerID(p), i}) {
-				pl.Discard = append(pl.Discard, c.Instance) // the owner's discard pile
-				pl.Lanes[i].Creature = nil
 				ev = append(ev, Event{Kind: EvDie, Player: PlayerID(p), Card: c.UID, Lane: i})
+				ev = append(ev, g.removeCreature(pos{PlayerID(p), i}, toDiscard)...) // owner's discard pile
 			}
 		}
 	}
