@@ -1,0 +1,5744 @@
+[
+  {
+    "id": "abdominal-snowman",
+    "name": "Abdominal Snowman",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 2,
+    "ability": "continuous",
+    "text": "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/abdominal_snowman.jpg"
+  },
+  {
+    "id": "adorabunny",
+    "name": "Adorabunny",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "text": "At the start of your turn, if Adorabunny has 4 or more Damage on it, deal 3 Damage to target opponent.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/adorabunny.jpg"
+  },
+  {
+    "id": "aeromancer",
+    "name": "Aeromancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 5,
+    "ability": "entering_play",
+    "text": "When Aeromancer enters play, you may swap the positions of 2 Creatures [that the] target player controls.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/aeromancer.jpg"
+  },
+  {
+    "id": "albino-eyebat",
+    "name": "Albino Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "While Albino Eyebat has exactly 2 Damage on it, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/albino_eyebat.jpg"
+  },
+  {
+    "id": "ancient-scholar",
+    "name": "Ancient Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Return a random Rainbow card from your Discard Pile to your Hand. If you Control a Building in this Lane, gain 1 Action.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ancient_scholar.jpg"
+  },
+  {
+    "id": "angel-heart",
+    "name": "Angel Heart",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "While Angel Heart has exactly 3 Damage on it, it has +3 ATK.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/angel_heart.jpg"
+  },
+  {
+    "id": "angel-of-chocolate",
+    "name": "Angel of Chocolate",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Heal all Damage from Angel of Chocolate.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/angel_of_chocolate.jpg"
+  },
+  {
+    "id": "angel-of-vanilla",
+    "name": "Angel of Vanilla",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Heal all Damage from Angel of Vanilla.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/angel_of_vanilla.jpg"
+  },
+  {
+    "id": "apple-bully",
+    "name": "Apple Bully",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Apple Bully's Landscape cannot be flipped down by effects opponents control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/apple_bully.jpg"
+  },
+  {
+    "id": "apple-pieclops",
+    "name": "Apple Pieclops",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 7,
+    "ability": "trigger",
+    "text": "At the start of your turn, you may heal or deal 1 Damage to each Creature you control. (Choose for each Creature.)",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/apple_pieclops.jpg"
+  },
+  {
+    "id": "archer-dan",
+    "name": "Archer Dan",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Destroy target Building in Archer Dan's Lane.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/archer_dan.jpg"
+  },
+  {
+    "id": "archer-danica",
+    "name": "Archer Danica",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "Destroy a Building you control and Floop \u003e\u003e\u003e Deal 3 damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/archer_danica.jpg"
+  },
+  {
+    "id": "ban-she-princess",
+    "name": "Ban-She Princess",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "entering_play",
+    "text": "When Ban-She Princess enters play, you may remove a token from an adjacent Landscape.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ban-she_princess.jpg"
+  },
+  {
+    "id": "ban-she-queen",
+    "name": "Ban-She Queen",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "ability": "entering_play",
+    "text": "When Ban-She Queen enters play, you may remove a token from an adjacent Landscape.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ban-she_queen.jpg"
+  },
+  {
+    "id": "beach-mummy",
+    "name": "Beach Mummy",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Return a Creature in an adjacent Lane to its owner's hand.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/beach_mummy.jpg"
+  },
+  {
+    "id": "big-foot",
+    "name": "Big Foot",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Flip target face down Landscape you control face up.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/big_foot.jpg"
+  },
+  {
+    "id": "biomancer",
+    "name": "Biomancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "trigger",
+    "text": "Each time a Creature you control changes Lanes, heal 2 Damage from Biomancer.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/biomancer.jpg"
+  },
+  {
+    "id": "black-paladin",
+    "name": "Black Paladin",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "+1 ATK for each card players (including you) have discarded from their hand this turn.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/black_paladin.jpg"
+  },
+  {
+    "id": "blonde-merwitch",
+    "name": "Blonde MerWitch",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "text": "The seas are her cauldron, and her ingredients are anything that sinks.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blonde_merwitch.jpg"
+  },
+  {
+    "id": "blue-gnome",
+    "name": "Blue Gnome",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to each opposing Creature that is on a Useless Swamp Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blue_gnome.jpg"
+  },
+  {
+    "id": "blue-merlock",
+    "name": "Blue Merlock",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Draw a card, then discard a card.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blue_merlock.jpg"
+  },
+  {
+    "id": "blue-ogre",
+    "name": "Blue Ogre",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 5,
+    "ability": "trigger",
+    "text": "Whenever you draw a card, Blue Ogre has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blue_ogre.jpg"
+  },
+  {
+    "id": "blue-slimey",
+    "name": "Blue Slimey",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "If you control 3 or more different Landscape types when Blue Slimey enters play, return a Creature in this Lane to it's owner's hand.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blue_slimey.jpg"
+  },
+  {
+    "id": "blueberry-djini",
+    "name": "Blueberry Djini",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Blueberry Djini enters play, if it replaced a Creature, draw two cards.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blueberry_djini.jpg"
+  },
+  {
+    "id": "blueberry-pieclops",
+    "name": "Blueberry Pieclops",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 4,
+    "attack": 5,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Blueberry Pieclops costs 1 less to play for each Spell you have played this turn.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blueberry_pieclops.jpg"
+  },
+  {
+    "id": "boarder-collie",
+    "name": "Boarder Collie",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Move Boarder Collie to any of your empty Landscapes. If either Landscape in that Lane is Frozen, gain 1 Action.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/boarder_collie.jpg"
+  },
+  {
+    "id": "bog-ban-she-angel",
+    "name": "Bog Ban-She Angel",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Move all Damage on this Creature to target Creature.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bog_ban-she_angel.jpg"
+  },
+  {
+    "id": "bog-bum",
+    "name": "Bog Bum",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "leaving_play",
+    "text": "If Bog Bum leaves play while Ready, each opponent discards a random card.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bog_bum.jpg"
+  },
+  {
+    "id": "bog-frog-bomb",
+    "name": "Bog Frog Bomb",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "ability": "leaving_play",
+    "text": "If Bog Frog Bomb leaves play while Ready, deal 2 Damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bog_frog_bomb.jpg"
+  },
+  {
+    "id": "bouncing-zebracorn",
+    "name": "Bouncing Zebracorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "+1 ATK for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bouncing_zebracorn.jpg"
+  },
+  {
+    "id": "brain-gooey",
+    "name": "Brain Gooey",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "entering_play",
+    "text": "When Brain Gooey enters play, if it replaced a Creature, it has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/brain_gooey.jpg"
+  },
+  {
+    "id": "brigadier-banana-split",
+    "name": "Brigadier Banana Split",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "text": "When Brigadier Banana Split attacks, deal 2 Damage to target opposing Creature on a Landscape with a Frozen token on it.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/brigadier_banana_split.jpg"
+  },
+  {
+    "id": "burly-lumberjack",
+    "name": "Burly Lumberjack",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "You may play additional Buildings onto this Landscape.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/burly_lumberjack.jpg"
+  },
+  {
+    "id": "business-dog",
+    "name": "Business Dog",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "Business Dog has +2 ATK this turn for each card you have played \"Dog\" or \"Puppy\" in its tile this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/business_dog.jpg"
+  },
+  {
+    "id": "cactus-thug",
+    "name": "Cactus Thug",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "Adjacent Cornfield Creatures have +1 ATK.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cactus_thug.jpg"
+  },
+  {
+    "id": "captain-taco",
+    "name": "Captain Taco",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 1,
+    "ability": "entering_play",
+    "text": "When Captain Taco enters play, deal 1 Damage to each Creature that is not on a Cornfield Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/captain_taco.jpg"
+  },
+  {
+    "id": "carmel-camel",
+    "name": "Carmel Camel",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 4,
+    "ability": "trigger",
+    "text": "When a Creature you own leaves play, you may put it underneath this card instead. + 1 ATK and + 1 DEF for each card under this. When this card leaves play, discard all cards under it.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/carmel_camel.jpg"
+  },
+  {
+    "id": "chest-burster",
+    "name": "Chest Burster",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "At the start of your turn, deal 3 Damage to each opponent who has no cards in hand.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/chest_burster.jpg"
+  },
+  {
+    "id": "chocolate-tacody",
+    "name": "Chocolate TaCody",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "At the start of your Fight Phase, if there are 1 or more Frozen tokens in this Lane, deal 1 Damage to each Creature target player controls.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/chocolate_tacody.jpg"
+  },
+  {
+    "id": "chronomancer",
+    "name": "Chronomancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "trigger",
+    "text": "Each time Chronomancer changes Lanes, gain 1 Action.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/chronomancer.jpg"
+  },
+  {
+    "id": "cold-soldier",
+    "name": "Cold Soldier",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "+3 ATK while your opponent does not control a Creature in this Lane",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cold_soldier.jpg"
+  },
+  {
+    "id": "cool-dog",
+    "name": "Cool Dog",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "Your Creatures on adjacent Lanes may not be Attacked.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cool_dog.jpg"
+  },
+  {
+    "id": "corn-bat",
+    "name": "Corn Bat",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Deal 1 Damage to target Creature in this Lane for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/corn_bat.jpg"
+  },
+  {
+    "id": "corn-dog",
+    "name": "Corn Dog",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 12,
+    "ability": "continuous",
+    "text": "Corn Dog has +1 DEF for each Cornfield Landscape you control. If you control 3 or fewer Cornfield Landscapes, Corn Dog has +1 ATK",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/corn_dog.jpg"
+  },
+  {
+    "id": "corn-lord",
+    "name": "Corn Lord",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "Corn Lord has +1 ATK for each other Cornfield Creature you control.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/corn_lord.jpg"
+  },
+  {
+    "id": "corn-ronin",
+    "name": "Corn Ronin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "+1 ATK for each adjacent Cornfield Landscape.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/corn_ronin.jpg"
+  },
+  {
+    "id": "cornataur",
+    "name": "Cornataur",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "entering_play",
+    "text": "When Cornataur enters play, deal 1 Damage to your opponent for each Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cornataur.jpg"
+  },
+  {
+    "id": "corns-templar",
+    "name": "Corns Templar",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Heal 1 Damage from Corns Templar.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/corns_templar.jpg"
+  },
+  {
+    "id": "cotton-devil",
+    "name": "Cotton Devil",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 1,
+    "ability": "continuous",
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cotton_devil.jpg"
+  },
+  {
+    "id": "cotton-eyebat",
+    "name": "Cotton Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "While Cotton Eyebat has exactly 4 Damage on it, it has +4 ATK.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cotton_eyebat.jpg"
+  },
+  {
+    "id": "cottonpult",
+    "name": "Cottonpult",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to target Creature. If Cottonpult has 5 or more Damage on it, it heals 1 Damage and readies.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cottonpult.jpg"
+  },
+  {
+    "id": "cow",
+    "name": "Cow",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "text": "Moo.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cow.jpg"
+  },
+  {
+    "id": "cowsper",
+    "name": "Cowsper",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Each adjacent Cornfield Creature has +1 DEF.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cowsper.jpg"
+  },
+  {
+    "id": "crazy-cat-lady",
+    "name": "Crazy Cat Lady",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "text": "Rainbow Creatures you control have +1 ATK.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/crazy_cat_lady.jpg"
+  },
+  {
+    "id": "cutie",
+    "name": "Cutie",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e You heal 1 Hit Point. (Can 't go over 25.)",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cutie_koala.jpg"
+  },
+  {
+    "id": "cutie-koala",
+    "name": "Cutie Koala",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "While Cutie Koala has 4 or more Damage on it, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cutie.jpg"
+  },
+  {
+    "id": "cyclops",
+    "name": "Cyclops",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 3,
+    "defense": 1,
+    "text": "+1 DEF for each open eye depicted on other Creatures you control.",
+    "printings": [
+      {
+        "raw": "Adventure Time: Card Wars DVD"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cyclops.jpg"
+  },
+  {
+    "id": "dark-angel",
+    "name": "Dark Angel",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5,
+    "ability": "continuous",
+    "text": "+1 ATK for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dark_angel.jpg"
+  },
+  {
+    "id": "davey-bones",
+    "name": "Davey Bones",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "Ghost has +2 ATK while defending against a Creature that is on a Sandy Lands Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/davey_bones.jpg"
+  },
+  {
+    "id": "diamond-dan",
+    "name": "Diamond Dan",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 2,
+    "ability": "leaving_play",
+    "text": "When Diamond Dan leaves play from a Nice Lands Landscape, return it to its owner's hand.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/diamond_dan.jpg"
+  },
+  {
+    "id": "djini-ghost",
+    "name": "Djini Ghost",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Pay 2 less to play your next Spell this Turn.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/djini_ghost.jpg"
+  },
+  {
+    "id": "dogboy",
+    "name": "Dogboy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "ability": "ignition",
+    "text": "Discard a card \u003e\u003e\u003e Dogboy has +2 ATK this turn. (Use only once during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dogboy.jpg"
+  },
+  {
+    "id": "dr-death",
+    "name": "Dr. Death",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 7,
+    "ability": "floop",
+    "text": "Destroy a Creature you control and FLOOP \u003e\u003e\u003e Destroy target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dr_death.jpg"
+  },
+  {
+    "id": "dr-stuffenstein",
+    "name": "Dr. Stuffenstein",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Heal 2 Damage from a Creature on an adjacent Landscape. If Dr. Stuffenstein has 5 or more Damage on it, heal 2 Damage from each of your Creatures instead.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dr_stuffenstein.jpg"
+  },
+  {
+    "id": "dragon-claw",
+    "name": "Dragon Claw",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Move a Creature you control to an empty Lane.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dragon_claw.jpg"
+  },
+  {
+    "id": "dragon-foot",
+    "name": "Dragon Foot",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "ability": "ignition",
+    "text": "Discard a card \u003e\u003e\u003e Dragon Foot has +1 ATK this turn. (Use up to five times during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dragon_foot.jpg"
+  },
+  {
+    "id": "dragoon-parrotrooper",
+    "name": "Dragoon Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 1,
+    "defense": 8,
+    "ability": "entering_play",
+    "text": "When Dragoon Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. Adjacent Creatures have - 1 ATK.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/dragoon_parrotrooper.jpg"
+  },
+  {
+    "id": "drained-cleric",
+    "name": "Drained Cleric",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 5,
+    "ability": "trigger",
+    "text": "At the start of your turn, move Drained Cleric to an empty Landscape you control. If you cannot, discard a card.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/drained_cleric.jpg"
+  },
+  {
+    "id": "drooling-dude",
+    "name": "Drooling Dude",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "text": "The ladies love him, as long as they have waterproof shoes.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/drooling_dude.jpg"
+  },
+  {
+    "id": "druid-of-the-cob",
+    "name": "Druid of the Cob",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Flooped Creatures you control have +1 ATK.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/druid_of_the_cob.jpg"
+  },
+  {
+    "id": "earth-mover",
+    "name": "Earth Mover",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "+2 ATK for each face-down Landscape in play.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/earth_mover.jpg"
+  },
+  {
+    "id": "embarrassing-bard",
+    "name": "Embarrassing Bard",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each Flooped Creature you control (including this one).",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/embarrassing_bard.jpg"
+  },
+  {
+    "id": "emboldened-retriever",
+    "name": "Emboldened Retriever",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "Each time Emboldened Retriever attacks, you may deal a card. Much ball. Wow.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/emboldened_retriever.jpg"
+  },
+  {
+    "id": "emperor-penguin",
+    "name": "Emperor Penguin",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Creatures on Landscapes with a Frozen token on it have -1 ATK.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/emperor_penguin.jpg"
+  },
+  {
+    "id": "endearing-elephant",
+    "name": "Endearing Elephant",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 4,
+    "text": "Each time Endearing Elephant is targeted by an opponent's Spell, deal 2 Damage to target opponent.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/endearing_elephant.jpg"
+  },
+  {
+    "id": "ethan-allfire",
+    "name": "Ethan Allfire",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 4,
+    "ability": "leaving_play",
+    "text": "When Ethan Allfire leaves play, draw 1 card for each Cornfield Landscapes you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ethan_allfire.jpg"
+  },
+  {
+    "id": "evil-eye",
+    "name": "Evil Eye",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "text": "Evil is in the eye of the beholder.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/evil_eye.jpg"
+  },
+  {
+    "id": "extraordinary-spider",
+    "name": "Extraordinary Spider",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "At the start of your turn, deal 1 Damage to target opponent for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/extraordinary_spider.jpg"
+  },
+  {
+    "id": "eye-guy",
+    "name": "Eye Guy",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "At the start of your turn, look at the top card of your deck. You may put it on the bottom of your deck.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/eye_guy.jpg"
+  },
+  {
+    "id": "fairy-shepard",
+    "name": "Fairy Shepard",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "Each Adjacent Nice Lands Creature has +2 DEF.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fairy_shepard.jpg"
+  },
+  {
+    "id": "fancy-pants-gnome",
+    "name": "Fancy Pants Gnome",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to each opposing Creature that is on a Cornfield Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fancy_pants_gnome.jpg"
+  },
+  {
+    "id": "fancy-zebracorn",
+    "name": "Fancy Zebracorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fancy_zebracorn.jpg"
+  },
+  {
+    "id": "fatapillar",
+    "name": "Fatapillar",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 0,
+    "defense": 3,
+    "ability": "continuous",
+    "text": "+2 ATK for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fatapillar.jpg"
+  },
+  {
+    "id": "fatigued-librarian",
+    "name": "Fatigued Librarian",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4,
+    "ability": "trigger",
+    "text": "Fatigued Librarian comes into play exhausted and does not ready at the start of your turn. Whenever Fatigued Librarian changes Lanes, ready it.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fatigued_librarian.jpg"
+  },
+  {
+    "id": "feedman",
+    "name": "Feedman",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "When Feedman enters play, the next Creature you play this turn costs 1 less to play.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/feedman.jpg"
+  },
+  {
+    "id": "fiddling-ferret",
+    "name": "Fiddling Ferret",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Draw a card, and then discard a card. If you discard a Rainbow card this way, gain 1 Action.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fiddling_ferret.jpg"
+  },
+  {
+    "id": "field-reaper",
+    "name": "Field Reaper",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 4,
+    "ability": "entering_play",
+    "text": "Additional Cost: Discard a card. When Field Reaper enters play, move target Creature in this Lane to an adjacent empty Lane on your side.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/field_reaper.jpg"
+  },
+  {
+    "id": "field-stalker",
+    "name": "Field Stalker",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "At the start of your turn, each player draws a card.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/field_stalker.jpg"
+  },
+  {
+    "id": "fisher-fish",
+    "name": "Fisher Fish",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "If Fisher Fish enters play onto a Blue Plains Landscape, deal 2 Damage to each opposing player.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fisher_fish.jpg"
+  },
+  {
+    "id": "fluffy-fox",
+    "name": "Fluffy Fox",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "While Fluffy Fox has 4 or more Damage on it, it ignores the first 2 Damage dealt to it by opposing Creatures.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fluffy_fox.jpg"
+  },
+  {
+    "id": "fly-swatter",
+    "name": "Fly Swatter",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Each opponent discards a card with cost 0, or reveals a hand with none.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fly_swatter.jpg"
+  },
+  {
+    "id": "four-star-fudge",
+    "name": "Four Star Fudge",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "Each time a Landscape becomes Frozen, draw a card.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/four_star_fudge.jpg"
+  },
+  {
+    "id": "frost-dragon",
+    "name": "Frost Dragon",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Freeze a Landscape in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/frost_dragon.jpg"
+  },
+  {
+    "id": "frosted-deanimator",
+    "name": "Frosted Deanimator",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "Frosted Deanimator may enter play onto a Landscape that has a Frozen token on it.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/frosted_deanimator.jpg"
+  },
+  {
+    "id": "frosted-snowwoman",
+    "name": "Frosted Snowwoman",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 5,
+    "ability": "entering_play",
+    "text": "When Frosted Snowwoman enters play, Freeze both Landscapes in her Lane.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/frosted_snowwoman.jpg"
+  },
+  {
+    "id": "frozen-bananancy",
+    "name": "Frozen BanaNancy",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "At the start of your Fight Phase, if there are one or more Frozen tokens in this Lane, deal 2 Damage to target opponent.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/frozen_bananancy.jpg"
+  },
+  {
+    "id": "frozen-fish",
+    "name": "Frozen Fish",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "trigger",
+    "text": "When Frozen Fish deals Damage to a Creature, you may Freeze a Landscape in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/frozen_fish.jpg"
+  },
+  {
+    "id": "fumigator",
+    "name": "FumiGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e Deal 1 Damage to each opposing Creature in play.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fumigator.jpg"
+  },
+  {
+    "id": "fummy",
+    "name": "Fummy",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Gain 1 Action this turn.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fummy.jpg"
+  },
+  {
+    "id": "furious-chick",
+    "name": "Furious Chick",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "ability": "continuous",
+    "text": "Furious Chick has +1 ATK for each Damage on it.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/furious_chick.jpg"
+  },
+  {
+    "id": "furious-hen",
+    "name": "Furious Hen",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 0,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "Furious Hen has +1 ATK for each Damage on it.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/furious_hen.jpg"
+  },
+  {
+    "id": "furious-rooster",
+    "name": "Furious Rooster",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Furious Rooster has +1 ATK for each Damage on it.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/furious_rooster.jpg"
+  },
+  {
+    "id": "future-scholar",
+    "name": "Future Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "ability": "entering_play",
+    "text": "When Future Scholar enters play, if it replaced a Creature, gain 1 Action.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/future_scholar.jpg"
+  },
+  {
+    "id": "geomancer",
+    "name": "Geomancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "At the start of your turn, you may move Geomancer to an empty Landscape you control.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/geomancer.jpg"
+  },
+  {
+    "id": "ghost",
+    "name": "Ghost",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "Ghost has +2 ATK while defending against a Creature that is on a Useless Swamp Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ghost_chest_burster.jpg"
+  },
+  {
+    "id": "ghost-chest-burster",
+    "name": "Ghost Chest Burster",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9,
+    "ability": "leaving_play",
+    "text": "When Ghost Chest Burster leaves play, draw the bottom card of your deck.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ghost_hag.jpg"
+  },
+  {
+    "id": "ghost-hag",
+    "name": "Ghost Hag",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "Ghost Hag has +2 ATK while defending against a Creature that is on a Blue Plains Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ghost_ninja.jpg"
+  },
+  {
+    "id": "ghost-ninja",
+    "name": "Ghost Ninja",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "When Ghost Ninja deals Damage to an opposing player, that opponent can't play Spells during his next turn.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ghost_tree.jpg"
+  },
+  {
+    "id": "ghost-tree",
+    "name": "Ghost Tree",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "Ghost Tree has +2 ATK while defending against a Creature that is on a Cornfield Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ghost.jpg"
+  },
+  {
+    "id": "giant-mummy-hand",
+    "name": "Giant Mummy Hand",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to target Creature for each Cornfield Landscape adjacent to this Lane.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/giant_mummy_hand.jpg"
+  },
+  {
+    "id": "giddy-giraffe",
+    "name": "Giddy Giraffe",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "While Giddy Giraffe has 4 or more Damage on it, it deal Damage directly to your opponent instead of the opposing Creature.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      },
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/giddy_giraffe.jpg"
+  },
+  {
+    "id": "glacier-racer",
+    "name": "Glacier Racer",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "+4 ATK if both Landscapes in this Lane have Frozen tokens on them.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/glacier_racer.jpg"
+  },
+  {
+    "id": "goat",
+    "name": "Goat",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "entering_play",
+    "text": "When Goat enters play, if it replaced a Creature, draw a card.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/goat.jpg"
+  },
+  {
+    "id": "gold-ninja",
+    "name": "Gold Ninja",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 2,
+    "ability": "entering_play",
+    "text": "When Gold Ninja enters play, deal 1 Damage to target Creature for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/gold_ninja.jpg"
+  },
+  {
+    "id": "golden-axe-stump",
+    "name": "Golden Axe Stump",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "Whenever an opponent draws a card, deal 1 Damage to that player.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/golden_axe_stump.jpg"
+  },
+  {
+    "id": "golden-jackal",
+    "name": "Golden Jackal",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "ability": "floop",
+    "text": "FLOOP and discard a Sandy Lands card \u003e\u003e\u003e Deal 1 Damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/golden_jackal.jpg"
+  },
+  {
+    "id": "granary-weevil",
+    "name": "Granary Weevil",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "text": "Destroy Granary Weevil \u003e\u003e\u003e Destroy target opposing Creature in this Lane and any Creature with the same name in play.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/granary_weevil.jpg"
+  },
+  {
+    "id": "grand-mummy",
+    "name": "Grand Mummy",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "ability": "trigger",
+    "text": "At the start of your turn, you may return Grand Mummy to its owner's hand. If you do, draw two cards.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/grand_mummy.jpg"
+  },
+  {
+    "id": "grape-djini",
+    "name": "Grape Djini",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Grape Djini enters play, if it replaced a Creature, you may put a card from your discard pile on top of your deck.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/grape_djini.jpg"
+  },
+  {
+    "id": "gray-eyebat",
+    "name": "Gray Eyebat",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Return a random Useless Swamp Creature from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/gray_eyebat.jpg"
+  },
+  {
+    "id": "green-cactiball",
+    "name": "Green Cactiball",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "+2 ATK for each Green Cactiball you control.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_cactiball.jpg"
+  },
+  {
+    "id": "green-gnome",
+    "name": "Green Gnome",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to each opposing Creature that is on a Blue Plains Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_gnome.jpg"
+  },
+  {
+    "id": "green-mermaid",
+    "name": "Green Mermaid",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9,
+    "ability": "ignition",
+    "text": "Destroy Green Mermaid \u003e\u003e\u003e Deal 1 Damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_mermaid.jpg"
+  },
+  {
+    "id": "green-merman",
+    "name": "Green Merman",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 0,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Put the top card of your deck into your discard pile, Deal Damage to each opposing Creature equal to the discarded card's Action Cost.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_merman.jpg"
+  },
+  {
+    "id": "green-party-ogre",
+    "name": "Green Party Ogre",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "When a Creature you control leaves play, heal 1 Damage from Green Party Ogre.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_party_ogre.jpg"
+  },
+  {
+    "id": "green-snakey",
+    "name": "Green Snakey",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "leaving_play",
+    "text": "When Green Snakey leaves play, deal 1 Damage to target Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_snakey.jpg"
+  },
+  {
+    "id": "green-zebracorn",
+    "name": "Green ZebraCorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "When Green ZebraCorn attacks, deal 1 Damage to target opponent.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/green_zebracorn.jpg"
+  },
+  {
+    "id": "grizzled-zebracorn",
+    "name": "Grizzled ZebraCorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "When Grizzled ZebraCorn attacks, deal 2 Damage to target opponent.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/grizzled_zebracorn.jpg"
+  },
+  {
+    "id": "headphone-jerk",
+    "name": "Headphone Jerk",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "ability": "entering_play",
+    "text": "When Headphone Jerk enters play, if it replaced a Creature, deal 3 Damage to another Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/headphone_jerk.jpg"
+  },
+  {
+    "id": "heavenly-gazer",
+    "name": "Heavenly Gazer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Put a Spell from your discard pile on top of your deck.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/heavenly_gazer.jpg"
+  },
+  {
+    "id": "helping-hand",
+    "name": "Helping Hand",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Return a Building from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/helping_hand.jpg"
+  },
+  {
+    "id": "herculeye",
+    "name": "Herculeye",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 6,
+    "ability": "ignition",
+    "text": "Discard a card \u003e\u003e\u003e Herculeye has +4 ATK this turn. (Use only once during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/herculeye.jpg"
+  },
+  {
+    "id": "hot-eyebat",
+    "name": "Hot Eyebat",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 4,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "Play Hot Eyebat only if you have 10 or more cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/hot_eyebat.jpg"
+  },
+  {
+    "id": "huggable-hedgehog",
+    "name": "Huggable Hedgehog",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "text": "While Huggable Hedgehog has 4 or more Damage on it, it deals Damage directly to your opponent instead of the opposing Creature.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/huggable_hedgehog.jpg"
+  },
+  {
+    "id": "hunkclops",
+    "name": "Hunkclops",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/hunkclops.jpg"
+  },
+  {
+    "id": "husker-champion",
+    "name": "Husker Champion",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "Husker Champion has +2 ATK and +2 DEF if you control a Building on this Landscape.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/husker_champion.jpg"
+  },
+  {
+    "id": "husker-knight",
+    "name": "Husker Knight",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "ability": "continuous",
+    "text": "Husker Knight has +1 ATK and +2 DEF for each Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/husker_knight.jpg"
+  },
+  {
+    "id": "husker-valkyrie",
+    "name": "Husker Valkyrie",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Husker Valkyrie has +2 ATK and +2 DEF if you control a Building on this Landscape.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/husker_valkyrie.jpg"
+  },
+  {
+    "id": "husker-worm",
+    "name": "Husker Worm",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 5,
+    "defense": 4,
+    "ability": "entering_play",
+    "text": "When Husker Worm enters play, flip a Cornfield Landscape you control face down.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/husker_worm.jpg"
+  },
+  {
+    "id": "husky-parrotrooper",
+    "name": "Husky Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 2,
+    "defense": 4,
+    "ability": "entering_play",
+    "text": "When Husky Parrotrooper enters play, move it to any empty Landscape, and then flip that Landscape face down.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/husky_parrotrooper.jpg"
+  },
+  {
+    "id": "hydromancer",
+    "name": "Hydromancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Hydromancer enters into play, you may reveal cards from the top of your deck until you reveal a Teamwork, and then play it for free. Shuffle the other revealed cards into your deck.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/hydromancer.jpg"
+  },
+  {
+    "id": "ice-cream-captain",
+    "name": "Ice Cream Captain",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 4,
+    "attack": 4,
+    "defense": 8,
+    "text": "Ice Cream Captain costs 1 less to play for each player that has a Landscape with a Frozen token on it.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ice_cream_captain.jpg"
+  },
+  {
+    "id": "ice-cream-sammy",
+    "name": "Ice Cream Sammy",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e Choose a Lane, Freeze both Landscapes in that Lane.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ice_cream_sammy.jpg"
+  },
+  {
+    "id": "icemeister",
+    "name": "Icemeister",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "At the start of your turn, deal 1 Damage to each Creature on a Landscape with a Frozen token on it.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/icemeister.jpg"
+  },
+  {
+    "id": "icy-commando",
+    "name": "Icy Commando",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "Icy Commando has +1 ATK for each Landscape with a Frozen token on it.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/icy_commando.jpg"
+  },
+  {
+    "id": "icy-infiltrator",
+    "name": "Icy Infiltrator",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "ability": "entering_play",
+    "text": "When Icy Infiltrator enters play, Freeze its Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      },
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/icy_infiltrator.jpg"
+  },
+  {
+    "id": "icy-intruder",
+    "name": "Icy Intruder",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "floop",
+    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e Freeze target Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/icy_intruder.jpg"
+  },
+  {
+    "id": "immortal-maize-walker",
+    "name": "Immortal Maize Walker",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "While Immortal Maize Walker is on a Cornfield Landscape, it deals triple Damage.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/immortal_maize_walker.jpg"
+  },
+  {
+    "id": "impossible-possum",
+    "name": "Impossible Possum",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "When this card is placed into your discard pile from anywhere, you may discard a card from your hand to return Impossible Possum to your hand.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/impossible_possum.jpg"
+  },
+  {
+    "id": "industrial-assassin",
+    "name": "Industrial Assassin",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "floop",
+    "text": "Destroy a Creature you control, FLOOP \u003e\u003e\u003e Draw a card.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/industrial_assassin.jpg"
+  },
+  {
+    "id": "infant-scholar",
+    "name": "Infant Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "If you played one or more Rainbow cards this turn, Infant Scholar has +3 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/infant_scholar.jpg"
+  },
+  {
+    "id": "infinite-figure",
+    "name": "Infinite Figure",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "ignition",
+    "text": "Discard a card \u003e\u003e\u003e Deal 1 Damage to another Creature in this Lane. (Use any number of times during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/infinite_figure.jpg"
+  },
+  {
+    "id": "instigator",
+    "name": "InstiGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 5,
+    "defense": 3,
+    "text": "When InstiGator enters play, move target opposing Creature into InstiGator's Lane (if empty).",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/instigator.jpg"
+  },
+  {
+    "id": "investigator",
+    "name": "InvestiGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Reveal the top 3 cards of your deck. Play a revealed Teamwork for free, and then discard the other cards.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/investigator.jpg"
+  },
+  {
+    "id": "irrigator",
+    "name": "IrriGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "While IrriGator is on an Icy Lands Landscape, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/irrigator.jpg"
+  },
+  {
+    "id": "jinxed-parrotrooper",
+    "name": "Jinxed Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "ability": "entering_play",
+    "text": "When Jinxed Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. At the start of your turn, discard a card.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/jinxed_parrotrooper.jpg"
+  },
+  {
+    "id": "kernel-queen",
+    "name": "Kernel Queen",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Kernel Queen has +1 ATK for each Flooped Creature you control.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/kernel_queen.jpg"
+  },
+  {
+    "id": "king-baby",
+    "name": "King Baby",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e Deal 1 Damage to target Creature for each Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/king_baby.jpg"
+  },
+  {
+    "id": "knit-kitty",
+    "name": "Knit Kitty",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "text": "Knit Kitty is affected by Buildings on adjacent Landscapes.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/knit_kitty.jpg"
+  },
+  {
+    "id": "lady-beetle",
+    "name": "Lady Beetle",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9,
+    "ability": "trigger",
+    "text": "At the start of your turn, you may return a Creature you control with 2 or fewer DEF remaining to its owner's hand.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lady_beetle.jpg"
+  },
+  {
+    "id": "legion-of-earlings",
+    "name": "Legion of Earlings",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "ability": "entering_play",
+    "text": "When Legion of Earlings enters play, you may return target Creature in this Lane to its owner's hand.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/legion_of_earlings.jpg"
+  },
+  {
+    "id": "life-beater-gnome",
+    "name": "Life Beater Gnome",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to each opposing Creature that is on a Sandy Lands Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/life_beater_gnome.jpg"
+  },
+  {
+    "id": "lifeguard-lobster",
+    "name": "Lifeguard Lobster",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "Each time another creature enters play during your turn, you must heal 1 Damage from another Creature.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lifeguard_lobster.jpg"
+  },
+  {
+    "id": "lime-slimey",
+    "name": "Lime Slimey",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "If you control 3 or more different Landscape types when Lime Slimey enters play, draw 2 cards.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lime_slimey.jpg"
+  },
+  {
+    "id": "little-freezy",
+    "name": "Little Freezy",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 4,
+    "defense": 1,
+    "ability": "continuous",
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/little_freezy.jpg"
+  },
+  {
+    "id": "log-knight",
+    "name": "Log Knight",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 2,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Put a Building from your hand below this Lane. (If it doesn't already have one.)",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/log_knight.jpg"
+  },
+  {
+    "id": "lonely-panda",
+    "name": "Lonely Panda",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "When Lonely Panda enters play, if you control no other Creatures, draw a card.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lonely_panda.jpg"
+  },
+  {
+    "id": "longboard-lobster",
+    "name": "Longboard Lobster",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 7,
+    "text": "+1 ATK for each Useless Swamp Landscapes in play.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/longboard_lobster.jpg"
+  },
+  {
+    "id": "lost-golem",
+    "name": "Lost Golem",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 3,
+    "attack": 5,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Lost Golem costs 1 less to play for each other Creature you have played this turn.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lost_golem.jpg"
+  },
+  {
+    "id": "loveable-lamb",
+    "name": "Loveable Lamb",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "At the start of your turn, if Loveable Lamb has 4 or more Damage on it, deal 2 Damage to target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      },
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/loveable_lamb.jpg"
+  },
+  {
+    "id": "lt-mushroom",
+    "name": "Lt. Mushroom",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 3,
+    "ability": "leaving_play",
+    "text": "When Lt. Mushroom leaves play during an opponent's turn, that opponent discards 3 cards.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lt_mushroom.jpg"
+  },
+  {
+    "id": "lumbercaddy",
+    "name": "Lumbercaddy",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Move target Building you control to any Landscape without one.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lumbercaddy.jpg"
+  },
+  {
+    "id": "mace-stump",
+    "name": "Mace Stump",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "ability": "ignition",
+    "text": "Destroy Mace Stump \u003e\u003e\u003e Target opponent discards a card for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/mace_stump.jpg"
+  },
+  {
+    "id": "man-witch",
+    "name": "Man-Witch",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 11,
+    "ability": "continuous",
+    "text": "Whenever a foe discards a card, deal 1 Damage to that foe.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/man-witch.jpg"
+  },
+  {
+    "id": "mantle-masher",
+    "name": "Mantle Masher",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Mantle Masher enters play, flip a Landscape in this Lane face down. When Mantle Masher leaves play, flip it face up.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/mantle_masher.jpg"
+  },
+  {
+    "id": "mint-chocouflage",
+    "name": "Mint Chocouflage",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "text": "While there is no opposing Creature in this Lane, Mint Chocouflage can't be damaged by your opponent's Spells or Creature abilities.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/mint_chocouflage.jpg"
+  },
+  {
+    "id": "mocha-launcher",
+    "name": "Mocha Launcher",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 4,
+    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e Deal 2 Damage to target Creature. If that Creature is destroyed this way, Freeze the Landscape it is on.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/mocha_launcher.jpg"
+  },
+  {
+    "id": "mouthball",
+    "name": "Mouthball",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "+2 DEF for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/mouthball.jpg"
+  },
+  {
+    "id": "ms-fluff",
+    "name": "Ms. Fluff",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "While Ms. Fluff has exactly 7 Damage on it, it has +7 ATK.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ms_fluff.jpg"
+  },
+  {
+    "id": "ms-mummy",
+    "name": "Ms. Mummy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "ability": "trigger",
+    "text": "At the start of you turn, you may return Ms. Mummy to its owner's hand. If you do, target Sandy Lands Creature you control gains 1 DEF.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 1
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ms_mummy.jpg"
+  },
+  {
+    "id": "music-mallard",
+    "name": "Music Mallard",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 9,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Draw a card. If Music Mallard has 5 or more Damage on it, draw an additional card.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/music_mallard.jpg"
+  },
+  {
+    "id": "navigator",
+    "name": "NaviGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "Discard a card \u003e\u003e\u003e NaviGator gets +ATK equal to the cost of the discarded card. (Use only once during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/navigator.jpg"
+  },
+  {
+    "id": "necromancer",
+    "name": "Necromancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "trigger",
+    "text": "Each time a Creature you control leaves play, you may move Necromancer to that Creature's empty Landscape.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/necromancer.jpg"
+  },
+  {
+    "id": "nice-ice-baby",
+    "name": "Nice Ice Baby",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 2,
+    "ability": "continuous",
+    "text": "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      },
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/nice_ice_baby.jpg"
+  },
+  {
+    "id": "niceasaurus-rex",
+    "name": "Niceasaurus Rex",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "At the start of your turn, if Niceasaurus Rex has Damage on it, draw a card.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/niceasaurus_rex.jpg"
+  },
+  {
+    "id": "ol-corn-eye",
+    "name": "Ol' Corn Eye",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 4,
+    "defense": 1,
+    "ability": "continuous",
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ol'_corn_eye.jpg"
+  },
+  {
+    "id": "orange-slimey",
+    "name": "Orange Slimey",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "If you control 3 or more different Landscape types when Orange Slimey enters play, deal 3 Damage to your opponent.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/orange_slimey.jpg"
+  },
+  {
+    "id": "overstuffed-orangutan",
+    "name": "Overstuffed Orangutan",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "While Overstuffed Orangutan has 4 or more Damage on it, double its ATK.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/overstuffed_orangutan.jpg"
+  },
+  {
+    "id": "paladim",
+    "name": "Paladim",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "Each Creature that changed Lanes this turn has +3 ATK this turn. (Opposing Creatures do not benefit from this.)",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/paladim.jpg"
+  },
+  {
+    "id": "papercut-tiger",
+    "name": "Papercut Tiger",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "While Papercut Tiger has exactly 5 Damage on it, it has +5 ATK.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/papercut_tiger.jpg"
+  },
+  {
+    "id": "patched-puppy",
+    "name": "Patched Puppy",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "text": "Deal 3 Damage to Patched Puppy \u003e\u003e\u003e Patched Puppy has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/patched_puppy.jpg"
+  },
+  {
+    "id": "patchy-the-pumpkin",
+    "name": "Patchy the Pumpkin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to target Creature. Do this once for each Cornfield Landscape you control. (May only target each Creature once.)",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/patchy_the_pumpkin.jpg"
+  },
+  {
+    "id": "patriot-popsicle",
+    "name": "Patriot Popsicle",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "When Patriot Popsicle enters play, you may Freeze a Landscape in this Lane.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/patriot_popsicle.jpg"
+  },
+  {
+    "id": "peach-djinni",
+    "name": "Peach Djinni",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 6,
+    "ability": "trigger",
+    "text": "When a Sandy Lands Creature enters play under your control, Peach Djinni has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/peach_djinni.jpg"
+  },
+  {
+    "id": "pentacutie",
+    "name": "Pentacutie",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Opponents can't play 0 cost cards.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pentacutie.jpg"
+  },
+  {
+    "id": "phyllis",
+    "name": "Phyllis",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "While her blade distracts you, her purse swings in for the whammy.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/phyllis.jpg"
+  },
+  {
+    "id": "pickler",
+    "name": "Pickler",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "ability": "ignition",
+    "text": "Sacrifice Pickler \u003e\u003e\u003e Deal 3 Damage to target Creature.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pickler.jpg"
+  },
+  {
+    "id": "pieclops",
+    "name": "Pieclops",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "entering_play",
+    "text": "When Pieclops enters play, heal 1 Damage from each adjacent Creature.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pieclops.jpg"
+  },
+  {
+    "id": "pied-piper",
+    "name": "Pied Piper",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "When Pied Piper attacks an opposing Creature, you may have a Flooped Creature you control attack it instead.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pied_piper.jpg"
+  },
+  {
+    "id": "pink-merwitch",
+    "name": "Pink Merwitch",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "ability": "ignition",
+    "text": "Discard a card \u003e\u003e\u003e Deal 1 Damage to each opposing Creature. (Use only once during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pink_merwitch.jpg"
+  },
+  {
+    "id": "pirate-bear",
+    "name": "Pirate Bear",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 3,
+    "ability": "continuous",
+    "text": "While Pirate Bear is on a Useless Swamp Landscape, it deals triple Damage.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pirate_bear.jpg"
+  },
+  {
+    "id": "polterclops",
+    "name": "Polterclops",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 1,
+    "ability": "continuous",
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/polterclops.jpg"
+  },
+  {
+    "id": "pony",
+    "name": "Pony",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pony.jpg"
+  },
+  {
+    "id": "popcorn-butteredfly",
+    "name": "Popcorn Butteredfly",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each Building you control.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/popcorn_butteredfly.jpg"
+  },
+  {
+    "id": "psionic-architect",
+    "name": "Psionic Architect",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Psionic Architect enters play, you may ready a Flooped Creature you control.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/psionic_architect.jpg"
+  },
+  {
+    "id": "psionic-swashbuckler",
+    "name": "Psionic Swashbuckler",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "When Psionic Swashbuckler enters play, you may deal 3 Damage to target Flooped Creature",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/psionic_swashbuckler.jpg"
+  },
+  {
+    "id": "punk-cat",
+    "name": "Punk Cat",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Each Creature that changed Lanes this turn has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/punk_cat.jpg"
+  },
+  {
+    "id": "pyromancer",
+    "name": "Pyromancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "ability": "trigger",
+    "text": "Each time Pyromancer enters a Landscape, you may deal 2 Damage to target Creature in that Lane. Pay 1 Action \u003e\u003e\u003e Move Pyromancer to an empty Landscape you control.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pyromancer.jpg"
+  },
+  {
+    "id": "quadurai",
+    "name": "Quadurai",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "At the start of you turn, deal 2 Damage to each opponent with 4 or more cards in hand.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/quadurai.jpg"
+  },
+  {
+    "id": "quake-maker",
+    "name": "Quake Maker",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "+2 ATK for each face-down Landscape in play.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/quake_maker.jpg"
+  },
+  {
+    "id": "rainbow-eyebat",
+    "name": "Rainbow Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "At the start of your turn, you heal 1 Hit Point for each different Landscape type you control. (Can 't go over 25.)",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/rainbow_eyebat.jpg"
+  },
+  {
+    "id": "rebounding-zebracorn",
+    "name": "Rebounding Zebracorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "+1 ATK for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/rebounding_zebracorn.jpg"
+  },
+  {
+    "id": "red-eyeling",
+    "name": "Red Eyeling",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Return a card with cost 0 from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/red_eyeling.jpg"
+  },
+  {
+    "id": "reign-deer",
+    "name": "Reign Deer",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 4,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each Landscape with a Frozen token on it players control.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/reign_deer.jpg"
+  },
+  {
+    "id": "repelling-rock-crab",
+    "name": "Repelling Rock Crab",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "Each time Repelling Rock Crab takes Damage from a Creature, it deals that much Damage to that Creature.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/repelling_rock_crab.jpg"
+  },
+  {
+    "id": "robomancer",
+    "name": "Robomancer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "ability": "continuous",
+    "text": "+1 ATK for each Creature that changed Lanes during your turn.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/robomancer.jpg"
+  },
+  {
+    "id": "rock-n-roller",
+    "name": "Rock 'n Roller",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "ability": "entering_play",
+    "text": "When Rock 'n Roller enters play, flip a Landscape in this Lane face down. When Rock 'n Roller leaves play, flip it face up.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/rock_'n_roller.jpg"
+  },
+  {
+    "id": "rocktopus",
+    "name": "Rocktopus",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Rocktopus has +1 ATK while attacking a Creature that is on a Sandy Lands Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/rocktopus.jpg"
+  },
+  {
+    "id": "routing-rock-crab",
+    "name": "Routing Rock Crab",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "Each time Routing Rock Crab takes Damage from a Creature, you may move that Creature to an adjacent empty Landscape.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/routing_rock_crab.jpg"
+  },
+  {
+    "id": "sack-of-pain",
+    "name": "Sack of Pain",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "While Sack of Pain has exactly 6 Damage on it, it has +6 ATK.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sack_of_pain.jpg"
+  },
+  {
+    "id": "sailing-sand-crab",
+    "name": "Sailing Sand Crab",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "When Sailing Sand Crab enters play, you may play a Creature with cost 1 for free.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sailing_sand_crab.jpg"
+  },
+  {
+    "id": "sand-angel",
+    "name": "Sand Angel",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "text": "Lie down in the sand, wave your arms and legs, and she will appear to you.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_angel.jpg"
+  },
+  {
+    "id": "sand-eyebat",
+    "name": "Sand Eyebat",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "ability": "trigger",
+    "text": "When another Creature enters play under your control, Sand Eyebat gains 1 DEF.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_eyebat.jpg"
+  },
+  {
+    "id": "sand-jackal",
+    "name": "Sand Jackal",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "ability": "continuous",
+    "text": "While Sand Jackal is on a [Nice Lands]] Landscape, when it defeats an opposing Creature, you heal 3 Hit Points.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_jackal.jpg"
+  },
+  {
+    "id": "sand-knights",
+    "name": "Sand Knights",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "+2 ATK if you control a Blue Plains Landscape.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_knights.jpg"
+  },
+  {
+    "id": "sandasaurus-rex",
+    "name": "Sandasaurus Rex",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 0,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "+2 ATK for each of your empty Lanes.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sandasaurus_rex.jpg"
+  },
+  {
+    "id": "sandhorn-devil",
+    "name": "Sandhorn Devil",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Sandhorn Devil enters play, deal 1 Damage to each Creature in play, (including each of your Creatures).",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sandhorn_devil.jpg"
+  },
+  {
+    "id": "sandmagus",
+    "name": "Sandmagus",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "ability": "trigger",
+    "text": "At the start of your turn, you may return Sandmagus to its owner's hand. If you do, each other Creature you control has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sandmagus.jpg"
+  },
+  {
+    "id": "sandsnake",
+    "name": "Sandsnake",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 9,
+    "ability": "entering_play",
+    "text": "When Sandsnake enters play, deal 4 Damage to target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sandsnake.jpg"
+  },
+  {
+    "id": "sandwitch",
+    "name": "SandWitch",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 12,
+    "ability": "continuous",
+    "text": "When SandWitch or another Creature enters play under your control, deal 1 Damage to your opponent.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sandwitch.jpg"
+  },
+  {
+    "id": "sea-hag",
+    "name": "Sea Hag",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Sea Hag has +1 ATK while attacking a Creature that is on a Useless Swamp Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sea_hag.jpg"
+  },
+  {
+    "id": "sewn-sloth",
+    "name": "Sewn Sloth",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 0,
+    "defense": 8,
+    "text": "Each adjacent Creature has +1 ATK. If Sewn Sloth has 4 or more Damage on it, each adjacent Creature has +2 ATK instead.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sewn_sloth.jpg"
+  },
+  {
+    "id": "shark",
+    "name": "Shark",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "When a Sandy Lands Creature enters play during your turn (including Shark), it has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/shark.jpg"
+  },
+  {
+    "id": "sharp-guy",
+    "name": "Sharp Guy",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 2 Damage to target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sharp_guy.jpg"
+  },
+  {
+    "id": "sheep",
+    "name": "Sheep",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 2,
+    "defense": 3,
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sheep.jpg"
+  },
+  {
+    "id": "shielded-zebracorn",
+    "name": "Shielded ZebraCorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "When Shielded ZebraCorn attacks, you may heal 1 Damage from an adjacent Creature.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/shielded_zebracorn.jpg"
+  },
+  {
+    "id": "shifty-sand-crab",
+    "name": "Shifty Sand Crab",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "Each time a Creature enters play during your turn, you may swap its space with Shifty Sand Crab.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/shifty_sand_crab.jpg"
+  },
+  {
+    "id": "ska-pion",
+    "name": "Ska-pion",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "ability": "continuous",
+    "text": "Ska-pion costs 1 less to play while an opponent controls a Creature you own.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ska-pion.jpg"
+  },
+  {
+    "id": "skeletal-hand",
+    "name": "Skeletal Hand",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Discard the top 3 cards of your deck. For each Spell discarded this way, target player discards a card.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/skeletal_hand.jpg"
+  },
+  {
+    "id": "slashy-sand-crab",
+    "name": "Slashy Sand Crab",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "Each time a Creature enters play during your turn on an adjacent Landscape, Slashy Sand Crab deals 2 Damage to a Creature in its Lane.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/slashy_sand_crab.jpg"
+  },
+  {
+    "id": "slay-rider",
+    "name": "Slay Rider",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 3 Damage to target Creature on a Landscape with a Frozen token on it.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/slay_rider.jpg"
+  },
+  {
+    "id": "smoldering-elder",
+    "name": "Smoldering Elder",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "ability": "entering_play",
+    "text": "When Smoldering Elder enters play, each player discards 2 cards.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/smoldering_elder.jpg"
+  },
+  {
+    "id": "smooth-eli",
+    "name": "Smooth Eli",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "Floop \u003e\u003e\u003e Move target Frozen token from one Landscape to a new Landscape.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/smooth_eli.jpg"
+  },
+  {
+    "id": "snakemint",
+    "name": "Snakemint",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "ability": "trigger",
+    "text": "When Snakemint deals Damage to an opposing player, you heal that many Hit Points. (Cant ' go over 25.)",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snakemint.jpg"
+  },
+  {
+    "id": "snow-angel",
+    "name": "Snow Angel",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Heal 1 Damage from each of your Creatures for each Landscape with a Frozen token on it players control.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_angel.jpg"
+  },
+  {
+    "id": "snow-baller",
+    "name": "Snow Baller",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "ignition",
+    "text": "Remove a Frozen token from Snow Baller's Landscape \u003e\u003e\u003e Deal 3 Damage to target Creature.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_baller.jpg"
+  },
+  {
+    "id": "snow-bunny",
+    "name": "Snow Bunny",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "ability": "ignition",
+    "text": "Destroy Snow Bunny \u003e\u003e\u003e Freeze target Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_bunny.jpg"
+  },
+  {
+    "id": "snow-dog",
+    "name": "Snow Dog",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Each adjacent Creature has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_dog.jpg"
+  },
+  {
+    "id": "softie-recruit",
+    "name": "Softie Recruit",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 5,
+    "text": "When Softie Recruit enters play, if your opponent does not control a Creature in this Lane, gain 1 Action.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      },
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/softie_recruit.jpg"
+  },
+  {
+    "id": "spike-icicle",
+    "name": "Spike Icicle",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 3,
+    "defense": 1,
+    "text": "Look out below!",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/spike_icicle.jpg"
+  },
+  {
+    "id": "spiked-zebracorn",
+    "name": "Spiked ZebraCorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "When Spiked ZebraCorn attacks, deal 1 Damage to each opposing Creature in adjacent Lanes.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/spiked_zebracorn.jpg"
+  },
+  {
+    "id": "sprucy-lucy",
+    "name": "Sprucy Lucy",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "Sprucy Lucy has +1 ATK for each Landscape with a Frozen token on it players control.",
+    "printings": [
+      {
+        "deck": "Ice King's Icy Lands Deck",
+        "set": "CP4",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sprucy_lucy.jpg"
+  },
+  {
+    "id": "squatting-bald-man",
+    "name": "Squatting Bald Man",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "ability": "ignition",
+    "text": "Discard a card \u003e\u003e\u003e Heal 1 Damage from Squatting Bald Man. (Use any number of times during each of your turns.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/squatting_bald_man.jpg"
+  },
+  {
+    "id": "static-parrotrooper",
+    "name": "Static Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Static Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. At the start of your turn, deal 1 damage to your Hero.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/static_parrotrooper.jpg"
+  },
+  {
+    "id": "steakchop",
+    "name": "Steakchop",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 4,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "At the start of your turn, discard 2 cards or destroy Steakchop. (Discard after your free draw.)",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/steakchop.jpg"
+  },
+  {
+    "id": "stitched-squirrel",
+    "name": "Stitched Squirrel",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 8,
+    "text": "At the start of your turn, if Stitched Squirrel has 4 or more Damage on it, destroy target opposing Building in this lane.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/stitched_squirrel.jpg"
+  },
+  {
+    "id": "strawberry-slimey",
+    "name": "Strawberry Slimey",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "If you control 3 or more different Landscape types when Strawberry Slimey enters play, heal 4 Damage from each Creature you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/strawberry_slimey.jpg"
+  },
+  {
+    "id": "struzann-jinn",
+    "name": "Struzann Jinn",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 11,
+    "ability": "continuous",
+    "text": "+2 ATK for each Flooped Creature you control.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/struzann_jinn.jpg"
+  },
+  {
+    "id": "subjugator",
+    "name": "SubjuGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "text": "The opposing Creature in this Lane has -1 DEF for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/subjugator.jpg"
+  },
+  {
+    "id": "sun-king",
+    "name": "Sun King",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 0,
+    "defense": 8,
+    "ability": "continuous",
+    "text": "Sun King counts as an additional Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sun_king.jpg"
+  },
+  {
+    "id": "swamp-horn",
+    "name": "Swamp Horn",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 4,
+    "defense": 1,
+    "ability": "continuous",
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/swamp_horn.jpg"
+  },
+  {
+    "id": "tailgator",
+    "name": "TailGator",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "When TailGator enters play, draw a card for each Creature that entered your discard pile this turn.",
+    "printings": [
+      {
+        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tailgator.jpg"
+  },
+  {
+    "id": "teeth-leaf",
+    "name": "Teeth Leaf",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "If you have 10 or more cards in your discard pile, pay 2 fewer Actions to play Teeth Leaf.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/teeth_leaf.jpg"
+  },
+  {
+    "id": "the-barrel",
+    "name": "The Barrel",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "ability": "continuous",
+    "text": "Each The Barrel has +1 ATK and +1 DEF for each other The Barrel in play.",
+    "printings": [
+      {
+        "deck": "Charlie's Blue Plains/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_barrel.jpg"
+  },
+  {
+    "id": "the-cooler",
+    "name": "The Cooler",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 7,
+    "ability": "leaving_play",
+    "text": "When The Cooler leaves play, Freeze its Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_cooler.jpg"
+  },
+  {
+    "id": "the-cooper",
+    "name": "The Cooper",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Target Creature gets +ATK this turn equal to the total cost of Teamwork cards your team controls.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_cooper.jpg"
+  },
+  {
+    "id": "the-dog",
+    "name": "The Dog",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Opposing Buildings in this Lane are blank while The Dog is Flooped \"Woof.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_dog.jpg"
+  },
+  {
+    "id": "the-mariachi",
+    "name": "The Mariachi",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to target Creature for each Creature that entered play this turn.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_mariachi.jpg"
+  },
+  {
+    "id": "the-pig",
+    "name": "The Pig",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Flip target Cornfield Landscape in this Lane face down.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_pig.jpg"
+  },
+  {
+    "id": "the-sludger",
+    "name": "The Sludger",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Choose a card name. Remove each card with that name in target player's discard pile from the game.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_sludger.jpg"
+  },
+  {
+    "id": "timmy-magic-eyes",
+    "name": "Timmy Magic Eyes",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Timmy Magic Eyes has +1 ATK while attacking a Creature that is on a Blue Plains Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/timmy_magic_eyes.jpg"
+  },
+  {
+    "id": "tiny-elephant",
+    "name": "Tiny Elephant",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "While in play, Tiny Elephant is also a Rainbow Creature (in addition to Blue Plains).",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tiny_elephant.jpg"
+  },
+  {
+    "id": "tired-wombat",
+    "name": "Tired Wombat",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 4,
+    "defense": 5,
+    "ability": "trigger",
+    "text": "At the start of your turn, move Tired Wombat to an empty Landscape you control. If you cannot, move it to an empty Landscape your opponent controls.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tired_wombat.jpg"
+  },
+  {
+    "id": "tntimmy",
+    "name": "TNTimmy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "ability": "leaving_play",
+    "text": "When TNTimmy leaves play, deal 1 Damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tntimmy.jpg"
+  },
+  {
+    "id": "tornado-wall-of-fire",
+    "name": "Tornado Wall Of Fire",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 0,
+    "defense": 10,
+    "text": "FLOOP \u003e\u003e\u003e Tornado Wall of Fire has +3 ATK while Flooped.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tornado_wall_of_fire.jpg"
+  },
+  {
+    "id": "tough-lumberjill",
+    "name": "Tough Lumberjill",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "entering_play",
+    "text": "When Tough Lumberjill enters play, deal 1 Damage to your opponent for each Building you control.",
+    "printings": [
+      {
+        "deck": "Cake's Cornfield Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tough_lumberjill.jpg"
+  },
+  {
+    "id": "trained-zebracorn-husker",
+    "name": "Trained ZebraCorn Husker",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "text": "+1 ATK for each Teamwork your team controls. If Trained ZebraCorn Husker leaves play during your Fight Phase, you may put it into your hand.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/trained_zebracorn_husker.jpg"
+  },
+  {
+    "id": "travelin-farmer",
+    "name": "Travelin' Farmer",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 12,
+    "ability": "leaving_play",
+    "text": "When Travelin' Farmer leaves play, deal 1 Damage to your opponent for each card in his hand.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/travelin'_farmer.jpg"
+  },
+  {
+    "id": "travelin-skeleton",
+    "name": "Travelin' Skeleton",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Travelin' Skeleton and another Creature you control change Lanes with each other.",
+    "printings": [
+      {
+        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
+        "set": "CP3",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/travelin'_skeleton.jpg"
+  },
+  {
+    "id": "travelin-wizard",
+    "name": "Travelin' Wizard",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 3,
+    "ability": "entering_play",
+    "text": "When Travelin' Wizard enters play, the opposing Creature in this Lane and Travelin' Wizard switch sides.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Rare"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/travelin'_wizard.jpg"
+  },
+  {
+    "id": "tree-of-undeath",
+    "name": "Tree of Undeath",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Return a random Creature from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tree_of_undeath.jpg"
+  },
+  {
+    "id": "ultra-dog",
+    "name": "Ultra Dog",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "text": "Floop \u003e\u003e\u003e Freeze target Landscape with a Creature on it.",
+    "printings": [
+      {
+        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
+        "set": "2v2",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ultra_dog.jpg"
+  },
+  {
+    "id": "uni-knight",
+    "name": "Uni-Knight",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4,
+    "ability": "ignition",
+    "text": "Pay 1 Action \u003e\u003e\u003e Target Creature in this Lane has -10 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 1
+      },
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/uni-knight.jpg"
+  },
+  {
+    "id": "unicyclops",
+    "name": "Unicyclops",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "At the start of your turn, each player draws a card and then discards a card.",
+    "printings": [
+      {
+        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
+        "set": "CP4",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/unicyclops.jpg"
+  },
+  {
+    "id": "vampire-lord",
+    "name": "Vampire Lord",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 1,
+    "defense": 8,
+    "text": "When Vampire Lord deals damage, heal that much Damage from him.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/vampire_lord.jpg"
+  },
+  {
+    "id": "wall-of-chocolate",
+    "name": "Wall of Chocolate",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "While Wall of Chocolate has no Damage on it, it has +3 ATK.",
+    "printings": [
+      {
+        "deck": "Princess Bubblegum's Nice Lands Deck",
+        "set": "CP3",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/wall_of_chocolate.jpg"
+  },
+  {
+    "id": "wall-of-ears",
+    "name": "Wall of Ears",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "ability": "continuous",
+    "text": "+1 DEF for each Cornfield Landscape in play (counting all players).",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/wall_of_ears.jpg"
+  },
+  {
+    "id": "wall-of-sand",
+    "name": "Wall of Sand",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 12,
+    "ability": "continuous",
+    "text": "If one or more other Sandy Lands Creatures enter play during your turn, Wall of Sand has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lady Rainicorn's SandyLand Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/wall_of_sand.jpg"
+  },
+  {
+    "id": "wandering-bald-man",
+    "name": "Wandering Bald Man",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 10,
+    "ability": "continuous",
+    "text": "At the start of your turn, put the top card of your deck into your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Useless Swamp Deck",
+        "set": "CP2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/wandering_bald_man.jpg"
+  },
+  {
+    "id": "weakened-warrior",
+    "name": "Weakened Warrior",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 5,
+    "defense": 6,
+    "ability": "trigger",
+    "text": "Weakened Warrior comes into play exhausted and does not ready at the start of your turn. Whenever Weakened Warrior changes Lanes, ready it.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/weakened_warrior.jpg"
+  },
+  {
+    "id": "well-dressed-wolf",
+    "name": "Well-Dressed Wolf",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "Well-Dressed Wolf has +1 ATK while attacking a Creature that is on a Cornfield Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Common"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/well-dressed_wolf.jpg"
+  },
+  {
+    "id": "woadic-chief",
+    "name": "Woadic Chief",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "ability": "trigger",
+    "text": "Woadic Chief has +2 ATK this turn for each Spell you have played this turn.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woadic_chief.jpg"
+  },
+  {
+    "id": "woadic-enchantress",
+    "name": "Woadic Enchantress",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "Creatures in this Lane cannot use Floop abilities.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woadic_enchantress.jpg"
+  },
+  {
+    "id": "woadic-marauder",
+    "name": "Woadic Marauder",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "ability": "trigger",
+    "text": "When Woadic Marauder changes Lanes during a turn, draw a card.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woadic_marauder.jpg"
+  },
+  {
+    "id": "woadic-matriarch",
+    "name": "Woadic Matriarch",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "Woadic Matriarch has +1 ATK for each Rainbow Creature you control.",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woadic_matriarch.jpg"
+  },
+  {
+    "id": "woadic-ring-leader",
+    "name": "Woadic Ring Leader",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4,
+    "ability": "trigger",
+    "text": "At the start of your turn, move Woadic Ring Leader to an empty Landscape you control. If you cannot, destroy it.",
+    "printings": [
+      {
+        "deck": "Gunter's Blue Plains/Icy Lands Deck",
+        "set": "CP5",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woadic_ring_leader.jpg"
+  },
+  {
+    "id": "woadic-weirdo",
+    "name": "Woadic Weirdo",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Reveal a card from your hand. That card becomes a Rainbow card until the end of your turn. (It has no Landscape type).",
+    "printings": [
+      {
+        "deck": "Fionna's Blue Plains Deck",
+        "set": "CP6",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woadic_weirdo.jpg"
+  },
+  {
+    "id": "x-large-spirit-soldier",
+    "name": "X-Large Spirit Soldier",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9,
+    "ability": "continuous",
+    "text": "Each adjacent Creature has +1 ATK.",
+    "printings": [
+      {
+        "deck": "Finn's Blue Plains Deck",
+        "set": "CP1",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/x-large_spirit_soldier.jpg"
+  },
+  {
+    "id": "yellow-gnome",
+    "name": "Yellow Gnome",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "ability": "floop",
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 Damage to each opposing Creature that is on a Nice Lands Landscape.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/yellow_gnome.jpg"
+  },
+  {
+    "id": "yellow-slimey",
+    "name": "Yellow Slimey",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 6,
+    "ability": "continuous",
+    "text": "While you control 3 or more different Landscape types, Yellow Slimey has +3 ATK.",
+    "printings": [
+      {
+        "deck": "For the Glory! Booster Pack",
+        "set": "FTG",
+        "rarity": "Uncommon"
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/yellow_slimey.jpg"
+  },
+  {
+    "id": "young-zebracorn-husker",
+    "name": "Young ZebraCorn Husker",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 5,
+    "text": "If Young ZebraCorn Husker leaves play during your Fight Phase, you may put it on top of your deck.",
+    "printings": [
+      {
+        "deck": "Jake's Cornfield/Nice Lands Deck",
+        "set": "2v2",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/young_zebracorn_husker.jpg"
+  }
+]
