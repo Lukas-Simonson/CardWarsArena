@@ -835,5 +835,16 @@
         }
       ]
     }
+  ],
+  "silo-of-truth": [
+    {
+      "kind": "activate",
+      "cost": 2,
+      "do": [
+        {
+          "do": "steal_play"
+        }
+      ]
+    }
   ]
 }

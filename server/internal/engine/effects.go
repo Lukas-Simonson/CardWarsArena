@@ -333,6 +333,8 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 					ev = append(ev, Event{Kind: EvDestroy, Player: r.Player, Card: b.UID, Lane: r.Lane})
 				}
 			}
+		case "steal_play":
+			ev = append(ev, g.stealPlay(c)...)
 		case "copy_floop":
 			ev = append(ev, g.copyFloop(c)...)
 		case "gain_actions":
@@ -492,4 +494,25 @@ func (g *Game) copyFloop(c effCtx) []Event {
 	cr.Silenced = true
 	cr.Lent = donors[rand.New(&g.rng).IntN(len(donors))]
 	return []Event{{Kind: EvAbilities, Player: c.p, Card: cr.UID, Lane: at.Lane}}
+}
+
+// stealPlay (Silo of Truth) takes a random card from the opponent's hand. The
+// controller must then play it for free. A card that cannot legally be played
+// anywhere goes to its owner's discard pile instead.
+func (g *Game) stealPlay(c effCtx) []Event {
+	opp := &g.State.Players[c.p.Opp()]
+	if len(opp.Hand) == 0 {
+		return nil
+	}
+	i := rand.New(&g.rng).IntN(len(opp.Hand))
+	in := opp.Hand[i]
+	opp.Hand = append(opp.Hand[:i:i], opp.Hand[i+1:]...)
+	ev := []Event{{Kind: EvSteal, Player: c.p, Card: in.UID}}
+	g.State.Pending = &Pending{Card: in}
+	if len(g.pendingActions(c.p)) == 0 {
+		g.State.Pending = nil
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+		ev = append(ev, Event{Kind: EvDiscard, Player: in.Owner, Card: in.UID})
+	}
+	return ev
 }

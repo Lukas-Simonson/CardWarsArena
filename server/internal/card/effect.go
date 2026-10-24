@@ -130,7 +130,7 @@ var validOps = map[string]struct{ slots int }{
 	"draw": {0}, "damage_creature": {0}, "damage_hero": {0}, "mod_creature": {0},
 	"move_creature": {2}, "move_building": {2}, "flip_landscape": {1},
 	"ready_creature": {1}, "bounce": {1}, "destroy_building": {1},
-	"gain_actions": {0}, "copy_floop": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
+	"gain_actions": {0}, "copy_floop": {0}, "steal_play": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.

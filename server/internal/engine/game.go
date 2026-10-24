@@ -163,6 +163,8 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 		ev = append(ev, g.doAttack(p, a)...)
 	case ActFloop, ActActivate:
 		ev = append(ev, g.doAbility(p, a)...)
+	case ActPlayPending:
+		ev = append(ev, g.doPending(p, a)...)
 	}
 	// State-based rules hold after every action, not just after combat.
 	ev = append(ev, g.settle()...)
@@ -180,6 +182,9 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 	}
 	if p != 0 && p != 1 {
 		return ErrNotYourTurn
+	}
+	if st.Pending != nil && a.Kind != ActPlayPending {
+		return ErrPending
 	}
 	switch a.Kind {
 	case ActKeepHand, ActMulligan:
@@ -204,6 +209,8 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 		return g.validateAttack(p, a)
 	case ActFloop, ActActivate:
 		return g.validateAbility(p, a)
+	case ActPlayPending:
+		return g.validatePending(p, a)
 	}
 	return ErrUnknownAction
 }

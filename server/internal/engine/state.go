@@ -97,6 +97,15 @@ type State struct {
 	ActionsLeft int       `json:"actions_left"`
 	Winner      PlayerID  `json:"winner"` // meaningful only when Phase == PhaseOver
 	NextUID     int       `json:"next_uid"`
+	// Pending, when set, is a decision the active player must make before
+	// anything else can happen.
+	Pending *Pending `json:"pending,omitempty"`
 	// SpellsThisTurn counts Spells the active player has played this turn.
 	SpellsThisTurn int `json:"spells_this_turn"`
+}
+
+// Pending is a card taken from the opponent that must be played for free
+// (Silo of Truth). The card is not in any zone while it waits.
+type Pending struct {
+	Card Instance `json:"card"`
 }

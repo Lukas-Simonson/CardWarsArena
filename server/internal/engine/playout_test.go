@@ -25,26 +25,17 @@ func starterGame(t testing.TB, seed uint64) *Game {
 	return g
 }
 
-// strictStarterGame is the same match using only cards whose rules are fully
-// modelled; the few still-unimplemented cards are left out of the decks.
+// strictStarterGame is the same match under the full deck rules, with no
+// unmodelled cards allowed: it fails to build if any card is not implemented.
 func strictStarterGame(t testing.TB, seed uint64) *Game {
 	t.Helper()
 	cat, err := card.Load("../../data")
 	if err != nil {
 		t.Fatal(err)
 	}
-	keep := func(ids []string) []string {
-		var out []string
-		for _, id := range ids {
-			if cat[id].Implemented() {
-				out = append(out, id)
-			}
-		}
-		return out
-	}
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, keep(cat.Deck("CP1", "Finn's Blue Plains Deck"))}
-	jake := DeckSpec{cornfields, keep(cat.Deck("CP1", "Jake's Cornfield Deck"))}
-	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2), SkipDeckRules: true}, [2]DeckSpec{finn, jake})
+	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("CP1", "Finn's Blue Plains Deck")}
+	jake := DeckSpec{cornfields, cat.Deck("CP1", "Jake's Cornfield Deck")}
+	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2)}, [2]DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,6 +93,11 @@ func (g *Game) checkInvariants(total [2]int) error {
 		}
 		if st.Phase != PhaseOver && pl.HP <= 0 {
 			return fmt.Errorf("player %d at %d HP but game not over", p, pl.HP)
+		}
+	}
+	if st.Pending != nil {
+		if err := count(st.Pending.Card, "pending"); err != nil {
+			return err
 		}
 	}
 	if owned != total {
@@ -233,7 +229,7 @@ func TestStrictRandomPlayoutsExerciseCardEffects(t *testing.T) {
 	}
 	t.Logf("events across %d games: %v", games, seen)
 	if !testing.Short() {
-		for _, k := range []EventKind{EvFloop, EvActivate, EvMove, EvFlip, EvBounce, EvReady, EvReturn, EvDeckTop, EvDestroy, EvActions} {
+		for _, k := range []EventKind{EvFloop, EvActivate, EvMove, EvFlip, EvBounce, EvReady, EvReturn, EvDeckTop, EvDestroy, EvActions, EvDiscard, EvAbilities, EvSteal} {
 			if seen[k] == 0 {
 				t.Errorf("no %s events in %d random games: that effect path is untested", k, games)
 			}
@@ -241,19 +237,20 @@ func TestStrictRandomPlayoutsExerciseCardEffects(t *testing.T) {
 	}
 }
 
-// The starter decks are fully modelled except for four cards whose rules need
-// features the engine does not have yet (see docs/effects.md). Fails when one
-// of them gets modelled, as a reminder to shrink this list and the docs.
-func TestOnlyKnownStarterCardsAreUnmodeled(t *testing.T) {
+// Every card in the two starter decks has its rules modelled, so those decks
+// can be played in strict mode (no AllowUnimplemented).
+func TestStarterDecksAreFullyModeled(t *testing.T) {
 	cat, err := card.Load("../../data")
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := map[string]bool{"silo-of-truth": true}
 	for _, deck := range [][]string{cat.Deck("CP1", "Finn's Blue Plains Deck"), cat.Deck("CP1", "Jake's Cornfield Deck")} {
+		if len(deck) != 40 {
+			t.Errorf("deck has %d cards", len(deck))
+		}
 		for _, id := range deck {
-			if cat[id].Implemented() == want[id] {
-				t.Errorf("%s: implemented=%v, expected %v", id, cat[id].Implemented(), !want[id])
+			if !cat[id].Implemented() {
+				t.Errorf("%s is not modelled", id)
 			}
 		}
 	}

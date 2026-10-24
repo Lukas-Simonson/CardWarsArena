@@ -158,6 +158,9 @@ func (g *Game) ownedCount(p PlayerID) int {
 			}
 		}
 	}
+	if pe := g.State.Pending; pe != nil {
+		tally(pe.Card)
+	}
 	return n
 }
 

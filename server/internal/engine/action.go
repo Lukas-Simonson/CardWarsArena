@@ -9,14 +9,15 @@ import (
 type ActionKind string
 
 const (
-	ActKeepHand ActionKind = "keep_hand" // mulligan phase: keep the opening hand
-	ActMulligan ActionKind = "mulligan"  // mulligan phase: redraw the opening hand (once)
-	ActPlayCard ActionKind = "play_card" // main phase: Card = UID in hand, Lane for Creatures/Buildings
-	ActDraw     ActionKind = "draw"      // main phase: spend 1 Action to draw 1 card
-	ActEndMain  ActionKind = "end_main"  // main phase: move on to the Fight phase
-	ActAttack   ActionKind = "attack"    // fight phase: Activate the Creature in Lane to Fight
-	ActFloop    ActionKind = "floop"     // main phase: Floop the card in Lane (Source: creature or building)
-	ActActivate ActionKind = "activate"  // main phase: pay Actions for an ability of the card in Lane (Index picks which)
+	ActKeepHand    ActionKind = "keep_hand"    // mulligan phase: keep the opening hand
+	ActMulligan    ActionKind = "mulligan"     // mulligan phase: redraw the opening hand (once)
+	ActPlayCard    ActionKind = "play_card"    // main phase: Card = UID in hand, Lane for Creatures/Buildings
+	ActDraw        ActionKind = "draw"         // main phase: spend 1 Action to draw 1 card
+	ActEndMain     ActionKind = "end_main"     // main phase: move on to the Fight phase
+	ActAttack      ActionKind = "attack"       // fight phase: Activate the Creature in Lane to Fight
+	ActPlayPending ActionKind = "play_pending" // play the card taken by Silo of Truth for free (Lane, Targets)
+	ActFloop       ActionKind = "floop"        // main phase: Floop the card in Lane (Source: creature or building)
+	ActActivate    ActionKind = "activate"     // main phase: pay Actions for an ability of the card in Lane (Index picks which)
 )
 
 // Action is a single player decision. It is the unit sent over the wire.
@@ -53,6 +54,8 @@ func (a Action) String() string {
 		return fmt.Sprintf("play_card(uid=%d, lane=%d)", a.Card, a.Lane)
 	case ActAttack:
 		return fmt.Sprintf("attack(lane=%d)", a.Lane)
+	case ActPlayPending:
+		return fmt.Sprintf("play_pending(lane=%d)", a.Lane)
 	case ActFloop, ActActivate:
 		return fmt.Sprintf("%s(%s lane=%d idx=%d)", a.Kind, a.Source, a.Lane, a.Index)
 	}
@@ -85,6 +88,7 @@ const (
 	EvFloop     EventKind = "floop"     // a card Flooped
 	EvActivate  EventKind = "activate"  // an activated ability was used
 	EvDiscard   EventKind = "discard"   // a card was discarded from hand
+	EvSteal     EventKind = "steal"     // a card was taken from the opponent's hand
 	EvAbilities EventKind = "abilities" // a Creature's abilities changed (Lane, Card)
 )
 
@@ -118,5 +122,7 @@ var (
 	ErrNoTarget       = errors.New("no legal target")
 	ErrNotReady       = errors.New("that card is not Ready")
 	ErrNoAbility      = errors.New("that card has no such ability")
+	ErrPending        = errors.New("the stolen card must be played first")
+	ErrNoPending      = errors.New("there is no stolen card to play")
 	ErrBadTarget      = errors.New("invalid target choice")
 )

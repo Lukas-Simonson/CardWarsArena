@@ -6,6 +6,12 @@ import "cardwars/internal/card"
 // by proposing candidates and keeping those Validate accepts, so it can never
 // disagree with Apply. Spells are offered once per card, with Lane 0.
 func (g *Game) LegalActions(p PlayerID) []Action {
+	if g.State.Pending != nil {
+		if p != g.State.Active || g.State.Phase == PhaseOver {
+			return nil
+		}
+		return g.pendingActions(p)
+	}
 	var cands []Action
 	switch g.State.Phase {
 	case PhaseMulligan:
