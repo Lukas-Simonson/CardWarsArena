@@ -31,6 +31,12 @@ test("optional empty target slots read as none", () => {
   assert.match(describeAction(ctx, a), /\[targets: none\]$/);
 });
 
+test("a null target slot (how Go encodes an empty list) is read as none", () => {
+  const a = { kind: "play_card", card: 10, lane: 1, targets: [null] };
+  assert.match(describeAction(ctx, a), /\[targets: none\]$/);
+  assert.equal(isKnownAction(ctx, a), true);
+});
+
 test("additional costs and several slots", () => {
   const a = {
     kind: "play_card", card: 10, lane: 0,
@@ -89,6 +95,12 @@ test("events", () => {
   assert.equal(e("bounce", { card: 30, player: 1 }), "Cool Dog returns to Jake's hand");
   assert.equal(e("steal", { card: 30 }), "Finn steals Cool Dog from the opponent's hand");
   assert.equal(e("something_new"), "something_new");
+});
+
+test("events name a card by card_id even if it was never in a view", () => {
+  const e = { kind: "play", player: 1, card: 999, card_id: "the-pig" };
+  assert.equal(describeEvent(ctx, e), "Jake plays The Pig");
+  assert.equal(describeEvent(ctx, { kind: "bounce", player: 1, card: 999, card_id: "cool-dog" }), "Cool Dog returns to Jake's hand");
 });
 
 test("every event kind the server can send has a description", () => {

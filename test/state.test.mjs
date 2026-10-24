@@ -39,6 +39,16 @@ test("cards that leave the visible game can still be named later", () => {
   assert.equal(s.log.at(-1), "The Pig returns to Bot's hand");
 });
 
+test("a card that only ever appears in events is named from card_id, now and later", () => {
+  let s = reduce(initialState(), joined(), cards);
+  // Legion of Earlings enters play and bounces itself: it is in no view.
+  s = reduce(s, update(1, view(), [{ kind: "play", player: 1, card: 777, card_id: "cool-dog" }, { kind: "bounce", player: 1, card: 777, card_id: "cool-dog" }]), cards);
+  assert.deepEqual(s.log, ["Bot plays Cool Dog", "Cool Dog returns to Bot's hand"]);
+  assert.equal(s.known[777], "cool-dog");
+  s = reduce(s, update(2, view(), [{ kind: "play", player: 1, card: 777 }]), cards); // an old event without card_id still resolves
+  assert.equal(s.log.at(-1), "Bot plays Cool Dog");
+});
+
 test("the log is capped", () => {
   let s = reduce(initialState(), joined(), cards);
   const events = Array.from({ length: LOG_LIMIT + 50 }, () => ({ kind: "actions", player: 0, amount: 1 }));

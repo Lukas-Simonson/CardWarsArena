@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Wars</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%9A%94%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <h1>Card Wars</h1>
+  <span id="status" class="chip">connecting…</span>
+  <span id="roombadge" class="chip" hidden></span>
+  <span class="spacer"></span>
+  <button id="leave" hidden>Leave game</button>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<section id="lobby">
+  <h2>Play</h2>
+  <div class="form">
+    <label>Server <input id="server" size="26" spellcheck="false"></label>
+    <button id="applyServer">Connect</button>
+  </div>
+  <div class="form">
+    <label>Your name <input id="name" size="12" value="Player" maxlength="24"></label>
+    <label>Your deck <select id="deck"></select></label>
+    <label>Bot's deck <select id="botdeck"><option value="">(the other starter deck)</option></select></label>
+    <button id="vsbot" class="primary">Play against the bot</button>
+  </div>
+  <div class="form">
+    <button id="create">Create a room for a friend</button>
+    <span class="muted">or</span>
+    <label>Room code <input id="code" size="6" maxlength="6" class="code" spellcheck="false"></label>
+    <button id="join">Join</button>
+  </div>
+  <p class="muted" id="lobbyhint"></p>
+</section>
+
+<main id="game" hidden></main>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

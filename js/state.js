@@ -69,6 +69,7 @@ export function reduce(state, msg, cards = {}) {
       if (msg.seq < state.seq) return state; // an older update arriving late
       const names = msg.names?.length ? msg.names : state.names;
       const known = learnCards(state.known, msg.view);
+      for (const e of msg.events ?? []) if (e.card && e.card_id) known[e.card] = e.card_id;
       const ctx = { view: msg.view, cards, names, known };
       const lines = (msg.events ?? []).map((e) => describeEvent(ctx, e));
       const log = lines.length ? [...state.log, ...lines].slice(-LOG_LIMIT) : state.log;
