@@ -1,0 +1,264 @@
+{
+  "blood-fortress": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "lane_ally"
+          },
+          "amount": {
+            "n": 1
+          }
+        }
+      ]
+    }
+  ],
+  "celestial-castle": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "def",
+          "to": {
+            "rel": "lane_ally"
+          },
+          "amount": {
+            "n": 3
+          }
+        }
+      ]
+    }
+  ],
+  "cool-dog": [
+    {
+      "kind": "static",
+      "restrict": "adjacent_allies_not_attackable"
+    }
+  ],
+  "nice-ice-baby": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 3
+          },
+          "if": {
+            "opposing_creature_in_lane": false
+          }
+        }
+      ]
+    }
+  ],
+  "punk-cat": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "any",
+            "changed_lanes": true
+          },
+          "amount": {
+            "n": 2
+          }
+        }
+      ]
+    }
+  ],
+  "struzann-jinn": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 2,
+            "per": {
+              "of": "flooped_creatures"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "x-large-spirit-soldier": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "adjacent_allies"
+          },
+          "amount": {
+            "n": 1
+          }
+        }
+      ]
+    }
+  ],
+  "corn-dog": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "def",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield"
+            }
+          }
+        },
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 1
+          },
+          "if": {
+            "landscapes": {
+              "type": "cornfield",
+              "max": 3
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "corn-lord": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "creatures",
+              "type": "cornfield",
+              "other": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "corn-ronin": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield",
+              "adjacent": true
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "husker-knight": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield"
+            }
+          }
+        },
+        {
+          "stat": "def",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 2,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "wall-of-ears": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "def",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "scope": "any",
+              "type": "cornfield"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "woadic-chief": [
+    {
+      "kind": "static",
+      "mods": [
+        {
+          "stat": "atk",
+          "to": {
+            "rel": "self"
+          },
+          "amount": {
+            "n": 2,
+            "per": {
+              "of": "spells_played"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "drooling-dude": [],
+  "evil-eye": [],
+  "phyllis": []
+}

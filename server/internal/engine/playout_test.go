@@ -52,8 +52,8 @@ func (g *Game) checkInvariants(total [2]int) error {
 				if err := count(l.Creature.Instance); err != nil {
 					return err
 				}
-				if l.Creature.Damage >= g.defense(l.Creature) {
-					return fmt.Errorf("player %d lane %d: creature has damage %d >= DEF %d and is still alive", p, i, l.Creature.Damage, g.defense(l.Creature))
+				if l.Creature.Damage >= g.def(pos{PlayerID(p), i}) {
+					return fmt.Errorf("player %d lane %d: creature has damage %d >= DEF %d and is still alive", p, i, l.Creature.Damage, g.def(pos{PlayerID(p), i}))
 				}
 				if l.Creature.Damage < 0 {
 					return fmt.Errorf("negative damage")
@@ -78,7 +78,7 @@ func (g *Game) checkInvariants(total [2]int) error {
 	if st.ActionsLeft < 0 || st.ActionsLeft > ActionsPerTurn {
 		return fmt.Errorf("actions left %d", st.ActionsLeft)
 	}
-	if st.Phase == PhaseFight && !g.hasReadyCreature(st.Active) {
+	if st.Phase == PhaseFight && !g.hasAttacker(st.Active) {
 		return fmt.Errorf("fight phase with nothing Ready: the turn should have ended")
 	}
 	return nil

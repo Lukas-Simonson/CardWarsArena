@@ -47,6 +47,10 @@ type Creature struct {
 	Instance
 	Damage int    `json:"damage"`
 	Status Status `json:"status"`
+	// Per-turn state, cleared when the turn ends.
+	TempATK      int  `json:"temp_atk,omitempty"`
+	TempDEF      int  `json:"temp_def,omitempty"`
+	ChangedLanes bool `json:"changed_lanes,omitempty"`
 }
 
 // Building is a Building in play.
@@ -84,4 +88,6 @@ type State struct {
 	ActionsLeft int       `json:"actions_left"`
 	Winner      PlayerID  `json:"winner"` // meaningful only when Phase == PhaseOver
 	NextUID     int       `json:"next_uid"`
+	// SpellsThisTurn counts Spells the active player has played this turn.
+	SpellsThisTurn int `json:"spells_this_turn"`
 }

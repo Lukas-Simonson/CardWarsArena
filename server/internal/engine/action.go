@@ -77,4 +77,5 @@ var (
 	ErrNoAttacker     = errors.New("no Ready Creature in that Lane")
 	ErrFirstTurn      = errors.New("the first player may not Floop or Fight on the first turn")
 	ErrNotPlayable    = errors.New("card cannot be played")
+	ErrCannotAttack   = errors.New("that Creature cannot be attacked")
 )
