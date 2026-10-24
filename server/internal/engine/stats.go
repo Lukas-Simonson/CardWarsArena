@@ -22,13 +22,31 @@ func (g *Game) forEachSource(fn func(source)) {
 			l := &g.State.Players[p].Lanes[i]
 			at := pos{PlayerID(p), i}
 			if l.Creature != nil {
-				fn(source{at, l.Creature, g.Card(l.Creature.Instance).Effects})
+				fn(source{at, l.Creature, g.effectsOf(l.Creature)})
 			}
 			if l.Building != nil {
 				fn(source{at, nil, g.Card(l.Building.Instance).Effects})
 			}
 		}
 	}
+}
+
+// effectsOf is the rules a Creature currently has. Normally that is its
+// printed effects; a Silenced Creature has none, or only the Floop ability it
+// was lent. Every read of a Creature's abilities goes through here.
+func (g *Game) effectsOf(c *Creature) []card.Effect {
+	if !c.Silenced {
+		return g.Card(c.Instance).Effects
+	}
+	var out []card.Effect
+	if lent := g.cat[c.Lent]; lent != nil {
+		for _, e := range lent.Effects {
+			if e.Kind == card.KindFloop {
+				out = append(out, e)
+			}
+		}
+	}
+	return out
 }
 
 func (g *Game) creatureAt(at pos) *Creature { return g.State.Players[at.P].Lanes[at.Lane].Creature }

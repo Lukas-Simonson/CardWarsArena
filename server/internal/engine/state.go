@@ -55,6 +55,11 @@ type Creature struct {
 	TempATK      int  `json:"temp_atk,omitempty"`
 	TempDEF      int  `json:"temp_def,omitempty"`
 	ChangedLanes bool `json:"changed_lanes,omitempty"`
+	// Silenced means the Creature has lost all its printed abilities this
+	// turn. If Lent is set it instead has only the FLOOP ability of that
+	// card (Schoolhouse).
+	Silenced bool   `json:"silenced,omitempty"`
+	Lent     string `json:"lent,omitempty"`
 }
 
 // Building is a Building in play.

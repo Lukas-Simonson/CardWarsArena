@@ -825,5 +825,15 @@
         }
       ]
     }
+  ],
+  "schoolhouse": [
+    {
+      "kind": "floop",
+      "do": [
+        {
+          "do": "copy_floop"
+        }
+      ]
+    }
   ]
 }

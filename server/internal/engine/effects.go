@@ -333,6 +333,8 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 					ev = append(ev, Event{Kind: EvDestroy, Player: r.Player, Card: b.UID, Lane: r.Lane})
 				}
 			}
+		case "copy_floop":
+			ev = append(ev, g.copyFloop(c)...)
 		case "gain_actions":
 			g.State.ActionsLeft += amt
 			ev = append(ev, Event{Kind: EvActions, Player: c.p, Amount: amt})
@@ -421,7 +423,7 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 		owner.Discard = append(owner.Discard, cr.Instance)
 	}
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
-	return append(ev, g.fire(card.OnLeavePlay, ctx, cr.Instance, nil)...)
+	return append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
 }
 
 // moveCreature moves a Creature to an empty Lane. Within one side that is a
@@ -443,7 +445,7 @@ func (g *Game) moveCreature(from, to pos) []Event {
 	}
 	ev := []Event{{Kind: EvMove, Player: to.P, Card: cr.UID, Lane: to.Lane}}
 	ctx := effCtx{p: to.P, at: to, hasSrc: true, creature: cr}
-	return append(ev, g.fire(card.OnChangeLanes, ctx, cr.Instance, nil)...)
+	return append(ev, g.fire(card.OnChangeLanes, ctx, g.effectsOf(cr), nil)...)
 }
 
 // moveBuilding moves a Building to a Lane on its controller's side that has none.
@@ -456,4 +458,38 @@ func (g *Game) moveBuilding(from pos, lane int) []Event {
 	pl.Lanes[from.Lane].Building = nil
 	pl.Lanes[lane].Building = b
 	return []Event{{Kind: EvMove, Player: from.P, Card: b.UID, Lane: lane}}
+}
+
+// copyFloop (Schoolhouse): the controller's Creature in the source's Lane
+// loses all abilities and gains the FLOOP ability of a random Creature with
+// one from the controller's discard pile, until end of turn. With no such
+// Creature in the discard pile nothing happens.
+func (g *Game) copyFloop(c effCtx) []Event {
+	if !c.hasSrc {
+		return nil
+	}
+	at := pos{c.p, c.at.Lane}
+	cr := g.creatureAt(at)
+	if cr == nil {
+		return nil
+	}
+	var donors []string
+	for _, in := range g.State.Players[c.p].Discard {
+		cd := g.Card(in)
+		if cd.Type != card.Creature {
+			continue
+		}
+		for _, e := range cd.Effects {
+			if e.Kind == card.KindFloop {
+				donors = append(donors, in.CardID)
+				break
+			}
+		}
+	}
+	if len(donors) == 0 {
+		return nil
+	}
+	cr.Silenced = true
+	cr.Lent = donors[rand.New(&g.rng).IntN(len(donors))]
+	return []Event{{Kind: EvAbilities, Player: c.p, Card: cr.UID, Lane: at.Lane}}
 }

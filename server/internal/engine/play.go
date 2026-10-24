@@ -198,7 +198,7 @@ func (g *Game) resolvePlay(p PlayerID, in Instance, c *card.Card, a Action) []Ev
 	}
 	ev := g.place(p, in, a.Lane)
 	ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: a.Lane})
-	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), in, a.Targets)...)
+	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), c.Effects, a.Targets)...)
 }
 
 // spellEffect returns a Spell's resolution effect, if it has one.

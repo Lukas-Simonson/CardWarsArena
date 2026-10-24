@@ -74,17 +74,18 @@ const (
 	EvHPLoss    EventKind = "hp_loss" // a player lost Hit Points
 	EvDie       EventKind = "die"
 	EvGameOver  EventKind = "game_over"
-	EvMove      EventKind = "move"     // a Creature or Building changed Lanes (Lane = destination)
-	EvFlip      EventKind = "flip"     // a Landscape was turned over
-	EvReady     EventKind = "ready"    // a Creature was readied
-	EvBounce    EventKind = "bounce"   // a Creature returned to its owner's hand
-	EvDestroy   EventKind = "destroy"  // a Building was destroyed
-	EvReturn    EventKind = "return"   // a card came back from a discard pile to hand
-	EvDeckTop   EventKind = "deck_top" // a card was put on top of a deck
-	EvActions   EventKind = "actions"  // Actions were gained
-	EvFloop     EventKind = "floop"    // a card Flooped
-	EvActivate  EventKind = "activate" // an activated ability was used
-	EvDiscard   EventKind = "discard"  // a card was discarded from hand
+	EvMove      EventKind = "move"      // a Creature or Building changed Lanes (Lane = destination)
+	EvFlip      EventKind = "flip"      // a Landscape was turned over
+	EvReady     EventKind = "ready"     // a Creature was readied
+	EvBounce    EventKind = "bounce"    // a Creature returned to its owner's hand
+	EvDestroy   EventKind = "destroy"   // a Building was destroyed
+	EvReturn    EventKind = "return"    // a card came back from a discard pile to hand
+	EvDeckTop   EventKind = "deck_top"  // a card was put on top of a deck
+	EvActions   EventKind = "actions"   // Actions were gained
+	EvFloop     EventKind = "floop"     // a card Flooped
+	EvActivate  EventKind = "activate"  // an activated ability was used
+	EvDiscard   EventKind = "discard"   // a card was discarded from hand
+	EvAbilities EventKind = "abilities" // a Creature's abilities changed (Lane, Card)
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.

@@ -4,9 +4,9 @@ import "cardwars/internal/card"
 
 // abilitySource resolves the card an ability action refers to.
 type abilitySource struct {
-	ctx    effCtx
-	card   *card.Card
-	status *Status
+	ctx     effCtx
+	effects []card.Effect
+	status  *Status
 }
 
 func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
@@ -21,21 +21,21 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 			return abilitySource{}, ErrNoAbility
 		}
 		ctx.creature = l.Creature
-		return abilitySource{ctx, g.Card(l.Creature.Instance), &l.Creature.Status}, nil
+		return abilitySource{ctx, g.effectsOf(l.Creature), &l.Creature.Status}, nil
 	case "building":
 		if l.Building == nil {
 			return abilitySource{}, ErrNoAbility
 		}
-		return abilitySource{ctx, g.Card(l.Building.Instance), &l.Building.Status}, nil
+		return abilitySource{ctx, g.Card(l.Building.Instance).Effects, &l.Building.Status}, nil
 	}
 	return abilitySource{}, ErrNoAbility
 }
 
 // abilityEffect finds the Floop effect, or the Index-th activated ability.
-func abilityEffect(c *card.Card, a Action) *card.Effect {
+func abilityEffect(effects []card.Effect, a Action) *card.Effect {
 	n := 0
-	for i := range c.Effects {
-		e := &c.Effects[i]
+	for i := range effects {
+		e := &effects[i]
 		switch {
 		case a.Kind == ActFloop && e.Kind == card.KindFloop:
 			return e
@@ -57,7 +57,7 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 	if err != nil {
 		return err
 	}
-	e := abilityEffect(src.card, a)
+	e := abilityEffect(src.effects, a)
 	if e == nil {
 		return ErrNoAbility
 	}
@@ -82,7 +82,7 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 // doAbility pays the cost of a validated ability and resolves it.
 func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	src, _ := g.abilitySource(p, a)
-	e := abilityEffect(src.card, a)
+	e := abilityEffect(src.effects, a)
 	kind := EvActivate
 	if a.Kind == ActFloop {
 		*src.status = Flooped
@@ -111,7 +111,7 @@ func (g *Game) abilityActions(p PlayerID) []Action {
 				continue
 			}
 			activate := 0
-			for _, e := range src.card.Effects {
+			for _, e := range src.effects {
 				a := Action{Lane: lane, Source: source}
 				switch e.Kind {
 				case card.KindFloop:
