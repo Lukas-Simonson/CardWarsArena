@@ -157,6 +157,10 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 		ev = append(ev, g.doPlay(p, a)...)
 	case ActDraw:
 		ev = append(ev, g.doDraw(p)...)
+	case ActEndMain:
+		ev = append(ev, g.doEndMain(p)...)
+	case ActAttack:
+		ev = append(ev, g.doAttack(p, a)...)
 	}
 	if g.State.Phase == PhaseMulligan && g.State.Players[0].Kept && g.State.Players[1].Kept {
 		ev = append(ev, g.startTurn(g.State.First)...)
@@ -190,6 +194,10 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 		return g.validatePlay(p, a)
 	case ActDraw:
 		return g.validateDraw(p)
+	case ActEndMain:
+		return g.validateEndMain(p)
+	case ActAttack:
+		return g.validateAttack(p, a)
 	}
 	return ErrUnknownAction
 }
