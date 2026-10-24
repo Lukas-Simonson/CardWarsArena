@@ -98,7 +98,8 @@ export const isKnownAction = (ctx, a) => !describeAction(ctx, a).startsWith("(un
 /** One line for the game log, as seen by this seat. */
 export function describeEvent(ctx, e) {
   const who = seatName(ctx, e.player);
-  const n = () => instName(ctx, e.card);
+  // The server names publicly revealed cards; fall back to what we have seen.
+  const n = () => (e.card_id ? cardName(ctx, e.card_id) : instName(ctx, e.card));
   switch (e.kind) {
     case "mulligan": return `${who} takes a mulligan`;
     case "keep_hand": return `${who} keeps their hand`;
