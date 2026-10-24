@@ -11,7 +11,8 @@ sent and asks for actions the view says are legal.
   `-origins` (e.g. `localhost:*`). Non-browser clients send no `Origin` and are
   always allowed.
 - Each connection is rate limited (default burst 40, 20 messages/s). A
-  `rate_limited` error means the message was dropped: resend it.
+  `rate_limited` error means the message was dropped: resend it. A client that
+  keeps flooding (25 refused messages in a row) is disconnected.
 - The server pings every 30 s; use any WebSocket library's default pong.
 
 Plain HTTP endpoints:
