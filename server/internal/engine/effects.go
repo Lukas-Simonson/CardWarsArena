@@ -12,6 +12,7 @@ type effCtx struct {
 	at       pos       // where the source card sits (only if hasSrc)
 	hasSrc   bool      // false for Spells
 	creature *Creature // the source, when it is a Creature
+	playing  int       // UID of the card being played (not a legal hand_card choice)
 }
 
 func (c effCtx) source() source { return source{pos: c.at, creature: c.creature} }
@@ -29,6 +30,15 @@ func sidesFor(side string, p PlayerID) []PlayerID {
 // candidates lists every legal choice for one target slot.
 func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
 	var out []TargetRef
+	if spec.What == "hand_card" {
+		// Only ever the controller's own hand (discard costs).
+		for _, in := range g.State.Players[c.p].Hand {
+			if in.UID != c.playing {
+				out = append(out, TargetRef{Kind: spec.What, Player: c.p, Card: in.UID})
+			}
+		}
+		return out
+	}
 	if spec.What == "discard_card" {
 		for _, p := range sidesFor(spec.Side, c.p) {
 			for _, in := range g.State.Players[p].Discard {
@@ -289,7 +299,19 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "move_creature":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
 			if len(from) == 1 && len(to) == 1 {
-				ev = append(ev, g.moveCreature(pos{from[0].Player, from[0].Lane}, to[0].Lane)...)
+				ev = append(ev, g.moveCreature(pos{from[0].Player, from[0].Lane}, pos{to[0].Player, to[0].Lane})...)
+			}
+		case "discard":
+			for _, r := range slotRefs(op.Slot, given) {
+				pl := &g.State.Players[r.Player]
+				for i, in := range pl.Hand {
+					if in.UID == r.Card {
+						pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
+						g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+						ev = append(ev, Event{Kind: EvDiscard, Player: r.Player, Card: in.UID})
+						break
+					}
+				}
 			}
 		case "move_building":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
@@ -402,18 +424,25 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 	return append(ev, g.fire(card.OnLeavePlay, ctx, cr.Instance, nil)...)
 }
 
-// moveCreature moves a Creature to an empty Lane on its controller's side.
-func (g *Game) moveCreature(from pos, lane int) []Event {
-	pl := &g.State.Players[from.P]
-	cr := pl.Lanes[from.Lane].Creature
-	if cr == nil || lane == from.Lane || pl.Lanes[lane].Creature != nil {
+// moveCreature moves a Creature to an empty Lane. Within one side that is a
+// plain Lane change; onto the other player's side it changes control: the
+// Creature stays owned by its owner but is now exhausted until its new
+// controller's next turn (Field Reaper).
+func (g *Game) moveCreature(from, to pos) []Event {
+	src := &g.State.Players[from.P].Lanes[from.Lane]
+	dst := &g.State.Players[to.P].Lanes[to.Lane]
+	cr := src.Creature
+	if cr == nil || dst.Creature != nil || src == dst {
 		return nil
 	}
-	pl.Lanes[from.Lane].Creature = nil
-	pl.Lanes[lane].Creature = cr
+	src.Creature = nil
+	dst.Creature = cr
 	cr.ChangedLanes = true
-	ev := []Event{{Kind: EvMove, Player: from.P, Card: cr.UID, Lane: lane}}
-	ctx := effCtx{p: from.P, at: pos{from.P, lane}, hasSrc: true, creature: cr}
+	if from.P != to.P {
+		cr.Status = Fought
+	}
+	ev := []Event{{Kind: EvMove, Player: to.P, Card: cr.UID, Lane: to.Lane}}
+	ctx := effCtx{p: to.P, at: to, hasSrc: true, creature: cr}
 	return append(ev, g.fire(card.OnChangeLanes, ctx, cr.Instance, nil)...)
 }
 

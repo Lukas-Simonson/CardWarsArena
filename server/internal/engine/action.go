@@ -29,6 +29,9 @@ type Action struct {
 	// activated abilities.
 	Source string `json:"source,omitempty"`
 	Index  int    `json:"index,omitempty"`
+	// CostTargets holds the choices for the card's additional cost, such as
+	// which card to discard.
+	CostTargets [][]TargetRef `json:"cost_targets,omitempty"`
 	// Targets holds one list of choices per target slot of the effect being
 	// used (the Spell, enter-play trigger, Floop or activated ability).
 	Targets [][]TargetRef `json:"targets,omitempty"`
@@ -81,6 +84,7 @@ const (
 	EvActions   EventKind = "actions"  // Actions were gained
 	EvFloop     EventKind = "floop"    // a card Flooped
 	EvActivate  EventKind = "activate" // an activated ability was used
+	EvDiscard   EventKind = "discard"  // a card was discarded from hand
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.

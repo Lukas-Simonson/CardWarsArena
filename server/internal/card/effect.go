@@ -30,6 +30,9 @@ const (
 	KindFloop    EffectKind = "floop"
 	KindActivate EffectKind = "activate"
 	KindSpell    EffectKind = "spell"
+	// KindAdditionalCost is paid when the card is played: its targets are
+	// chosen with the action and its ops (discard) run before the card does.
+	KindAdditionalCost EffectKind = "additional_cost"
 )
 
 // Trigger events (Effect.On).
@@ -127,7 +130,7 @@ var validOps = map[string]struct{ slots int }{
 	"draw": {0}, "damage_creature": {0}, "damage_hero": {0}, "mod_creature": {0},
 	"move_creature": {2}, "move_building": {2}, "flip_landscape": {1},
 	"ready_creature": {1}, "bounce": {1}, "destroy_building": {1},
-	"gain_actions": {0}, "return_from_discard": {0}, "put_on_deck": {1},
+	"gain_actions": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -180,12 +183,21 @@ func (e *Effect) Validate(t Type) error {
 		if t != Spell {
 			return fmt.Errorf("spell effect on a %s", t)
 		}
+	case KindAdditionalCost:
+		if t != Creature && t != Building && t != Spell {
+			return fmt.Errorf("additional costs belong to cards that are played")
+		}
+		for i, op := range e.Do {
+			if op.Do != "discard" {
+				return fmt.Errorf("additional cost op %d: only discard is supported, got %q", i, op.Do)
+			}
+		}
 	default:
 		return fmt.Errorf("unknown effect kind %q", e.Kind)
 	}
 	for i, ts := range e.Targets {
 		switch ts.What {
-		case "creature", "building", "landscape", "lane", "discard_card":
+		case "creature", "building", "landscape", "lane", "discard_card", "hand_card":
 		default:
 			return fmt.Errorf("target %d: unknown what %q", i, ts.What)
 		}

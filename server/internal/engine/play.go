@@ -91,6 +91,18 @@ func (g *Game) validatePlay(p PlayerID, a Action) error {
 	if err != nil {
 		return err
 	}
+	// An additional cost (Field Reaper discards a card) is chosen with the play.
+	if ce := costEffect(c); ce != nil {
+		usable, err := g.checkTargets(ce.Targets, a.CostTargets, effCtx{p: p, playing: a.Card})
+		if !usable {
+			return ErrNoTarget
+		}
+		if err != nil {
+			return err
+		}
+	} else if len(a.CostTargets) > 0 {
+		return ErrBadTarget
+	}
 	switch c.Type {
 	case card.Spell:
 		if e := spellEffect(c); e != nil {
@@ -162,7 +174,16 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	pl.Hand = append(pl.Hand[:idx:idx], pl.Hand[idx+1:]...)
 	c := g.Card(in)
 	g.State.ActionsLeft -= *c.Cost
+	var costEv []Event
+	if ce := costEffect(c); ce != nil {
+		costEv = g.runOps(ce.Do, effCtx{p: p, playing: a.Card}, a.CostTargets)
+	}
+	return append(costEv, g.resolvePlay(p, in, c, a)...)
+}
 
+// resolvePlay puts a paid-for card into play, or resolves a Spell.
+func (g *Game) resolvePlay(p PlayerID, in Instance, c *card.Card, a Action) []Event {
+	pl := &g.State.Players[p]
 	if c.Type == card.Spell {
 		// Spells never enter play: resolve, then discard. The Spell counts as
 		// played before it resolves (Woadic Chief counts it) but is not in the
@@ -184,6 +205,16 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 func spellEffect(c *card.Card) *card.Effect {
 	for i := range c.Effects {
 		if c.Effects[i].Kind == card.KindSpell {
+			return &c.Effects[i]
+		}
+	}
+	return nil
+}
+
+// costEffect returns a card's additional cost, if it has one.
+func costEffect(c *card.Card) *card.Effect {
+	for i := range c.Effects {
+		if c.Effects[i].Kind == card.KindAdditionalCost {
 			return &c.Effects[i]
 		}
 	}

@@ -43,37 +43,53 @@ const maxTargetCombos = 64
 // spellActions proposes the plays of a Spell, one per target choice.
 func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
 	e := spellEffect(c)
-	if e == nil || len(e.Targets) == 0 {
-		return []Action{{Kind: ActPlayCard, Card: in.UID}}
+	choices := [][][]TargetRef{nil}
+	if e != nil && len(e.Targets) > 0 {
+		choices = g.targetCombos(e.Targets, effCtx{p: p}, maxTargetCombos)
 	}
 	var out []Action
-	for _, targets := range g.targetCombos(e.Targets, effCtx{p: p}, maxTargetCombos) {
-		out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Targets: targets})
+	for _, cost := range g.costChoices(p, in) {
+		for _, targets := range choices {
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets})
+		}
 	}
 	return out
 }
 
+// costChoices lists the ways to pay a card's additional cost; a card with no
+// additional cost has the single choice of paying nothing.
+func (g *Game) costChoices(p PlayerID, in Instance) [][][]TargetRef {
+	ce := costEffect(g.Card(in))
+	if ce == nil {
+		return [][][]TargetRef{nil}
+	}
+	return g.targetCombos(ce.Targets, effCtx{p: p, playing: in.UID}, maxTargetCombos)
+}
+
 // laneActions proposes the plays of a Creature or Building into one Lane, one
-// per target choice of its enter-play trigger.
+// per choice of additional cost and enter-play target.
 func (g *Game) laneActions(p PlayerID, in Instance, lane int) []Action {
-	plain := Action{Kind: ActPlayCard, Card: in.UID, Lane: lane}
+	costs := g.costChoices(p, in)
+	if len(costs) == 0 {
+		return []Action{{Kind: ActPlayCard, Card: in.UID, Lane: lane}} // cannot pay; Validate says why
+	}
 	e := enterEffect(g.Card(in))
-	if e == nil || len(e.Targets) == 0 {
-		return []Action{plain}
-	}
-	if _, _, err := g.checkPlayable(p, plain); err != nil {
-		return []Action{plain} // not playable anyway; Validate will say why
-	}
-	h := g.Clone()
-	h.place(p, in, lane)
-	ctx := h.placedCtx(p, lane)
-	combos := h.targetCombos(e.Targets, ctx, maxTargetCombos)
-	if len(combos) == 0 {
-		return []Action{plain} // nothing to target: the trigger does nothing
+	triggerChoices := [][][]TargetRef{nil}
+	if e != nil && len(e.Targets) > 0 {
+		plain := Action{Kind: ActPlayCard, Card: in.UID, Lane: lane}
+		if _, _, err := g.checkPlayable(p, plain); err == nil {
+			h := g.Clone()
+			h.place(p, in, lane)
+			if combos := h.targetCombos(e.Targets, h.placedCtx(p, lane), maxTargetCombos); len(combos) > 0 {
+				triggerChoices = combos // otherwise nothing to target: the trigger does nothing
+			}
+		}
 	}
 	var out []Action
-	for _, targets := range combos {
-		out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, Targets: targets})
+	for _, cost := range costs {
+		for _, targets := range triggerChoices {
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets})
+		}
 	}
 	return out
 }
