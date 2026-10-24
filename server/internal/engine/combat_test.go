@@ -21,7 +21,7 @@ func midGame(t *testing.T) *Game {
 
 func (g *Game) put(p PlayerID, lane int, id string) *Creature {
 	g.State.NextUID++
-	c := &Creature{Instance: Instance{UID: g.State.NextUID, CardID: id}, Status: Ready}
+	c := &Creature{Instance: Instance{UID: g.State.NextUID, CardID: id, Owner: p}, Status: Ready}
 	g.State.Players[p].Lanes[lane].Creature = c
 	return c
 }
@@ -258,5 +258,42 @@ func TestGameOverIsAnnouncedOnce(t *testing.T) {
 	}
 	if n != 1 {
 		t.Errorf("game_over events = %d, want 1", n)
+	}
+}
+
+func TestDeadCreatureGoesToItsOwnersDiscardNotItsControllers(t *testing.T) {
+	// Glossary: "If you have control of one of your opponent's cards and it
+	// dies, it goes to your opponent's discard pile, not yours."
+	g := midGame(t)
+	stolen := g.put(1, 0, "Grunt")
+	stolen.Owner = 0 // player 1 controls a card from player 0's deck
+	stolen.Damage = 2
+	g.put(0, 0, "Brute")
+	g.must(t, 1, endMain)
+	g.must(t, 1, attack(0)) // the Brute deals 4 to it
+	if len(g.State.Players[0].Discard) != 1 || g.State.Players[0].Discard[0].UID != stolen.UID {
+		t.Errorf("owner's discard = %+v", g.State.Players[0].Discard)
+	}
+	if len(g.State.Players[1].Discard) != 0 {
+		t.Errorf("controller's discard = %+v", g.State.Players[1].Discard)
+	}
+}
+
+func TestReplacedAndBouncedCreaturesGoToTheirOwner(t *testing.T) {
+	g := realGame(t)
+	foreign := g.put(1, 0, "cool-dog")
+	foreign.Owner = 0
+	g.enter(t, 1, "evil-eye", 0) // replace it
+	if d := g.State.Players[0].Discard; len(d) != 1 || d[0].UID != foreign.UID {
+		t.Errorf("replaced Creature should be in its owner's discard: %+v", d)
+	}
+	g2 := realGame(t)
+	g2.State.Active = 0
+	b := g2.put(1, 0, "cool-dog")
+	b.Owner = 0
+	hand := len(g2.State.Players[0].Hand)
+	g2.removeCreature(pos{1, 0}, toHand)
+	if len(g2.State.Players[0].Hand) != hand+1 {
+		t.Error("a bounced Creature returns to its owner's hand")
 	}
 }

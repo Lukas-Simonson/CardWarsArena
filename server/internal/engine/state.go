@@ -40,6 +40,10 @@ const (
 type Instance struct {
 	UID    int    `json:"uid"`
 	CardID string `json:"card"`
+	// Owner is the player whose deck the card came from. Discarded or
+	// returned cards always go to their owner, even when someone else
+	// controls them (a Creature controlled by the player whose side it is on).
+	Owner PlayerID `json:"owner"`
 }
 
 // Creature is a Creature in play.

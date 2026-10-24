@@ -51,31 +51,37 @@ func strictStarterGame(t testing.TB, seed uint64) *Game {
 	return g
 }
 
-// checkInvariants returns a description of the first broken invariant.
+// checkInvariants returns a description of the first broken invariant. total
+// is how many cards each player owned at the start.
 func (g *Game) checkInvariants(total [2]int) error {
 	st := &g.State
 	seen := map[int]bool{}
+	owned := [2]int{}
+	count := func(in Instance, where string) error {
+		if seen[in.UID] {
+			return fmt.Errorf("uid %d appears twice (%s)", in.UID, where)
+		}
+		seen[in.UID] = true
+		owned[in.Owner]++
+		return nil
+	}
 	for p := range st.Players {
 		pl := &st.Players[p]
-		n := 0
-		count := func(in Instance) error {
-			n++
-			if seen[in.UID] {
-				return fmt.Errorf("uid %d appears twice", in.UID)
-			}
-			seen[in.UID] = true
-			return nil
-		}
-		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard} {
+		for name, list := range map[string][]Instance{"deck": pl.Deck, "hand": pl.Hand, "discard": pl.Discard} {
 			for _, in := range list {
-				if err := count(in); err != nil {
+				if err := count(in, name); err != nil {
 					return err
 				}
 			}
 		}
+		for _, in := range pl.Discard {
+			if in.Owner != PlayerID(p) {
+				return fmt.Errorf("player %d discard holds a card owned by player %d", p, in.Owner)
+			}
+		}
 		for i, l := range pl.Lanes {
 			if l.Creature != nil {
-				if err := count(l.Creature.Instance); err != nil {
+				if err := count(l.Creature.Instance, "creature"); err != nil {
 					return err
 				}
 				if l.Creature.Damage >= g.def(pos{PlayerID(p), i}) {
@@ -86,13 +92,10 @@ func (g *Game) checkInvariants(total [2]int) error {
 				}
 			}
 			if l.Building != nil {
-				if err := count(l.Building.Instance); err != nil {
+				if err := count(l.Building.Instance, "building"); err != nil {
 					return err
 				}
 			}
-		}
-		if n != total[p] {
-			return fmt.Errorf("player %d has %d cards, started with %d", p, n, total[p])
 		}
 		if pl.HP > StartingHP {
 			return fmt.Errorf("player %d HP %d above start", p, pl.HP)
@@ -100,6 +103,9 @@ func (g *Game) checkInvariants(total [2]int) error {
 		if st.Phase != PhaseOver && pl.HP <= 0 {
 			return fmt.Errorf("player %d at %d HP but game not over", p, pl.HP)
 		}
+	}
+	if owned != total {
+		return fmt.Errorf("cards by owner %v, started with %v", owned, total)
 	}
 	if st.ActionsLeft < 0 { // effects such as Ancient Scholar can grant extra Actions
 		return fmt.Errorf("actions left %d", st.ActionsLeft)
@@ -121,7 +127,7 @@ func playRandomSeen(t testing.TB, g *Game, rng *rand.Rand, maxActions int, seen 
 	t.Helper()
 	var total [2]int
 	for p := range total {
-		total[p] = g.cardCount(PlayerID(p))
+		total[p] = g.ownedCount(PlayerID(p))
 	}
 	for n := 0; n < maxActions; n++ {
 		if g.State.Phase == PhaseOver {

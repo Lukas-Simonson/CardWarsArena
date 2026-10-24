@@ -55,7 +55,7 @@ func NewGame(cat card.Catalog, cfg Config, decks [2]DeckSpec) (*Game, error) {
 			pl.Lanes[i].Landscape = ls
 		}
 		for _, id := range decks[p].Cards {
-			pl.Deck = append(pl.Deck, g.newInstance(id))
+			pl.Deck = append(pl.Deck, g.newInstance(id, PlayerID(p)))
 		}
 		g.shuffle(pl.Deck)
 		g.draw(PlayerID(p), StartingHand)
@@ -118,9 +118,9 @@ func (g *Game) Clone() *Game {
 // Card returns the catalog entry for an instance.
 func (g *Game) Card(i Instance) *card.Card { return g.cat[i.CardID] }
 
-func (g *Game) newInstance(id string) Instance {
+func (g *Game) newInstance(id string, owner PlayerID) Instance {
 	g.State.NextUID++
-	return Instance{UID: g.State.NextUID, CardID: id}
+	return Instance{UID: g.State.NextUID, CardID: id, Owner: owner}
 }
 
 func (g *Game) shuffle(s []Instance) {

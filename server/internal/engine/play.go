@@ -134,7 +134,7 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 	var ev []Event
 	if g.Card(in).Type == card.Building {
 		if old := lane.Building; old != nil {
-			pl.Discard = append(pl.Discard, old.Instance)
+			g.State.Players[old.Owner].Discard = append(g.State.Players[old.Owner].Discard, old.Instance)
 			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
 		}
 		lane.Building = &Building{Instance: in, Status: Ready}

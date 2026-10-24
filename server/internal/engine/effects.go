@@ -306,7 +306,7 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			for _, r := range slotRefs(op.Slot, given) {
 				l := &g.State.Players[r.Player].Lanes[r.Lane]
 				if b := l.Building; b != nil {
-					g.State.Players[r.Player].Discard = append(g.State.Players[r.Player].Discard, b.Instance)
+					g.State.Players[b.Owner].Discard = append(g.State.Players[b.Owner].Discard, b.Instance)
 					l.Building = nil
 					ev = append(ev, Event{Kind: EvDestroy, Player: r.Player, Card: b.UID, Lane: r.Lane})
 				}
@@ -389,14 +389,14 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 		return nil
 	}
 	l.Creature = nil
-	pl := &g.State.Players[at.P]
+	owner := &g.State.Players[cr.Owner]
 	var ev []Event
 	switch to {
 	case toHand:
-		pl.Hand = append(pl.Hand, cr.Instance)
-		ev = append(ev, Event{Kind: EvBounce, Player: at.P, Card: cr.UID, Lane: at.Lane})
+		owner.Hand = append(owner.Hand, cr.Instance)
+		ev = append(ev, Event{Kind: EvBounce, Player: cr.Owner, Card: cr.UID, Lane: at.Lane})
 	default:
-		pl.Discard = append(pl.Discard, cr.Instance)
+		owner.Discard = append(owner.Discard, cr.Instance)
 	}
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
 	return append(ev, g.fire(card.OnLeavePlay, ctx, cr.Instance, nil)...)
