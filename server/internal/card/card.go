@@ -65,3 +65,9 @@ type Card struct {
 	// effect model exists; the engine must not guess from Text.
 	Effects []map[string]any `json:"effects,omitempty"`
 }
+
+// Implemented reports whether the engine can play this card correctly: it has
+// no rules text beyond its stats, or its text has been modelled in Effects.
+func (c *Card) Implemented() bool {
+	return c.Text == "" || len(c.Effects) > 0
+}
