@@ -61,13 +61,15 @@ type Card struct {
 	Printings []Printing  `json:"printings,omitempty"`
 	ImageURL  string      `json:"image_url,omitempty"`
 
-	// Effects is the machine-readable rules for the card. Empty until the
-	// effect model exists; the engine must not guess from Text.
-	Effects []map[string]any `json:"effects,omitempty"`
+	// Effects and Modeled come from data/effects, not from the card files.
+	// Modeled means someone has written down this card's rules (possibly none).
+	// The engine must never guess rules from Text.
+	Effects []Effect `json:"-"`
+	Modeled bool     `json:"-"`
 }
 
 // Implemented reports whether the engine can play this card correctly: it has
-// no rules text beyond its stats, or its text has been modelled in Effects.
+// no rules text beyond its stats, or its rules have been modelled.
 func (c *Card) Implemented() bool {
-	return c.Text == "" || len(c.Effects) > 0
+	return c.Text == "" || c.Modeled
 }

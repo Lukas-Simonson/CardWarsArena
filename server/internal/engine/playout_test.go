@@ -12,7 +12,7 @@ import (
 // catalog. Their rules text is not modelled yet, so it is ignored.
 func starterGame(t testing.TB, seed uint64) *Game {
 	t.Helper()
-	cat, err := card.LoadDir("../../data/cards")
+	cat, err := card.Load("../../data")
 	if err != nil {
 		t.Fatal(err)
 	}
