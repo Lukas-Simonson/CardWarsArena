@@ -241,3 +241,23 @@ func (g *Game) attackable(target pos) bool {
 	})
 	return ok
 }
+
+// Attack and Defense are the current ATK and DEF of p's Creature in a Lane
+// (0 if there is none), after all modifiers. For display and tooling.
+func (g *Game) Attack(p PlayerID, lane int) int {
+	if g.creatureAt(pos{p, lane}) == nil {
+		return 0
+	}
+	return g.atk(pos{p, lane})
+}
+
+func (g *Game) Defense(p PlayerID, lane int) int {
+	if g.creatureAt(pos{p, lane}) == nil {
+		return 0
+	}
+	return g.def(pos{p, lane})
+}
+
+// CanBeAttacked reports whether the Creature in p's Lane is currently
+// protected from Fights (Cool Dog).
+func (g *Game) CanBeAttacked(p PlayerID, lane int) bool { return g.attackable(pos{p, lane}) }
