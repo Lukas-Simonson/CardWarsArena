@@ -162,6 +162,8 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 	case ActAttack:
 		ev = append(ev, g.doAttack(p, a)...)
 	}
+	// State-based rules hold after every action, not just after combat.
+	ev = append(ev, g.settle()...)
 	if g.State.Phase == PhaseMulligan && g.State.Players[0].Kept && g.State.Players[1].Kept {
 		ev = append(ev, g.startTurn(g.State.First)...)
 	}

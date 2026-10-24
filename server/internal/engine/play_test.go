@@ -188,3 +188,18 @@ func TestDrawFromEmptyDeck(t *testing.T) {
 		t.Error("running out of cards must not end the game")
 	}
 }
+
+func TestZeroDefCreatureDiesOnEntry(t *testing.T) {
+	// State-based rules apply after every action, not only after combat.
+	g := newTestGame(t, 0, []string{"Free Rat"}, nil)
+	g.start(t)
+	g.State.Players[0].Hand[g.handIndex(0, g.uid(t, 0, "Free Rat"))].CardID = "Free Rat"
+	g.Card(Instance{CardID: "Free Rat"}).Defense = ip(0)
+	g.play(t, 0, "Free Rat", 0)
+	if g.State.Players[0].Lanes[0].Creature != nil {
+		t.Error("a Creature with damage >= DEF must be discarded")
+	}
+	if len(g.State.Players[0].Discard) != 1 {
+		t.Errorf("discard = %+v", g.State.Players[0].Discard)
+	}
+}
