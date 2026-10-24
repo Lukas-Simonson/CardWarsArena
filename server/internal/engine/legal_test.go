@@ -75,3 +75,22 @@ func TestLegalActionsGameOver(t *testing.T) {
 		t.Errorf("%d actions after game over", n)
 	}
 }
+
+func TestAwaiting(t *testing.T) {
+	g := newTestGame(t, 0, nil, nil)
+	if got := g.Awaiting(); len(got) != 2 {
+		t.Errorf("mulligan: %v", got)
+	}
+	g.must(t, 0, Action{Kind: ActKeepHand})
+	if got := g.Awaiting(); len(got) != 1 || got[0] != 1 {
+		t.Errorf("after player 0 decides: %v", got)
+	}
+	g.must(t, 1, Action{Kind: ActKeepHand})
+	if got := g.Awaiting(); len(got) != 1 || got[0] != 0 {
+		t.Errorf("main phase: %v", got)
+	}
+	g.State.Phase = PhaseOver
+	if got := g.Awaiting(); len(got) != 0 {
+		t.Errorf("over: %v", got)
+	}
+}

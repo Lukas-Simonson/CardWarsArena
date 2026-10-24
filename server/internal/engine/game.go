@@ -250,3 +250,23 @@ func (g *Game) startTurn(p PlayerID) []Event {
 	}
 	return append(ev, g.fireTurnStart(p)...)
 }
+
+// Awaiting lists the players who must make a decision now: both undecided
+// players during the mulligan phase, otherwise the active player. It is empty
+// when the game is over.
+func (g *Game) Awaiting() []PlayerID {
+	st := &g.State
+	switch {
+	case st.Phase == PhaseOver:
+		return nil
+	case st.Phase == PhaseMulligan:
+		var out []PlayerID
+		for p := PlayerID(0); p < 2; p++ {
+			if !st.Players[p].Kept {
+				out = append(out, p)
+			}
+		}
+		return out
+	}
+	return []PlayerID{st.Active}
+}

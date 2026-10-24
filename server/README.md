@@ -5,11 +5,15 @@ Go rules engine, card data and tooling for the Adventure Time Card Wars web port
 ```
 cmd/cardimport   convert the raw card dump into data/cards
 cmd/cardwars     interactive terminal client (play and test)
+cmd/cardwarsd    WebSocket game server (rooms, bot opponent)
 internal/card    card model, effect schema, catalog loader
 internal/engine  the rules engine (pure, deterministic)
 internal/bot     weighted-random computer player
+internal/decks   finds preconstructed decks in the card data
+internal/view    what one seat may see of a game (hidden information)
+internal/server  rooms, protocol, WebSocket handling
 data/            raw dump, generated cards, hand-written effects
-docs/            design notes (effects.md)
+docs/            design notes (effects.md) and the client protocol (protocol.md)
 ```
 
 ## Playing in the terminal
@@ -46,6 +50,16 @@ substring. `u` undoes sandbox edits too.
 
 Decks other than the two CP1 starters contain cards whose rules are not modelled
 yet; `--allow-unmodelled` plays them with their text ignored.
+
+## Running the server
+
+```
+go run ./cmd/cardwarsd                 # then open http://localhost:8080/
+```
+
+The page at `/` is a debug client: play against the bot, or open it in two
+browsers to play yourself (Create room / Join). The client protocol is in
+`docs/protocol.md`.
 
 ## Development
 
