@@ -398,7 +398,8 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 	default:
 		pl.Discard = append(pl.Discard, cr.Instance)
 	}
-	return ev
+	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
+	return append(ev, g.fire(card.OnLeavePlay, ctx, cr.Instance, nil)...)
 }
 
 // moveCreature moves a Creature to an empty Lane on its controller's side.
@@ -411,7 +412,9 @@ func (g *Game) moveCreature(from pos, lane int) []Event {
 	pl.Lanes[from.Lane].Creature = nil
 	pl.Lanes[lane].Creature = cr
 	cr.ChangedLanes = true
-	return []Event{{Kind: EvMove, Player: from.P, Card: cr.UID, Lane: lane}}
+	ev := []Event{{Kind: EvMove, Player: from.P, Card: cr.UID, Lane: lane}}
+	ctx := effCtx{p: from.P, at: pos{from.P, lane}, hasSrc: true, creature: cr}
+	return append(ev, g.fire(card.OnChangeLanes, ctx, cr.Instance, nil)...)
 }
 
 // moveBuilding moves a Building to a Lane on its controller's side that has none.

@@ -450,5 +450,131 @@
         }
       ]
     }
+  ],
+  "cornataur": [
+    {
+      "kind": "trigger",
+      "on": "enter_play",
+      "do": [
+        {
+          "do": "damage_hero",
+          "who": "opponent",
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "husker-worm": [
+    {
+      "kind": "trigger",
+      "on": "enter_play",
+      "targets": [
+        {
+          "what": "landscape",
+          "side": "you",
+          "landscape": "cornfield"
+        }
+      ],
+      "do": [
+        {
+          "do": "flip_landscape",
+          "slot": 0,
+          "face": "down"
+        }
+      ]
+    }
+  ],
+  "legion-of-earlings": [
+    {
+      "kind": "trigger",
+      "on": "enter_play",
+      "targets": [
+        {
+          "what": "creature",
+          "in_lane": true,
+          "optional": true
+        }
+      ],
+      "do": [
+        {
+          "do": "bounce",
+          "slot": 0
+        }
+      ]
+    }
+  ],
+  "psionic-architect": [
+    {
+      "kind": "trigger",
+      "on": "enter_play",
+      "targets": [
+        {
+          "what": "creature",
+          "side": "you",
+          "flooped": true,
+          "optional": true
+        }
+      ],
+      "do": [
+        {
+          "do": "ready_creature",
+          "slot": 0
+        }
+      ]
+    }
+  ],
+  "travelin-farmer": [
+    {
+      "kind": "trigger",
+      "on": "leave_play",
+      "do": [
+        {
+          "do": "damage_hero",
+          "who": "opponent",
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "opponent_hand"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "field-stalker": [
+    {
+      "kind": "trigger",
+      "on": "turn_start",
+      "do": [
+        {
+          "do": "draw",
+          "who": "each",
+          "amount": {
+            "n": 1
+          }
+        }
+      ]
+    }
+  ],
+  "woadic-marauder": [
+    {
+      "kind": "trigger",
+      "on": "change_lanes",
+      "do": [
+        {
+          "do": "draw",
+          "who": "you",
+          "amount": {
+            "n": 1
+          }
+        }
+      ]
+    }
   ]
 }

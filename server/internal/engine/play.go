@@ -55,46 +55,103 @@ func (g *Game) canAfford(p PlayerID, c *card.Card) error {
 	return nil
 }
 
-func (g *Game) validatePlay(p PlayerID, a Action) error {
+// checkPlayable runs every check on a play except target choices.
+func (g *Game) checkPlayable(p PlayerID, a Action) (Instance, *card.Card, error) {
 	if err := g.requireMain(p); err != nil {
-		return err
+		return Instance{}, nil, err
 	}
 	idx := g.handIndex(p, a.Card)
 	if idx < 0 {
-		return ErrNoSuchCard
+		return Instance{}, nil, ErrNoSuchCard
 	}
-	c := g.Card(g.State.Players[p].Hand[idx])
+	in := g.State.Players[p].Hand[idx]
+	c := g.Card(in)
 	switch c.Type {
 	case card.Creature, card.Building, card.Spell:
 	default:
-		return ErrNotPlayable
+		return in, c, ErrNotPlayable
 	}
-	if c.Type != card.Spell {
-		if a.Lane < 0 || a.Lane >= NumLanes {
-			return ErrBadLane
-		}
+	if c.Type != card.Spell && (a.Lane < 0 || a.Lane >= NumLanes) {
+		return in, c, ErrBadLane
 	}
 	if err := g.canAfford(p, c); err != nil {
+		return in, c, err
+	}
+	if c.Type == card.Creature {
+		// A Flooped Creature must be Ready before it can be replaced.
+		if old := g.State.Players[p].Lanes[a.Lane].Creature; old != nil && old.Status == Flooped {
+			return in, c, ErrFlooped
+		}
+	}
+	return in, c, nil
+}
+
+func (g *Game) validatePlay(p PlayerID, a Action) error {
+	in, c, err := g.checkPlayable(p, a)
+	if err != nil {
 		return err
 	}
-	if c.Type == card.Spell {
+	switch c.Type {
+	case card.Spell:
 		if e := spellEffect(c); e != nil {
 			usable, err := g.checkTargets(e.Targets, a.Targets, effCtx{p: p})
 			if !usable {
 				return ErrNoTarget
 			}
-			if err != nil {
-				return err
+			return err
+		}
+	default:
+		e := enterEffect(c)
+		if e == nil || len(e.Targets) == 0 {
+			if len(a.Targets) > 0 {
+				return ErrBadTarget
 			}
+			return nil
 		}
+		// Targets are judged against the board as it will be once the card
+		// is placed (a replaced Creature is already gone).
+		h := g.Clone()
+		h.place(p, in, a.Lane)
+		usable, err := h.checkTargets(e.Targets, a.Targets, h.placedCtx(p, a.Lane))
+		if !usable {
+			if len(a.Targets) > 0 {
+				return ErrBadTarget
+			}
+			return nil // the trigger will simply do nothing
+		}
+		return err
 	}
-	if c.Type == card.Creature {
-		// A Flooped Creature must be Ready before it can be replaced.
-		if old := g.State.Players[p].Lanes[a.Lane].Creature; old != nil && old.Status == Flooped {
-			return ErrFlooped
-		}
+	if len(a.Targets) > 0 {
+		return ErrBadTarget
 	}
 	return nil
+}
+
+// place puts a Creature or Building into a Lane of p, replacing what is there.
+func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
+	pl := &g.State.Players[p]
+	lane := &pl.Lanes[laneIdx]
+	var ev []Event
+	if g.Card(in).Type == card.Building {
+		if old := lane.Building; old != nil {
+			pl.Discard = append(pl.Discard, old.Instance)
+			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
+		}
+		lane.Building = &Building{Instance: in, Status: Ready}
+		return ev
+	}
+	if old := lane.Creature; old != nil {
+		// Replaced Creatures go to their owner's discard; damage is dropped.
+		ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
+		ev = append(ev, g.removeCreature(pos{p, laneIdx}, toDiscard)...)
+	}
+	lane.Creature = &Creature{Instance: in, Status: Ready}
+	return ev
+}
+
+// placedCtx is the effect context for the card most recently placed in a Lane.
+func (g *Game) placedCtx(p PlayerID, lane int) effCtx {
+	return effCtx{p: p, at: pos{p, lane}, hasSrc: true, creature: g.creatureAt(pos{p, lane})}
 }
 
 // doPlay pays for and plays a validated card.
@@ -106,28 +163,11 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	c := g.Card(in)
 	g.State.ActionsLeft -= *c.Cost
 
-	var ev []Event
-	switch c.Type {
-	case card.Creature:
-		lane := &pl.Lanes[a.Lane]
-		if old := lane.Creature; old != nil {
-			// Replaced Creatures go to their owner's discard; damage is dropped.
-			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: a.Lane})
-			ev = append(ev, g.removeCreature(pos{p, a.Lane}, toDiscard)...)
-		}
-		lane.Creature = &Creature{Instance: in, Status: Ready}
-	case card.Building:
-		lane := &pl.Lanes[a.Lane]
-		if old := lane.Building; old != nil {
-			pl.Discard = append(pl.Discard, old.Instance)
-			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: a.Lane})
-		}
-		lane.Building = &Building{Instance: in, Status: Ready}
-	case card.Spell:
+	if c.Type == card.Spell {
 		// Spells never enter play: resolve, then discard. The Spell counts as
 		// played before it resolves (Woadic Chief counts it) but is not in the
 		// discard pile while it does.
-		ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID})
+		ev := []Event{{Kind: EvPlay, Player: p, Card: in.UID}}
 		g.State.SpellsThisTurn++
 		if e := spellEffect(c); e != nil {
 			ev = append(ev, g.runOps(e.Do, effCtx{p: p, at: pos{p, 0}}, a.Targets)...)
@@ -135,13 +175,25 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 		pl.Discard = append(pl.Discard, in)
 		return ev
 	}
-	return append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: a.Lane})
+	ev := g.place(p, in, a.Lane)
+	ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: a.Lane})
+	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), in, a.Targets)...)
 }
 
 // spellEffect returns a Spell's resolution effect, if it has one.
 func spellEffect(c *card.Card) *card.Effect {
 	for i := range c.Effects {
 		if c.Effects[i].Kind == card.KindSpell {
+			return &c.Effects[i]
+		}
+	}
+	return nil
+}
+
+// enterEffect returns a card's enter-play trigger, if it has one.
+func enterEffect(c *card.Card) *card.Effect {
+	for i := range c.Effects {
+		if c.Effects[i].Kind == card.KindTrigger && c.Effects[i].On == card.OnEnterPlay {
 			return &c.Effects[i]
 		}
 	}

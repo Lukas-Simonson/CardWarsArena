@@ -165,6 +165,9 @@ func (e *Effect) Validate(t Type) error {
 		if t != Creature && t != Building {
 			return fmt.Errorf("triggers belong to creatures and buildings")
 		}
+		if len(e.Targets) > 0 && e.On != OnEnterPlay {
+			return fmt.Errorf("only enter_play triggers can have targets")
+		}
 	case KindFloop:
 		if t != Creature && t != Building {
 			return fmt.Errorf("floop belongs to creatures and buildings")

@@ -94,15 +94,20 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 }
 
 // settle applies state-based rules: Creatures with damage >= DEF are
-// discarded, and a player at 0 Hit Points loses.
+// discarded (repeating, since leaving play can trigger more damage), and a
+// player at 0 Hit Points loses.
 func (g *Game) settle() []Event {
 	var ev []Event
-	for p := range g.State.Players {
-		pl := &g.State.Players[p]
-		for i := range pl.Lanes {
-			if c := pl.Lanes[i].Creature; c != nil && c.Damage >= g.def(pos{PlayerID(p), i}) {
-				ev = append(ev, Event{Kind: EvDie, Player: PlayerID(p), Card: c.UID, Lane: i})
-				ev = append(ev, g.removeCreature(pos{PlayerID(p), i}, toDiscard)...) // owner's discard pile
+	for changed := true; changed; {
+		changed = false
+		for p := range g.State.Players {
+			for i := range g.State.Players[p].Lanes {
+				at := pos{PlayerID(p), i}
+				if c := g.creatureAt(at); c != nil && c.Damage >= g.def(at) {
+					ev = append(ev, Event{Kind: EvDie, Player: PlayerID(p), Card: c.UID, Lane: i})
+					ev = append(ev, g.removeCreature(at, toDiscard)...) // owner's discard pile
+					changed = true
+				}
 			}
 		}
 	}

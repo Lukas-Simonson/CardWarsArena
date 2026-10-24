@@ -237,5 +237,5 @@ func (g *Game) startTurn(p PlayerID) []Event {
 	for _, c := range g.draw(p, 1) {
 		ev = append(ev, Event{Kind: EvDraw, Player: p, Card: c.UID})
 	}
-	return ev
+	return append(ev, g.fireTurnStart(p)...)
 }

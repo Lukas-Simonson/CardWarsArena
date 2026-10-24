@@ -18,7 +18,7 @@ func (g *Game) LegalActions(p PlayerID) []Action {
 				continue
 			}
 			for lane := 0; lane < NumLanes; lane++ {
-				cands = append(cands, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane})
+				cands = append(cands, g.laneActions(p, in, lane)...)
 			}
 		}
 	case PhaseFight:
@@ -48,6 +48,31 @@ func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
 	var out []Action
 	for _, targets := range g.targetCombos(e.Targets, effCtx{p: p}, maxTargetCombos) {
 		out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Targets: targets})
+	}
+	return out
+}
+
+// laneActions proposes the plays of a Creature or Building into one Lane, one
+// per target choice of its enter-play trigger.
+func (g *Game) laneActions(p PlayerID, in Instance, lane int) []Action {
+	plain := Action{Kind: ActPlayCard, Card: in.UID, Lane: lane}
+	e := enterEffect(g.Card(in))
+	if e == nil || len(e.Targets) == 0 {
+		return []Action{plain}
+	}
+	if _, _, err := g.checkPlayable(p, plain); err != nil {
+		return []Action{plain} // not playable anyway; Validate will say why
+	}
+	h := g.Clone()
+	h.place(p, in, lane)
+	ctx := h.placedCtx(p, lane)
+	combos := h.targetCombos(e.Targets, ctx, maxTargetCombos)
+	if len(combos) == 0 {
+		return []Action{plain} // nothing to target: the trigger does nothing
+	}
+	var out []Action
+	for _, targets := range combos {
+		out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, Targets: targets})
 	}
 	return out
 }
