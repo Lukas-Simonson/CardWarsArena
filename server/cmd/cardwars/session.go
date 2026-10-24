@@ -13,6 +13,7 @@ import (
 
 	"cardwars/internal/bot"
 	"cardwars/internal/card"
+	"cardwars/internal/decks"
 	"cardwars/internal/engine"
 )
 
@@ -94,18 +95,18 @@ func newSession(o options, in io.Reader, out io.Writer) (*session, error) {
 		o.seed = uint64(time.Now().UnixNano())
 		s.opts.seed = o.seed
 	}
-	decks := findDecks(cat)
-	var picked [2]deckInfo
+	all := decks.Find(cat)
+	var picked [2]decks.Info
 	for i, q := range []string{o.deck0, o.deck1} {
-		d, err := pickDeck(decks, q)
+		d, err := decks.Pick(all, q)
 		if err != nil {
 			return nil, err
 		}
 		if !d.LandOK {
-			return nil, fmt.Errorf("%s: cannot tell its Landscapes from the deck name", d.key())
+			return nil, fmt.Errorf("%s: cannot tell its Landscapes from the deck name", d.Key())
 		}
 		if !o.allowUnmod && d.Modelled < d.Distinct {
-			return nil, fmt.Errorf("%s has cards whose rules are not modelled yet (%d of %d); use --allow-unmodelled to play with their text ignored", d.key(), d.Modelled, d.Distinct)
+			return nil, fmt.Errorf("%s has cards whose rules are not modelled yet (%d of %d); use --allow-unmodelled to play with their text ignored", d.Key(), d.Modelled, d.Distinct)
 		}
 		picked[i] = d
 	}
@@ -114,7 +115,7 @@ func newSession(o options, in io.Reader, out io.Writer) (*session, error) {
 		first = int(o.seed % 2)
 	}
 	g, err := engine.NewGame(cat, engine.Config{Seed: o.seed, First: engine.PlayerID(first), AllowUnimplemented: o.allowUnmod, SkipDeckRules: o.sandbox},
-		[2]engine.DeckSpec{{Landscapes: picked[0].Landscapes, Cards: picked[0].Cards}, {Landscapes: picked[1].Landscapes, Cards: picked[1].Cards}})
+		[2]engine.DeckSpec{picked[0].Spec(), picked[1].Spec()})
 	if err != nil {
 		return nil, err
 	}

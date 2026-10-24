@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"cardwars/internal/decks"
 )
 
 func main() { os.Exit(run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr)) }
@@ -26,7 +28,7 @@ func run(args []string, in io.Reader, out, errOut io.Writer) int {
 		return 1
 	}
 	if opts.listDecks {
-		fmt.Fprint(out, listDecks(findDecks(s.cat)))
+		fmt.Fprint(out, decks.Table(decks.Find(s.cat)))
 		return 0
 	}
 	s.loop()

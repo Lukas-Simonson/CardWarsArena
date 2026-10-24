@@ -1,4 +1,6 @@
-package main
+// Package decks finds the preconstructed decks in the card data and works out
+// the Landscapes each one is played with.
+package decks
 
 import (
 	"fmt"
@@ -9,27 +11,36 @@ import (
 	"cardwars/internal/engine"
 )
 
-// deckInfo is a preconstructed deck found in the card data's printings.
-type deckInfo struct {
-	Set, Name  string
-	Owner      string // "Finn" from "Finn's Blue Plains Deck"
-	Cards      []string
-	Landscapes [engine.NumLanes]card.Landscape
-	LandOK     bool
-	Modelled   int // distinct cards with their rules modelled
-	Distinct   int
+// Info is a preconstructed deck found in the card data's printings.
+type Info struct {
+	Set        string                          `json:"set"`
+	Name       string                          `json:"name"`
+	Owner      string                          `json:"owner"` // "Finn" from "Finn's Blue Plains Deck"
+	Cards      []string                        `json:"-"`
+	Size       int                             `json:"size"`
+	Landscapes [engine.NumLanes]card.Landscape `json:"landscapes"`
+	LandOK     bool                            `json:"-"`
+	Modelled   int                             `json:"-"` // distinct cards with their rules modelled
+	Distinct   int                             `json:"-"`
+	Ready      bool                            `json:"playable"`
 }
 
-func (d deckInfo) key() string { return d.Set + " " + d.Name }
+// Spec turns the deck into what the engine needs to start a game.
+func (d Info) Spec() engine.DeckSpec {
+	return engine.DeckSpec{Landscapes: d.Landscapes, Cards: d.Cards}
+}
 
-// playable says whether the deck can be used with the engine's normal rules.
-func (d deckInfo) playable() bool {
+// Key is the "SET Name" identifier used to look a deck up.
+func (d Info) Key() string { return d.Set + " " + d.Name }
+
+// Playable says whether the deck can be used with the engine's normal rules.
+func (d Info) Playable() bool {
 	return d.LandOK && len(d.Cards) >= engine.MinDeckSize && d.Modelled == d.Distinct
 }
 
-// landscapesFromName reads the Landscape types out of a deck name, such as
+// LandscapesFromName reads the Landscape types out of a deck name, such as
 // "Cornfield/Nice Lands". The data does not store them separately.
-func landscapesFromName(name string) ([engine.NumLanes]card.Landscape, bool) {
+func LandscapesFromName(name string) ([engine.NumLanes]card.Landscape, bool) {
 	var out [engine.NumLanes]card.Landscape
 	lower := strings.ToLower(name)
 	type found struct {
@@ -70,7 +81,7 @@ func landscapesFromName(name string) ([engine.NumLanes]card.Landscape, bool) {
 	return out, true
 }
 
-func ownerFromName(name string) string {
+func OwnerFromName(name string) string {
 	if i := strings.Index(name, "'s "); i > 0 {
 		return name[:i]
 	}
@@ -80,8 +91,8 @@ func ownerFromName(name string) string {
 	return ""
 }
 
-// findDecks lists every preconstructed deck in the catalog, sorted by set and name.
-func findDecks(cat card.Catalog) []deckInfo {
+// Find lists every preconstructed deck in the catalog, sorted by set and name.
+func Find(cat card.Catalog) []Info {
 	type k struct{ set, name string }
 	seen := map[k]bool{}
 	for _, c := range cat {
@@ -91,10 +102,10 @@ func findDecks(cat card.Catalog) []deckInfo {
 			}
 		}
 	}
-	var out []deckInfo
+	var out []Info
 	for key := range seen {
-		d := deckInfo{Set: key.set, Name: key.name, Owner: ownerFromName(key.name), Cards: cat.Deck(key.set, key.name)}
-		d.Landscapes, d.LandOK = landscapesFromName(key.name)
+		d := Info{Set: key.set, Name: key.name, Owner: OwnerFromName(key.name), Cards: cat.Deck(key.set, key.name)}
+		d.Landscapes, d.LandOK = LandscapesFromName(key.name)
 		distinct := map[string]bool{}
 		for _, id := range d.Cards {
 			if !distinct[id] {
@@ -105,18 +116,20 @@ func findDecks(cat card.Catalog) []deckInfo {
 				}
 			}
 		}
+		d.Size = len(d.Cards)
+		d.Ready = d.Playable()
 		out = append(out, d)
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].key() < out[j].key() })
+	sort.Slice(out, func(i, j int) bool { return out[i].Key() < out[j].Key() })
 	return out
 }
 
-// pickDeck finds the single deck whose "SET Name" contains every word of query.
-func pickDeck(decks []deckInfo, query string) (deckInfo, error) {
+// Pick finds the single deck whose "SET Name" contains every word of query.
+func Pick(decks []Info, query string) (Info, error) {
 	words := strings.Fields(strings.ToLower(query))
-	var hits []deckInfo
+	var hits []Info
 	for _, d := range decks {
-		k := strings.ToLower(d.key())
+		k := strings.ToLower(d.Key())
 		ok := len(words) > 0
 		for _, w := range words {
 			ok = ok && strings.Contains(k, w)
@@ -128,9 +141,9 @@ func pickDeck(decks []deckInfo, query string) (deckInfo, error) {
 	if len(hits) > 1 {
 		// Several decks share a name (2v2 versions of Jake's deck): prefer
 		// the one that can actually be played.
-		var ready []deckInfo
+		var ready []Info
 		for _, h := range hits {
-			if h.playable() {
+			if h.Playable() {
 				ready = append(ready, h)
 			}
 		}
@@ -140,18 +153,19 @@ func pickDeck(decks []deckInfo, query string) (deckInfo, error) {
 	}
 	switch len(hits) {
 	case 0:
-		return deckInfo{}, fmt.Errorf("no deck matches %q (try --list-decks)", query)
+		return Info{}, fmt.Errorf("no deck matches %q (try --list-decks)", query)
 	case 1:
 		return hits[0], nil
 	}
 	var names []string
 	for _, h := range hits {
-		names = append(names, h.key())
+		names = append(names, h.Key())
 	}
-	return deckInfo{}, fmt.Errorf("%q is ambiguous: %s", query, strings.Join(names, "; "))
+	return Info{}, fmt.Errorf("%q is ambiguous: %s", query, strings.Join(names, "; "))
 }
 
-func listDecks(decks []deckInfo) string {
+// Table formats a deck list for people.
+func Table(decks []Info) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "%-6s %-62s %5s  %s\n", "SET", "DECK", "CARDS", "STATUS")
 	for _, d := range decks {
