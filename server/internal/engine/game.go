@@ -161,6 +161,8 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 		ev = append(ev, g.doEndMain(p)...)
 	case ActAttack:
 		ev = append(ev, g.doAttack(p, a)...)
+	case ActFloop, ActActivate:
+		ev = append(ev, g.doAbility(p, a)...)
 	}
 	// State-based rules hold after every action, not just after combat.
 	ev = append(ev, g.settle()...)
@@ -200,6 +202,8 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 		return g.validateEndMain(p)
 	case ActAttack:
 		return g.validateAttack(p, a)
+	case ActFloop, ActActivate:
+		return g.validateAbility(p, a)
 	}
 	return ErrUnknownAction
 }

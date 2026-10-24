@@ -75,7 +75,7 @@ func (g *Game) checkInvariants(total [2]int) error {
 			return fmt.Errorf("player %d at %d HP but game not over", p, pl.HP)
 		}
 	}
-	if st.ActionsLeft < 0 || st.ActionsLeft > ActionsPerTurn {
+	if st.ActionsLeft < 0 { // effects such as Ancient Scholar can grant extra Actions
 		return fmt.Errorf("actions left %d", st.ActionsLeft)
 	}
 	if st.Phase == PhaseFight && !g.hasAttacker(st.Active) {

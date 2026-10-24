@@ -576,5 +576,190 @@
         }
       ]
     }
+  ],
+  "ancient-scholar": [
+    {
+      "kind": "floop",
+      "do": [
+        {
+          "do": "return_from_discard",
+          "who": "you",
+          "random": true,
+          "filter": {
+            "landscape": "rainbow"
+          }
+        },
+        {
+          "do": "gain_actions",
+          "amount": {
+            "n": 1
+          },
+          "if": {
+            "building_in_lane": true
+          }
+        }
+      ]
+    }
+  ],
+  "dragon-claw": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "creature",
+          "side": "you"
+        },
+        {
+          "what": "lane",
+          "side": "you",
+          "without": "creature"
+        }
+      ],
+      "do": [
+        {
+          "do": "move_creature",
+          "slot": 0,
+          "slot2": 1
+        }
+      ]
+    }
+  ],
+  "embarrassing-bard": [
+    {
+      "kind": "floop",
+      "do": [
+        {
+          "do": "draw",
+          "who": "you",
+          "amount": {
+            "n": 1,
+            "per": {
+              "of": "flooped_creatures"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "heavenly-gazer": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "discard_card",
+          "side": "you",
+          "card_type": "spell"
+        }
+      ],
+      "do": [
+        {
+          "do": "put_on_deck",
+          "slot": 0
+        }
+      ]
+    }
+  ],
+  "the-pig": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "landscape",
+          "in_lane": true,
+          "landscape": "cornfield"
+        }
+      ],
+      "do": [
+        {
+          "do": "flip_landscape",
+          "slot": 0,
+          "face": "down"
+        }
+      ]
+    }
+  ],
+  "archer-dan": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "building",
+          "in_lane": true
+        }
+      ],
+      "do": [
+        {
+          "do": "destroy_building",
+          "slot": 0
+        }
+      ]
+    }
+  ],
+  "big-foot": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "landscape",
+          "side": "you",
+          "face_down": true
+        }
+      ],
+      "do": [
+        {
+          "do": "flip_landscape",
+          "slot": 0,
+          "face": "up"
+        }
+      ]
+    }
+  ],
+  "patchy-the-pumpkin": [
+    {
+      "kind": "floop",
+      "targets": [
+        {
+          "what": "creature",
+          "count": {
+            "n": 1,
+            "per": {
+              "of": "landscapes",
+              "type": "cornfield"
+            }
+          }
+        }
+      ],
+      "do": [
+        {
+          "do": "damage_creature",
+          "slot": 0,
+          "amount": {
+            "n": 1
+          }
+        }
+      ]
+    }
+  ],
+  "uni-knight": [
+    {
+      "kind": "activate",
+      "cost": 1,
+      "targets": [
+        {
+          "what": "creature",
+          "in_lane": true
+        }
+      ],
+      "do": [
+        {
+          "do": "mod_creature",
+          "slot": 0,
+          "stat": "atk",
+          "amount": {
+            "n": -10
+          }
+        }
+      ]
+    }
   ]
 }
