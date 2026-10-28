@@ -87,7 +87,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .hpbar div { height: 100%; border-radius: 999px; background: linear-gradient(180deg, #ff7a6b 0 45%, #d2352b 45% 100%); transition: width 300ms ease; }
 
 /* ---------- prompt bar */
-.prompt { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; padding: 8px 16px; font-size: 19px; text-align: center; border-radius: 999px; min-height: 52px; }
+.prompt { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; font-size: 19px; line-height: 1.2; text-align: center; border-radius: 16px; min-height: 56px; }
 .prompt.you { box-shadow: inset 0 4px 10px rgba(0,0,0,.55), 0 0 0 3px rgba(255,211,77,.7); }
 .prompt button { min-height: 36px; font-size: 17px; }
 .prompt .btn-green, .prompt .btn-purple, .prompt .btn-red { font-size: 20px; min-height: 40px; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 4px 0 var(--ink); }
@@ -106,7 +106,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .strip.go { outline: 3px solid #7dd24c; outline-offset: 2px; }
 .strip.sel { outline: 4px solid var(--gold); outline-offset: 2px; }
 
-.tile { position: relative; display: block; width: 100%; height: clamp(96px, 17vh, 230px); padding: 0; border: 3px solid #1f1a12; border-radius: 8px; overflow: hidden; font-family: inherit; color: #1f1a12; background: var(--tile, #9cc43a); }
+.tile { position: relative; display: block; width: 100%; height: clamp(96px, 19.5vh, 230px); padding: 0; border: 3px solid #1f1a12; border-radius: 8px; overflow: hidden; font-family: inherit; color: #1f1a12; background: var(--tile, #9cc43a); }
 .tile.mine { box-shadow: inset 0 6px 0 rgba(255,255,255,.18); }
 .tile.theirs { box-shadow: inset 0 -6px 0 rgba(0,0,0,.18); }
 .tile .hex { position: absolute; inset: 0; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='13.86'%3E%3Cpath d='M0 6.93 L4 0 H12 L16 6.93 L12 13.86 H4 Z M16 6.93 H24' fill='none' stroke='rgba(20,20,10,0.22)' stroke-width='1.2'/%3E%3C/svg%3E"); }
@@ -170,7 +170,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .piles button.well { color: #fff; }
 .piles button.well:not(:disabled):hover { border-color: var(--gold); }
 .piles svg { width: 24px; height: 24px; }
-.hand { flex: 1 1 400px; min-width: 0; display: flex; justify-content: center; align-items: flex-end; padding: 8px 28px 6px; min-height: 140px; }
+.hand { flex: 1 1 400px; min-width: 0; display: flex; justify-content: center; align-items: flex-end; padding: 14px 28px 12px; min-height: 172px; }
 .hand .empty { align-self: center; color: #d6e2ec; }
 .hbtn { flex: 0 1 100px; min-width: 56px; margin: 0 -6px; padding: 0; background: none; border: none; border-radius: 10px; color: inherit; transition: transform 160ms ease, opacity 160ms ease; }
 .hbtn .card { border-radius: 10px; }

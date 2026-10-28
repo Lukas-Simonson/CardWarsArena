@@ -45,10 +45,9 @@ export function renderGame(root, model, on) {
     topbar(model2, on),
     h("div", { class: "cols" },
       h("div", { class: "main" },
-        promptBar(model2, on),
         battlefield(model2, on),
         handSection(model2, on)),
-      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), logPanel(state)))));
+      h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), logPanel(state)))));
 }
 
 /** Replace just the "Card up close" panel (used on hover, so the scene is not rebuilt). */
@@ -282,7 +281,7 @@ function handSection(m, on) {
     const playable = !!srcs[key];
     const sel = ui.source === key;
     const off = k - (n - 1) / 2;
-    const xf = sel ? "translateY(-30px) rotate(0deg)" : `translateY(${Math.abs(off) * 7}px) rotate(${off * 4}deg)`;
+    const xf = sel ? "translateY(-30px) rotate(0deg)" : `translateY(${Math.abs(off) * 3}px) rotate(${off * 3}deg)`;
     const cls = ["hbtn", sel ? "sel" : "", pick ? "pick" : "", playable && !ui.picker ? "go" : "", playable || pick || sel ? "" : "off"].join(" ");
     return h("button", {
       type: "button", class: cls, style: `transform:${xf}`, "aria-pressed": sel ? "true" : "false",
