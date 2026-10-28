@@ -36,6 +36,9 @@ You act on the cards themselves; there is no list of actions.
   phase, where you click each Creature to attack. **End turn** appears when
   nobody can Fight.
 * `Esc` or **Cancel** drops the selection. Hover any card to read it big.
+* Things that happen are animated: cards dropping into lanes, lunges and hits with
+  damage numbers, destroyed cards fading out, draws, spells being cast, and a
+  banner when the turn changes. `prefers-reduced-motion` turns them off.
 
 ## Layout
 
@@ -50,6 +53,7 @@ js/prompt.js     pure: what the prompt bar says for the current selection
 js/dom.js        tiny element builder
 js/card.js       one card: the scan, or a frame built from its data
 js/render.js     draws the battle scene (DOM)
+js/anim.js       pure plan() of what to animate between two views, plus the Web Animations that play it
 js/main.js       wiring: lobby, connection, rejoin, click handlers
 test/            node --test unit tests, fixtures, and a smoke test
 serve.mjs        tiny static server for development
