@@ -1,0 +1,136 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { ActionPicker, sources, sourceKey, kindKey, slotsOf, tokenOfRef, parseToken, isGeneral } from "../js/picker.js";
+import { buildPrompt } from "../js/prompt.js";
+import { view, ctxFor } from "./fixtures.mjs";
+
+const creatureRef = (player, lane) => ({ kind: "creature", player, lane });
+const play = (card, lane, targets) => ({ kind: "play_card", card, lane, ...(targets ? { targets } : {}) });
+
+test("general actions have no source; others group by source", () => {
+  const legal = [{ kind: "draw" }, { kind: "end_main" }, play(10, 0), play(10, 3), { kind: "attack", lane: 2 }, { kind: "floop", lane: 0, source: "creature" }, { kind: "activate", lane: 1, source: "building", index: 1 }];
+  assert.ok(isGeneral(legal[0]) && isGeneral(legal[1]));
+  const s = sources(legal);
+  assert.deepEqual(Object.keys(s).sort(), ["hand:10", "lane:0:creature", "lane:1:building", "lane:2:creature"]);
+  assert.equal(s["hand:10"].length, 2);
+  assert.equal(sourceKey({ kind: "play_pending" }), "pending");
+  assert.equal(kindKey(legal[6]), "activate:1");
+});
+
+test("tokens round-trip", () => {
+  assert.equal(tokenOfRef({ kind: "creature", player: 1, lane: 2 }), "creature:1:2");
+  assert.equal(tokenOfRef({ kind: "discard_card", player: 0, card: 13 }), "discard_card:0:13");
+  assert.equal(tokenOfRef({ kind: "hand_card", player: 0, card: 12 }), "hand_card:12");
+  assert.deepEqual(parseToken("dest:3"), { kind: "dest", lane: 3 });
+  assert.deepEqual(parseToken("creature:1:2"), { kind: "creature", player: 1, lane: 2 });
+  assert.deepEqual(parseToken("discard_card:0:13"), { kind: "discard_card", player: 0, uid: 13 });
+});
+
+test("a Creature needs a lane; a Spell does not", () => {
+  const ctx = ctxFor();
+  assert.deepEqual(slotsOf(play(10, 2), ctx), [["dest:2"]]);
+  assert.deepEqual(slotsOf(play(11, 0, [[creatureRef(1, 0)]]), ctx), [["creature:1:0"]]);
+});
+
+test("a Creature is placed with one click on a lane", () => {
+  const ctx = ctxFor();
+  const p = new ActionPicker([play(10, 0), play(10, 1), play(10, 3)], ctx);
+  assert.equal(p.result(), null, "nothing is sent before a click");
+  assert.deepEqual(p.options().tokens, ["dest:0", "dest:1", "dest:3"]);
+  assert.equal(p.pick("dest:9"), false);
+  assert.ok(p.pick("dest:1"));
+  assert.deepEqual(p.result(), play(10, 1));
+});
+
+test("a choice-free Spell waits for confirm()", () => {
+  const ctx = ctxFor();
+  const p = new ActionPicker([{ kind: "play_card", card: 11 }], ctx);
+  assert.equal(p.result(), null);
+  assert.deepEqual(p.options().tokens, []);
+  assert.deepEqual(p.confirm(), { kind: "play_card", card: 11 });
+});
+
+test("targets narrow the actions and an optional slot offers None", () => {
+  const ctx = ctxFor();
+  const a = [play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [[creatureRef(1, 2)]]), play(11, 0, [[]])];
+  const p = new ActionPicker(a, ctx);
+  assert.deepEqual(p.options().tokens, ["creature:1:0", "creature:1:2"]);
+  assert.ok(p.options().can_skip);
+  assert.equal(p.options().skip_label, "None");
+  assert.ok(p.skip());
+  assert.deepEqual(p.result(), a[2]);
+});
+
+test("several targets in one slot are chosen one by one", () => {
+  const ctx = ctxFor();
+  const both = [creatureRef(1, 0), creatureRef(1, 2)];
+  const a = [play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [both])];
+  const p = new ActionPicker(a, ctx);
+  assert.ok(p.pick("creature:1:0"));
+  assert.equal(p.result(), null, "still ambiguous: Done or one more");
+  assert.equal(p.options().skip_label, "Done");
+  assert.deepEqual(p.options().tokens, ["creature:1:2"]);
+  assert.ok(p.pick("creature:1:2"));
+  assert.deepEqual(p.result(), a[1]);
+});
+
+test("a source with several kinds lists them, and restricts to one", () => {
+  const ctx = ctxFor();
+  const acts = [{ kind: "attack", lane: 0 }, { kind: "floop", lane: 0, source: "creature", targets: [[creatureRef(1, 0)]] }];
+  assert.deepEqual(new ActionPicker(acts, ctx).kinds(), ["attack", "floop"]);
+  const f = new ActionPicker(acts, ctx, "floop");
+  assert.deepEqual(f.options().tokens, ["creature:1:0"]);
+  assert.ok(f.pick("creature:1:0"));
+  assert.deepEqual(f.result(), acts[1]);
+});
+
+test("cost targets come before effect targets", () => {
+  const ctx = ctxFor();
+  const a = { kind: "play_card", card: 11, cost_targets: [[{ kind: "hand_card", player: 0, card: 12 }]], targets: [[creatureRef(1, 0)]] };
+  const p = new ActionPicker([a], ctx);
+  assert.deepEqual(p.options().tokens, ["hand_card:12"]);
+  assert.ok(p.pick("hand_card:12"));
+  assert.deepEqual(p.options().tokens, ["creature:1:0"]);
+  assert.ok(p.pick("creature:1:0"));
+  assert.deepEqual(p.result(), a);
+});
+
+test("token order does not depend on the order the server listed actions", () => {
+  const ctx = ctxFor();
+  const a = [play(10, 3), play(10, 0), play(10, 1)];
+  assert.deepEqual(new ActionPicker(a, ctx).options().tokens, new ActionPicker([...a].reverse(), ctx).options().tokens);
+});
+
+// ---- prompt
+
+const myTurn = (over) => ctxFor(view({ legal: [{ kind: "draw" }], ...over }));
+
+test("prompt: waiting, idle, fight phase", () => {
+  assert.match(buildPrompt(ctxFor(view({ awaiting: [1] })), false, "", null, false).text, /Waiting for Jake/);
+  assert.match(buildPrompt(myTurn(), true, "", null, false).text, /click a glowing card/);
+  assert.match(buildPrompt(myTurn({ phase: "fight" }), true, "", null, false).text, /Fight!/);
+  assert.equal(buildPrompt(myTurn({ over: true }), true, "", null, false).text, "Game over");
+});
+
+test("prompt: choosing a lane, a target, and confirming", () => {
+  const ctx = myTurn();
+  const lanes = new ActionPicker([play(10, 0), play(10, 1)], ctx);
+  const p1 = buildPrompt(ctx, true, "hand:10", lanes, false);
+  assert.equal(p1.text, "Choose a lane for Cool Dog");
+  assert.ok(p1.cancel);
+  const spell = new ActionPicker([{ kind: "play_card", card: 11 }], ctx);
+  const p2 = buildPrompt(ctx, true, "hand:11", spell, false);
+  assert.equal(p2.confirm, "Cast Corn Scepter");
+  const targets = new ActionPicker([play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [[]])], ctx);
+  const p3 = buildPrompt(ctx, true, "hand:11", targets, false);
+  assert.equal(p3.text, "Choose a target for Corn Scepter");
+  assert.equal(p3.skip, "None");
+});
+
+test("prompt: asks which kind first", () => {
+  const ctx = myTurn();
+  const acts = [{ kind: "attack", lane: 0 }, { kind: "floop", lane: 0, source: "creature" }];
+  const p = buildPrompt(ctx, true, "lane:0:creature", new ActionPicker(acts, ctx), true);
+  assert.equal(p.text, "What should The Pig do?");
+  assert.deepEqual(p.kinds, [["attack", "Fight"], ["floop", "Floop"]]);
+});
