@@ -143,8 +143,13 @@ export function applyEffects(root, fx, ctx) {
         if (!t || !ctx.cards?.[f.card]) break;
         const at = document.createElement("div");
         at.className = `at ghost ${f.status === "ready" ? "" : f.status}`;
-        at.append(cardEl(ctx.cards[f.card]));
-        spawn(t, at, [{ opacity: 1, transform: "none" }, { opacity: 1, transform: "scale(1.05) rotate(-4deg)", offset: 0.3 }, { opacity: 0, transform: "scale(.5) rotate(14deg)", filter: "grayscale(1)" }], { duration: 560, delay: f.delay, easing: "ease-in" });
+        const face = cardEl(ctx.cards[f.card]);
+        at.append(face);
+        // Animate the card, not .at: .at carries the centring and the sideways
+        // turn in its own transform, which an animation on it would replace.
+        t.append(at);
+        const a = face.animate([{ opacity: 1, transform: "none" }, { opacity: 1, transform: "scale(1.05) rotate(-4deg)", offset: 0.3 }, { opacity: 0, transform: "scale(.5) rotate(14deg)", filter: "grayscale(1)" }], { duration: 560, delay: f.delay, easing: "ease-in", fill: "both" });
+        a.onfinish = () => at.remove();
         break;
       }
       case "deal":
