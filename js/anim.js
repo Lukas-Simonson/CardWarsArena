@@ -14,7 +14,7 @@ export const LUNGE_MS = 520;    // an attacker lunges before it turns sideways
 export const CAST_MS = 2000;    // a cast spell stays on show this long
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
-const STATUS_XF = { ready: "none", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
+const STATUS_XF = { ready: "rotate(0deg) scale(1)", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
 
 /** uid -> {seat, lane, thing} for the Creatures (or Buildings) in a view. */
 function index(view, key) {
@@ -40,7 +40,7 @@ export function plan(prev, view, events = [], ctx = {}) {
     else if (b.thing.status !== a.thing.status) {
       // a Creature that attacked finishes its lunge upright, then turns
       const lunged = events.some((e) => e.kind === "attack" && e.card === uid);
-      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: STATUS_XF[b.thing.status] ?? "none", delay: lunged ? LUNGE_MS : 0 });
+      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: STATUS_XF[b.thing.status] ?? "rotate(0deg) scale(1)", delay: lunged ? LUNGE_MS : 0 });
     }
   }
   for (const [uid, b] of cBefore) {

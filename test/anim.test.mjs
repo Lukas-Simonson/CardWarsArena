@@ -34,7 +34,7 @@ test("a Fight: lunge first, then the blow lands", () => {
   assert.deepEqual(fx.find((f) => f.t === "lunge"), { t: "lunge", seat: 0, lane: 0, up: true });
   assert.deepEqual(fx.find((f) => f.t === "hp"), { t: "hp", seat: 1, amount: 4, delay: HIT_DELAY });
   assert.equal(fx.find((f) => f.t === "hpbar").from, 88, "the bar slides down from where it was");
-  assert.deepEqual(fx.find((f) => f.t === "settle"), { t: "settle", seat: 0, lane: 0, from: "none", delay: LUNGE_MS }, "turns sideways only after its lunge");
+  assert.deepEqual(fx.find((f) => f.t === "settle"), { t: "settle", seat: 0, lane: 0, from: "rotate(0deg) scale(1)", delay: LUNGE_MS }, "turns sideways only after its lunge");
 
   const dmg = plan(view(), view(), [{ kind: "attack", player: 1, card: 30, lane: 2 }, { kind: "damage", player: 0, card: 22, lane: 2, amount: 2 }], ctx);
   assert.deepEqual(dmg.map((f) => [f.t, f.seat, f.lane]), [["lunge", 1, 2], ["hit", 0, 2]]);
