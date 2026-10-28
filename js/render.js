@@ -303,14 +303,15 @@ function handSection(m, on) {
       h("button", { type: "button", class: "well", onclick: () => on.onDiscard(me), "aria-label": `Your discard pile, ${p.discard.length} cards` }, h("span", {}, "Discard"), h("b", {}, p.discard.length))),
     h("div", { class: "well hand" }, n === 0 ? h("span", { class: "empty" }, "Your hand is empty") : cardsEl),
     h("div", { class: "acts" },
-      h("div", { style: "display:flex;align-items:center;gap:12px" },
+      h("div", { class: "actcount" },
         h("div", { class: "orb", role: "img", "aria-label": `${v.actions_left} of 2 Actions left` }, myMain || v.active === me ? v.actions_left : "–"),
-        h("span", { class: "lbl" }, "Actions left")),
-      pending && h("button", { type: "button", class: "btn-purple", style: "min-height:48px;font-size:18px", onclick: on.onPending }, "Play the stolen card"),
-      h("button", { type: "button", class: "btn-steel", disabled: !draw || !!ui.picker, onclick: () => draw && on.onAction(draw) }, "Draw · 1 Action"),
-      end && !ui.picker && (canFight
-        ? h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(end) }, "Fight!")
-        : h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(end) }, "End turn"))));
+        h("span", { class: "lbl" }, "Actions")),
+      h("div", { class: "btns" },
+        pending && h("button", { type: "button", class: "btn-purple", style: "min-height:40px;font-size:16px", onclick: on.onPending }, "Play the stolen card"),
+        h("button", { type: "button", class: "btn-steel", disabled: !draw || !!ui.picker, onclick: () => draw && on.onAction(draw) }, "Draw · 1 Action"),
+        end && !ui.picker && (canFight
+          ? h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(end) }, "Fight!")
+          : h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(end) }, "End turn")))));
 }
 
 // ---------- sidebar
