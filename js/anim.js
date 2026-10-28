@@ -13,6 +13,8 @@ export const DIE_DELAY = 420;   // a destroyed card lingers a moment first
 export const LUNGE_MS = 520;    // an attacker lunges before it turns sideways
 export const CAST_MS = 2000;    // a cast spell stays on show this long
 export const STAGE_MS = CAST_MS - 150; // ...and what it did is shown as the card fades
+export const TURN_PAUSE_MS = 1000; // rest after the last action before the turn changes
+export const BANNER_MS = 1300;
 const AFTER_CAST_MS = 1300;     // time for the damage and a death that follow it
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
@@ -69,9 +71,15 @@ export function plan(prev, view, events = [], ctx = {}) {
     if (p.hp !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), to: pct(p.hp), delay: fought ? HIT_DELAY : 0 });
   });
 
+  // Whatever the turn's last action did plays out, then a pause, then the turn
+  // changes (banner and the new turn's draws).
+  const body = fx.reduce((m, f) => Math.max(m, END[f.t]?.(f) ?? 0), 0);
+  const shift = events.some((e) => e.kind === "turn_start") && body > 0 ? body + TURN_PAUSE_MS : 0;
+  for (const f of fx) if (f.t === "turn") f.delay = shift;
+
   const hadHand = new Set((prev.players[me].hand ?? []).map((c) => c.uid));
-  (view.players[me].hand ?? []).filter((c) => !hadHand.has(c.uid)).forEach((c, i) => fx.push({ t: "deal", uid: c.uid, delay: i * 120 }));
-  if (view.players[1 - me].hand_count > prev.players[1 - me].hand_count) fx.push({ t: "oppdraw" });
+  (view.players[me].hand ?? []).filter((c) => !hadHand.has(c.uid)).forEach((c, i) => fx.push({ t: "deal", uid: c.uid, delay: i * 120 + shift }));
+  if (view.players[1 - me].hand_count > prev.players[1 - me].hand_count) fx.push({ t: "oppdraw", delay: shift });
   return fx;
 }
 
@@ -81,12 +89,32 @@ export function plan(prev, view, events = [], ctx = {}) {
  */
 export function paceFor(events = [], cards = {}) {
   const kinds = new Set(events.map((e) => e.kind));
-  if (events.some((e) => e.kind === "play" && cards[e.card_id]?.type === "spell")) return STAGE_MS + AFTER_CAST_MS;
-  if (kinds.has("turn_start") || kinds.has("attack") || kinds.has("die")) return 1400;
+  const spell = events.some((e) => e.kind === "play" && cards[e.card_id]?.type === "spell");
+  if (kinds.has("turn_start")) {
+    // the last action plays out, a pause, then the turn banner
+    const body = bodyOf(kinds);
+    return (spell ? STAGE_MS : 0) + body + (body > 0 ? TURN_PAUSE_MS : 0) + BANNER_MS + 100;
+  }
+  if (spell) return STAGE_MS + AFTER_CAST_MS;
+  if (kinds.has("attack") || kinds.has("die")) return 1400;
   if (kinds.has("play") || kinds.has("floop") || kinds.has("activate") || kinds.has("damage") || kinds.has("destroy")) return 1100;
   if (kinds.has("draw")) return 650;
   return 800;
 }
+
+/** A generous estimate of how long the effects of these event kinds take (the turn change excluded). */
+function bodyOf(kinds) {
+  if (kinds.has("attack")) return 1200;
+  if (kinds.has("die") || kinds.has("damage") || kinds.has("destroy")) return 1000;
+  if (kinds.has("play") || kinds.has("floop") || kinds.has("activate") || kinds.has("bounce") || kinds.has("move") || kinds.has("ready")) return 500;
+  return 0;
+}
+
+/** When each effect finishes, from its start of the update (see applyEffects). */
+const END = {
+  drop: () => 380, settle: (f) => f.delay + 320, build: () => 320, lunge: () => LUNGE_MS,
+  hit: (f) => f.delay + 900, hp: (f) => f.delay + 1000, hpbar: (f) => f.delay + 600, ghost: (f) => f.delay + 560,
+};
 
 const pct = (hp) => Math.max(0, Math.min(100, Math.round((hp / MAX_HP) * 100)));
 
@@ -158,13 +186,13 @@ export function applyEffects(root, fx, ctx) {
         play(q(`.hbtn[data-uid="${f.uid}"]`), [{ transform: "translate(160px, -140px) scale(.4) rotate(25deg)", opacity: 0 }, { opacity: 1, offset: 0.5 }, { transform: "none" }], { duration: 420, delay: f.delay, composite: "replace" });
         break;
       case "oppdraw":
-        play([...root.querySelectorAll(".back")].pop(), [{ transform: "translateY(40px) scale(.5)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, composite: "replace" });
+        play([...root.querySelectorAll(".back")].pop(), [{ transform: "translateY(40px) scale(.5)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, delay: f.delay, composite: "replace" });
         break;
       case "turn": {
         const el = document.createElement("div");
         el.className = `fx-banner ${f.mine ? "mine" : "theirs"}`;
         el.textContent = f.mine ? "Your turn!" : `${ctx.names?.[f.seat] || "Opponent"}'s turn`;
-        spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.6)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1.05)", offset: 0.2 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.75 }, { opacity: 0, transform: "translate(-50%, -50%) scale(1.15)" }], { duration: 1300 });
+        spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.6)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1.05)", offset: 0.2 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.75 }, { opacity: 0, transform: "translate(-50%, -50%) scale(1.15)" }], { duration: BANNER_MS, delay: f.delay });
         break;
       }
       case "cast": {
