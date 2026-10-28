@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { plan, paceFor, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS } from "../js/anim.js";
+import { plan, paceFor, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS } from "../js/anim.js";
 import { view, cards } from "./fixtures.mjs";
 
 const next = (mutate) => { const v = structuredClone(view()); mutate(v); return v; };
@@ -49,7 +49,7 @@ test("cards drawn, turns and spells", () => {
   assert.ok(kinds(fx).includes("oppdraw"));
 
   const turn = plan(view(), view(), [{ kind: "turn_start", player: 1 }, { kind: "play", player: 0, card: 11, card_id: "corn-scepter" }, { kind: "play", player: 0, card: 10, card_id: "cool-dog" }], ctx);
-  assert.deepEqual(turn, [{ t: "turn", seat: 1, mine: false }, { t: "cast", card: "corn-scepter", seat: 0 }]);
+  assert.deepEqual(turn, [{ t: "turn", seat: 1, mine: false, delay: 0 }, { t: "cast", card: "corn-scepter", seat: 0 }]);
 });
 
 test("a Floop turns at once; a cast spell is given time to be read", () => {
@@ -62,4 +62,19 @@ test("a Floop turns at once; a cast spell is given time to be read", () => {
 test("a new Building pops in", () => {
   const built = next((v) => { v.players[0].lanes[3].building = { uid: 95, card: "blood-fortress", owner: 0, status: "ready" }; });
   assert.deepEqual(plan(view(), built, [], ctx), [{ t: "build", seat: 0, lane: 3 }]);
+});
+
+test("the turn changes only after the last action has played out, plus a pause", () => {
+  const after = next((v) => { v.players[1].hp = 21; v.players[0].lanes[0].creature.status = "fought"; v.players[0].hand.push({ uid: 99, card: "the-pig", owner: 0 }); });
+  const events = [{ kind: "attack", player: 0, card: 20 }, { kind: "hp_loss", player: 1, amount: 4 }, { kind: "turn_start", player: 1 }, { kind: "draw", player: 0, card: 99 }];
+  const fx = plan(view(), after, events, ctx);
+  const turn = fx.find((f) => f.t === "turn");
+  const lastBlow = Math.max(...fx.filter((f) => ["hp", "hit", "hpbar", "settle", "lunge"].includes(f.t)).map((f) => (f.delay ?? 0) + 600));
+  assert.ok(turn.delay >= lastBlow + TURN_PAUSE_MS - 100, "banner waits for the fight, then a pause");
+  assert.equal(fx.find((f) => f.t === "deal").delay, turn.delay, "the new turn's draw waits with it");
+  assert.ok(paceFor(events, cards) >= turn.delay + BANNER_MS, "the next update waits for the banner");
+
+  const bare = plan(view(), view(), [{ kind: "turn_start", player: 1 }], ctx);
+  assert.equal(bare[0].delay, 0, "nothing to wait for within this update");
+  assert.ok(paceFor([{ kind: "turn_start", player: 1 }], cards) >= BANNER_MS);
 });

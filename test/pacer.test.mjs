@@ -4,12 +4,13 @@ import { Pacer } from "../js/pacer.js";
 import { paceFor } from "../js/anim.js";
 
 /** A pacer on a fake clock. */
-function rig(hold) {
+function rig(hold, extra = {}) {
   let t = 0, timers = [];
   const delivered = [];
   const p = new Pacer({
     deliver: (m) => delivered.push([t, m.n]),
     holdFor: hold,
+    ...extra,
     now: () => t,
     timers: {
       setTimeout: (fn, ms) => { const id = timers.length; timers.push({ at: t + ms, fn, id }); return id; },
@@ -69,4 +70,16 @@ test("busier updates rest longer", () => {
   assert.ok(paceFor([{ kind: "attack" }]) > paceFor([{ kind: "draw" }]));
   assert.ok(paceFor([{ kind: "turn_start" }, { kind: "draw" }]) >= paceFor([{ kind: "play" }]));
   assert.ok(paceFor([]) > 0);
+});
+
+test("a gap delays a message beyond the rest, and skipWait ignores the rest", () => {
+  const { p, delivered, advance } = rig(() => 1000, { gapFor: (m) => (m.turn ? 500 : 0), skipWait: (m) => !!m.now });
+  p.push({ n: 1 });
+  p.push({ n: 2, turn: true });
+  advance(1499);
+  assert.equal(delivered.length, 1, "rest plus the gap");
+  advance(1);
+  assert.deepEqual(delivered[1], [1500, 2]);
+  p.push({ n: 3, now: true });
+  assert.deepEqual(delivered[2], [1500, 3], "delivered immediately");
 });
