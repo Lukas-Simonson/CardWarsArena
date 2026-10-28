@@ -61,6 +61,20 @@ test("targets narrow the actions and an optional slot offers None", () => {
   assert.deepEqual(p.result(), a[2]);
 });
 
+test("slots that every action leaves empty need no click", () => {
+  const ctx = ctxFor();
+  const a = [
+    play(11, 0, [[], [], []]),
+    play(11, 0, [[], [], [{ kind: "lane", player: 0, lane: 1 }]]),
+    play(11, 0, [[], [], [{ kind: "lane", player: 0, lane: 2 }]]),
+  ];
+  const p = new ActionPicker(a, ctx);
+  assert.deepEqual(p.options().tokens, ["lane:0:1", "lane:0:2"], "the first two empty slots are already closed");
+  assert.ok(p.options().can_skip, "the third is optional");
+  assert.ok(p.pick("lane:0:2"));
+  assert.deepEqual(p.result(), a[2]);
+});
+
 test("several targets in one slot are chosen one by one", () => {
   const ctx = ctxFor();
   const both = [creatureRef(1, 0), creatureRef(1, 2)];

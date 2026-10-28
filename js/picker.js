@@ -105,6 +105,9 @@ export class ActionPicker {
         this.slots.set(a, slotsOf(a, ctx));
       }
     }
+    // Leading slots that every action leaves empty (an unused optional choice)
+    // need no click.
+    this.#advance();
   }
 
   /** The distinct kinds among the candidates (Fight or Floop or an ability). */
