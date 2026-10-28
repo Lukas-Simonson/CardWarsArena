@@ -6,7 +6,8 @@ import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
 import { isMyDecision } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
-import { plan, applyEffects } from "./anim.js";
+import { plan, applyEffects, paceFor } from "./anim.js";
+import { Pacer } from "./pacer.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -27,6 +28,21 @@ let conn = null;
 let pendingFx = null; // what to animate on the next render: the step from one view to the next
 
 // ---------- state changes
+
+// Updates are shown one at a time, each given time to play out, so a bot that
+// moves in quick succession can be followed. Rests are skipped when it is our
+// turn to act: there is nothing to watch, and our own move should answer at once.
+const pacer = new Pacer({
+  deliver: dispatch,
+  holdFor: (msg) => (isMyDecision(state) ? 0 : paceFor(msg.events)),
+});
+
+/** Messages from the server: updates wait their turn; everything else is immediate. */
+function onServerMessage(msg) {
+  if (msg.type === "update") return pacer.push(msg);
+  if (msg.type === "joined" || msg.type === "room_closed") pacer.clear();
+  dispatch(msg);
+}
 
 function dispatch(msg) {
   const before = state;
@@ -98,6 +114,7 @@ const on = {
   onDiscard(seat) { ui.discard = ui.discard === seat ? null : seat; render(); },
   onLeave() {
     if (state.session) send({ type: "leave" });
+    pacer.clear();
     state = leave(state);
     sstore("cw.session", null);
     resetUi();
@@ -174,7 +191,7 @@ function connect() {
   conn?.close();
   conn = new Connection({
     url: wsUrl(server),
-    onMessage: dispatch,
+    onMessage: onServerMessage,
     onStatus(status) {
       state = setStatus(state, status);
       if (status === "open") rejoin();
@@ -197,6 +214,7 @@ async function applyServer(text) {
   server = s;
   store("cw.server", server);
   $("server").value = server;
+  pacer.clear();
   state = initialState();
   resetUi();
   await loadCatalog();
