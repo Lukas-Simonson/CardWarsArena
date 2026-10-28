@@ -45,12 +45,10 @@ export function renderGame(root, model, on) {
     topbar(model2, on),
     h("div", { class: "cols" },
       h("div", { class: "main" },
-        playerBar(model2, opp, on),
         promptBar(model2, on),
         battlefield(model2, on),
-        playerBar(model2, me, on),
         handSection(model2, on)),
-      h("div", { class: "side" }, detailPanel(ctx, ui.inspect), logPanel(state)))));
+      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), logPanel(state)))));
 }
 
 /** Replace just the "Card up close" panel (used on hover, so the scene is not rebuilt). */
@@ -118,7 +116,7 @@ function promptBar({ prompt, myDecision, ctx }, on) {
 function battlefield(m, on) {
   const { ctx, me, opp } = m;
   const v = ctx.view;
-  const felt = h("section", { class: "felt", style: "padding:16px", "aria-label": "Battlefield" },
+  const felt = h("section", { class: "felt", style: "padding:10px", "aria-label": "Battlefield" },
     h("div", { class: "lanes" }, [0, 1, 2, 3].map((i) => laneColumn(m, i, on))));
   const veil = overlay(m, on);
   if (veil) felt.append(veil);
@@ -135,11 +133,20 @@ function laneColumn(m, i, on) {
   const canFloop = (srcs[`lane:${i}:creature`] ?? []).some((a) => a.kind === "floop") && !ui.picker;
   return h("div", { class: "lane" },
     buildingStrip(m, opp, i, on),
+    landName(ctx, opp, i),
     tile(m, opp, i, on),
     laneInfo(m, i, mc, oc),
-    tile(m, me, i, on),
-    h("div", { class: "floop" }, canFloop && h("button", { type: "button", class: "btn-purple", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>")),
+    h("div", { class: "tilewrap" },
+      tile(m, me, i, on),
+      canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>")),
+    landName(ctx, me, i),
     buildingStrip(m, me, i, on));
+}
+
+/** The Landscape's name, shown beside the tile so it never covers a card. */
+function landName(ctx, seat, i) {
+  const lane = ctx.view.players[seat].lanes[i];
+  return h("div", { class: "landname" }, lane.face_down ? "Face-down" : landscapeName(lane.landscape));
 }
 
 function laneInfo(m, i, mc, oc) {
@@ -155,7 +162,7 @@ function laneInfo(m, i, mc, oc) {
   } else if (mc && mc.status === "flooped") { text = "Flooped, no Fight"; bg = "#dccbf3"; }
   else if (mc && mc.status === "fought") { text = "Fought"; bg = "#d9cfb8"; }
   else if (!mc && oc) { text = myTurn ? "Open lane!" : "Open lane"; bg = "#ffb39e"; }
-  return h("div", { class: "info" }, h("small", {}, `Lane ${i + 1}`), h("span", { class: "pill", style: `background:${bg}` }, text));
+  return h("div", { class: "info" }, h("span", { class: "pill", title: `Lane ${i + 1}`, style: `background:${bg}` }, text));
 }
 
 /** One half of a Lane: Landscape background with the Creature on it. */
@@ -188,7 +195,6 @@ function tile(m, seat, i, on) {
     onclick: click, onmouseenter: c ? () => on.onInspect(c.card, true) : null,
   },
     h("div", { class: "hex" }),
-    h("span", { class: "land" }, lane.face_down ? "Face-down" : landscapeName(lane.landscape)),
     c && h("div", { class: `at ${c.status === "ready" ? "" : c.status}` }, cardEl(ctx.cards[c.card], { atk: c.attack, def: c.defense, damage: c.damage })),
     c && c.status !== "ready" && h("span", { class: "stat" }, c.status === "fought" ? "Fought" : "Flooped"),
     c && stats.length > 0 && c.status === "ready" && h("span", { class: "stat" }, stats.join(" · ")));
@@ -297,11 +303,11 @@ function handSection(m, on) {
       h("button", { type: "button", class: "well", onclick: () => on.onDiscard(me), "aria-label": `Your discard pile, ${p.discard.length} cards` }, h("span", {}, "Discard"), h("b", {}, p.discard.length))),
     h("div", { class: "well hand" }, n === 0 ? h("span", { class: "empty" }, "Your hand is empty") : cardsEl),
     h("div", { class: "acts" },
-      h("div", { style: "display:flex;flex-direction:column;align-items:center;gap:12px" },
+      h("div", { style: "display:flex;align-items:center;gap:12px" },
         h("div", { class: "orb", role: "img", "aria-label": `${v.actions_left} of 2 Actions left` }, myMain || v.active === me ? v.actions_left : "–"),
         h("span", { class: "lbl" }, "Actions left")),
       pending && h("button", { type: "button", class: "btn-purple", style: "min-height:48px;font-size:18px", onclick: on.onPending }, "Play the stolen card"),
-      h("button", { type: "button", class: "btn-steel", disabled: !draw || !!ui.picker, onclick: () => draw && on.onAction(draw) }, "Draw a card · 1 Action"),
+      h("button", { type: "button", class: "btn-steel", disabled: !draw || !!ui.picker, onclick: () => draw && on.onAction(draw) }, "Draw · 1 Action"),
       end && !ui.picker && (canFight
         ? h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(end) }, "Fight!")
         : h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(end) }, "End turn"))));
