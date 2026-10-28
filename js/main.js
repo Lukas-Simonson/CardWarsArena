@@ -6,6 +6,7 @@ import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
 import { isMyDecision } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
+import { plan, applyEffects } from "./anim.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -23,6 +24,7 @@ let catalogError = "";
 // picker that tracks their choices for it, and what the card on show is.
 const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
 let conn = null;
+let pendingFx = null; // what to animate on the next render: the step from one view to the next
 
 // ---------- state changes
 
@@ -30,6 +32,7 @@ function dispatch(msg) {
   const before = state;
   state = reduce(state, msg, cards);
   if (msg.type === "update") resetSelection(); // the position changed: old clicks no longer apply
+  if (msg.type === "update" && before.view && state.seq !== before.seq) pendingFx = { seq: state.seq, prev: before.view, events: msg.events ?? [] };
   if (msg.type === "joined") sstore("cw.session", JSON.stringify({ server, room: msg.room, token: msg.token }));
   if (msg.type === "room_closed") { sstore("cw.session", null); resetUi(); }
   if (msg.type === "error" && (msg.code === "bad_token" || msg.code === "room_not_found")) sstore("cw.session", null);
@@ -129,7 +132,14 @@ function render() {
   banner.textContent = msg;
   banner.className = "banner" + (!state.error && !catalogError ? " info" : "");
   $("lobby").querySelectorAll("#vsbot").forEach((b) => (b.disabled = state.status !== "open" || !decks.length));
-  if (inRoom) renderGame($("game"), { state, cards, ui }, on);
+  if (inRoom) {
+    renderGame($("game"), { state, cards, ui }, on);
+    if (pendingFx?.seq === state.seq && state.view) {
+      const ctx = ctxNow();
+      applyEffects($("game"), plan(pendingFx.prev, state.view, pendingFx.events, ctx), ctx);
+    }
+    pendingFx = null; // later re-renders (a click, a hover) must not replay it
+  }
 }
 
 // ---------- connecting

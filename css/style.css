@@ -214,6 +214,13 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .pilegrid button { width: 110px; padding: 0; background: none; border: none; border-radius: 8px; }
 .pilegrid button.pick .card { box-shadow: 0 0 0 4px var(--gold), 0 0 12px 4px rgba(255,211,77,.6); }
 
+/* ---------- animation helpers (the motion itself is in js/anim.js) */
+.fx-float { font-style: normal; position: absolute; left: 50%; top: 24%; z-index: 6; pointer-events: none; font-family: var(--big-font); font-size: 34px; color: #fff; -webkit-text-stroke: 5px #7a0f08; paint-order: stroke fill; text-shadow: 0 3px 0 #3b0d0a; }
+.fx-float.side { left: calc(100% + 6px); top: 6px; font-size: 28px; }
+.tile .at.ghost { z-index: 4; pointer-events: none; }
+.fx-banner { position: absolute; left: 50%; top: 50%; z-index: 12; pointer-events: none; padding: 6px 40px 0; font-family: var(--big-font); font-size: 52px; white-space: nowrap; color: #fff; -webkit-text-stroke: 6px #16212b; paint-order: stroke fill; text-shadow: 0 5px 0 #16212b; border-radius: 18px; background: rgba(15,30,15,.55); }
+.fx-banner.mine { color: var(--gold); }
+.fx-cast { position: absolute; left: 50%; top: 50%; z-index: 12; pointer-events: none; width: clamp(130px, 18vh, 200px); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
 @media (max-width: 900px) {
   .tile { height: 150px; } .lanes { gap: 6px; } .felt { border-width: 8px; padding: 10px !important; }
   .strip { font-size: 12px; } .strip .row .tag { display: none; }

@@ -90,7 +90,7 @@ function playerBar({ ctx, me, ui, tokens }, seat, on) {
     "aria-label": `${label}: ${n} cards`,
   }, `${label} ${n}`);
   return h("section", { class: "steel pbar", "aria-label": mine ? "You" : "Opponent" },
-    h("div", { class: "shield", role: "img", "aria-label": `${mine ? "You have" : seatName(ctx, seat) + " has"} ${p.hp} of ${MAX_HP} Hit Points` },
+    h("div", { class: "shield", "data-seat": seat, role: "img", "aria-label": `${mine ? "You have" : seatName(ctx, seat) + " has"} ${p.hp} of ${MAX_HP} Hit Points` },
       svg(SHIELD, { viewBox: "0 0 48 54" }), h("span", {}, p.hp)),
     h("div", { class: "well avatar", "aria-hidden": "true", style: `background:${mine ? "#c98a1f" : "#2e5f9c"}` }, seatName(ctx, seat)[0]?.toUpperCase() ?? "?"),
     h("div", { class: "pname" },
@@ -98,7 +98,7 @@ function playerBar({ ctx, me, ui, tokens }, seat, on) {
       h("div", { class: "sub" }, mine ? `${p.hand?.length ?? 0} in hand` : `${p.hand_count} in hand`)),
     backs && h("div", { class: "backs", "aria-hidden": "true" }, backs),
     !mine && h("div", { class: "counts" }, h("span", { class: "well", style: "padding:2px 10px;border-radius:999px" }, `Deck ${p.deck_count}`), pile("Discard", p.discard.length, true)),
-    h("div", { class: "well hpbar", "aria-hidden": "true" }, h("div", { style: `width:${hpw}%` })));
+    h("div", { class: "well hpbar", "data-seat": seat, "aria-hidden": "true" }, h("div", { style: `width:${hpw}%` })));
 }
 
 function promptBar({ prompt, myDecision, ctx }, on) {
@@ -191,6 +191,7 @@ function tile(m, seat, i, on) {
   const stats = c && [c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced"), c.damage > 0 && `dmg ${c.damage}`].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
+    "data-seat": seat, "data-lane": i,
     onclick: click, onmouseenter: c ? () => on.onInspect(c.card, true) : null,
   },
     h("div", { class: "hex" }),
@@ -217,7 +218,7 @@ function buildingStrip(m, seat, i, on) {
   };
   const card = b && ctx.cards[b.card];
   return h("button", {
-    type: "button", class: classes.join(" "), onclick: click,
+    type: "button", class: classes.join(" "), onclick: click, "data-seat": seat, "data-lane": i,
     "aria-label": `${mine ? "Your" : "Opponent"} Building slot, Lane ${i + 1}${b ? `: ${cardName(ctx, b.card)}` : ", empty"}`,
     onmouseenter: b ? () => on.onInspect(b.card, true) : null,
   }, b
@@ -284,7 +285,7 @@ function handSection(m, on) {
     const xf = sel ? "translateY(-30px) rotate(0deg)" : `translateY(${Math.abs(off) * 3}px) rotate(${off * 3}deg)`;
     const cls = ["hbtn", sel ? "sel" : "", pick ? "pick" : "", playable && !ui.picker ? "go" : "", playable || pick || sel ? "" : "off"].join(" ");
     return h("button", {
-      type: "button", class: cls, style: `transform:${xf}`, "aria-pressed": sel ? "true" : "false",
+      type: "button", class: cls, style: `transform:${xf}`, "data-uid": inst.uid, "aria-pressed": sel ? "true" : "false",
       "aria-label": `${card?.name ?? inst.card}, cost ${card?.cost ?? "?"}${playable ? "" : ", cannot be played now"}`,
       onclick: () => (pick ? on.onToken(token) : playable ? on.onHand(inst.uid, inst.card) : on.onInspect(inst.card)),
       onmouseenter: () => on.onInspect(inst.card, true),
