@@ -3,8 +3,9 @@
 // other modules.
 import { Connection, wsUrl, normaliseServer } from "./net.js";
 import { initialState, reduce, setStatus, leave } from "./state.js";
-import { renderGame } from "./render.js";
-import { handSelection, laneSelection, sameSelection } from "./describe.js";
+import { renderGame, updateDetail } from "./render.js";
+import { isMyDecision } from "./state.js";
+import { ActionPicker, sources } from "./picker.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -18,7 +19,9 @@ let state = initialState();
 let cards = {};
 let decks = [];
 let catalogError = "";
-const ui = { selection: null, inspect: null, discard: null };
+// What the player is in the middle of: the card they clicked (source), the
+// picker that tracks their choices for it, and what the card on show is.
+const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
 let conn = null;
 
 // ---------- state changes
@@ -26,14 +29,15 @@ let conn = null;
 function dispatch(msg) {
   const before = state;
   state = reduce(state, msg, cards);
-  if (msg.type === "update") ui.selection = null; // the position changed: old clicks no longer apply
+  if (msg.type === "update") resetSelection(); // the position changed: old clicks no longer apply
   if (msg.type === "joined") sstore("cw.session", JSON.stringify({ server, room: msg.room, token: msg.token }));
   if (msg.type === "room_closed") { sstore("cw.session", null); resetUi(); }
   if (msg.type === "error" && (msg.code === "bad_token" || msg.code === "room_not_found")) sstore("cw.session", null);
   if (state !== before) render();
 }
 
-function resetUi() { ui.selection = null; ui.inspect = null; ui.discard = null; }
+function resetSelection() { ui.source = ""; ui.picker = null; ui.awaitingKind = false; }
+function resetUi() { resetSelection(); ui.inspect = null; ui.discard = null; }
 
 function send(msg) {
   if (!conn?.send(msg)) dispatch({ type: "error", code: "not_connected", message: "not connected to the server" });
@@ -41,23 +45,54 @@ function send(msg) {
 
 // ---------- user intent
 
+const ctxNow = () => ({ view: state.view, cards, names: state.names, known: state.known });
+const sourcesNow = () => (isMyDecision(state) ? sources(state.view.legal) : {});
+
+function sendAction(action) {
+  send({ type: "action", action, seq: state.seq });
+  resetSelection();
+  render();
+}
+
+/** Click a card that can act: start a picker over everything it can do (or one kind). */
+function select(key, kind = "") {
+  const actions = sourcesNow()[key];
+  if (!actions) return;
+  ui.source = key;
+  ui.picker = new ActionPicker(actions, ctxNow(), kind);
+  ui.awaitingKind = kind === "" && ui.picker.kinds().length > 1;
+  const only = ui.picker.candidates;
+  // In the Fight phase a Creature can only attack: no need to ask twice.
+  if (state.view.phase === "fight" && only.length === 1 && only[0].kind === "attack") return sendAction(only[0]);
+  render();
+}
+
+/** Send the action if the clicks so far have settled on exactly one. */
+function settle() {
+  const action = ui.picker?.result();
+  if (action) sendAction(action);
+  else render();
+}
+
+const toggle = (key, kind) => (ui.source === key && !kind ? (resetSelection(), render()) : select(key, kind));
+
 const on = {
-  onHand(uid, cardId) {
-    const sel = handSelection(uid);
-    ui.selection = sameSelection(ui.selection, sel) ? null : sel;
+  onHand(uid, cardId) { ui.inspect = cardId; toggle(`hand:${uid}`); },
+  onLane(lane, source, cardId) { if (cardId) ui.inspect = cardId; toggle(`lane:${lane}:${source}`); },
+  onFloop(lane, source) { select(`lane:${lane}:${source}`, "floop"); },
+  onPending() { select("pending"); },
+  onToken(token) { if (ui.picker?.pick(token)) settle(); },
+  onKind(kind) { select(ui.source, kind); },
+  onSkip() { if (ui.picker?.skip()) settle(); },
+  onConfirm() { const a = ui.picker?.confirm(); if (a) sendAction(a); },
+  onCancel() { resetSelection(); render(); },
+  onAction(action) { sendAction(action); },
+  onInspect(cardId, hover = false) {
     ui.inspect = cardId;
-    render();
+    if (hover) updateDetail($("game"), ctxNow(), cardId);
+    else render();
   },
-  onLane(lane, source, cardId) {
-    const sel = laneSelection(lane, source);
-    ui.selection = sameSelection(ui.selection, sel) ? null : sel;
-    ui.inspect = cardId;
-    render();
-  },
-  onInspect(cardId) { ui.inspect = cardId; render(); },
   onDiscard(seat) { ui.discard = ui.discard === seat ? null : seat; render(); },
-  onClearSelection() { ui.selection = null; render(); },
-  onAction(action) { send({ type: "action", action, seq: state.seq }); },
   onLeave() {
     if (state.session) send({ type: "leave" });
     state = leave(state);
@@ -67,15 +102,15 @@ const on = {
   },
 };
 
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && (ui.picker || ui.discard != null)) { ui.discard = null; resetSelection(); render(); }
+});
+
 const form = () => ({ name: $("name").value, deck: $("deck").value });
 
 $("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_deck: $("botdeck").value || undefined });
-$("create").onclick = () => send({ type: "create", ...form() });
-$("join").onclick = () => send({ type: "join", room: $("code").value.trim(), ...form() });
-$("leave").onclick = on.onLeave;
 $("applyServer").onclick = () => applyServer($("server").value);
 $("server").onkeydown = (e) => e.key === "Enter" && applyServer($("server").value);
-$("code").onkeydown = (e) => e.key === "Enter" && $("join").click();
 $("name").onchange = () => store("cw.name", $("name").value);
 $("deck").onchange = () => store("cw.deck", $("deck").value);
 
@@ -85,21 +120,15 @@ function render() {
   const inRoom = !!state.session;
   $("lobby").hidden = inRoom;
   $("game").hidden = !inRoom;
-  $("leave").hidden = !inRoom;
   const s = $("status");
   s.textContent = { open: "connected", connecting: "connecting…", reconnecting: "reconnecting…", closed: "disconnected" }[state.status] ?? state.status;
-  s.className = "chip " + (state.status === "open" ? "ok" : state.status === "closed" ? "bad" : "warn");
-  const badge = $("roombadge");
-  badge.hidden = !inRoom;
-  if (inRoom) badge.textContent = `Room ${state.session.room} · seat ${state.session.seat}${state.session.vsBot ? " · vs bot" : ""}`;
-
+  s.className = "conn " + (state.status === "open" ? "ok" : state.status === "closed" ? "bad" : "warn");
   const banner = $("banner");
   const msg = state.error || catalogError || (!inRoom && state.closedReason ? `The room closed: ${state.closedReason}.` : "");
   banner.hidden = !msg;
   banner.textContent = msg;
   banner.className = "banner" + (!state.error && !catalogError ? " info" : "");
-
-  $("lobby").querySelectorAll("button:not(#applyServer)").forEach((b) => (b.disabled = state.status !== "open" || !decks.length));
+  $("lobby").querySelectorAll("#vsbot").forEach((b) => (b.disabled = state.status !== "open" || !decks.length));
   if (inRoom) renderGame($("game"), { state, cards, ui }, on);
 }
 
