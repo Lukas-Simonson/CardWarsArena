@@ -12,6 +12,8 @@ export const HIT_DELAY = 260;   // the blow lands this long after the lunge star
 export const DIE_DELAY = 420;   // a destroyed card lingers a moment first
 export const LUNGE_MS = 520;    // an attacker lunges before it turns sideways
 export const CAST_MS = 2000;    // a cast spell stays on show this long
+export const STAGE_MS = CAST_MS - 150; // ...and what it did is shown as the card fades
+const AFTER_CAST_MS = 1300;     // time for the damage and a death that follow it
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
 const STATUS_XF = { ready: "rotate(0deg) scale(1)", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
@@ -79,7 +81,7 @@ export function plan(prev, view, events = [], ctx = {}) {
  */
 export function paceFor(events = [], cards = {}) {
   const kinds = new Set(events.map((e) => e.kind));
-  if (events.some((e) => e.kind === "play" && cards[e.card_id]?.type === "spell")) return CAST_MS + 200;
+  if (events.some((e) => e.kind === "play" && cards[e.card_id]?.type === "spell")) return STAGE_MS + AFTER_CAST_MS;
   if (kinds.has("turn_start") || kinds.has("attack") || kinds.has("die")) return 1400;
   if (kinds.has("play") || kinds.has("floop") || kinds.has("activate") || kinds.has("damage") || kinds.has("destroy")) return 1100;
   if (kinds.has("draw")) return 650;
@@ -90,7 +92,7 @@ const pct = (hp) => Math.max(0, Math.min(100, Math.round((hp / MAX_HP) * 100)));
 
 // ---------- playing them
 
-const reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+export const reduced = () => !!globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /** Play the effects on the freshly rendered scene in `root`. */
 export function applyEffects(root, fx, ctx) {

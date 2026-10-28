@@ -6,7 +6,7 @@ import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
 import { isMyDecision } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
-import { plan, applyEffects, paceFor } from "./anim.js";
+import { plan, applyEffects, paceFor, reduced, STAGE_MS } from "./anim.js";
 import { Pacer } from "./pacer.js";
 
 const $ = (id) => document.getElementById(id);
@@ -25,6 +25,8 @@ let catalogError = "";
 // picker that tracks their choices for it, and what the card on show is.
 const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
 let conn = null;
+let staging = false; // a cast spell is on show; what it did is shown when it ends
+let stageTimer = null;
 let pendingFx = null; // what to animate on the next render: the step from one view to the next
 
 // ---------- state changes
@@ -68,6 +70,7 @@ const ctxNow = () => ({ view: state.view, cards, names: state.names, known: stat
 const sourcesNow = () => (isMyDecision(state) ? sources(state.view.legal) : {});
 
 function sendAction(action) {
+  if (staging) return;
   send({ type: "action", action, seq: state.seq });
   resetSelection();
   render();
@@ -75,6 +78,7 @@ function sendAction(action) {
 
 /** Click a card that can act: start a picker over everything it can do (or one kind). */
 function select(key, kind = "") {
+  if (staging) return;
   const actions = sourcesNow()[key];
   if (!actions) return;
   ui.source = key;
@@ -100,9 +104,9 @@ const on = {
   onLane(lane, source, cardId) { if (cardId) ui.inspect = cardId; toggle(`lane:${lane}:${source}`); },
   onFloop(lane, source) { select(`lane:${lane}:${source}`, "floop"); },
   onPending() { select("pending"); },
-  onToken(token) { if (ui.picker?.pick(token)) settle(); },
+  onToken(token) { if (!staging && ui.picker?.pick(token)) settle(); },
   onKind(kind) { select(ui.source, kind); },
-  onSkip() { if (ui.picker?.skip()) settle(); },
+  onSkip() { if (!staging && ui.picker?.skip()) settle(); },
   onConfirm() { const a = ui.picker?.confirm(); if (a) sendAction(a); },
   onCancel() { resetSelection(); render(); },
   onAction(action) { sendAction(action); },
@@ -115,6 +119,7 @@ const on = {
   onLeave() {
     if (state.session) send({ type: "leave" });
     pacer.clear();
+    clearTimeout(stageTimer); staging = false; pendingFx = null;
     state = leave(state);
     sstore("cw.session", null);
     resetUi();
@@ -149,12 +154,22 @@ function render() {
   banner.textContent = msg;
   banner.className = "banner" + (!state.error && !catalogError ? " info" : "");
   $("lobby").querySelectorAll("#vsbot").forEach((b) => (b.disabled = state.status !== "open" || !decks.length));
-  if (inRoom) {
-    renderGame($("game"), { state, cards, ui }, on);
-    if (pendingFx?.seq === state.seq && state.view) {
-      const ctx = ctxNow();
-      applyEffects($("game"), plan(pendingFx.prev, state.view, pendingFx.events, ctx), ctx);
+  if (inRoom && !staging) {
+    const fx = pendingFx?.seq === state.seq && state.view ? pendingFx : null;
+    const effects = fx ? plan(fx.prev, state.view, fx.events, ctxNow()) : [];
+    const casts = effects.filter((f) => f.t === "cast");
+    if (casts.length && !fx.staged && !reduced()) {
+      // A spell is shown first, over the position it was cast in; its effects
+      // (damage, a death) play once it has been seen.
+      const before = { ...state, view: { ...fx.prev, legal: [], awaiting: [] } };
+      renderGame($("game"), { state: before, cards, ui: { ...ui, source: "", picker: null, awaitingKind: false, discard: null } }, on);
+      applyEffects($("game"), casts, { ...ctxNow(), view: before.view });
+      staging = fx.staged = true;
+      stageTimer = setTimeout(() => { staging = false; render(); }, STAGE_MS);
+      return;
     }
+    renderGame($("game"), { state, cards, ui }, on);
+    if (fx) applyEffects($("game"), effects.filter((f) => f.t !== "cast"), ctxNow());
     pendingFx = null; // later re-renders (a click, a hover) must not replay it
   }
 }
