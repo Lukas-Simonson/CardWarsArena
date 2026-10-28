@@ -34,7 +34,7 @@ let pendingFx = null; // what to animate on the next render: the step from one v
 // turn to act: there is nothing to watch, and our own move should answer at once.
 const pacer = new Pacer({
   deliver: dispatch,
-  holdFor: (msg) => (isMyDecision(state) ? 0 : paceFor(msg.events)),
+  holdFor: (msg) => (isMyDecision(state) ? 0 : paceFor(msg.events, cards)),
 });
 
 /** Messages from the server: updates wait their turn; everything else is immediate. */
