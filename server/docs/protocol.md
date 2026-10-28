@@ -1,6 +1,6 @@
 # Client protocol (version 1)
 
-This is what a client (the Godot game, the debug page, a bot) speaks to
+This is what a client (the web client, the debug page, a bot) speaks to
 `cardwarsd`. The server owns every rule; a client only renders the view it is
 sent and asks for actions the view says are legal.
 
