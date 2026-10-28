@@ -15,6 +15,7 @@ export const CAST_MS = 2000;    // a cast spell stays on show this long
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
 const STATUS_XF = { ready: "rotate(0deg) scale(1)", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
+const xfOf = (status) => STATUS_XF[status] ?? STATUS_XF.ready;
 
 /** uid -> {seat, lane, thing} for the Creatures (or Buildings) in a view. */
 function index(view, key) {
@@ -40,7 +41,7 @@ export function plan(prev, view, events = [], ctx = {}) {
     else if (b.thing.status !== a.thing.status) {
       // a Creature that attacked finishes its lunge upright, then turns
       const lunged = events.some((e) => e.kind === "attack" && e.card === uid);
-      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: STATUS_XF[b.thing.status] ?? "rotate(0deg) scale(1)", delay: lunged ? LUNGE_MS : 0 });
+      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: xfOf(b.thing.status), to: xfOf(a.thing.status), delay: lunged ? LUNGE_MS : 0 });
     }
   }
   for (const [uid, b] of cBefore) {
@@ -63,7 +64,7 @@ export function plan(prev, view, events = [], ctx = {}) {
   }
 
   view.players.forEach((p, seat) => {
-    if (p.hp !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), delay: fought ? HIT_DELAY : 0 });
+    if (p.hp !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), to: pct(p.hp), delay: fought ? HIT_DELAY : 0 });
   });
 
   const hadHand = new Set((prev.players[me].hand ?? []).map((c) => c.uid));
@@ -112,7 +113,7 @@ export function applyEffects(root, fx, ctx) {
         play(tile(f.seat, f.lane)?.querySelector(".card"), [{ transform: `translateY(${f.seat === ctx.view.you ? "50px" : "-50px"}) scale(1.6)`, opacity: 0 }, { opacity: 1, offset: 0.6 }, { transform: "none" }], { duration: 380, composite: "replace", easing: "cubic-bezier(.2,.9,.3,1.2)" });
         break;
       case "settle":
-        play(tile(f.seat, f.lane)?.querySelector(".at"), [{ transform: `translate(-50%, -50%) ${f.from}` }], { duration: 320, delay: f.delay, composite: "replace" });
+        play(tile(f.seat, f.lane)?.querySelector(".at"), [{ transform: `translate(-50%, -50%) ${f.from}` }, { transform: `translate(-50%, -50%) ${f.to}` }], { duration: 320, delay: f.delay, composite: "replace" });
         break;
       case "build":
         play(q(`.strip[data-seat="${f.seat}"][data-lane="${f.lane}"] .row`), [{ transform: "scale(1.4)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 320, composite: "replace" });
@@ -135,7 +136,7 @@ export function applyEffects(root, fx, ctx) {
         break;
       }
       case "hpbar":
-        play(q(`.hpbar[data-seat="${f.seat}"] > div`), [{ width: `${f.from}%` }], { duration: 600, delay: f.delay, composite: "replace" });
+        play(q(`.hpbar[data-seat="${f.seat}"] > div`), [{ width: `${f.from}%` }, { width: `${f.to}%` }], { duration: 600, delay: f.delay, composite: "replace" });
         break;
       case "ghost": {
         const t = tile(f.seat, f.lane);
