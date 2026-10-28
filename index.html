@@ -5,41 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Card Wars</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%9A%94%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Patrick+Hand&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<header>
-  <h1>Card Wars</h1>
-  <span id="status" class="chip">connecting…</span>
-  <span id="roombadge" class="chip" hidden></span>
-  <span class="spacer"></span>
-  <button id="leave" hidden>Leave game</button>
-</header>
+<body class="wood">
+<div id="banner" class="banner" hidden role="alert"></div>
+<span id="status" class="conn" role="status">connecting…</span>
 
-<div id="banner" class="banner" hidden></div>
-
-<section id="lobby">
-  <h2>Play</h2>
-  <div class="form">
-    <label>Server <input id="server" size="26" spellcheck="false"></label>
-    <button id="applyServer">Connect</button>
-  </div>
-  <div class="form">
-    <label>Your name <input id="name" size="12" value="Player" maxlength="24"></label>
+<main id="lobby" class="lobby">
+  <h1 class="h">Card Wars</h1>
+  <p class="sub">Pick a deck and take on the bot.</p>
+  <section class="steel">
+    <label>Your name <input id="name" value="Player" maxlength="24" autocomplete="off"></label>
     <label>Your deck <select id="deck"></select></label>
     <label>Bot's deck <select id="botdeck"><option value="">(the other starter deck)</option></select></label>
-    <button id="vsbot" class="primary">Play against the bot</button>
-  </div>
-  <div class="form">
-    <button id="create">Create a room for a friend</button>
-    <span class="muted">or</span>
-    <label>Room code <input id="code" size="6" maxlength="6" class="code" spellcheck="false"></label>
-    <button id="join">Join</button>
-  </div>
-  <p class="muted" id="lobbyhint"></p>
-</section>
+    <button id="vsbot" class="btn-green go" type="button">Play the bot!</button>
+    <p class="hint muted" id="lobbyhint"></p>
+    <details>
+      <summary>Server</summary>
+      <label>Server address <input id="server" spellcheck="false" autocomplete="off"></label>
+      <button id="applyServer" class="btn-steel" type="button" style="min-height:40px;margin-top:8px">Connect</button>
+    </details>
+  </section>
+</main>
 
-<main id="game" hidden></main>
+<div id="game" hidden></div>
 
 <script type="module" src="js/main.js"></script>
 </body>
