@@ -66,6 +66,18 @@ export function plan(prev, view, events = [], ctx = {}) {
   return fx;
 }
 
+/**
+ * How long the scene should rest on an update before showing the next, so the
+ * motion above can finish and the player can see what happened.
+ */
+export function paceFor(events = []) {
+  const kinds = new Set(events.map((e) => e.kind));
+  if (kinds.has("turn_start") || kinds.has("attack") || kinds.has("die")) return 1400;
+  if (kinds.has("play") || kinds.has("floop") || kinds.has("activate") || kinds.has("damage") || kinds.has("destroy")) return 1100;
+  if (kinds.has("draw")) return 650;
+  return 800;
+}
+
 const pct = (hp) => Math.max(0, Math.min(100, Math.round((hp / MAX_HP) * 100)));
 
 // ---------- playing them
