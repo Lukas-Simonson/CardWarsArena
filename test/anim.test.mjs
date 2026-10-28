@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { plan, HIT_DELAY, DIE_DELAY } from "../js/anim.js";
+import { plan, paceFor, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS } from "../js/anim.js";
 import { view, cards } from "./fixtures.mjs";
 
 const next = (mutate) => { const v = structuredClone(view()); mutate(v); return v; };
@@ -34,7 +34,7 @@ test("a Fight: lunge first, then the blow lands", () => {
   assert.deepEqual(fx.find((f) => f.t === "lunge"), { t: "lunge", seat: 0, lane: 0, up: true });
   assert.deepEqual(fx.find((f) => f.t === "hp"), { t: "hp", seat: 1, amount: 4, delay: HIT_DELAY });
   assert.equal(fx.find((f) => f.t === "hpbar").from, 88, "the bar slides down from where it was");
-  assert.deepEqual(fx.find((f) => f.t === "settle"), { t: "settle", seat: 0, lane: 0, from: "none" });
+  assert.deepEqual(fx.find((f) => f.t === "settle"), { t: "settle", seat: 0, lane: 0, from: "none", delay: LUNGE_MS }, "turns sideways only after its lunge");
 
   const dmg = plan(view(), view(), [{ kind: "attack", player: 1, card: 30, lane: 2 }, { kind: "damage", player: 0, card: 22, lane: 2, amount: 2 }], ctx);
   assert.deepEqual(dmg.map((f) => [f.t, f.seat, f.lane]), [["lunge", 1, 2], ["hit", 0, 2]]);
@@ -50,6 +50,13 @@ test("cards drawn, turns and spells", () => {
 
   const turn = plan(view(), view(), [{ kind: "turn_start", player: 1 }, { kind: "play", player: 0, card: 11, card_id: "corn-scepter" }, { kind: "play", player: 0, card: 10, card_id: "cool-dog" }], ctx);
   assert.deepEqual(turn, [{ t: "turn", seat: 1, mine: false }, { t: "cast", card: "corn-scepter", seat: 0 }]);
+});
+
+test("a Floop turns at once; a cast spell is given time to be read", () => {
+  const flooped = next((v) => { v.players[0].lanes[0].creature.status = "flooped"; });
+  assert.equal(plan(view(), flooped, [{ kind: "floop", player: 0, card: 20 }], ctx)[0].delay, 0);
+  assert.ok(paceFor([{ kind: "play", player: 0, card: 11, card_id: "corn-scepter" }], cards) >= CAST_MS, "the next update waits for the spell");
+  assert.ok(paceFor([{ kind: "play", player: 0, card: 10, card_id: "cool-dog" }], cards) < CAST_MS);
 });
 
 test("a new Building pops in", () => {

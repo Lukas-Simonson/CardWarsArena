@@ -10,6 +10,8 @@ import { cardEl } from "./card.js";
 const MAX_HP = 25;
 export const HIT_DELAY = 260;   // the blow lands this long after the lunge starts
 export const DIE_DELAY = 420;   // a destroyed card lingers a moment first
+export const LUNGE_MS = 520;    // an attacker lunges before it turns sideways
+export const CAST_MS = 2000;    // a cast spell stays on show this long
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
 const STATUS_XF = { ready: "none", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
@@ -35,7 +37,11 @@ export function plan(prev, view, events = [], ctx = {}) {
   for (const [uid, a] of cAfter) {
     const b = cBefore.get(uid);
     if (!b || b.seat !== a.seat || b.lane !== a.lane) fx.push({ t: "drop", seat: a.seat, lane: a.lane });
-    else if (b.thing.status !== a.thing.status) fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: STATUS_XF[b.thing.status] ?? "none" });
+    else if (b.thing.status !== a.thing.status) {
+      // a Creature that attacked finishes its lunge upright, then turns
+      const lunged = events.some((e) => e.kind === "attack" && e.card === uid);
+      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: STATUS_XF[b.thing.status] ?? "none", delay: lunged ? LUNGE_MS : 0 });
+    }
   }
   for (const [uid, b] of cBefore) {
     if (cAfter.has(uid)) continue;
@@ -70,8 +76,9 @@ export function plan(prev, view, events = [], ctx = {}) {
  * How long the scene should rest on an update before showing the next, so the
  * motion above can finish and the player can see what happened.
  */
-export function paceFor(events = []) {
+export function paceFor(events = [], cards = {}) {
   const kinds = new Set(events.map((e) => e.kind));
+  if (events.some((e) => e.kind === "play" && cards[e.card_id]?.type === "spell")) return CAST_MS + 200;
   if (kinds.has("turn_start") || kinds.has("attack") || kinds.has("die")) return 1400;
   if (kinds.has("play") || kinds.has("floop") || kinds.has("activate") || kinds.has("damage") || kinds.has("destroy")) return 1100;
   if (kinds.has("draw")) return 650;
@@ -105,7 +112,7 @@ export function applyEffects(root, fx, ctx) {
         play(tile(f.seat, f.lane)?.querySelector(".card"), [{ transform: `translateY(${f.seat === ctx.view.you ? "50px" : "-50px"}) scale(1.6)`, opacity: 0 }, { opacity: 1, offset: 0.6 }, { transform: "none" }], { duration: 380, composite: "replace", easing: "cubic-bezier(.2,.9,.3,1.2)" });
         break;
       case "settle":
-        play(tile(f.seat, f.lane)?.querySelector(".at"), [{ transform: `translate(-50%, -50%) ${f.from}` }], { duration: 320, composite: "replace" });
+        play(tile(f.seat, f.lane)?.querySelector(".at"), [{ transform: `translate(-50%, -50%) ${f.from}` }], { duration: 320, delay: f.delay, composite: "replace" });
         break;
       case "build":
         play(q(`.strip[data-seat="${f.seat}"][data-lane="${f.lane}"] .row`), [{ transform: "scale(1.4)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 320, composite: "replace" });
@@ -158,7 +165,7 @@ export function applyEffects(root, fx, ctx) {
         const el = document.createElement("div");
         el.className = "fx-cast";
         el.append(cardEl(c));
-        spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.5) rotate(-8deg)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1) rotate(0)", offset: 0.25 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.7 }, { opacity: 0, transform: "translate(-50%, -62%) scale(1.15)" }], { duration: 1100 });
+        spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.5) rotate(-8deg)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1) rotate(0)", offset: 0.14 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.85 }, { opacity: 0, transform: "translate(-50%, -62%) scale(1.15)" }], { duration: CAST_MS });
         break;
       }
     }
