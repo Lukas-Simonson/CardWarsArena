@@ -196,7 +196,8 @@ function tile(m, seat, i, on) {
     onclick: click, onmouseenter: c ? () => on.onInspect(c.card, true) : null,
   },
     h("div", { class: "hex" }),
-    c && h("div", { class: `at ${c.status === "ready" ? "" : c.status}` }, cardEl(ctx.cards[c.card], { atk: c.attack, def: c.defense, damage: c.damage })),
+    c && h("div", { class: `at ${c.status === "ready" ? "" : c.status}` }, cardEl(ctx.cards[c.card])),
+    c && tileStats(ctx.cards[c.card], c),
     c && c.status !== "ready" && h("span", { class: "stat" }, c.status === "fought" ? "Fought" : "Flooped"),
     c && stats.length > 0 && c.status === "ready" && h("span", { class: "stat" }, stats.join(" · ")));
 }
@@ -361,4 +362,14 @@ function logParts(line, names, on) {
   }
   if (at < line.length) out.push(line.slice(at));
   return out;
+}
+
+/** Attack and Defense left, big and beside the card (not rotating with it). */
+function tileStats(card, c) {
+  const base = card?.attack ?? 0;
+  const atk = c.attack ?? base;
+  const left = (c.defense ?? card?.defense ?? 0) - (c.damage ?? 0);
+  return h("div", { class: "tstats" },
+    h("span", { class: `tstat atk ${atk > base ? "up" : ""}`, title: "Attack" }, h("small", {}, "ATK"), atk),
+    h("span", { class: `tstat def ${c.damage > 0 ? "hurt" : ""}`, title: "Defense left" }, h("small", {}, "DEF"), left));
 }
