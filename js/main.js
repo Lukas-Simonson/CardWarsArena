@@ -141,9 +141,9 @@ $("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_d
 $("create").onclick = () => send({ type: "create", ...form(), vs_bot: false });
 const joinRoom = () => { const room = $("code").value.trim().toUpperCase(); if (room) send({ type: "join", room, ...form() }); };
 $("join").onclick = joinRoom;
-$("code").onkeydown = (e) => e.key === "Enter" && joinRoom();
+$("code").addEventListener("keydown", (e) => { if (e.key === "Enter") joinRoom(); });
 $("applyServer").onclick = () => applyServer($("server").value);
-$("server").onkeydown = (e) => e.key === "Enter" && applyServer($("server").value);
+$("server").addEventListener("keydown", (e) => { if (e.key === "Enter") applyServer($("server").value); });
 $("name").onchange = () => store("cw.name", $("name").value);
 $("deck").onchange = () => store("cw.deck", $("deck").value);
 
