@@ -38,6 +38,7 @@ export function plan(prev, view, events = [], ctx = {}) {
   const me = view.you;
 
   const diedUids = new Set(events.filter((e) => e.kind === "die").map((e) => e.card));
+  const newTurn = events.some((e) => e.kind === "turn_start");
   const cBefore = index(prev, "creature"), cAfter = index(view, "creature");
   for (const [uid, a] of cAfter) {
     const b = cBefore.get(uid);
@@ -45,7 +46,9 @@ export function plan(prev, view, events = [], ctx = {}) {
     else if (b.thing.status !== a.thing.status) {
       // a Creature that attacked finishes its lunge upright, then turns
       const lunged = events.some((e) => e.kind === "attack" && e.card === uid);
-      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: xfOf(b.thing.status), to: xfOf(a.thing.status), delay: lunged ? LUNGE_MS : 0 });
+      // a Creature readied by the new turn stays turned until the turn banner shows
+      const refresh = newTurn && a.thing.status === "ready" && !lunged;
+      fx.push({ t: "settle", seat: a.seat, lane: a.lane, from: xfOf(b.thing.status), to: xfOf(a.thing.status), delay: lunged ? LUNGE_MS : 0, ...(refresh && { refresh })});
     }
   }
   for (const [uid, b] of cBefore) {
@@ -73,9 +76,9 @@ export function plan(prev, view, events = [], ctx = {}) {
 
   // Whatever the turn's last action did plays out, then a pause, then the turn
   // changes (banner and the new turn's draws).
-  const body = fx.reduce((m, f) => Math.max(m, END[f.t]?.(f) ?? 0), 0);
-  const shift = events.some((e) => e.kind === "turn_start") && body > 0 ? body + TURN_PAUSE_MS : 0;
-  for (const f of fx) if (f.t === "turn") f.delay = shift;
+  const body = fx.reduce((m, f) => (f.refresh ? m : Math.max(m, END[f.t]?.(f) ?? 0)), 0);
+  const shift = newTurn && body > 0 ? body + TURN_PAUSE_MS : 0;
+  for (const f of fx) if (f.t === "turn" || f.refresh) f.delay = shift;
 
   const hadHand = new Set((prev.players[me].hand ?? []).map((c) => c.uid));
   (view.players[me].hand ?? []).filter((c) => !hadHand.has(c.uid)).forEach((c, i) => fx.push({ t: "deal", uid: c.uid, delay: i * 120 + shift }));
