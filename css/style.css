@@ -226,3 +226,5 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 .log ul { max-height: 190px; overflow-y: auto; }
+.cardref { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+.cardref:hover, .cardref:focus-visible { color: #7442b0; outline: none; }

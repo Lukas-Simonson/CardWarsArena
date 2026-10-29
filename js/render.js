@@ -47,7 +47,7 @@ export function renderGame(root, model, on) {
       h("div", { class: "main" },
         battlefield(model2, on),
         handSection(model2, on),
-        logPanel(state)),
+        logPanel(state, ctx, on)),
       h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect)))));
 }
 
@@ -329,10 +329,36 @@ function detailPanel(ctx, cardId) {
       : h("p", {}, "Point at or click a card to read it big.")));
 }
 
-function logPanel(state) {
+function logPanel(state, ctx, on) {
   const lines = state.log.slice(-LOG_SHOWN).reverse();
+  const names = nameMatcher(ctx.cards);
   return h("section", { class: "parch log", "aria-labelledby": "log-h" },
     h("h2", { id: "log-h" }, "What just happened"),
     lines.length === 0 ? h("p", { class: "muted", style: "margin:0" }, "Nothing yet.") :
-      h("ul", {}, lines.map((l) => h("li", { class: l.startsWith("──") ? "turn" : l.startsWith("***") ? "big" : "" }, l.replaceAll("──", "").replaceAll("***", "").trim()))));
+      h("ul", {}, lines.map((l) => h("li", { class: l.startsWith("──") ? "turn" : l.startsWith("***") ? "big" : "" },
+        ...logParts(l.replaceAll("──", "").replaceAll("***", "").trim(), names, on)))));
+}
+
+/** A regex (longest names first) and name -> card id, or null with no catalog. */
+function nameMatcher(cards) {
+  const byName = new Map();
+  for (const c of Object.values(cards ?? {})) if (c.name && !byName.has(c.name)) byName.set(c.name, c.id);
+  if (byName.size === 0) return null;
+  const alts = [...byName.keys()].sort((a, b) => b.length - a.length).map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return { re: new RegExp(alts.join("|"), "g"), byName };
+}
+
+/** A log line as text with each card name made hoverable. */
+function logParts(line, names, on) {
+  if (!names) return [line];
+  const out = [];
+  let at = 0;
+  for (const m of line.matchAll(names.re)) {
+    if (m.index > at) out.push(line.slice(at, m.index));
+    const id = names.byName.get(m[0]);
+    out.push(h("span", { class: "cardref", tabindex: "0", onmouseenter: () => on.onInspect(id, true), onfocus: () => on.onInspect(id, true), onclick: () => on.onInspect(id) }, m[0]));
+    at = m.index + m[0].length;
+  }
+  if (at < line.length) out.push(line.slice(at));
+  return out;
 }
