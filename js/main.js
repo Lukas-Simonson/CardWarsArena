@@ -16,7 +16,10 @@ const sstore = (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sess
 const sload = (k) => { try { return sessionStorage.getItem(k); } catch { return null; } };
 
 const params = new URLSearchParams(location.search);
-let server = normaliseServer(params.get("server") || load("cw.server") || "http://localhost:8080");
+// Served together with the game server (Docker, a reverse proxy) the server is the page's own
+// origin; the dev static server on :5173 talks to a game server on :8080.
+const defaultServer = location.port === "5173" ? "http://localhost:8080" : location.origin;
+let server = normaliseServer(params.get("server") || load("cw.server") || defaultServer);
 let state = initialState();
 let cards = {};
 let decks = [];
