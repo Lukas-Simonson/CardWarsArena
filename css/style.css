@@ -228,3 +228,11 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .log ul { max-height: 190px; overflow-y: auto; }
 .cardref { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
 .cardref:hover, .cardref:focus-visible { color: #7442b0; outline: none; }
+
+/* lobby: play a friend */
+.lobby .or { display: flex; align-items: center; gap: 10px; color: #cfe0ee; font-size: 15px; margin: 4px 0; }
+.lobby .or::before, .lobby .or::after { content: ""; flex: 1; border-top: 2px dashed rgba(255,255,255,.3); }
+.joinrow { display: flex; gap: 8px; }
+.joinrow input { flex: 1 1 auto; min-width: 0; text-transform: uppercase; letter-spacing: 2px; }
+.joinrow button { flex: 0 0 auto; min-height: 44px; }
+.roomcode { font-family: var(--big-font); font-size: 64px; letter-spacing: 8px; margin: 8px 0 0; color: #fff; -webkit-text-stroke: 4px #1f1033; paint-order: stroke fill; user-select: all; }

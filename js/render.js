@@ -26,8 +26,9 @@ export function renderGame(root, model, on) {
     root.replaceChildren(h("div", { class: "table" },
       h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, "Card Wars"))),
       h("div", { class: "steel", style: "padding:24px 28px" },
-        h("h2", { class: "h", style: "font-size:30px" }, state.waiting ? `Waiting for an opponent — room ${state.session?.room ?? ""}` : "Joining…"),
-        state.waiting && h("p", {}, "Send this code to your friend; they choose “Join”."))));
+        h("h2", { class: "h", style: "font-size:30px" }, state.waiting ? "Waiting for an opponent…" : "Joining…"),
+        state.waiting && h("p", {}, "Send this room code to your friend; they type it under “Join”."),
+        state.waiting && h("p", { class: "roomcode", "aria-label": "Room code" }, state.session?.room ?? ""))));
     return;
   }
   const ctx = { view: v, cards, names: state.names, known: state.known };

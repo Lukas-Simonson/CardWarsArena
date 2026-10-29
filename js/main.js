@@ -138,6 +138,10 @@ document.addEventListener("keydown", (e) => {
 const form = () => ({ name: $("name").value, deck: $("deck").value });
 
 $("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_deck: $("botdeck").value || undefined });
+$("create").onclick = () => send({ type: "create", ...form(), vs_bot: false });
+const joinRoom = () => { const room = $("code").value.trim().toUpperCase(); if (room) send({ type: "join", room, ...form() }); };
+$("join").onclick = joinRoom;
+$("code").onkeydown = (e) => e.key === "Enter" && joinRoom();
 $("applyServer").onclick = () => applyServer($("server").value);
 $("server").onkeydown = (e) => e.key === "Enter" && applyServer($("server").value);
 $("name").onchange = () => store("cw.name", $("name").value);
@@ -153,11 +157,12 @@ function render() {
   s.textContent = { open: "connected", connecting: "connecting…", reconnecting: "reconnecting…", closed: "disconnected" }[state.status] ?? state.status;
   s.className = "conn " + (state.status === "open" ? "ok" : state.status === "closed" ? "bad" : "warn");
   const banner = $("banner");
-  const msg = state.error || catalogError || (!inRoom && state.closedReason ? `The room closed: ${state.closedReason}.` : "");
+  const gone = inRoom && state.view && state.opponent.connected === false ? "Your opponent has disconnected. The game waits for them to come back." : "";
+  const msg = state.error || catalogError || gone || (!inRoom && state.closedReason ? `The room closed: ${state.closedReason}.` : "");
   banner.hidden = !msg;
   banner.textContent = msg;
   banner.className = "banner" + (!state.error && !catalogError ? " info" : "");
-  $("lobby").querySelectorAll("#vsbot").forEach((b) => (b.disabled = state.status !== "open" || !decks.length));
+  for (const id of ["vsbot", "create", "join"]) $(id).disabled = state.status !== "open" || !decks.length;
   if (inRoom && !staging) {
     const fx = pendingFx?.seq === state.seq && state.view ? pendingFx : null;
     const effects = fx ? plan(fx.prev, state.view, fx.events, ctxNow()) : [];
