@@ -78,3 +78,10 @@ test("the turn changes only after the last action has played out, plus a pause",
   assert.equal(bare[0].delay, 0, "nothing to wait for within this update");
   assert.ok(paceFor([{ kind: "turn_start", player: 1 }], cards) >= BANNER_MS);
 });
+
+test("only a bare turn change needs the pacer's pause; a last Fight does not", async () => {
+  const { bareTurnChange } = await import("../js/anim.js");
+  assert.equal(bareTurnChange({ events: [{ kind: "turn_start" }, { kind: "draw" }] }), true);
+  assert.equal(bareTurnChange({ events: [{ kind: "attack" }, { kind: "damage" }, { kind: "turn_start" }] }), false);
+  assert.equal(bareTurnChange({ events: [{ kind: "attack" }] }), false);
+});

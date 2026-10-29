@@ -120,6 +120,14 @@ const pct = (hp) => Math.max(0, Math.min(100, Math.round((hp / MAX_HP) * 100)));
 
 // ---------- playing them
 
+// A turn change with nothing else happening in the update (the turn was ended
+// by a bare "end turn"): the pause before it has to come from the pacer. When the
+// update also holds an action (the last Fight), plan() puts the pause after it.
+export const bareTurnChange = (msg) => {
+  const ev = msg.events ?? [];
+  return ev.some((e) => e.kind === "turn_start") && !ev.some((e) => !["turn_start", "draw", "actions", "ready"].includes(e.kind));
+};
+
 export const reduced = () => !!globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /** Play the effects on the freshly rendered scene in `root`. */
