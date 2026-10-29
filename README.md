@@ -70,3 +70,25 @@ The smoke test chooses every action through the picker, as a player would, and
 fails if the picker ever offers an action the server did not list or leaves
 the player with nothing to click. Start the server with `-bot-delay 1ms` to
 make it fast.
+
+## Docker
+
+`docker-compose.yml` runs the game server and this client behind one port, so the
+browser sees a single origin (no CORS or `-origins` needed):
+
+```bash
+docker compose up -d --build   # then open http://localhost:8088
+```
+
+The `web` container (Caddy) serves the static files and proxies `/ws`, `/api/*`
+and `/healthz` to the `server` container. To publish it, point your own reverse
+proxy at port 8088 of the `web` container and keep the `Host` header (Caddy's
+`reverse_proxy` does by default), which the WebSocket origin check compares:
+
+```
+cardwars.example.com {
+	reverse_proxy host:8088
+}
+```
+
+Games live in memory, so restarting the server ends any match in progress.
