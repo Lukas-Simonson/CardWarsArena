@@ -175,7 +175,6 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .hbtn { flex: 0 1 100px; min-width: 56px; margin: 0 -6px; padding: 0; background: none; border: none; border-radius: 10px; color: inherit; transition: transform 160ms ease, opacity 160ms ease; }
 .hbtn .card { border-radius: 10px; }
 .hbtn:hover { z-index: 6; transform: translateY(-64px) scale(1.55) !important; }
-.hbtn.go .card { box-shadow: 0 0 0 4px #7dd24c, 0 0 14px 4px rgba(125,210,76,.5); }
 .hbtn.sel .card { box-shadow: 0 0 0 4px var(--gold), 0 0 18px 6px rgba(255,211,77,.55); }
 .hbtn.pick .card { box-shadow: 0 0 0 4px #ff6b5a, 0 0 18px 6px rgba(255,107,90,.55); }
 .hbtn.off { opacity: .62; }
