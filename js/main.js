@@ -6,7 +6,7 @@ import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
 import { isMyDecision } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
-import { plan, applyEffects, paceFor, reduced, STAGE_MS, TURN_PAUSE_MS } from "./anim.js";
+import { plan, applyEffects, paceFor, reduced, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
 import { Pacer } from "./pacer.js";
 
 const $ = (id) => document.getElementById(id);
@@ -34,14 +34,13 @@ let pendingFx = null; // what to animate on the next render: the step from one v
 // Updates are shown one at a time, each given time to play out, so a bot that
 // moves in quick succession can be followed. Rests are skipped when it is our
 // turn to act: there is nothing to watch, and our own move should answer at once.
-const turnChanges = (msg) => (msg.events ?? []).some((e) => e.kind === "turn_start");
 const pacer = new Pacer({
   deliver: dispatch,
   holdFor: (msg) => (msg.view?.phase === "mulligan" ? 0 : paceFor(msg.events, cards)),
   // Our own moves answer at once; but the turn never changes while something is
   // still playing, and not until a short pause after it.
-  skipWait: (msg) => isMyDecision(state) && !turnChanges(msg),
-  gapFor: (msg) => (turnChanges(msg) && state.view?.phase !== "mulligan" ? TURN_PAUSE_MS : 0),
+  skipWait: (msg) => isMyDecision(state) && !bareTurnChange(msg),
+  gapFor: (msg) => (bareTurnChange(msg) && state.view?.phase !== "mulligan" ? TURN_PAUSE_MS : 0),
 });
 
 /** Messages from the server: updates wait their turn; everything else is immediate. */
