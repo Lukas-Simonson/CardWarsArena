@@ -189,7 +189,7 @@ function tile(m, seat, i, on) {
     if (c) on.onInspect(c.card);
   };
   const label = `${mine ? "Your" : "Opponent"} Lane ${i + 1}, ${lane.face_down ? "face-down" : landscapeName(lane.landscape)}${c ? `: ${cardName(ctx, c.card)}` : ", empty"}`;
-  const stats = c && [c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced"), c.damage > 0 && `dmg ${c.damage}`].filter(Boolean);
+  const stats = c && [c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced")].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
     "data-seat": seat, "data-lane": i,
