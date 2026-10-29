@@ -46,8 +46,9 @@ export function renderGame(root, model, on) {
     h("div", { class: "cols" },
       h("div", { class: "main" },
         battlefield(model2, on),
-        handSection(model2, on)),
-      h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), logPanel(state)))));
+        handSection(model2, on),
+        logPanel(state)),
+      h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect)))));
 }
 
 /** Replace just the "Card up close" panel (used on hover, so the scene is not rebuilt). */

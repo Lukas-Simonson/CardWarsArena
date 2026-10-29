@@ -187,9 +187,9 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .acts .btn-red, .acts .btn-green { width: 100%; min-height: 48px; font-size: 24px; white-space: nowrap; padding-top: 5px; box-shadow: inset 0 3px 0 rgba(255,255,255,.35), 0 5px 0 var(--ink); }
 
 /* ---------- sidebar */
-.side .parch, .side .steel { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-.side h2 { font-size: 24px; align-self: flex-start; }
-.side .parch h2 { font-family: var(--hand-font); font-weight: 400; font-size: 26px; margin: 0; }
+.side .parch, .side .steel, .log { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.side h2, .log h2 { font-size: 24px; align-self: flex-start; }
+.side .parch h2, .log h2 { font-family: var(--hand-font); font-weight: 400; font-size: 26px; margin: 0; }
 .detail { align-items: center; }
 .detail .well { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px; }
 .detail .well .card { width: 210px; }
@@ -225,3 +225,4 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
   .strip { font-size: 12px; } .strip .row .tag { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.log ul { max-height: 190px; overflow-y: auto; }
