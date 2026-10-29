@@ -4,7 +4,7 @@ A browser client for the Card Wars server (`../server`): no build step, no
 dependencies. The look comes from the "Card Wars Web — Game Design" Claude
 Design project: wood table, felt battlefield, riveted steel panels.
 
-Today it plays one thing: a match against the bot. Card art comes from the
+It plays a match against the bot, or against a friend with a room code. Card art comes from the
 catalog's `image_url`; a card without a scan is drawn from its data in a frame
 coloured for its Landscape.
 
@@ -18,7 +18,7 @@ go run ./cmd/cardwarsd -origins 'localhost:*'
 npm start            # or: node serve.mjs 5173
 ```
 
-Open http://localhost:5173/. Pick a deck and choose **Play the bot!**. The
+Open http://localhost:5173/. Pick a deck and choose **Play the bot!**, or **Create a room** and send the code to a friend, who types it under **Join**. (To try it alone, use two browser tabs: each keeps its own seat.) The
 server address (default `http://localhost:8080`, or `?server=http://host:port`)
 is under "Server" on the lobby. Reloading the page puts you back in your seat.
 

@@ -16,12 +16,18 @@
 
 <main id="lobby" class="lobby">
   <h1 class="h">Card Wars</h1>
-  <p class="sub">Pick a deck and take on the bot.</p>
+  <p class="sub">Pick a deck, then take on the bot or a friend.</p>
   <section class="steel">
     <label>Your name <input id="name" value="Player" maxlength="24" autocomplete="off"></label>
     <label>Your deck <select id="deck"></select></label>
     <label>Bot's deck <select id="botdeck"><option value="">(the other starter deck)</option></select></label>
     <button id="vsbot" class="btn-green go" type="button">Play the bot!</button>
+    <div class="or"><span>or play a friend</span></div>
+    <button id="create" class="btn-purple" type="button">Create a room</button>
+    <div class="joinrow">
+      <input id="code" placeholder="Room code" maxlength="8" spellcheck="false" autocomplete="off" aria-label="Room code">
+      <button id="join" class="btn-steel" type="button">Join</button>
+    </div>
     <p class="hint muted" id="lobbyhint"></p>
     <details>
       <summary>Server</summary>
