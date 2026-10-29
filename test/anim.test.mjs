@@ -85,3 +85,20 @@ test("only a bare turn change needs the pacer's pause; a last Fight does not", a
   assert.equal(bareTurnChange({ events: [{ kind: "attack" }, { kind: "damage" }, { kind: "turn_start" }] }), false);
   assert.equal(bareTurnChange({ events: [{ kind: "attack" }] }), false);
 });
+
+test("Creatures readied by a new turn stay turned until the turn banner shows", () => {
+  const before = next((v) => { v.players[0].lanes[0].creature.status = "fought"; v.players[1].lanes[0].creature.status = "fought"; });
+  const fx = plan(before, view(), [{ kind: "turn_start", player: 0 }], ctx);
+  const turn = fx.find((f) => f.t === "turn");
+  const settles = fx.filter((f) => f.t === "settle");
+  assert.equal(settles.length, 2);
+  for (const s of settles) assert.equal(s.delay, turn.delay);
+
+  // after a last Fight the readying waits for the banner too, not for the blow
+  const after = next((v) => { v.players[1].hp = 21; });
+  const events = [{ kind: "attack", player: 1, card: 30 }, { kind: "hp_loss", player: 0, amount: 4 }, { kind: "turn_start", player: 0 }];
+  const fx2 = plan(before, after, events, ctx);
+  const t2 = fx2.find((f) => f.t === "turn");
+  assert.ok(t2.delay > 0);
+  assert.ok(fx2.filter((f) => f.refresh).every((f) => f.delay === t2.delay));
+});
