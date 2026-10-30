@@ -2,6 +2,9 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -16,6 +19,39 @@ func cli(t *testing.T, input string, args ...string) (out string, code int) {
 	return stdout.String() + stderr.String(), code
 }
 
+// dataWithout copies the card data but leaves out one card's rules, so any
+// deck holding it is unplayable.
+func dataWithout(t *testing.T, id string) string {
+	t.Helper()
+	dir := t.TempDir()
+	for _, sub := range []string{"cards", "effects"} {
+		if err := os.MkdirAll(filepath.Join(dir, sub), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		files, _ := filepath.Glob(filepath.Join("../../data", sub, "*.json"))
+		for _, f := range files {
+			b, err := os.ReadFile(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if sub == "effects" {
+				var m map[string]json.RawMessage
+				if err := json.Unmarshal(b, &m); err != nil {
+					t.Fatal(err)
+				}
+				delete(m, id)
+				if b, err = json.Marshal(m); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := os.WriteFile(filepath.Join(dir, sub, filepath.Base(f)), b, 0o644); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	return dir
+}
+
 func TestListDecks(t *testing.T) {
 	out, code := cli(t, "", "--list-decks")
 	if code != 0 || !strings.Contains(out, "Finn's Deck") {
@@ -25,8 +61,8 @@ func TestListDecks(t *testing.T) {
 		if strings.Contains(line, "Finn's Deck") && !strings.Contains(line, "ready") {
 			t.Errorf("Finn's deck should be ready: %q", line)
 		}
-		if strings.Contains(line, "BMO's Deck") && strings.Contains(line, "ready") {
-			t.Errorf("a deck with unmodelled cards must not be ready: %q", line)
+		if strings.Contains(line, "BMO's Deck") && !strings.Contains(line, "ready") {
+			t.Errorf("all four decks are modelled and should be ready: %q", line)
 		}
 	}
 }
@@ -36,7 +72,7 @@ func TestBadArguments(t *testing.T) {
 		"unknown deck":   {"--p0", "nope"},
 		"bad bot":        {"--bot", "everyone"},
 		"bad first":      {"--first", "5"},
-		"unmodelled":     {"--p0", "bmo"},
+		"unmodelled":     {"--data", dataWithout(t, "mace-stump"), "--p0", "bmo"},
 		"unknown flag":   {"--wat"},
 		"ambiguous deck": {"--p0", "deck"},
 	} {
@@ -44,7 +80,7 @@ func TestBadArguments(t *testing.T) {
 			t.Errorf("%s: expected failure, got:\n%s", name, out)
 		}
 	}
-	if out, code := cli(t, "", "--p0", "bmo", "--allow-unmodelled", "--bot", "both"); code != 0 {
+	if out, code := cli(t, "", "--data", dataWithout(t, "mace-stump"), "--p0", "bmo", "--allow-unmodelled", "--bot", "both"); code != 0 {
 		t.Errorf("--allow-unmodelled should let BMO's deck play: %s", out)
 	}
 }

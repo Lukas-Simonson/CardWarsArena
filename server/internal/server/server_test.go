@@ -39,6 +39,20 @@ type harness struct {
 	ts  *httptest.Server
 }
 
+// unmodelled makes a deck unplayable by taking the rules away from one of its cards.
+func unmodelled(t *testing.T, id string) func(*Config) {
+	return func(cfg *Config) {
+		cat := card.Catalog{}
+		for k, c := range catalog(t) {
+			cat[k] = c
+		}
+		stripped := *cat[id]
+		stripped.Modeled, stripped.Effects = false, nil
+		cat[id] = &stripped
+		cfg.Catalog = cat
+	}
+}
+
 func newHarness(t *testing.T, mutate ...func(*Config)) *harness {
 	t.Helper()
 	// Scripted clients answer instantly, far faster than a person: relax the limiter.
@@ -228,7 +242,7 @@ func TestHelloAndHTTPEndpoints(t *testing.T) {
 }
 
 func TestDecksEndpointMarksPlayability(t *testing.T) {
-	h := newHarness(t)
+	h := newHarness(t, unmodelled(t, "mace-stump")) // one of BMO's cards
 	resp, err := http.Get(h.ts.URL + "/api/decks")
 	if err != nil {
 		t.Fatal(err)
@@ -245,7 +259,7 @@ func TestDecksEndpointMarksPlayability(t *testing.T) {
 	for _, d := range list {
 		ready[d.Name] = d.Playable
 	}
-	if !ready["Finn's Deck"] || !ready["Jake's Deck"] || ready["BMO's Deck"] || ready["Lady's Deck"] {
+	if !ready["Finn's Deck"] || !ready["Jake's Deck"] || !ready["Lady's Deck"] || ready["BMO's Deck"] {
 		t.Errorf("playable = %v", ready)
 	}
 }
@@ -365,7 +379,7 @@ func TestIllegalActionIsRejectedAndChangesNothing(t *testing.T) {
 }
 
 func TestRequestErrors(t *testing.T) {
-	h := newHarness(t)
+	h := newHarness(t, unmodelled(t, "mace-stump"))
 	c := h.dial()
 	c.send(ClientMsg{Type: MsgAction, Action: &engine.Action{Kind: engine.ActDraw}})
 	c.expectError(ErrNotInRoom)

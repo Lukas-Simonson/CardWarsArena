@@ -12,24 +12,34 @@ created with `AllowUnimplemented`.
 | kind        | meaning |
 |-------------|---------|
 | `static`    | Always on while the card is in play: stat `mods` and/or a `restrict`ion |
-| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes` |
-| `floop`     | `FLOOP >>>` ability: exhaust (Ready only), then run `do` |
-| `activate`  | `Pay N Action(s) >>>` ability, usable any number of times |
+| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters` |
+| `floop`     | `FLOOP >>>` ability: exhaust (Ready only), then run `do`. `cost` adds Actions to pay |
+| `activate`  | `Pay N Action(s) >>>` ability, usable any number of times. `cost` 0 is allowed when the first op removes the card itself (`destroy_creature`/`bounce` with `self`) |
+| `play_condition` | The card may only be played while `if` holds (Hot Eyebat, Bone Wand) |
+| `cost_mod`  | The card costs `reduce` less: Actions and Landscapes, or only Actions with `actions_only` |
 | `spell`     | Resolved when the Spell is played, then the Spell is discarded |
 | `additional_cost` | Paid when the card is played (Field Reaper discards a card); its targets travel in the action's `cost_targets` |
 
 ## Pieces
 
 - **Value** `{n, per?}`: a number, or `n` times a **Count**.
-- **Count** `{of, scope?, type?, adjacent?, other?}` where `of` is one of
+- **Count** `{of, scope?, type?, adjacent?, other?, div?, card?, from_target?}` where `of` is one of
   `landscapes`, `landscape_types`, `creatures`, `flooped_creatures`,
-  `spells_played`, `opponent_hand`. Landscape counts only see face-up ones.
+  `spells_played`, `opponent_hand`, `discard` (your discard pile), `empty_lanes`,
+  `entered_this_turn` (Creatures that entered play this turn; `scope: any` for both sides),
+  `entered_adjacent` (entered on your side in the Lanes next to the card), `base_attack`
+  (the card's printed ATK) and `milled_cost` (the cost of the card `mill` last discarded).
+  `div` counts whole groups ("for every 5 cards": `div: 5`), `card` limits `creatures` to one
+  card, and `from_target` counts from each chosen Creature instead of the card. Landscape counts only see face-up ones.
   `creatures` with `type` matches the *card's* Landscape type (a Rainbow card is
   never a Cornfield Creature).
 - **Selector** `{rel, landscape?, changed_lanes?}`: which creatures. `rel` is
   `self`, `lane_ally` (my creature in this Lane), `adjacent_allies`, `your`,
   `opposing`, `any`.
-- **Cond** `{opposing_creature_in_lane?, landscapes?{type,min?,max?}, building_in_lane?}`.
+- **Cond** `{opposing_creature_in_lane?, landscapes?{type,min?,max?}, building_in_lane?,
+  opponent_hand_max?, discard_min?, controls?, on_landscape?, entered_max?}`.
+- **Watch** (on a `creature_enters` trigger) `{landscape?, other?, your_turn?}`: which Creatures entering
+  under your control fire it. `once_per_turn` limits the trigger to once each turn.
 - **TargetSpec**: one choice slot. `what` = `creature|building|landscape|lane|discard_card|hand_card`,
   `side` = `you|opponent|any`, `in_lane`, `adjacent_lane`, `landscape`, `face_down`,
   `without` (for lanes: `creature` or `building`), `card_type`, `optional`, and
@@ -38,8 +48,11 @@ created with `AllowUnimplemented`.
   `mod_creature`, `move_creature`, `move_building`, `flip_landscape`,
   `ready_creature`, `bounce`, `destroy_building`, `gain_actions`,
   `return_from_discard`, `put_on_deck`, `discard`, `copy_floop` (Schoolhouse),
-  `steal_play` (Silo of Truth). Ops reference target slots by index and may
-  carry an `if` condition.
+  `steal_play` (Silo of Truth), `destroy_creature`, `mill`, `discard_random`,
+  `discount_next_creature`, `borrow_creature` (Spirit Tower) and `ogre_gas`. Ops reference
+  target slots by index and may carry an `if` condition. `self` and `entering` act on the
+  card itself or on the Creature that fired a `creature_enters` trigger instead of a slot;
+  `permanent` makes `mod_creature` last while the Creature is in play.
 
 ## Targets are chosen up front
 
@@ -88,4 +101,17 @@ stuck.
   own Lane if that Lane has no Creature.
 - Silo of Truth "no cost" waives the additional cost too.
 
-All 40-card starter decks are fully modelled.
+- Where a card says an opponent "discards a card" (Abraca Amadeus, Bone Wand, Mace Stump) the
+  card is chosen at random: the engine has no way to ask the opponent mid-turn.
+- Ogre Gas reveals the top 3 cards, puts one chosen at random on the bottom and discards the
+  other two, for the same reason.
+- Ms. Mummy's "at the start of your turn, you may" is a free ability usable before any
+  Creature has entered play under your control that turn. "Gains 1 DEF" is permanent, like
+  Sand Eyebat's.
+- Palace of Bone stops the entering and leaving play triggers of Creatures opposite it,
+  including other Creatures' "when a Creature enters play" triggers that they would set off.
+- Spirit Tower needs an empty Lane on your side as well as the Creature to take; the Creature
+  goes home to the same Lane at the end of the turn (if its owner has put nothing there).
+- Zazo's Magic Seeds counts Creatures that entered play this turn on the target's side.
+
+All four starter decks (Finn's, Jake's, BMO's and Lady's) are fully modelled.
