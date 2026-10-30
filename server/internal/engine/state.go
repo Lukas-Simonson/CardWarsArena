@@ -60,6 +60,14 @@ type Creature struct {
 	// card (Schoolhouse).
 	Silenced bool   `json:"silenced,omitempty"`
 	Lent     string `json:"lent,omitempty"`
+	// PermATK and PermDEF are bonuses that last while the Creature is in play.
+	PermATK int `json:"perm_atk,omitempty"`
+	PermDEF int `json:"perm_def,omitempty"`
+	// Borrowed Creatures go back to their owner's side at the end of the turn
+	// (Spirit Tower).
+	Borrowed bool `json:"borrowed,omitempty"`
+	// Fired lists the once-per-turn triggers already used this turn.
+	Fired []int `json:"fired,omitempty"`
 }
 
 // Building is a Building in play.
@@ -102,6 +110,11 @@ type State struct {
 	Pending *Pending `json:"pending,omitempty"`
 	// SpellsThisTurn counts Spells the active player has played this turn.
 	SpellsThisTurn int `json:"spells_this_turn"`
+	// Entered counts the Creatures that entered play this turn, per side and Lane.
+	Entered [2][NumLanes]int `json:"entered"`
+	// CreatureDiscount is how many Actions the next Creature the active
+	// player plays costs less (Unempty Coffin).
+	CreatureDiscount int `json:"creature_discount,omitempty"`
 }
 
 // Pending is a card taken from the opponent that must be played for free

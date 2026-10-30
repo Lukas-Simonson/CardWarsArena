@@ -48,8 +48,8 @@ without playing to it:
 Players are `0`, `1`, `me`, `opp`; lanes are 1-4; card names match by
 substring. `u` undoes sandbox edits too.
 
-Decks other than Finn's and Jake's contain cards whose rules are not modelled
-yet; `--allow-unmodelled` plays them with their text ignored.
+All four decks are fully modelled. A card without modelled rules (a future deck) is refused
+unless `--allow-unmodelled` is given, which plays it with its text ignored.
 
 ## Running the server
 

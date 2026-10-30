@@ -64,8 +64,7 @@ func TestFindAndPick(t *testing.T) {
 		t.Errorf("the full key should work too: %+v %v", byKey, err)
 	}
 	for _, d := range all {
-		wantReady := d.Owner == "Finn" || d.Owner == "Jake" // the others still have unmodelled cards
-		if d.Ready != wantReady || !d.LandOK || d.Hero == "" {
+		if !d.Ready || !d.LandOK || d.Hero == "" {
 			t.Errorf("%s: ready=%v landscapes=%v hero=%q", d.Key(), d.Ready, d.LandOK, d.Hero)
 		}
 	}

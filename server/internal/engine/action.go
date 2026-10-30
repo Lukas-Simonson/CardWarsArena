@@ -125,4 +125,5 @@ var (
 	ErrPending        = errors.New("the stolen card must be played first")
 	ErrNoPending      = errors.New("there is no stolen card to play")
 	ErrBadTarget      = errors.New("invalid target choice")
+	ErrCondition      = errors.New("the card's condition is not met")
 )

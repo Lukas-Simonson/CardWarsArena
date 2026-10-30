@@ -16,9 +16,31 @@ type Effect struct {
 	// activate: Pay Cost Actions >>> ...
 	Cost int `json:"cost,omitempty"`
 
+	// trigger on creature_enters: which entering Creatures it watches.
+	Watch *Watch `json:"watch,omitempty"`
+	// trigger: fire at most once each turn (Wall of Sand).
+	OncePerTurn bool `json:"once_per_turn,omitempty"`
+
+	// floop, activate: only usable while this holds. play_condition: the card
+	// may only be played while this holds.
+	If *Cond `json:"if,omitempty"`
+
+	// cost_mod: the card costs Reduce less to play (only the Actions paid, if
+	// ActionsOnly, otherwise the Landscapes needed too).
+	Reduce      *Value `json:"reduce,omitempty"`
+	ActionsOnly bool   `json:"actions_only,omitempty"`
+
 	// floop, activate, spell, trigger: what is chosen and what happens.
 	Targets []TargetSpec `json:"targets,omitempty"`
 	Do      []Op         `json:"do,omitempty"`
+}
+
+// Watch says which Creatures entering play under the watcher's control fire
+// a creature_enters trigger.
+type Watch struct {
+	Landscape Landscape `json:"landscape,omitempty"` // the entering card's own type
+	Other     bool      `json:"other,omitempty"`     // not the watcher itself
+	YourTurn  bool      `json:"your_turn,omitempty"` // only during the controller's turn
 }
 
 // EffectKind says when an Effect applies.
@@ -30,6 +52,9 @@ const (
 	KindFloop    EffectKind = "floop"
 	KindActivate EffectKind = "activate"
 	KindSpell    EffectKind = "spell"
+	// KindPlayCondition and KindCostMod apply to the card while it is in hand.
+	KindPlayCondition EffectKind = "play_condition"
+	KindCostMod       EffectKind = "cost_mod"
 	// KindAdditionalCost is paid when the card is played: its targets are
 	// chosen with the action and its ops (discard) run before the card does.
 	KindAdditionalCost EffectKind = "additional_cost"
@@ -41,10 +66,17 @@ const (
 	OnLeavePlay   = "leave_play"
 	OnTurnStart   = "turn_start"
 	OnChangeLanes = "change_lanes"
+	// OnCreatureEnters fires when a Creature enters play under the card's
+	// controller's control (the card's Watch narrows which).
+	OnCreatureEnters = "creature_enters"
 )
 
 // Restrictions (Effect.Restrict).
-const RestrictAdjacentAlliesNotAttackable = "adjacent_allies_not_attackable"
+const (
+	RestrictAdjacentAlliesNotAttackable = "adjacent_allies_not_attackable"
+	// Opposing Creatures in the Lane do not trigger entering or leaving play effects (Palace of Bone).
+	RestrictOpposingNoEnterLeave = "opposing_no_enter_leave_triggers"
+)
 
 // Mod adjusts the ATK or DEF of every creature matching To.
 type Mod struct {
@@ -62,11 +94,16 @@ type Value struct {
 
 // Count things, always from the point of view of the effect's controller.
 type Count struct {
-	Of       string    `json:"of"`
-	Scope    string    `json:"scope,omitempty"` // "you" (default) or "any"
-	Type     Landscape `json:"type,omitempty"`
-	Adjacent bool      `json:"adjacent,omitempty"`
-	Other    bool      `json:"other,omitempty"`
+	Of   string `json:"of"`
+	Div  int    `json:"div,omitempty"`  // count whole groups of this many (for every 5 cards)
+	Card string `json:"card,omitempty"` // creatures: only this card
+	// FromTarget counts from the point of view of each chosen Creature
+	// instead of the card (Zazo's Magic Seeds).
+	FromTarget bool      `json:"from_target,omitempty"`
+	Scope      string    `json:"scope,omitempty"` // "you" (default) or "any"
+	Type       Landscape `json:"type,omitempty"`
+	Adjacent   bool      `json:"adjacent,omitempty"`
+	Other      bool      `json:"other,omitempty"`
 }
 
 // Selector picks creatures relative to the effect's source.
@@ -81,6 +118,11 @@ type Cond struct {
 	OpposingCreatureInLane *bool          `json:"opposing_creature_in_lane,omitempty"`
 	BuildingInLane         *bool          `json:"building_in_lane,omitempty"`
 	Landscapes             *LandscapeCond `json:"landscapes,omitempty"`
+	OpponentHandMax        *int           `json:"opponent_hand_max,omitempty"` // the opponent holds at most this many cards
+	DiscardMin             *int           `json:"discard_min,omitempty"`       // your discard pile holds at least this many
+	Controls               Landscape      `json:"controls,omitempty"`          // you control a Creature of this type
+	OnLandscape            Landscape      `json:"on_landscape,omitempty"`      // the card's Lane has this face-up Landscape
+	EnteredMax             *int           `json:"entered_max,omitempty"`       // at most this many of your Creatures entered play this turn
 }
 
 // LandscapeCond bounds how many face-up Landscapes of a type you control.
@@ -100,6 +142,7 @@ type TargetSpec struct {
 	FaceDown     *bool     `json:"face_down,omitempty"`
 	Without      string    `json:"without,omitempty"`   // lanes: "creature" or "building"
 	CardType     Type      `json:"card_type,omitempty"` // discard_card
+	Cost         *int      `json:"cost,omitempty"`      // discard_card
 	Flooped      *bool     `json:"flooped,omitempty"`   // creatures
 	Optional     bool      `json:"optional,omitempty"`
 	Count        *Value    `json:"count,omitempty"` // up to this many distinct targets
@@ -118,6 +161,12 @@ type Op struct {
 	Amount *Value      `json:"amount,omitempty"`
 	Random bool        `json:"random,omitempty"`
 	Filter *CardFilter `json:"filter,omitempty"` // return_from_discard
+	// Self acts on the card itself; Entering on the Creature that fired a
+	// creature_enters trigger.
+	Self     bool `json:"self,omitempty"`
+	Entering bool `json:"entering,omitempty"`
+	// Permanent makes mod_creature last as long as the Creature is in play.
+	Permanent bool `json:"permanent,omitempty"`
 }
 
 // CardFilter narrows cards in a pile.
@@ -131,6 +180,8 @@ var validOps = map[string]struct{ slots int }{
 	"move_creature": {2}, "move_building": {2}, "flip_landscape": {1},
 	"ready_creature": {1}, "bounce": {1}, "destroy_building": {1},
 	"gain_actions": {0}, "copy_floop": {0}, "steal_play": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
+	"destroy_creature": {0}, "mill": {0}, "discard_random": {0}, "discount_next_creature": {0},
+	"borrow_creature": {2}, "ogre_gas": {0},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -140,7 +191,7 @@ func (e *Effect) Validate(t Type) error {
 		if len(e.Mods) == 0 && e.Restrict == "" {
 			return fmt.Errorf("static effect has no mods or restrict")
 		}
-		if e.Restrict != "" && e.Restrict != RestrictAdjacentAlliesNotAttackable {
+		if e.Restrict != "" && e.Restrict != RestrictAdjacentAlliesNotAttackable && e.Restrict != RestrictOpposingNoEnterLeave {
 			return fmt.Errorf("unknown restrict %q", e.Restrict)
 		}
 		for _, m := range e.Mods {
@@ -161,7 +212,7 @@ func (e *Effect) Validate(t Type) error {
 		}
 	case KindTrigger:
 		switch e.On {
-		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes:
+		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters:
 		default:
 			return fmt.Errorf("unknown trigger %q", e.On)
 		}
@@ -176,8 +227,25 @@ func (e *Effect) Validate(t Type) error {
 			return fmt.Errorf("floop belongs to creatures and buildings")
 		}
 	case KindActivate:
-		if e.Cost < 1 {
-			return fmt.Errorf("activate needs a cost of at least 1 Action")
+		if e.Cost < 1 && !(len(e.Do) > 0 && e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce")) {
+			return fmt.Errorf("activate needs a cost of at least 1 Action, or to remove its own card first")
+		}
+	case KindPlayCondition:
+		if e.If == nil {
+			return fmt.Errorf("play_condition needs an if")
+		}
+		if t != Creature && t != Building && t != Spell {
+			return fmt.Errorf("play conditions belong to cards that are played")
+		}
+	case KindCostMod:
+		if e.Reduce == nil {
+			return fmt.Errorf("cost_mod needs reduce")
+		}
+		if err := e.Reduce.validate(); err != nil {
+			return err
+		}
+		if t != Creature && t != Building && t != Spell {
+			return fmt.Errorf("cost mods belong to cards that are played")
 		}
 	case KindSpell:
 		if t != Spell {
@@ -217,7 +285,7 @@ func (e *Effect) Validate(t Type) error {
 				return fmt.Errorf("op %d (%s): slot %d out of range", i, op.Do, *s)
 			}
 		}
-		if info.slots >= 1 && op.Slot == nil {
+		if info.slots >= 1 && op.Slot == nil && !op.Self {
 			return fmt.Errorf("op %d (%s): needs slot", i, op.Do)
 		}
 		if info.slots == 2 && op.Slot2 == nil {
@@ -237,7 +305,8 @@ func (v Value) validate() error {
 		return nil
 	}
 	switch v.Per.Of {
-	case "landscapes", "landscape_types", "creatures", "flooped_creatures", "spells_played", "opponent_hand":
+	case "landscapes", "landscape_types", "creatures", "flooped_creatures", "spells_played", "opponent_hand",
+		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

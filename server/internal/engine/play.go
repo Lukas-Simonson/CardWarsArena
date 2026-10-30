@@ -34,6 +34,31 @@ func (g *Game) faceUp(p PlayerID, ls card.Landscape) int {
 	return n
 }
 
+// costFor is what playing c costs p right now: the Actions to pay and the
+// face-up Landscapes of its type needed. Normally both are the printed cost;
+// cost mods on the card and a pending Creature discount lower them.
+func (g *Game) costFor(p PlayerID, c *card.Card) (actions, lands int) {
+	if c.Cost == nil {
+		return 0, 0
+	}
+	actions, lands = *c.Cost, *c.Cost
+	at := source{pos: pos{p, 0}}
+	for _, e := range c.Effects {
+		if e.Kind != card.KindCostMod || (e.If != nil && !g.cond(*e.If, at)) {
+			continue
+		}
+		r := g.value(*e.Reduce, at)
+		actions -= r
+		if !e.ActionsOnly {
+			lands -= r
+		}
+	}
+	if c.Type == card.Creature && p == g.State.Active {
+		actions -= g.State.CreatureDiscount
+	}
+	return max(actions, 0), max(lands, 0)
+}
+
 // canAfford checks the Action cost and the Landscape requirement. The cost is
 // both the number of Actions paid and the number of face-up Landscapes of the
 // card's type required. Rainbow and 0-cost cards need no Landscape, and 0-cost
@@ -42,17 +67,24 @@ func (g *Game) canAfford(p PlayerID, c *card.Card) error {
 	if c.Cost == nil {
 		return ErrNotPlayable
 	}
-	cost := *c.Cost
-	if cost == 0 {
-		return nil
-	}
-	if g.State.ActionsLeft < cost {
+	actions, lands := g.costFor(p, c)
+	if g.State.ActionsLeft < actions {
 		return ErrNoActions
 	}
-	if c.Landscape != card.Rainbow && g.faceUp(p, c.Landscape) < cost {
+	if lands > 0 && c.Landscape != card.Rainbow && g.faceUp(p, c.Landscape) < lands {
 		return ErrLandscapes
 	}
 	return nil
+}
+
+// conditionsMet checks a card's "play only if" rules.
+func (g *Game) conditionsMet(p PlayerID, c *card.Card) bool {
+	for _, e := range c.Effects {
+		if e.Kind == card.KindPlayCondition && !g.cond(*e.If, source{pos: pos{p, 0}}) {
+			return false
+		}
+	}
+	return true
 }
 
 // checkPlayable runs every check on a play except target choices.
@@ -76,6 +108,9 @@ func (g *Game) checkPlayable(p PlayerID, a Action) (Instance, *card.Card, error)
 	}
 	if err := g.canAfford(p, c); err != nil {
 		return in, c, err
+	}
+	if !g.conditionsMet(p, c) {
+		return in, c, ErrCondition
 	}
 	if c.Type == card.Creature {
 		// A Flooped Creature must be Ready before it can be replaced.
@@ -179,7 +214,11 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	in := pl.Hand[idx]
 	pl.Hand = append(pl.Hand[:idx:idx], pl.Hand[idx+1:]...)
 	c := g.Card(in)
-	g.State.ActionsLeft -= *c.Cost
+	actions, _ := g.costFor(p, c)
+	g.State.ActionsLeft -= actions
+	if c.Type == card.Creature {
+		g.State.CreatureDiscount = 0 // the discount is for the next Creature played
+	}
 	var costEv []Event
 	if ce := costEffect(c); ce != nil {
 		costEv = g.runOps(ce.Do, effCtx{p: p, playing: a.Card}, a.CostTargets)
@@ -203,7 +242,14 @@ func (g *Game) resolvePlay(p PlayerID, in Instance, c *card.Card, a Action) []Ev
 	}
 	ev := g.place(p, in, a.Lane)
 	ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: a.Lane})
-	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), c.Effects, a.Targets)...)
+	if c.Type == card.Creature {
+		g.State.Entered[p][a.Lane]++
+	}
+	ev = append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, a.Lane), c.Effects, a.Targets)...)
+	if c.Type == card.Creature {
+		ev = append(ev, g.fireWatchers(p, a.Lane)...)
+	}
+	return ev
 }
 
 // spellEffect returns a Spell's resolution effect, if it has one.

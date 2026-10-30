@@ -128,14 +128,30 @@ func (g *Game) settle() []Event {
 // endTurn passes the turn to p's opponent. Unspent Actions are lost and every
 // "this turn" effect ends.
 func (g *Game) endTurn(p PlayerID) []Event {
+	var ev []Event
+	// Borrowed Creatures go home (back to their owner's side of the same Lane).
+	for i := range g.State.Players {
+		for lane := range g.State.Players[i].Lanes {
+			at := pos{PlayerID(i), lane}
+			if c := g.creatureAt(at); c != nil && c.Borrowed {
+				c.Borrowed = false
+				if c.Owner != at.P {
+					ev = append(ev, g.moveCreature(at, pos{c.Owner, lane})...)
+				}
+			}
+		}
+	}
 	g.State.SpellsThisTurn = 0
+	g.State.Entered = [2][NumLanes]int{}
+	g.State.CreatureDiscount = 0
 	for i := range g.State.Players {
 		for _, l := range g.State.Players[i].Lanes {
 			if c := l.Creature; c != nil {
 				c.TempATK, c.TempDEF, c.ChangedLanes = 0, 0, false
 				c.Silenced, c.Lent = false, ""
+				c.Fired = nil
 			}
 		}
 	}
-	return g.startTurn(p.Opp())
+	return append(ev, g.startTurn(p.Opp())...)
 }
