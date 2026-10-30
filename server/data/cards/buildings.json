@@ -1,53 +1,5 @@
 [
   {
-    "id": "auto-plucker",
-    "name": "Auto-Plucker",
-    "type": "building",
-    "landscape": "nice_lands",
-    "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e Heal or deal 1 Damage to your Creature in this Lane.",
-    "printings": [
-      {
-        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/auto-plucker.jpg"
-  },
-  {
-    "id": "bayou-fountain",
-    "name": "Bayou Fountain",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 1,
-    "text": "Discard a card \u003e\u003e\u003e Your Creature on this Landscape has +1 ATK this turn. (Use any number of times during each of your turns.)",
-    "printings": [
-      {
-        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
-        "set": "2v2",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bayou_fountain.jpg"
-  },
-  {
-    "id": "blood-castle",
-    "name": "Blood Castle",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 1,
-    "text": "Each time an opposing Creature in this Lane takes Damage, increase the amount by 1.",
-    "printings": [
-      {
-        "deck": "Cake's Cornfield Deck",
-        "set": "CP6",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blood_castle.jpg"
-  },
-  {
     "id": "blood-fortress",
     "name": "Blood Fortress",
     "type": "building",
@@ -56,101 +8,27 @@
     "text": "Your Creature in this Lane has +1 ATK.",
     "printings": [
       {
-        "deck": "Jake's Cornfield Deck",
-        "set": "CP1",
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 2
       },
       {
-        "deck": "Finn's Blue Plains Deck",
-        "set": "CP1",
-        "copies": 1
-      },
-      {
-        "deck": "BMO's Useless Swamp Deck",
-        "set": "CP2",
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 2
       },
       {
-        "deck": "Lady Rainicorns's Sandy Lands Deck",
-        "set": "CP2",
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      },
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
         "copies": 2
-      },
-      {
-        "deck": "Princess Bubblegum's Nice Lands Deck",
-        "set": "CP3",
-        "copies": 1
-      },
-      {
-        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
-        "set": "CP3",
-        "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/blood_fortress.jpg"
-  },
-  {
-    "id": "bog-palace",
-    "name": "Bog Palace",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 2,
-    "text": "Your Creature on this Landscape has +3 ATK. At the start of each of your turns, discard a card.",
-    "printings": [
-      {
-        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bog_palace.jpg"
-  },
-  {
-    "id": "cabin-of-many-woods",
-    "name": "Cabin of Many Woods",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 5,
-    "text": "Cabin of Many Woods costs 1 less to play for each Flooped Creature you control. Your Creature in the Lane has +5 DEF.",
-    "printings": [
-      {
-        "deck": "Cake's Cornfield Deck",
-        "set": "CP6",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cabin_of_many_woods.jpg"
-  },
-  {
-    "id": "cardboard-mansion",
-    "name": "Cardboard Mansion",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 5,
-    "text": "Cardboard Mansion costs 1 less to play for every 5 cards in your Discard Pile. FLOOP \u003e\u003e\u003e Gain 1 Action.",
-    "printings": [
-      {
-        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cardboard_mansion.jpg"
-  },
-  {
-    "id": "cave-of-solitude",
-    "name": "Cave of Solitude",
-    "type": "building",
-    "landscape": "nice_lands",
-    "cost": 2,
-    "text": "Discard a card \u003e\u003e\u003e Your Creature in this Lane can't be targeted or attacked until the start of your next turn.",
-    "printings": [
-      {
-        "deck": "Princess Bubblegum's Nice Lands Deck",
-        "set": "CP3",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cave_of_solitude.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Fortress.webp"
   },
   {
     "id": "celestial-castle",
@@ -161,421 +39,27 @@
     "text": "Your Creature in this Lane has +3 DEF.",
     "printings": [
       {
-        "deck": "Jake's Cornfield Deck",
-        "set": "CP1",
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 1
       },
       {
-        "deck": "Finn's Blue Plains Deck",
-        "set": "CP1",
-        "copies": 2
-      },
-      {
-        "deck": "BMO's Useless Swamp Deck",
-        "set": "CP2",
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 1
       },
       {
-        "deck": "Lady Rainicorns's Sandy Lands Deck",
-        "set": "CP2",
-        "copies": 1
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
       },
       {
-        "deck": "Princess Bubblegum's Nice Lands Deck",
-        "set": "CP3",
-        "copies": 1
-      },
-      {
-        "deck": "Ice King's Icy Lands Deck",
-        "set": "CP4",
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/celestial_castle.jpg"
-  },
-  {
-    "id": "celestial-fortress",
-    "name": "Celestial Fortress",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 1,
-    "text": "The opposing Creature in this Lane has -2 DEF.",
-    "printings": [
-      {
-        "deck": "Cake's Cornfield Deck",
-        "set": "CP6",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/celestial_fortress.jpg"
-  },
-  {
-    "id": "charming-city",
-    "name": "Charming City",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 1,
-    "text": "All Creatures in this Lane lose their Landscape type and become Rainbow Creatures.",
-    "printings": [
-      {
-        "deck": "Fionna's Blue Plains Deck",
-        "set": "CP6",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/charming_city.jpg"
-  },
-  {
-    "id": "cloud-tower",
-    "name": "Cloud Tower",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 2,
-    "text": "Your Creature on this Landscape cannot be targeted by your foe's Spells or Creature abilities. FLOOP \u003e\u003e\u003e Move a Creature you control to this Landscape.",
-    "printings": [
-      {
-        "deck": "Charlie's Blue Plains/Nice Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cloud_tower.jpg"
-  },
-  {
-    "id": "crab-skull-island",
-    "name": "Crab Skull Island",
-    "type": "building",
-    "landscape": "sandy_lands",
-    "cost": 1,
-    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e If this Landscape is empty, reveal cards from the top of your deck until you reveal a Creature, then play it onto this Landscape for free and shuffle the other revealed cards into your deck.",
-    "printings": [
-      {
-        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/crab_skull_island.jpg"
-  },
-  {
-    "id": "crystal-palace",
-    "name": "Crystal Palace",
-    "type": "building",
-    "landscape": "icy_lands",
-    "cost": 1,
-    "text": "When a Landscape in this Lane becomes Frozen, deal 2 Damage to target Creature.",
-    "printings": [
-      {
-        "deck": "Ice King's Icy Lands Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/crystal_palace.jpg"
-  },
-  {
-    "id": "domed-stronghold",
-    "name": "Domed Stronghold",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 1,
-    "text": "Your Creature on this Landscape has +2 DEF and cannot be damaged by your foe's Spells.",
-    "printings": [
-      {
-        "deck": "Charlie's Blue Plains/Nice Lands Deck",
-        "set": "2v2",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/domed_stronghold.jpg"
-  },
-  {
-    "id": "elf-hut",
-    "name": "Elf Hut",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 1,
-    "text": "Pay 1 Action \u003e\u003e\u003e Draw a card for each Creature in this Lane.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Common"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/elf_hut.jpg"
-  },
-  {
-    "id": "fancy-spa",
-    "name": "Fancy Spa",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 1,
-    "text": "At the start of your Fight Phase, if you control an exhausted Creature on this Landscape, draw a card.",
-    "printings": [
-      {
-        "deck": "Gunter's Blue Plains/Icy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fancy_spa.jpg"
-  },
-  {
-    "id": "farmhouse",
-    "name": "Farmhouse",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 1,
-    "text": "Farmhouse counts as an additional Cornfield Landscape you control.",
-    "printings": [
-      {
-        "deck": "Cake's Cornfield Deck",
-        "set": "CP6",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/farmhouse.jpg"
-  },
-  {
-    "id": "floating-ice-palace",
-    "name": "Floating Ice Palace",
-    "type": "building",
-    "landscape": "icy_lands",
-    "cost": 2,
-    "text": "Your Creature on this Landscape has +1 ATK during your turn for each Landscape with a Frozen token on it.",
-    "printings": [
-      {
-        "deck": "Gunter's Blue Plains/Icy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/floating_ice_palace.jpg"
-  },
-  {
-    "id": "fountain-of-tears",
-    "name": "Fountain of Tears",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 0,
-    "text": "While your Creature in this Lane has exactly 3 Damage on it, it has +3 ATK.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Rare"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fountain_of_tears.jpg"
-  },
-  {
-    "id": "fright-tower",
-    "name": "Fright Tower",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 1,
-    "text": "Pay 1 Action \u003e\u003e\u003e Target Creature in this Lane has +1 ATK this turn for every 5 cards in your discard pile.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Common"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fright_tower.jpg"
-  },
-  {
-    "id": "funeral-home",
-    "name": "Funeral Home",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 1,
-    "text": "Whenever a foe discards a card, your Creature in this Lane has +1 ATK until the end of turn.",
-    "printings": [
-      {
-        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/funeral_home.jpg"
-  },
-  {
-    "id": "haybarn",
-    "name": "Haybarn",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 1,
-    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e If this Landscape is empty, play a \"Feedman\" from your discard pile onto this Landscape for free. If Haybarn leaves play, destroy the Feedman on its Landscape.",
-    "printings": [
-      {
-        "deck": "Jake's Cornfield/Nice Lands Deck",
-        "set": "2v2",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/haybarn.jpg"
-  },
-  {
-    "id": "husker-garrison",
-    "name": "Husker Garrison",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 2,
-    "text": "Your Creature on this Landscape has +1 ATK and +1 DEF for each Cornfield Creature you control.",
-    "printings": [
-      {
-        "deck": "Jake's Cornfield/Nice Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/husker_garrison.jpg"
-  },
-  {
-    "id": "ice-base",
-    "name": "Ice Base",
-    "type": "building",
-    "landscape": "icy_lands",
-    "cost": 2,
-    "text": "When Ice Base enters play, Freeze both Landscapes in this Lane. You may play Creatures onto this Landscape even while Frozen.",
-    "printings": [
-      {
-        "deck": "Moniker's Useless Swamp/Icy Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ice_base.jpg"
-  },
-  {
-    "id": "ice-olation-cell",
-    "name": "Ice-olation Cell",
-    "type": "building",
-    "landscape": "icy_lands",
-    "cost": 1,
-    "text": "Creatures on Landscapes with a Frozen token on it in this Lane cannot Attack or use abilities.",
-    "printings": [
-      {
-        "deck": "Ice King's Icy Lands Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ice-olation_cell.jpg"
-  },
-  {
-    "id": "igloo-of-sanctuary",
-    "name": "Igloo of Sanctuary",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e If your Creature in this Lane moved here from another Lane this turn, it has +3ATK this turn.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Common"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/igloo_of_sanctuary.jpg"
-  },
-  {
-    "id": "learning-center",
-    "name": "Learning Center",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 2,
-    "text": "Learning Center gains the game text of Buildings you control in adjacent Lanes (but not their names).",
-    "printings": [
-      {
-        "deck": "Fionna's Blue Plains Deck",
-        "set": "CP6",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/learning_center.jpg"
-  },
-  {
-    "id": "lunchpad",
-    "name": "Lunchpad",
-    "type": "building",
-    "landscape": "sandy_lands",
-    "cost": 2,
-    "text": "FLOOP \u003e\u003e\u003e Draw a card for each Creature that entered play onto this Landscape this turn.",
-    "printings": [
-      {
-        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lunchpad.jpg"
-  },
-  {
-    "id": "mausoleum",
-    "name": "Mausoleum",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 1,
-    "text": "Your Creature in this Lane has +1 DEF for every 5 cards in your discard pile.",
-    "printings": [
-      {
-        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
-        "set": "CP3",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/mausoleum.jpg"
-  },
-  {
-    "id": "nice-windmill",
-    "name": "Nice Windmill",
-    "type": "building",
-    "landscape": "nice_lands",
-    "cost": 1,
-    "text": "Pay 1 Action \u003e\u003e\u003e Heal or deal up to 2 Damage to your Creature in this Lane.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Uncommon"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/nice_windmill.jpg"
-  },
-  {
-    "id": "night-tower",
-    "name": "Night Tower",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e If your opponent has no Creature in this Lane they discard a card.",
-    "printings": [
-      {
-        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
-        "set": "CP3",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/night_tower.jpg"
-  },
-  {
-    "id": "oil-refinery",
-    "name": "Oil Refinery",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 2,
-    "text": "Your Creature on this Landscape has +2 DEF for each Oil Refinery you control.",
-    "printings": [
-      {
-        "deck": "Fionna's Blue Plains Deck",
-        "set": "CP6",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/oil_refinery.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Celestial%20Castle.webp"
   },
   {
     "id": "palace-of-bone",
@@ -583,111 +67,31 @@
     "type": "building",
     "landscape": "useless_swamp",
     "cost": 1,
-    "text": "Opposing Creatures in this Lane don't trigger entering or leaving play effects.",
+    "text": "Opposing Creatures in this Lane do not trigger entering or leaving play effects.",
     "printings": [
       {
-        "deck": "BMO's Useless Swamp Deck",
-        "set": "CP2",
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/palace_of_bone.jpg"
-  },
-  {
-    "id": "parrotmilitary-outpost",
-    "name": "Parrotmilitary Outpost",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 0,
-    "text": "Each Creature in this Lane has -1 ATK (min 0).",
-    "printings": [
-      {
-        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/parrotmilitary_outpost.jpg"
-  },
-  {
-    "id": "pillow-fortress",
-    "name": "Pillow Fortress",
-    "type": "building",
-    "landscape": "nice_lands",
-    "cost": 1,
-    "text": "Pay 1 Action, FLOOP \u003e\u003e\u003e Heal 2 or deal 2 Damage to a Creature you control on this Landscape. Do the same to another friendly Creature.",
-    "printings": [
-      {
-        "deck": "Jake's Cornfield/Nice Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pillow_fortress.jpg"
-  },
-  {
-    "id": "pyramidia",
-    "name": "Pyramidia",
-    "type": "building",
-    "landscape": "blue_plains",
-    "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e If you control a Creature in this Lane, gain 1 Action. Use it only to play a Creature into this Lane.",
-    "printings": [
-      {
-        "deck": "Lumpy Space Princess' Blue Plains/Useless Swamp Deck (Totally Rad Deck)",
-        "set": "CP3",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/pyramidia.jpg"
-  },
-  {
-    "id": "sand-castle",
-    "name": "Sand Castle",
-    "type": "building",
-    "landscape": "sandy_lands",
-    "cost": 1,
-    "text": "Discard Sand Castle from play \u003e\u003e\u003e Put your Creature on this Landscape into your hand and then play it for free.",
-    "printings": [
-      {
-        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
-        "set": "2v2",
-        "copies": 2
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_castle.jpg"
-  },
-  {
-    "id": "sand-pyramid",
-    "name": "Sand Pyramid",
-    "type": "building",
-    "landscape": "sandy_lands",
-    "cost": 1,
-    "text": "Pay 2 Actions \u003e\u003e\u003e Return each Creature in this Lane to its owner's hand. (Affects both players.)",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Uncommon"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_pyramid.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Palace%20of%20Bone.webp"
   },
   {
     "id": "sand-sphinx",
     "name": "Sand Sphinx",
     "type": "building",
     "landscape": "sandy_lands",
-    "cost": 1,
+    "cost": 2,
     "text": "FLOOP \u003e\u003e\u003e Return a Creature you control in this Lane to its owner's hand.",
     "printings": [
       {
-        "deck": "Lady Rainicorn's SandyLand Deck",
-        "set": "CP2",
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 2
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sand_sphinx.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sand%20Sphinx.webp"
   },
   {
     "id": "schoolhouse",
@@ -695,68 +99,15 @@
     "type": "building",
     "landscape": "blue_plains",
     "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e Your Creature in this Lane loses all abilities and gains the FLOOP ability of a random Creature (with a FLOOP ability) in your discard pile until end of turn.",
+    "text": "FLOOP \u003e\u003e\u003e Your Creature in this Lane loses all abilities and gains the Floop ability of a random Creature (with a Floop ability) in your discard pile until end of turn.",
     "printings": [
       {
-        "deck": "Finn's Blue Plains Deck",
-        "set": "CP1",
-        "copies": 1
-      },
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Uncommon"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/schoolhouse.jpg"
-  },
-  {
-    "id": "shadowy-pyramid",
-    "name": "Shadowy Pyramid",
-    "type": "building",
-    "landscape": "useless_swamp",
-    "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e Draw a card. If you control a Creature in this Lane, discard a card.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Common"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/shadowy_pyramid.jpg"
-  },
-  {
-    "id": "silo-of-freedom",
-    "name": "Silo of Freedom",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 1,
-    "text": "Discard a card \u003e\u003e\u003e Your Landscape in this Lane loses its type and becomes the type of your choice (except face down) until the start of your next turn.",
-    "printings": [
-      {
-        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
-        "set": "CP5",
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/silo_of_freedom.jpg"
-  },
-  {
-    "id": "silo-of-justice",
-    "name": "Silo of Justice",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 1,
-    "text": "Pay 1 Action \u003e\u003e\u003e Deal 1 Damage to target Creature in this Lane and 1 Damage to its controller.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Uncommon"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/silo_of_justice.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Schoolhouse.webp"
   },
   {
     "id": "silo-of-truth",
@@ -764,79 +115,15 @@
     "type": "building",
     "landscape": "cornfield",
     "cost": 1,
-    "text": "Pay 2 Actions \u003e\u003e\u003e Steal a random card from your opponent and play it at no cost.",
+    "text": "Pay 2 actions \u003e\u003e\u003e Steal a random card from your opponent's hand and play it at no cost.",
     "printings": [
       {
-        "deck": "Jake's Cornfield Deck",
-        "set": "CP1",
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/silo_of_truth.jpg"
-  },
-  {
-    "id": "sinkhole",
-    "name": "Sinkhole",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 2,
-    "text": "Discard a card, FLOOP \u003e\u003e\u003e Flip target Landscape in this Lane face down until the start of your next turn.",
-    "printings": [
-      {
-        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sinkhole.jpg"
-  },
-  {
-    "id": "snow-bank",
-    "name": "Snow Bank",
-    "type": "building",
-    "landscape": "icy_lands",
-    "cost": 1,
-    "text": "FLOOP, Remove a Frozen token from a Landscape in this Lane \u003e\u003e\u003e Deal 3 Damage to target opponent.",
-    "printings": [
-      {
-        "deck": "Grand Prix's Sandy Lands/Icy Lands Deck",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_bank.jpg"
-  },
-  {
-    "id": "snow-business",
-    "name": "Snow Business",
-    "type": "building",
-    "landscape": "icy_lands",
-    "cost": 2,
-    "text": "Pay 1 Action \u003e\u003e\u003e Freeze target Landscape in this Lane.",
-    "printings": [
-      {
-        "deck": "Ice King's Icy Lands Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_business.jpg"
-  },
-  {
-    "id": "snow-training-camp",
-    "name": "Snow Training Camp",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 0,
-    "text": "FLOOP \u003e\u003e\u003e Freeze both Landscapes in this Lane. Use only if no Frozen tokens are in play.",
-    "printings": [
-      {
-        "deck": "Gunter's Blue Plains/Icy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/snow_training_camp.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Silo%20of%20Truth.webp"
   },
   {
     "id": "spirit-tower",
@@ -844,100 +131,15 @@
     "type": "building",
     "landscape": "useless_swamp",
     "cost": 2,
-    "text": "Pay 1 Action and FLOOP \u003e\u003e\u003e If you control no Creatures in this Lane, move target Creature in this Lane to your side and ready it. At end of turn, return it to its owner's side.",
+    "text": "FLOOP and pay 1 action \u003e\u003e\u003e If you control no Creatures in this Lane, move target Creature in this Lane to your side and ready it. At end of turn, return it to its owner's side.",
     "printings": [
       {
-        "deck": "BMO's Useless Swamp Deck",
-        "set": "CP2",
-        "copies": 1
-      },
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Common"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/spirit_tower.jpg"
-  },
-  {
-    "id": "sundae-school",
-    "name": "Sundae School",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 1,
-    "text": "While you have an even amount of Hit Points, your Creature on this Landscape has +2 ATK.",
-    "printings": [
-      {
-        "deck": "Boom! Comics Adventure Time with Fionna and Cake: Card Wars Issue #1",
-        "set": "PROMO",
-        "rarity": "Ultra Rare"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/sundae_school.jpg"
-  },
-  {
-    "id": "temple-of-the-sun",
-    "name": "Temple of the Sun",
-    "type": "building",
-    "landscape": "sandy_lands",
-    "cost": 1,
-    "text": "When a Sandy Lands Creature with cost 1 or greater you control enters play in this Lane, you may return it to its owner's hand.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Uncommon"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/temple_of_the_sun.jpg"
-  },
-  {
-    "id": "the-big-hen-house",
-    "name": "The Big Hen House",
-    "type": "building",
-    "landscape": "nice_lands",
-    "cost": 1,
-    "text": "At the start of your turn, deal 1 or 2 Damage to your Creature in this Lane, then you heal 1 HP (Max 25).",
-    "printings": [
-      {
-        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
-        "set": "CP4",
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/the_big_hen_house.jpg"
-  },
-  {
-    "id": "weary-trading-post",
-    "name": "Weary Trading Post",
-    "type": "building",
-    "landscape": "rainbow",
-    "cost": 0,
-    "text": "FLOOP \u003e\u003e Move an exhausted Creature you control to this Landscape (if empty).",
-    "printings": [
-      {
-        "deck": "Gunter's Blue Plains/Icy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/weary_trading_post.jpg"
-  },
-  {
-    "id": "windmill-of-health",
-    "name": "Windmill of Health",
-    "type": "building",
-    "landscape": "nice_lands",
-    "cost": 1,
-    "text": "While your Creature in this Lane has no Damage on it, it has +2 ATK.",
-    "printings": [
-      {
-        "deck": "Princess Bubblegum's Nice Lands Deck",
-        "set": "CP3",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/windmill_of_health.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spirit%20Tower.webp"
   },
   {
     "id": "woad-mobile-home",
@@ -945,30 +147,14 @@
     "type": "building",
     "landscape": "blue_plains",
     "cost": 1,
-    "text": "FLOOP \u003e\u003e\u003e Move a Creature in an empty adjacent Lane to this Lane (if empty).",
+    "text": "FLOOP \u003e\u003e\u003e Move a Creature in an adjacent Lane to this Lane (if empty).",
     "printings": [
       {
-        "deck": "Finn's Blue Plains Deck",
-        "set": "CP1",
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
         "copies": 2
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/woad_mobile_home.jpg"
-  },
-  {
-    "id": "yellow-lighthouse",
-    "name": "Yellow Lighthouse",
-    "type": "building",
-    "landscape": "cornfield",
-    "cost": 1,
-    "text": "At the start of your turn, each players who controls a Creature in this Lane draws a card.",
-    "printings": [
-      {
-        "deck": "For the Glory! Booster Pack",
-        "set": "FTG",
-        "rarity": "Common"
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/yellow_lighthouse.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woad%20Mobile%20Home.webp"
   }
 ]

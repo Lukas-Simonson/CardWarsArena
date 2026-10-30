@@ -1,171 +1,31 @@
 [
   {
-    "id": "abracadaniel",
-    "name": "Abracadaniel",
-    "type": "hero",
-    "text": "Pay 1 Action \u003e\u003e\u003e Reveal the top card of your deck. If it's a Rainbow card, play it.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/abracadaniel.jpg"
-  },
-  {
-    "id": "billy",
-    "name": "Billy",
-    "type": "hero",
-    "text": "If your opponent's deck runs out of cards, you win the game.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/billy.jpg"
-  },
-  {
     "id": "bmo",
     "name": "BMO",
     "type": "hero",
-    "text": "Discard a card from your hand \u003e\u003e\u003e Deal 1 Damage to target Creature.",
+    "text": "Discard a card from your hand \u003e\u003e\u003e Deal 1 damage to target Creature.",
     "printings": [
       {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/bmo.jpg"
-  },
-  {
-    "id": "cake",
-    "name": "Cake",
-    "type": "hero",
-    "text": "Each time a Building enters play under your control, heal 2 Damage from each Creature you control with a Building on its Landscape.",
-    "printings": [
-      {
-        "deck": "Cake's Cornfield Deck",
-        "set": "CP6",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cake.jpg"
-  },
-  {
-    "id": "charlie",
-    "name": "Charlie",
-    "type": "hero",
-    "text": "Once during your turn, you may move a Creature you control to an adjacent empty Landscape.",
-    "printings": [
-      {
-        "deck": "Doubles Tournament",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/charlie.jpg"
-  },
-  {
-    "id": "cosmic-owl",
-    "name": "Cosmic Owl",
-    "type": "hero",
-    "text": "Pay 1 Action \u003e\u003e\u003e Look at the top 4 cards of you deck and rearrange them.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/cosmic_owl.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/BMO.webp"
   },
   {
     "id": "finn",
     "name": "Finn",
     "type": "hero",
-    "text": "Creatures you control take no Damage on them have \"FLOOP \u003e\u003e\u003e Deal 1 Damage to target Creature.",
+    "text": "Creatures you control with no damage on them have \"FLOOP \u003e\u003e\u003e Deal 1 damage to target Creature.\"",
     "printings": [
       {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/finn.jpg"
-  },
-  {
-    "id": "fionna",
-    "name": "Fionna",
-    "type": "hero",
-    "text": "While you control only one Landscape type, your Rainbow Creatures have +1 ATK.",
-    "printings": [
-      {
-        "deck": "Fionna's Blue Plains Deck",
-        "set": "CP6",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/fionna.jpg"
-  },
-  {
-    "id": "grand-prix",
-    "name": "Grand Prix",
-    "type": "hero",
-    "text": "Once during your turn, you may put a Creature you played this turn back into your hand, then play it for free and put 3 Damage on it.",
-    "printings": [
-      {
-        "deck": "Doubles Tournament",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/grand_prix.jpg"
-  },
-  {
-    "id": "gunter",
-    "name": "Gunter",
-    "type": "hero",
-    "text": "Creatures you control on Landscapes with Frozen tokens have +1 ATK.",
-    "printings": [
-      {
-        "deck": "Gunter's Blue Plains/Icy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/gunter.jpg"
-  },
-  {
-    "id": "huntress-wizard",
-    "name": "Huntress Wizard",
-    "type": "hero",
-    "text": "At the start of the game, choose a word with 3 or more letters. Whenever you play a card with that word in its name, deal 1 Damage to target Creature an opponent controls.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/huntress_wizard.jpg"
-  },
-  {
-    "id": "ice-king",
-    "name": "Ice King",
-    "type": "hero",
-    "text": "The first time a Creature you control attacks down an empty Lane during each of your turns, it has +1 ATK.",
-    "printings": [
-      {
-        "deck": "Ice King's Icy Lands Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ice_king.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Finn.webp"
   },
   {
     "id": "jake",
@@ -174,179 +34,25 @@
     "text": "Creatures on facedown Landscapes you control have +2 ATK.",
     "printings": [
       {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/jake.jpg"
-  },
-  {
-    "id": "jake-doubles-tournament",
-    "name": "Jake [Doubles Tournament]",
-    "type": "hero",
-    "text": "Once during your turn, when a Creature you control damages an opponent, you may deal 1 Damage to target Creature in one of your Lanes.",
-    "printings": [
-      {
-        "deck": "Doubles Tournament",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/jake_doubles.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Jake.webp"
   },
   {
     "id": "lady-rainicorn",
     "name": "Lady Rainicorn",
     "type": "hero",
-    "text": "If you return two or more Creatures to your hand from play or your discard pile during your turn, heal 2 HP.",
+    "text": "If you return 2 or more Creatures to your hand from play or your discard pile during your turn, heal 2 HP.",
     "printings": [
       {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
         "copies": 1
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lady_rainicorn.jpg"
-  },
-  {
-    "id": "lemongrab",
-    "name": "Lemongrab",
-    "type": "hero",
-    "text": "At the start of your Fight Phase, if you have 1 or more empty Landscapes, gain 1 HP. (Can't go over 25.)",
-    "printings": [
-      {
-        "deck": "Lemongrab's Cornfield/Sandy Lands Deck",
-        "set": "CP5",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lemongrab.jpg"
-  },
-  {
-    "id": "lumpy-space-princess",
-    "name": "Lumpy Space Princess",
-    "type": "hero",
-    "text": "The first time you replace a Creature on your turn, draw a card.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/lumpy_space_princess.jpg"
-  },
-  {
-    "id": "magic-man",
-    "name": "Magic Man",
-    "type": "hero",
-    "text": "When you play a card with cost exactly 2, deal 2 Damage to a Creature an opponent controls.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/magic_man.jpg"
-  },
-  {
-    "id": "marceline",
-    "name": "Marceline",
-    "type": "hero",
-    "text": "Your Creatures with 5 or more Damage on them have +1 ATK.",
-    "printings": [
-      {
-        "deck": "Marceline's Nice Lands/Useless Swamp Deck",
-        "set": "CP4",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/marceline.jpg"
-  },
-  {
-    "id": "moniker",
-    "name": "Moniker",
-    "type": "hero",
-    "text": "Once during your turn, you may ready a Flooped Creature.",
-    "printings": [
-      {
-        "deck": "Doubles Tournament",
-        "set": "2v2",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/moniker.jpg"
-  },
-  {
-    "id": "princess-bubblegum",
-    "name": "Princess Bubblegum",
-    "type": "hero",
-    "text": "Once per turn, you may deal 1 Damage to one of your Creatures. That Creature has +1 ATK this turn.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/princess_bubblegum.jpg"
-  },
-  {
-    "id": "prismo",
-    "name": "Prismo",
-    "type": "hero",
-    "text": "If you have no matching Landscapes, your Creatures have +1 DEF.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/prismo.jpg"
-  },
-  {
-    "id": "ricardio",
-    "name": "Ricardio",
-    "type": "hero",
-    "text": "Once during each of your turns, you may pay 1 HP. If you do, reveal the top card of your deck. You may discard it.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/ricardio.jpg"
-  },
-  {
-    "id": "susan-strong",
-    "name": "Susan Strong",
-    "type": "hero",
-    "text": "Pay 1 Action \u0026 destroy a Creature you control \u003e\u003e\u003e Deal Damage equal to its cost to each opposing Creature.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/susan_strong.jpg"
-  },
-  {
-    "id": "tree-trunks",
-    "name": "Tree Trunks",
-    "type": "hero",
-    "text": "Once during  each of your turns, you may discard a card with \"Pie\" in its name to gain 1 Action.",
-    "printings": [
-      {
-        "deck": "Hero Pack #1",
-        "set": "HP1",
-        "copies": 1
-      }
-    ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/tree_trunks.jpg"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lady%20Rainicorn.webp"
   }
 ]

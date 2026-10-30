@@ -1,38 +1,42 @@
-// Command cardimport converts the raw card dump (data/raw/cards.json) into the
-// canonical per-type files under data/cards, and prints a report of every
-// normalization it applied or problem it found.
+// Command cardimport converts the card catalogue (data/CardWarsCatalogue.json)
+// into the canonical per-type files under data/cards, and prints a report of
+// every normalization it applied or problem it found.
 package main
 
 import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	"cardwars/internal/card"
 )
 
+// rawCard is one entry of the catalogue.
 type rawCard struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	CardType    string `json:"card_type"`
-	Landscape   string `json:"landscape"`
-	Cost        *int   `json:"cost"`
-	Attack      *int   `json:"attack"`
-	Defence     *int   `json:"defence"`
-	Ability     string `json:"ability"`
-	DeckInfo    string `json:"deck_info"`
-	ImageURL    string `json:"image_url"`
+	Name     string         `json:"name"`
+	Type     string         `json:"type"`
+	Faction  string         `json:"faction"`
+	Cost     *int           `json:"cost"`
+	Attack   *int           `json:"attack"`
+	Defense  *int           `json:"defense"`
+	Ability  string         `json:"ability"` // the rules text
+	Notes    string         `json:"notes"`   // flavour text
+	Image    string         `json:"image"`   // file name of the scan
+	Quantity int            `json:"quantity"`
+	Sets     map[string]int `json:"sets"` // "Finn Vs Jake (Finn)" -> copies
+	Extras   map[string]any `json:"extras"`
 }
 
 func main() {
-	in := flag.String("in", "data/raw/cards.json", "raw card dump")
+	in := flag.String("in", "data/CardWarsCatalogue.json", "card catalogue")
 	out := flag.String("out", "data/cards", "output directory")
+	images := flag.String("image-base", "https://lukas-simonson.github.io/image-repo/card_wars/", "URL the scans are published under; each card's image file name is appended")
 	flag.Parse()
 
 	data, err := os.ReadFile(*in)
@@ -44,7 +48,7 @@ func main() {
 		fatal(err)
 	}
 
-	cards, report := convert(raws)
+	cards, report := convert(raws, *images)
 
 	byType := map[card.Type][]card.Card{}
 	for _, c := range cards {
@@ -82,10 +86,8 @@ func fatal(err error) {
 
 // Report collects what the converter changed or could not resolve.
 type Report struct {
-	Dropped  []string // cards removed from scope
 	Notes    []string // normalizations that lost nothing
 	Problems []string // data inconsistencies left for a human
-	Unparsed []string // printings kept as raw text
 }
 
 func (r *Report) String() string {
@@ -96,32 +98,21 @@ func (r *Report) String() string {
 			fmt.Fprintf(&b, "  - %s\n", l)
 		}
 	}
-	section("Dropped (out of scope)", r.Dropped)
 	section("Problems needing a human", r.Problems)
-	section("Unparsed printings", r.Unparsed)
 	section("Normalizations", r.Notes)
 	return b.String()
 }
 
-var landscapes = map[string]card.Landscape{
-	"cornfield":     card.Cornfield,
-	"blue plains":   card.BluePlains,
-	"useless swamp": card.UselessSwamp,
-	"nice lands":    card.NiceLands,
-	"sandy lands":   card.SandyLands,
-	"icy lands":     card.IcyLands,
-	"rainbow":       card.Rainbow,
-}
-
-var abilities = map[string]card.AbilityKind{
-	"":              card.AbilityNone,
-	"none":          card.AbilityNone,
-	"continuous":    card.AbilityContinuous,
-	"floop":         card.AbilityFloop,
-	"entering play": card.AbilityEnteringPlay,
-	"leaving play":  card.AbilityLeavingPlay,
-	"trigger":       card.AbilityTrigger,
-	"ignition":      card.AbilityIgnition,
+// factions maps the catalogue's faction names (spaces and case ignored) to Landscapes.
+var factions = map[string]card.Landscape{
+	"cornfield":    card.Cornfield,
+	"blueplains":   card.BluePlains,
+	"uselessswamp": card.UselessSwamp,
+	"nicelands":    card.NiceLands,
+	"sandylands":   card.SandyLands,
+	"sandyland":    card.SandyLands,
+	"icylands":     card.IcyLands,
+	"rainbow":      card.Rainbow,
 }
 
 var types = map[string]card.Type{
@@ -131,81 +122,111 @@ var types = map[string]card.Type{
 	"hero":     card.Hero,
 }
 
-func convert(raws []rawCard) ([]card.Card, *Report) {
+// setKeyRe splits "Finn Vs Jake (Finn)" into the set and the deck's owner.
+var setKeyRe = regexp.MustCompile(`^(.*?) \((.+)\)$`)
+
+// deckName is how a deck is called: its owner's name, "Finn's Deck".
+func deckName(owner string) string { return owner + "'s Deck" }
+
+type deckKey struct{ set, owner string }
+
+func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 	rep := &Report{}
 	var cards []card.Card
 	seen := map[string]string{}
-	noneAbility := 0
+	decks := map[deckKey]bool{}
+	var heroes []int // indexes into cards
 
 	for _, r := range raws {
-		// 1v1 only: Teamwork cards belong to the 2v2 ruleset.
-		if strings.EqualFold(r.CardType, "Teamwork") {
-			rep.Dropped = append(rep.Dropped, r.Name+" (Teamwork, 2v2)")
-			continue
-		}
-		t, ok := types[strings.ToLower(r.CardType)]
+		t, ok := types[strings.ToLower(r.Type)]
 		if !ok {
-			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: unknown card_type %q", r.Name, r.CardType))
+			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: unknown type %q", r.Name, r.Type))
 			continue
 		}
-
 		c := card.Card{
-			ID:       slug(r.Name),
-			Name:     r.Name,
-			Type:     t,
-			Cost:     r.Cost,
-			Attack:   r.Attack,
-			Defense:  r.Defence,
-			Text:     strings.TrimSpace(r.Description),
-			ImageURL: r.ImageURL,
+			ID:      slug(r.Name),
+			Name:    r.Name,
+			Type:    t,
+			Cost:    r.Cost,
+			Attack:  r.Attack,
+			Defense: r.Defense,
+			Text:    strings.TrimSpace(r.Ability),
+			Notes:   strings.TrimSpace(r.Notes),
+		}
+		if r.Image != "" {
+			c.ImageURL = imageBase + url.PathEscape(r.Image)
 		}
 		if prev, dup := seen[c.ID]; dup {
 			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: id %q collides with %q", r.Name, c.ID, prev))
 		}
 		seen[c.ID] = r.Name
+		if len(r.Extras) > 0 {
+			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: has extras, which the importer does not read", r.Name))
+		}
 
-		if r.Landscape != "" {
-			ls, ok := landscapes[strings.ToLower(r.Landscape)]
+		if r.Faction != "" {
+			ls, ok := factions[strings.ToLower(strings.ReplaceAll(r.Faction, " ", ""))]
 			if !ok {
-				rep.Problems = append(rep.Problems, fmt.Sprintf("%s: unknown landscape %q", r.Name, r.Landscape))
+				rep.Problems = append(rep.Problems, fmt.Sprintf("%s: unknown faction %q", r.Name, r.Faction))
 			}
 			c.Landscape = ls
 		}
 
-		ak, ok := abilities[strings.ToLower(r.Ability)]
-		if !ok {
-			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: unknown ability %q", r.Name, r.Ability))
-		}
-		if r.Ability == "None" {
-			noneAbility++
-		}
-		c.Ability = ak
-
-		validate(&c, r, rep)
-
-		for _, part := range strings.Split(r.DeckInfo, " : ") {
-			p, ok := parsePrinting(part)
-			if !ok {
-				rep.Unparsed = append(rep.Unparsed, fmt.Sprintf("%s: %q", r.Name, strings.TrimSpace(part)))
+		// A Hero belongs to its owner's deck, whatever sets the catalogue lists; see below.
+		if t != card.Hero {
+			total := 0
+			for key, copies := range r.Sets {
+				m := setKeyRe.FindStringSubmatch(key)
+				if m == nil {
+					rep.Problems = append(rep.Problems, fmt.Sprintf("%s: cannot read set %q (want \"Set (Deck)\")", r.Name, key))
+					continue
+				}
+				c.Printings = append(c.Printings, card.Printing{Set: m[1], Deck: deckName(m[2]), Copies: copies})
+				decks[deckKey{m[1], m[2]}] = true
+				total += copies
 			}
-			c.Printings = append(c.Printings, p)
+			if r.Quantity != total {
+				rep.Problems = append(rep.Problems, fmt.Sprintf("%s: quantity %d but the sets add up to %d", r.Name, r.Quantity, total))
+			}
+			sort.Slice(c.Printings, func(i, j int) bool {
+				return c.Printings[i].Set+c.Printings[i].Deck < c.Printings[j].Set+c.Printings[j].Deck
+			})
+		} else {
+			heroes = append(heroes, len(cards))
 		}
+
+		validate(&c, rep)
 		cards = append(cards, c)
 	}
 
-	if noneAbility > 0 {
-		rep.Notes = append(rep.Notes, fmt.Sprintf(`ability "None" (string) treated as no ability on %d cards`, noneAbility))
+	// Heroes: each goes with the deck whose owner it is named for ("Lady Rainicorn" is Lady's).
+	for _, i := range heroes {
+		c := &cards[i]
+		var owned []deckKey
+		for d := range decks {
+			if c.Name == d.owner || strings.HasPrefix(c.Name, d.owner+" ") {
+				owned = append(owned, d)
+			}
+		}
+		if len(owned) != 1 {
+			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: could not tell whose Hero this is (%d decks match)", c.Name, len(owned)))
+			continue
+		}
+		c.Printings = []card.Printing{{Set: owned[0].set, Deck: deckName(owned[0].owner), Copies: 1}}
+		rep.Notes = append(rep.Notes, fmt.Sprintf("%s: Hero placed in %s (%s), not the sets the catalogue lists", c.Name, deckName(owned[0].owner), owned[0].set))
 	}
+
 	rep.Notes = append(rep.Notes,
-		"landscape and ability names normalized to snake_case enums; card names kept exactly as printed",
-		"deck_info split on ' : ' into printings; trailing number = copies in that deck, trailing text = rarity")
+		"faction names normalized to snake_case Landscapes; card names and rules text kept exactly as given",
+		"set \"Finn Vs Jake (Finn)\" read as set \"Finn Vs Jake\", deck \"Finn's Deck\"",
+		"image file names turned into URLs under -image-base")
 
 	sort.Slice(cards, func(i, j int) bool { return cards[i].ID < cards[j].ID })
 	return cards, rep
 }
 
 // validate flags inconsistencies without changing the data.
-func validate(c *card.Card, r rawCard, rep *Report) {
+func validate(c *card.Card, rep *Report) {
 	switch c.Type {
 	case card.Creature:
 		if c.Attack == nil || c.Defense == nil {
@@ -221,39 +242,11 @@ func validate(c *card.Card, r rawCard, rep *Report) {
 		}
 	}
 	if c.Type != card.Hero && (c.Cost == nil || c.Landscape == "") {
-		rep.Problems = append(rep.Problems, fmt.Sprintf("%s: missing cost or landscape", c.Name))
+		rep.Problems = append(rep.Problems, fmt.Sprintf("%s: missing cost or faction", c.Name))
 	}
-	hasFloopText := strings.Contains(strings.ToUpper(c.Text), "FLOOP")
-	if c.Type == card.Creature || c.Type == card.Building {
-		if c.Ability == card.AbilityFloop && !hasFloopText {
-			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: ability is floop but text has no FLOOP", c.Name))
-		}
-		if c.Ability != card.AbilityFloop && hasFloopText {
-			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: text has FLOOP but ability is %q", c.Name, c.Ability))
-		}
+	if c.Text == "" && c.Type != card.Creature { // a vanilla Creature has no rules text
+		rep.Problems = append(rep.Problems, fmt.Sprintf("%s: no rules text", c.Name))
 	}
-	if c.Text == "" {
-		rep.Problems = append(rep.Problems, fmt.Sprintf("%s: no description", c.Name))
-	}
-}
-
-var printingRe = regexp.MustCompile(`^(.*?) \((\w+)\)(?: - (.+))?$`)
-
-func parsePrinting(s string) (card.Printing, bool) {
-	s = strings.Join(strings.Fields(s), " ") // collapses stray newlines/spaces
-	m := printingRe.FindStringSubmatch(s)
-	if m == nil {
-		return card.Printing{Raw: s}, false
-	}
-	p := card.Printing{Deck: m[1], Set: m[2]}
-	if m[3] != "" {
-		if n, err := strconv.Atoi(m[3]); err == nil {
-			p.Copies = n
-		} else {
-			p.Rarity = m[3]
-		}
-	}
-	return p, true
 }
 
 var nonAlnum = regexp.MustCompile(`[^a-z0-9]+`)

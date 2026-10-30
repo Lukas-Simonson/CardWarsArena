@@ -40,8 +40,8 @@ const (
 
 // Printing records one product a card appears in.
 type Printing struct {
-	Deck   string `json:"deck,omitempty"`   // product/deck name, e.g. "Finn's Blue Plains Deck"
-	Set    string `json:"set,omitempty"`    // set code, e.g. "CP1"
+	Deck   string `json:"deck,omitempty"`   // deck within the set, e.g. "Finn's Deck"
+	Set    string `json:"set,omitempty"`    // product, e.g. "Finn Vs Jake"
 	Copies int    `json:"copies,omitempty"` // copies in that starter deck
 	Rarity string `json:"rarity,omitempty"` // booster/promo rarity, when printed
 	Raw    string `json:"raw,omitempty"`    // original text, kept when it could not be parsed
@@ -58,6 +58,7 @@ type Card struct {
 	Defense   *int        `json:"defense,omitempty"`
 	Ability   AbilityKind `json:"ability,omitempty"`
 	Text      string      `json:"text,omitempty"`
+	Notes     string      `json:"notes,omitempty"` // flavour text
 	Printings []Printing  `json:"printings,omitempty"`
 	ImageURL  string      `json:"image_url,omitempty"`
 

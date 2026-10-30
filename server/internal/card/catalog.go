@@ -93,10 +93,14 @@ func loadEffects(cat Catalog, dir string) error {
 }
 
 // Deck returns the card ids (one entry per copy, sorted) printed in the given
-// product, e.g. Deck("CP1", "Finn's Blue Plains Deck").
+// product, e.g. Deck("Finn Vs Jake", "Finn's Deck"). The deck's Hero is not
+// one of them; see Hero.
 func (c Catalog) Deck(set, deck string) []string {
 	var ids []string
 	for id, card := range c {
+		if card.Type == Hero {
+			continue
+		}
 		for _, p := range card.Printings {
 			if p.Set == set && p.Deck == deck {
 				for i := 0; i < p.Copies; i++ {
@@ -107,4 +111,16 @@ func (c Catalog) Deck(set, deck string) []string {
 	}
 	sort.Strings(ids)
 	return ids
+}
+
+// Hero returns the id of the Hero that comes with the given deck, or "".
+func (c Catalog) Hero(set, deck string) string {
+	for id, card := range c {
+		for _, p := range card.Printings {
+			if card.Type == Hero && p.Set == set && p.Deck == deck {
+				return id
+			}
+		}
+	}
+	return ""
 }
