@@ -7,14 +7,14 @@ func TestLoadDirAndStarterDeck(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(cat) != 502 {
-		t.Errorf("catalog has %d cards, want 502", len(cat))
+	if len(cat) != 91 {
+		t.Errorf("catalog has %d cards, want 91", len(cat))
 	}
 	pig, ok := cat["the-pig"]
 	if !ok || pig.Landscape != Rainbow || pig.Cost == nil || *pig.Cost != 1 {
 		t.Fatalf("the-pig not loaded as expected: %+v", pig)
 	}
-	if got := len(cat.Deck("CP1", "Finn's Blue Plains Deck")); got != 40 {
+	if got := len(cat.Deck("Finn Vs Jake", "Finn's Deck")); got != 40 {
 		t.Errorf("Finn deck has %d cards, want 40", got)
 	}
 }

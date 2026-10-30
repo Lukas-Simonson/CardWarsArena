@@ -18,15 +18,15 @@ func cli(t *testing.T, input string, args ...string) (out string, code int) {
 
 func TestListDecks(t *testing.T) {
 	out, code := cli(t, "", "--list-decks")
-	if code != 0 || !strings.Contains(out, "Finn's Blue Plains Deck") {
+	if code != 0 || !strings.Contains(out, "Finn's Deck") {
 		t.Fatalf("code %d:\n%s", code, out)
 	}
 	for _, line := range strings.Split(out, "\n") {
-		if strings.Contains(line, "Finn's Blue Plains Deck") && !strings.Contains(line, "ready") {
+		if strings.Contains(line, "Finn's Deck") && !strings.Contains(line, "ready") {
 			t.Errorf("Finn's deck should be ready: %q", line)
 		}
-		if strings.Contains(line, "Jake's Cornfield/Nice Lands") && strings.Contains(line, "ready") {
-			t.Errorf("a 2v2 deck with missing cards must not be ready: %q", line)
+		if strings.Contains(line, "BMO's Deck") && strings.Contains(line, "ready") {
+			t.Errorf("a deck with unmodelled cards must not be ready: %q", line)
 		}
 	}
 }
@@ -154,7 +154,7 @@ func TestBotCommandHandsControlOver(t *testing.T) {
 
 func newUI(t *testing.T) (*ui, *engine.Game) {
 	t.Helper()
-	s, err := newSession(options{data: "../../data", deck0: "cp1 finn", deck1: "cp1 jake", seed: 3, first: 0, bots: "none"}, strings.NewReader(""), &bytes.Buffer{})
+	s, err := newSession(options{data: "../../data", deck0: "finn", deck1: "jake", seed: 3, first: 0, bots: "none"}, strings.NewReader(""), &bytes.Buffer{})
 	if err != nil {
 		t.Fatal(err)
 	}

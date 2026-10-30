@@ -22,7 +22,7 @@ Plain HTTP endpoints:
 
 | path | |
 |---|---|
-| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `landscapes`, `playable` |
+| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `landscapes`, `hero` (card id), `playable` |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
 | `GET /healthz` | `ok` |
 | `GET /` | the debug client |
@@ -49,15 +49,15 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
 ## Client → server
 
 ```jsonc
-{"type":"create","name":"Lukas","deck":"cp1 finn","vs_bot":true,"bot_deck":"cp1 jake"}
-{"type":"join","room":"B69K","name":"Ann","deck":"cp1 jake"}
+{"type":"create","name":"Lukas","deck":"finn","vs_bot":true,"bot_deck":"jake"}
+{"type":"join","room":"B69K","name":"Ann","deck":"jake"}
 {"type":"rejoin","room":"B69K","token":"0f59…"}
 {"type":"action","seq":12,"action":{"kind":"play_card","card":57,"lane":2}}
 {"type":"leave"}
 {"type":"ping"}
 ```
 
-- `deck` is words matched against `"SET Deck name"` (`"cp1 finn"`); the match must
+- `deck` is words matched against `"SET Deck name"` (`"finn"`, or `"Finn Vs Jake Finn"`); words that name one deck on its own win over the set's name. The match must
   be unique and playable. `bot_deck` defaults to the next playable deck.
 - `seed` (create only) is honoured only when the server runs with `-dev`.
 - **Always send `seq`** with an action: the `seq` of the update you chose it from.

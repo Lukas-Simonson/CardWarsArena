@@ -106,12 +106,12 @@ func TestNothingHiddenIsEverSentToEitherSeat(t *testing.T) {
 		}
 		a := &checkSink{t: t, seat: 0}
 		b := &checkSink{t: t, seat: 1}
-		room, tokenA, err := srv.create(a, ClientMsg{Deck: "cp1 finn", Seed: &seed})
+		room, tokenA, err := srv.create(a, ClientMsg{Deck: "finn", Seed: &seed})
 		if err != nil {
 			t.Fatal(err)
 		}
 		a.room, b.room = room, room
-		deck, _ := srv.deckFor("cp1 jake")
+		deck, _ := srv.deckFor("jake")
 		tokenB, err := room.join(b, "B", deck)
 		if err != nil {
 			t.Fatal(err)

@@ -22,8 +22,8 @@ func realGame(t *testing.T) *Game {
 			t.Fatal(err)
 		}
 	})
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, realCat.Deck("CP1", "Finn's Blue Plains Deck")}
-	jake := DeckSpec{cornfields, realCat.Deck("CP1", "Jake's Cornfield Deck")}
+	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, realCat.Deck("Finn Vs Jake", "Finn's Deck")}
+	jake := DeckSpec{cornfields, realCat.Deck("Finn Vs Jake", "Jake's Deck")}
 	g, err := NewGame(realCat, Config{Seed: 1, First: 0, AllowUnimplemented: true}, [2]DeckSpec{jake, finn})
 	if err != nil {
 		t.Fatal(err)
@@ -147,7 +147,7 @@ func TestWallOfEarsCountsBothPlayers(t *testing.T) {
 
 func TestStruzannJinnCountsFloopedCreatures(t *testing.T) {
 	g := realGame(t)
-	g.put(1, 0, "struzann-jinn") // 1/11
+	g.put(1, 0, "struzann-djinn") // 1/11
 	f := g.put(1, 1, "the-pig")
 	f.Status = Flooped
 	if got := g.atkOf(1, 0); got != 1+2 {

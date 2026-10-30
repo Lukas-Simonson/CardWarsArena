@@ -17,8 +17,8 @@ func newGame(t *testing.T, seed uint64) *engine.Game {
 	}
 	b, c := card.BluePlains, card.Cornfield
 	g, err := engine.NewGame(cat, engine.Config{Seed: seed, First: 0}, [2]engine.DeckSpec{
-		{Landscapes: [4]card.Landscape{b, b, b, b}, Cards: cat.Deck("CP1", "Finn's Blue Plains Deck")},
-		{Landscapes: [4]card.Landscape{c, c, c, c}, Cards: cat.Deck("CP1", "Jake's Cornfield Deck")},
+		{Landscapes: [4]card.Landscape{b, b, b, b}, Cards: cat.Deck("Finn Vs Jake", "Finn's Deck")},
+		{Landscapes: [4]card.Landscape{c, c, c, c}, Cards: cat.Deck("Finn Vs Jake", "Jake's Deck")},
 	})
 	if err != nil {
 		t.Fatal(err)

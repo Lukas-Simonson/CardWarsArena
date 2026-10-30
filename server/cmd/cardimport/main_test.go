@@ -3,15 +3,14 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"strings"
 	"testing"
 
 	"cardwars/internal/card"
 )
 
-func loadConverted(t *testing.T) []card.Card {
+func loadConverted(t *testing.T) ([]card.Card, *Report) {
 	t.Helper()
-	data, err := os.ReadFile("../../data/raw/cards.json")
+	data, err := os.ReadFile("../../data/CardWarsCatalogue.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -19,43 +18,60 @@ func loadConverted(t *testing.T) []card.Card {
 	if err := json.Unmarshal(data, &raws); err != nil {
 		t.Fatal(err)
 	}
-	cards, _ := convert(raws)
-	return cards
+	return convert(raws, "https://img.example/")
 }
 
-// The rulebook's official deck lists: each starter deck is 40 non-Landscape cards.
-func TestStarterDecksMatchRulebook(t *testing.T) {
-	cards := loadConverted(t)
-	for deck, want := range map[string]int{
-		"Finn's Blue Plains Deck": 40,
-		"Jake's Cornfield Deck":   40,
-	} {
-		got := 0
-		for _, c := range cards {
-			for _, p := range c.Printings {
-				if p.Set == "CP1" && p.Deck == deck {
-					got += p.Copies
-				}
-			}
-		}
-		if got != want {
-			t.Errorf("%s: %d cards, want %d", deck, got, want)
-		}
+func TestCatalogueConvertsCleanly(t *testing.T) {
+	cards, rep := loadConverted(t)
+	if len(rep.Problems) != 0 {
+		t.Errorf("problems: %v", rep.Problems)
 	}
-}
-
-func TestNoTeamworkAndUniqueIDs(t *testing.T) {
 	seen := map[string]bool{}
-	for _, c := range loadConverted(t) {
+	for _, c := range cards {
 		if seen[c.ID] {
 			t.Errorf("duplicate id %s", c.ID)
 		}
 		seen[c.ID] = true
-		if strings.EqualFold(string(c.Type), "teamwork") {
-			t.Errorf("teamwork card %s kept", c.Name)
+	}
+	if len(seen) != 91 {
+		t.Errorf("got %d cards, want 91", len(seen))
+	}
+}
+
+// Each deck is 40 non-Hero cards (BMO's has one more) and has its own Hero.
+func TestDecksAreWholeAndHaveTheirHero(t *testing.T) {
+	cards, _ := loadConverted(t)
+	size := map[string]int{}
+	hero := map[string]string{}
+	for _, c := range cards {
+		for _, p := range c.Printings {
+			if c.Type == card.Hero {
+				hero[p.Deck] = c.Name
+			} else {
+				size[p.Deck] += p.Copies
+			}
 		}
 	}
-	if len(seen) != 502 {
-		t.Errorf("got %d cards, want 502", len(seen))
+	for deck, want := range map[string]int{"Finn's Deck": 40, "Jake's Deck": 40, "BMO's Deck": 41, "Lady's Deck": 40} {
+		if size[deck] != want {
+			t.Errorf("%s: %d cards, want %d", deck, size[deck], want)
+		}
+	}
+	if hero["Finn's Deck"] != "Finn" || hero["Lady's Deck"] != "Lady Rainicorn" || len(hero) != 4 {
+		t.Errorf("heroes: %v", hero)
+	}
+}
+
+func TestImageURLAndIDs(t *testing.T) {
+	cards, _ := loadConverted(t)
+	byName := map[string]card.Card{}
+	for _, c := range cards {
+		byName[c.Name] = c
+	}
+	if got := byName["Zazo's Magic Seeds"]; got.ID != "zazo-s-magic-seeds" || got.ImageURL != "https://img.example/Zazo%27s%20Magic%20Seeds.webp" && got.ImageURL != "https://img.example/Zazo's%20Magic%20Seeds.webp" {
+		t.Errorf("Zazo: %q %q", got.ID, got.ImageURL)
+	}
+	if byName["Dr. Death"].ID != "dr-death" {
+		t.Errorf("ids keep the old slug rule: %q", byName["Dr. Death"].ID)
 	}
 }
