@@ -4,7 +4,7 @@
 // rules.
 import { h, svg } from "./dom.js";
 import { cardEl } from "./card.js";
-import { cardName, describeRef, landscapeName, seatName } from "./describe.js";
+import { cardName, landscapeName, seatName } from "./describe.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -234,7 +234,7 @@ function buildingStrip(m, seat, i, on) {
 
 /**
  * A Choice stops the game until someone decides (an opponent's spell makes
- * you discard, Ogre Gas shows cards, Ms. Mummy asks). The player who decides
+ * you discard, Ogre Gas shows cards). The player who decides
  * gets a modal dialog over everything; nothing else can be done until it is
  * answered, so it has no way to be dismissed.
  */
@@ -266,23 +266,13 @@ function choiceModal(m, on) {
       return action && cardButton(inst, action);
     }));
   } else {
-    title = by;
-    text = ctx.cards[ch.card]?.text ?? "Do you want to use it?";
-    body = h("div", { class: "modalrow" },
-      choose.map((a) => h("button", { type: "button", class: "btn-green modalopt", onclick: () => on.onAction(a) }, yesLabel(ctx, a))),
-      legal.filter((a) => a.kind === "decline").map((a) => h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(a) }, "No thanks")));
+    return null;
   }
   return h("div", { class: `modal-backdrop${ui.modalAgain ? " again" : ""}` },
     h("div", { class: "modal parch", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-h" },
       h("h2", { id: "modal-h" }, title),
       h("p", {}, text),
       body));
-}
-
-/** "Yes", or "Yes: Fummy (your, lane 2)" when the answer picks something. */
-function yesLabel(ctx, a) {
-  const picked = (a.targets ?? []).flat();
-  return picked.length ? `Yes: ${picked.map((r) => describeRef(ctx, r)).join(", ")}` : "Yes";
 }
 
 // ---------- overlays on the felt
