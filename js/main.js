@@ -6,7 +6,7 @@ import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
 import { isMyDecision } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
-import { plan, applyEffects, paceFor, reduced, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
+import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
 import { Pacer } from "./pacer.js";
 
 const $ = (id) => document.getElementById(id);
@@ -30,6 +30,7 @@ const ui = { source: "", picker: null, awaitingKind: false, inspect: null, disca
 let conn = null;
 let staging = false; // a cast spell is on show; what it did is shown when it ends
 let stageTimer = null;
+let modalSeq = -1;
 let pendingFx = null; // what to animate on the next render: the step from one view to the next
 
 // ---------- state changes
@@ -180,7 +181,14 @@ function render() {
       stageTimer = setTimeout(() => { staging = false; render(); }, STAGE_MS);
       return;
     }
-    renderGame($("game"), { state, cards, ui }, on);
+    // A dialog waits for the motion of this update to finish; a re-render of the same update does not replay it.
+    const game = $("game");
+    game.style.setProperty("--modal-delay", `${Math.max(350, restOf(effects.filter((f) => f.t !== "cast")) + 150)}ms`);
+    renderGame(game, { state, cards, ui: { ...ui, modalAgain: modalSeq === state.seq } }, on);
+    if (state.view?.choice) {
+      modalSeq = state.seq;
+      if (!game.querySelector(".modal")?.contains(document.activeElement)) game.querySelector(".modalopt")?.focus();
+    }
     if (fx) applyEffects($("game"), effects.filter((f) => f.t !== "cast"), ctxNow());
     pendingFx = null; // later re-renders (a click, a hover) must not replay it
   }

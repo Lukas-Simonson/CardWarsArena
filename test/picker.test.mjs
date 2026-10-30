@@ -148,3 +148,19 @@ test("prompt: asks which kind first", () => {
   assert.equal(p.text, "What should The Pig do?");
   assert.deepEqual(p.kinds, [["attack", "Fight"], ["floop", "Floop"]]);
 });
+
+// ---- choices (the modal)
+
+test("choose and decline answer a Choice and belong to no card on the board", () => {
+  assert.ok(isGeneral({ kind: "choose", card: 12 }));
+  assert.ok(isGeneral({ kind: "decline" }));
+  assert.deepEqual(sources([{ kind: "choose", card: 12 }, { kind: "decline" }]), {});
+});
+
+test("prompt: a Choice tells the decider to use the dialog and everyone else to wait", () => {
+  const choice = { player: 0, kind: "discard", card: "corn-scepter", count: 2 };
+  const mine = ctxFor(view({ choice, legal: [{ kind: "choose", card: 10 }] }));
+  assert.match(buildPrompt(mine, true, "", null, false).text, /Corn Scepter: make your choice in the dialog/);
+  const theirs = ctxFor(view({ choice: { ...choice, player: 1 }, awaiting: [1] }));
+  assert.match(buildPrompt(theirs, false, "", null, false).text, /Waiting for Jake to decide \(Corn Scepter\)/);
+});
