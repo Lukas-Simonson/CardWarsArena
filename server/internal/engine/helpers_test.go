@@ -161,6 +161,11 @@ func (g *Game) ownedCount(p PlayerID) int {
 	if pe := g.State.Pending; pe != nil {
 		tally(pe.Card)
 	}
+	for _, ch := range append(append([]Choice{}, g.State.Queue...), ptrVal(g.State.Choice)...) {
+		for _, in := range ch.Revealed {
+			tally(in)
+		}
+	}
 	return n
 }
 

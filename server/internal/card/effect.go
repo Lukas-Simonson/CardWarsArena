@@ -167,6 +167,10 @@ type Op struct {
 	Entering bool `json:"entering,omitempty"`
 	// Permanent makes mod_creature last as long as the Creature is in play.
 	Permanent bool `json:"permanent,omitempty"`
+	// may asks the controller whether to do Then, after choosing Targets
+	// (Ms. Mummy's "you may"). Slots in Then refer to Targets.
+	Targets []TargetSpec `json:"targets,omitempty"`
+	Then    []Op         `json:"then,omitempty"`
 }
 
 // CardFilter narrows cards in a pile.
@@ -180,8 +184,8 @@ var validOps = map[string]struct{ slots int }{
 	"move_creature": {2}, "move_building": {2}, "flip_landscape": {1},
 	"ready_creature": {1}, "bounce": {1}, "destroy_building": {1},
 	"gain_actions": {0}, "copy_floop": {0}, "steal_play": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
-	"destroy_creature": {0}, "mill": {0}, "discard_random": {0}, "discount_next_creature": {0},
-	"borrow_creature": {2}, "ogre_gas": {0},
+	"destroy_creature": {0}, "mill": {0}, "discount_next_creature": {0},
+	"borrow_creature": {2}, "ogre_gas": {0}, "discard_choice": {0}, "may": {0},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -263,7 +267,14 @@ func (e *Effect) Validate(t Type) error {
 	default:
 		return fmt.Errorf("unknown effect kind %q", e.Kind)
 	}
-	for i, ts := range e.Targets {
+	if err := validateSpecs(e.Targets); err != nil {
+		return err
+	}
+	return validateOps(e.Do, e.Targets)
+}
+
+func validateSpecs(specs []TargetSpec) error {
+	for i, ts := range specs {
 		switch ts.What {
 		case "creature", "building", "landscape", "lane", "discard_card", "hand_card":
 		default:
@@ -275,13 +286,18 @@ func (e *Effect) Validate(t Type) error {
 			return fmt.Errorf("target %d: unknown side %q", i, ts.Side)
 		}
 	}
-	for i, op := range e.Do {
+	return nil
+}
+
+// validateOps checks ops whose slots refer to specs.
+func validateOps(ops []Op, specs []TargetSpec) error {
+	for i, op := range ops {
 		info, ok := validOps[op.Do]
 		if !ok {
 			return fmt.Errorf("op %d: unknown op %q", i, op.Do)
 		}
 		for _, s := range []*int{op.Slot, op.Slot2} {
-			if s != nil && (*s < 0 || *s >= len(e.Targets)) {
+			if s != nil && (*s < 0 || *s >= len(specs)) {
 				return fmt.Errorf("op %d (%s): slot %d out of range", i, op.Do, *s)
 			}
 		}
@@ -295,6 +311,16 @@ func (e *Effect) Validate(t Type) error {
 			if err := op.Amount.validate(); err != nil {
 				return fmt.Errorf("op %d: %w", i, err)
 			}
+		}
+		if op.Do == "may" {
+			if err := validateSpecs(op.Targets); err != nil {
+				return fmt.Errorf("op %d: %w", i, err)
+			}
+			if err := validateOps(op.Then, op.Targets); err != nil {
+				return fmt.Errorf("op %d: %w", i, err)
+			}
+		} else if len(op.Then) > 0 || len(op.Targets) > 0 {
+			return fmt.Errorf("op %d (%s): then/targets belong to may", i, op.Do)
 		}
 	}
 	return nil

@@ -115,10 +115,42 @@ type State struct {
 	// CreatureDiscount is how many Actions the next Creature the active
 	// player plays costs less (Unempty Coffin).
 	CreatureDiscount int `json:"creature_discount,omitempty"`
+	// Choice is a decision someone must make before anything else happens;
+	// Queue holds those that arose while it was open.
+	Choice *Choice  `json:"choice,omitempty"`
+	Queue  []Choice `json:"queue,omitempty"`
 }
 
 // Pending is a card taken from the opponent that must be played for free
 // (Silo of Truth). The card is not in any zone while it waits.
 type Pending struct {
 	Card Instance `json:"card"`
+}
+
+// Choice kinds.
+const (
+	ChoiceDiscard = "discard" // a player picks cards from their hand to discard
+	ChoiceReveal  = "reveal"  // a player picks one of the revealed cards; the rest are discarded
+	ChoiceMay     = "may"     // a player decides whether to do something, and to what
+)
+
+// Choice is a decision that stops the game until a player makes it. It is
+// the general form of Pending: the player who must decide need not be the
+// active one (an opponent chooses what to discard).
+type Choice struct {
+	Player PlayerID `json:"player"` // who decides
+	Kind   string   `json:"kind"`
+	Card   string   `json:"card"` // the card that asks
+	// discard: cards still to discard.
+	Count int `json:"count,omitempty"`
+	// reveal: the cards shown, out of the deck until the choice is made. The
+	// chosen one goes to the bottom of the deck and the rest are discarded.
+	Revealed []Instance `json:"revealed,omitempty"`
+	// may: the controller, Lane and UID of the Creature that asks, what is
+	// chosen, and what is done if the player says yes.
+	Controller PlayerID          `json:"controller,omitempty"`
+	Lane       int               `json:"lane,omitempty"`
+	SourceUID  int               `json:"source_uid,omitempty"`
+	Targets    []card.TargetSpec `json:"targets,omitempty"`
+	Then       []card.Op         `json:"then,omitempty"`
 }

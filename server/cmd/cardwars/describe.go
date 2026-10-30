@@ -135,6 +135,20 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 		s := fmt.Sprintf("%s %s%s%s", verb, name, cost, where)
 		s = withTargets(s, "discard", u.targets(me, a.CostTargets))
 		return withTargets(s, "targets", u.targets(me, a.Targets))
+	case engine.ActChoose:
+		ch := st.Choice
+		if ch == nil {
+			return "Choose"
+		}
+		switch ch.Kind {
+		case engine.ChoiceDiscard:
+			return "Discard " + u.instName(a.Card)
+		case engine.ChoiceReveal:
+			return "Put " + u.instName(a.Card) + " on the bottom of the deck"
+		}
+		return withTargets("Yes, "+u.g.Catalog()[ch.Card].Name+" does it", "targets", u.targets(me, a.Targets))
+	case engine.ActDecline:
+		return "No"
 	case engine.ActPlayPending:
 		name := "the stolen card"
 		if st.Pending != nil {

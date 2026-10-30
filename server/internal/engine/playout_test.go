@@ -100,6 +100,13 @@ func (g *Game) checkInvariants(total [2]int) error {
 			return err
 		}
 	}
+	for _, ch := range append(append([]Choice{}, st.Queue...), ptrVal(st.Choice)...) {
+		for _, in := range ch.Revealed {
+			if err := count(in, "revealed"); err != nil {
+				return err
+			}
+		}
+	}
 	if owned != total {
 		return fmt.Errorf("cards by owner %v, started with %v", owned, total)
 	}

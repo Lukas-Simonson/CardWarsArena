@@ -245,8 +245,10 @@ func TestDestroySelfAbilities(t *testing.T) {
 	g.fillDiscard(0, 9, "fummy") // plus the Mermaid and, after destroying, the Stump: 11
 	hand := len(g.State.Players[1].Hand)
 	g.must(t, 0, activate(2, 0))
+	// 11 cards in the discard pile: the opponent chooses 2 cards to discard.
+	g.discardChoices(t, 1, 2)
 	if got := len(g.State.Players[1].Hand); got != hand-2 {
-		t.Errorf("11 cards in the discard pile means 2 discards: hand %d -> %d", hand, got)
+		t.Errorf("hand %d -> %d, want 2 fewer", hand, got)
 	}
 }
 
@@ -451,13 +453,29 @@ func TestSpells(t *testing.T) {
 		hand := len(g.State.Players[0].Hand)
 		g.State.ActionsLeft = 2
 		g.must(t, 1, Action{Kind: ActPlayCard, Card: g.give(1, "abraca-amadeus")})
+		if g.State.Choice == nil || g.State.Choice.Player != 0 || g.State.Choice.Count != 2 {
+			t.Fatalf("the opponent must choose 2 cards to discard: %+v", g.State.Choice)
+		}
+		// Nothing else can happen until they have chosen.
+		g.mustFail(t, 1, Action{Kind: ActDraw}, ErrChoice)
+		g.mustFail(t, 0, Action{Kind: ActDraw}, ErrChoice)
+		g.mustFail(t, 1, Action{Kind: ActChoose, Card: g.State.Players[0].Hand[0].UID}, ErrNotYourTurn)
+		g.mustFail(t, 0, Action{Kind: ActChoose, Card: 99999}, ErrNoSuchCard)
+		if got := g.Awaiting(); len(got) != 1 || got[0] != 0 {
+			t.Errorf("awaiting %v, want only the opponent", got)
+		}
+		g.discardChoices(t, 0, 2)
 		if got := len(g.State.Players[0].Hand); got != hand-2 {
 			t.Errorf("hand %d -> %d, want 2 fewer", hand, got)
+		}
+		if g.State.Choice != nil || g.Awaiting()[0] != 1 {
+			t.Error("the active player goes on once the choice is made")
 		}
 		wand := g.give(1, "bone-wand")
 		g.mustFail(t, 1, Action{Kind: ActPlayCard, Card: wand}, ErrCondition)
 		g.put(1, 0, "mace-stump")
 		g.must(t, 1, Action{Kind: ActPlayCard, Card: wand})
+		g.discardChoices(t, 0, 1)
 		if got := len(g.State.Players[0].Hand); got != hand-3 {
 			t.Errorf("Bone Wand: hand %d", got)
 		}
@@ -519,8 +537,19 @@ func TestSpells(t *testing.T) {
 		deck := len(g.State.Players[1].Deck)
 		discard := len(g.State.Players[1].Discard)
 		g.must(t, 1, Action{Kind: ActPlayCard, Card: g.give(1, "ogre-gas")})
+		ch := g.State.Choice
+		if ch == nil || ch.Kind != ChoiceReveal || len(ch.Revealed) != 3 {
+			t.Fatalf("Ogre Gas reveals 3 cards: %+v", ch)
+		}
+		keep := ch.Revealed[1]
+		g.mustFail(t, 1, Action{Kind: ActChoose, Card: g.State.Players[1].Hand[0].UID}, ErrNoSuchCard)
+		g.must(t, 1, Action{Kind: ActChoose, Card: keep.UID})
+		bottom := g.State.Players[1].Deck[len(g.State.Players[1].Deck)-1]
+		if bottom.UID != keep.UID {
+			t.Errorf("the chosen card goes to the bottom: %d, want %d", bottom.UID, keep.UID)
+		}
 		if got := len(g.State.Players[1].Deck); got != deck-2 {
-			t.Errorf("Ogre Gas: one of the top 3 goes to the bottom, two are discarded: deck %d -> %d", deck, got)
+			t.Errorf("one of the top 3 goes to the bottom, two are discarded: deck %d -> %d", deck, got)
 		}
 		if got := len(g.State.Players[1].Discard); got != discard+3 { // two cards and the spell
 			t.Errorf("discard %d -> %d", discard, got)
@@ -528,25 +557,106 @@ func TestSpells(t *testing.T) {
 	})
 }
 
-func TestMsMummyReturnsAndStrengthensForever(t *testing.T) {
+func TestMsMummyAsksAtTheStartOfYourTurn(t *testing.T) {
 	g := ladyGame(t)
 	g.put(1, 0, "ms-mummy")
 	ally := g.put(1, 1, "fummy") // SandyLands, 2/7
-	g.must(t, 1, activate(0, 0, []TargetRef{crRef(1, 1)}))
-	if g.State.Players[1].Lanes[0].Creature != nil {
-		t.Error("Ms. Mummy returns to its owner's hand")
+	g.State.Active = 0
+	g.endTurn(0) // player 1's turn begins
+	ch := g.State.Choice
+	if ch == nil || ch.Kind != ChoiceMay || ch.Player != 1 {
+		t.Fatalf("Ms. Mummy asks her controller: %+v", ch)
 	}
-	if g.defOf(1, 1) != 8 {
-		t.Errorf("DEF %d, want 8", g.defOf(1, 1))
+	legal := g.LegalActions(1)
+	// No, yes with nobody helped, or yes helping the one SandyLands Creature.
+	if len(legal) != 3 || legal[0].Kind != ActDecline || len(legal[1].Targets[0]) != 0 || len(legal[2].Targets[0]) != 1 {
+		t.Fatalf("legal = %+v", legal)
+	}
+	g.mustFail(t, 1, Action{Kind: ActDraw}, ErrChoice)
+	g.must(t, 1, legal[2])
+	if g.State.Players[1].Lanes[0].Creature != nil || !handHas(g, 1, g.cardUID(1, "ms-mummy")) {
+		t.Error("Ms. Mummy returns to her owner's hand")
+	}
+	if ally.PermDEF != 1 || g.defOf(1, 1) != 8 {
+		t.Errorf("the chosen Creature gains 1 DEF for good: %d", g.defOf(1, 1))
 	}
 	g.endTurn(1)
 	if ally.PermDEF != 1 {
 		t.Error("the DEF is not lost at the end of the turn")
 	}
-	// Once a Creature has entered play this turn she cannot do it again.
-	g.State.Active, g.State.Phase = 1, PhaseMain
-	g.enter(t, 1, "ms-mummy", 0)
-	g.mustFail(t, 1, activate(0, 0, []TargetRef{crRef(1, 1)}), ErrCondition)
+}
+
+func TestMsMummyCanBeDeclined(t *testing.T) {
+	g := ladyGame(t)
+	g.put(1, 0, "ms-mummy")
+	g.put(1, 1, "fummy")
+	g.State.Active = 0
+	g.endTurn(0)
+	g.must(t, 1, Action{Kind: ActDecline})
+	if g.State.Players[1].Lanes[0].Creature == nil || g.State.Choice != nil {
+		t.Error("declining changes nothing")
+	}
+	g.must(t, 1, Action{Kind: ActDraw})
+}
+
+// With no SandyLands Creature to help she may still go home.
+func TestMsMummyWithoutATarget(t *testing.T) {
+	g := ladyGame(t)
+	g.put(1, 0, "ms-mummy")
+	g.State.Active = 0
+	g.endTurn(0)
+	g.must(t, 1, Action{Kind: ActChoose, Targets: [][]TargetRef{{}}})
+	if g.State.Players[1].Lanes[0].Creature != nil {
+		t.Error("she returned to her owner's hand")
+	}
+}
+
+func TestChoicesQueue(t *testing.T) {
+	g := ladyGame(t)
+	g.put(1, 0, "ms-mummy")
+	g.put(1, 1, "ms-mummy")
+	g.State.Active = 0
+	g.endTurn(0)
+	if g.State.Choice == nil || len(g.State.Queue) != 1 {
+		t.Fatalf("two Mummies ask one after the other: %+v / %d queued", g.State.Choice, len(g.State.Queue))
+	}
+	g.must(t, 1, Action{Kind: ActDecline})
+	if g.State.Choice == nil || len(g.State.Queue) != 0 {
+		t.Fatal("the second question follows the first")
+	}
+	g.must(t, 1, Action{Kind: ActDecline})
+	if g.State.Choice != nil {
+		t.Error("no more questions")
+	}
+}
+
+func TestDiscardingYourWholeHandAsksNothing(t *testing.T) {
+	g := ladyGame(t)
+	g.fillDiscard(1, 30, "fummy")
+	g.State.Players[0].Hand = g.State.Players[0].Hand[:1]
+	g.State.ActionsLeft = 2
+	g.must(t, 1, Action{Kind: ActPlayCard, Card: g.give(1, "abraca-amadeus")})
+	if g.State.Choice != nil || len(g.State.Players[0].Hand) != 0 {
+		t.Error("with fewer cards than to discard there is nothing to choose")
+	}
+}
+
+// cardUID is the UID of the card named id in p's hand.
+func (g *Game) cardUID(p PlayerID, id string) int {
+	for _, in := range g.State.Players[p].Hand {
+		if in.CardID == id {
+			return in.UID
+		}
+	}
+	return 0
+}
+
+// discardChoices makes p choose their first n hand cards to discard.
+func (g *Game) discardChoices(t *testing.T, p PlayerID, n int) {
+	t.Helper()
+	for i := 0; i < n; i++ {
+		g.must(t, p, Action{Kind: ActChoose, Card: g.State.Players[p].Hand[0].UID})
+	}
 }
 
 // Every card of all four decks can be played through the real rules, so random

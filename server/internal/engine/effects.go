@@ -14,6 +14,15 @@ type effCtx struct {
 	creature *Creature // the source, when it is a Creature
 	playing  int       // UID of the card being played (not a legal hand_card choice)
 	entering *pos      // for creature_enters triggers: the Creature that entered
+	card     string    // the source card's id when it is not a Creature (a Spell or Building)
+}
+
+// cardID is the id of the card using the effect.
+func (c effCtx) cardID() string {
+	if c.creature != nil {
+		return c.creature.CardID
+	}
+	return c.card
 }
 
 func (c effCtx) source() source { return source{pos: c.at, creature: c.creature} }
@@ -327,9 +336,14 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			for _, p := range g.whoList(op.Who, c.p) {
 				ev = append(ev, g.mill(p, amt)...)
 			}
-		case "discard_random":
+		case "discard_choice":
 			for _, p := range g.whoList(op.Who, c.p) {
-				ev = append(ev, g.discardRandom(p, amt)...)
+				ev = append(ev, g.discardChoice(p, amt, c)...)
+			}
+		case "may":
+			if c.creature != nil {
+				g.ask(Choice{Player: c.p, Kind: ChoiceMay, Card: c.cardID(), Controller: c.p, Lane: c.at.Lane,
+					SourceUID: c.creature.UID, Targets: op.Targets, Then: op.Then})
 			}
 		case "discount_next_creature":
 			g.State.CreatureDiscount += amt
@@ -344,7 +358,7 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				}
 			}
 		case "ogre_gas":
-			ev = append(ev, g.ogreGas(c.p, max(amt, 3))...)
+			g.ogreGas(c.p, 3, c)
 		case "bounce":
 			for _, at := range g.creaturesFor(op, c, given) {
 				ev = append(ev, g.removeCreature(at, toHand)...)
@@ -426,42 +440,53 @@ func (g *Game) mill(p PlayerID, n int) []Event {
 	return ev
 }
 
-// discardRandom makes p discard n cards from their hand at random. The
-// player's own choice is not offered, since the opponent decides nothing here.
-func (g *Game) discardRandom(p PlayerID, n int) []Event {
+// discardChoice makes p discard n cards from their hand, by their own choice.
+// When they would have to discard their whole hand there is nothing to choose.
+func (g *Game) discardChoice(p PlayerID, n int, c effCtx) []Event {
 	pl := &g.State.Players[p]
-	var ev []Event
-	for ; n > 0 && len(pl.Hand) > 0; n-- {
-		i := rand.New(&g.rng).IntN(len(pl.Hand))
-		in := pl.Hand[i]
-		pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
-		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
-		ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
+	n = min(n, len(pl.Hand))
+	if n <= 0 {
+		return nil
 	}
-	return ev
+	if n == len(pl.Hand) {
+		var ev []Event
+		for len(pl.Hand) > 0 {
+			ev = append(ev, g.discardFromHand(p, pl.Hand[0].UID)...)
+		}
+		return ev
+	}
+	g.ask(Choice{Player: p, Kind: ChoiceDiscard, Card: c.cardID(), Count: n})
+	return nil
 }
 
-// ogreGas reveals the top n cards of p's deck, puts one of them (chosen at
-// random) on the bottom and discards the rest.
-func (g *Game) ogreGas(p PlayerID, n int) []Event {
+// discardFromHand moves one of p's hand cards to its owner's discard pile.
+func (g *Game) discardFromHand(p PlayerID, uid int) []Event {
+	pl := &g.State.Players[p]
+	for i, in := range pl.Hand {
+		if in.UID == uid {
+			pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
+			g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+			return []Event{{Kind: EvDiscard, Player: p, Card: in.UID}}
+		}
+	}
+	return nil
+}
+
+// ogreGas reveals the top n cards of p's deck: p chooses one to put on the
+// bottom and the rest are discarded.
+func (g *Game) ogreGas(p PlayerID, n int, c effCtx) {
 	pl := &g.State.Players[p]
 	n = min(n, len(pl.Deck))
 	if n == 0 {
-		return nil
+		return
 	}
 	top := append([]Instance(nil), pl.Deck[:n]...)
 	pl.Deck = pl.Deck[n:]
-	keep := rand.New(&g.rng).IntN(n)
-	var ev []Event
-	for i, in := range top {
-		if i == keep {
-			pl.Deck = append(pl.Deck, in)
-			continue
-		}
-		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
-		ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
+	if n == 1 { // nothing to choose
+		pl.Deck = append(pl.Deck, top[0])
+		return
 	}
-	return ev
+	g.ask(Choice{Player: p, Kind: ChoiceReveal, Card: c.cardID(), Revealed: top})
 }
 
 func (g *Game) takeFromDiscard(p PlayerID, uid int) (Instance, bool) {

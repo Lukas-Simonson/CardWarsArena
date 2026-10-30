@@ -26,6 +26,7 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 		if l.Building == nil {
 			return abilitySource{}, ErrNoAbility
 		}
+		ctx.card = l.Building.CardID
 		return abilitySource{ctx, g.Card(l.Building.Instance).Effects, &l.Building.Status}, nil
 	}
 	return abilitySource{}, ErrNoAbility

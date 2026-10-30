@@ -40,7 +40,7 @@ func (g *Game) fireTurnStart(p PlayerID) []Event {
 			items = append(items, item{g.effectsOf(l.Creature), effCtx{p: p, at: pos{p, i}, hasSrc: true, creature: l.Creature}})
 		}
 		if l.Building != nil {
-			items = append(items, item{g.Card(l.Building.Instance).Effects, effCtx{p: p, at: pos{p, i}, hasSrc: true}})
+			items = append(items, item{g.Card(l.Building.Instance).Effects, effCtx{p: p, at: pos{p, i}, hasSrc: true, card: l.Building.CardID}})
 		}
 	}
 	var ev []Event
