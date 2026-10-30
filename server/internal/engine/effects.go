@@ -13,6 +13,7 @@ type effCtx struct {
 	hasSrc   bool      // false for Spells
 	creature *Creature // the source, when it is a Creature
 	playing  int       // UID of the card being played (not a legal hand_card choice)
+	entering *pos      // for creature_enters triggers: the Creature that entered
 }
 
 func (c effCtx) source() source { return source{pos: c.at, creature: c.creature} }
@@ -44,7 +45,8 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
 			for _, in := range g.State.Players[p].Discard {
 				cd := g.Card(in)
 				if (spec.CardType != "" && cd.Type != spec.CardType) ||
-					(spec.Landscape != "" && cd.Landscape != spec.Landscape) {
+					(spec.Landscape != "" && cd.Landscape != spec.Landscape) ||
+					(spec.Cost != nil && (cd.Cost == nil || *cd.Cost != *spec.Cost)) {
 					continue
 				}
 				out = append(out, TargetRef{Kind: spec.What, Player: p, Card: in.UID})
@@ -214,6 +216,18 @@ func (g *Game) whoList(who string, p PlayerID) []PlayerID {
 // Creature matching op.All.
 func (g *Game) creaturesFor(op card.Op, c effCtx, given [][]TargetRef) []pos {
 	var out []pos
+	if op.Self {
+		if c.creature != nil && g.creatureAt(c.at) == c.creature {
+			out = append(out, c.at)
+		}
+		return out
+	}
+	if op.Entering {
+		if c.entering != nil && g.creatureAt(*c.entering) != nil {
+			out = append(out, *c.entering)
+		}
+		return out
+	}
 	if op.All != nil {
 		for p := range g.State.Players {
 			for lane := range g.State.Players[p].Lanes {
@@ -279,10 +293,19 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "mod_creature":
 			for _, at := range g.creaturesFor(op, c, given) {
 				cr := g.creatureAt(at)
-				if op.Stat == "atk" {
-					cr.TempATK += amt
-				} else {
-					cr.TempDEF += amt
+				n := amt
+				if op.Amount != nil && op.Amount.Per != nil && op.Amount.Per.FromTarget {
+					n = g.value(*op.Amount, source{pos: at}) // counted from the chosen Creature
+				}
+				switch {
+				case op.Permanent && op.Stat == "atk":
+					cr.PermATK += n
+				case op.Permanent:
+					cr.PermDEF += n
+				case op.Stat == "atk":
+					cr.TempATK += n
+				default:
+					cr.TempDEF += n
 				}
 			}
 		case "ready_creature":
@@ -292,6 +315,36 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 					ev = append(ev, Event{Kind: EvReady, Player: at.P, Card: cr.UID, Lane: at.Lane})
 				}
 			}
+		case "destroy_creature":
+			for _, at := range g.creaturesFor(op, c, given) {
+				if cr := g.creatureAt(at); cr != nil {
+					ev = append(ev, Event{Kind: EvDie, Player: at.P, Card: cr.UID, Lane: at.Lane})
+					ev = append(ev, g.removeCreature(at, toDiscard)...)
+				}
+			}
+		case "mill":
+			g.milledCost = 0
+			for _, p := range g.whoList(op.Who, c.p) {
+				ev = append(ev, g.mill(p, amt)...)
+			}
+		case "discard_random":
+			for _, p := range g.whoList(op.Who, c.p) {
+				ev = append(ev, g.discardRandom(p, amt)...)
+			}
+		case "discount_next_creature":
+			g.State.CreatureDiscount += amt
+		case "borrow_creature":
+			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
+			if len(from) == 1 && len(to) == 1 && from[0].Player != c.p && to[0].Player == c.p {
+				at := pos{c.p, to[0].Lane}
+				ev = append(ev, g.moveCreature(pos{from[0].Player, from[0].Lane}, at)...)
+				if cr := g.creatureAt(at); cr != nil {
+					cr.Status, cr.Borrowed = Ready, true
+					ev = append(ev, Event{Kind: EvReady, Player: c.p, Card: cr.UID, Lane: at.Lane})
+				}
+			}
+		case "ogre_gas":
+			ev = append(ev, g.ogreGas(c.p, max(amt, 3))...)
 		case "bounce":
 			for _, at := range g.creaturesFor(op, c, given) {
 				ev = append(ev, g.removeCreature(at, toHand)...)
@@ -351,6 +404,62 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				}
 			}
 		}
+	}
+	return ev
+}
+
+// mill puts the top n cards of p's deck into their owner's discard pile.
+func (g *Game) mill(p PlayerID, n int) []Event {
+	pl := &g.State.Players[p]
+	var ev []Event
+	for ; n > 0 && len(pl.Deck) > 0; n-- {
+		in := pl.Deck[0]
+		pl.Deck = pl.Deck[1:]
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+		if cost := g.Card(in).Cost; cost != nil {
+			g.milledCost = *cost
+		} else {
+			g.milledCost = 0
+		}
+		ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
+	}
+	return ev
+}
+
+// discardRandom makes p discard n cards from their hand at random. The
+// player's own choice is not offered, since the opponent decides nothing here.
+func (g *Game) discardRandom(p PlayerID, n int) []Event {
+	pl := &g.State.Players[p]
+	var ev []Event
+	for ; n > 0 && len(pl.Hand) > 0; n-- {
+		i := rand.New(&g.rng).IntN(len(pl.Hand))
+		in := pl.Hand[i]
+		pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+		ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
+	}
+	return ev
+}
+
+// ogreGas reveals the top n cards of p's deck, puts one of them (chosen at
+// random) on the bottom and discards the rest.
+func (g *Game) ogreGas(p PlayerID, n int) []Event {
+	pl := &g.State.Players[p]
+	n = min(n, len(pl.Deck))
+	if n == 0 {
+		return nil
+	}
+	top := append([]Instance(nil), pl.Deck[:n]...)
+	pl.Deck = pl.Deck[n:]
+	keep := rand.New(&g.rng).IntN(n)
+	var ev []Event
+	for i, in := range top {
+		if i == keep {
+			pl.Deck = append(pl.Deck, in)
+			continue
+		}
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+		ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
 	}
 	return ev
 }

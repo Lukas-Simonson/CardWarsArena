@@ -56,12 +56,12 @@ func (g *Game) creatureAt(at pos) *Creature { return g.State.Players[at.P].Lanes
 // Every read of a stat goes through here.
 func (g *Game) atk(at pos) int {
 	c := g.creatureAt(at)
-	return max(0, baseStat(g.Card(c.Instance).Attack)+c.TempATK+g.staticMod("atk", at))
+	return max(0, baseStat(g.Card(c.Instance).Attack)+c.TempATK+c.PermATK+g.staticMod("atk", at))
 }
 
 func (g *Game) def(at pos) int {
 	c := g.creatureAt(at)
-	return max(0, baseStat(g.Card(c.Instance).Defense)+c.TempDEF+g.staticMod("def", at))
+	return max(0, baseStat(g.Card(c.Instance).Defense)+c.TempDEF+c.PermDEF+g.staticMod("def", at))
 }
 
 func baseStat(v *int) int {
@@ -144,7 +144,11 @@ func (g *Game) value(v card.Value, s source) int {
 	if v.Per == nil {
 		return v.N
 	}
-	return v.N * g.count(*v.Per, s)
+	n := g.count(*v.Per, s)
+	if v.Per.Div > 0 {
+		n /= v.Per.Div
+	}
+	return v.N * n
 }
 
 // count evaluates a Count from the point of view of source s.
@@ -187,6 +191,9 @@ func (g *Game) count(c card.Count, s source) int {
 				if c.Type != "" && g.Card(cr.Instance).Landscape != c.Type {
 					continue
 				}
+				if c.Card != "" && cr.CardID != c.Card {
+					continue
+				}
 				if c.Of == "flooped_creatures" && cr.Status != Flooped {
 					continue
 				}
@@ -201,6 +208,39 @@ func (g *Game) count(c card.Count, s source) int {
 		return st.SpellsThisTurn
 	case "opponent_hand":
 		return len(st.Players[s.P.Opp()].Hand)
+	case "discard":
+		return len(st.Players[s.P].Discard)
+	case "empty_lanes":
+		n := 0
+		for _, l := range st.Players[s.P].Lanes {
+			if l.Creature == nil {
+				n++
+			}
+		}
+		return n
+	case "entered_this_turn":
+		n := 0
+		for _, p := range players {
+			for _, e := range st.Entered[p] {
+				n += e
+			}
+		}
+		return n
+	case "entered_adjacent":
+		n := 0
+		for i, e := range st.Entered[s.P] {
+			if abs(i-s.Lane) == 1 {
+				n += e
+			}
+		}
+		return n
+	case "base_attack":
+		if s.creature == nil {
+			return 0
+		}
+		return baseStat(g.Card(s.creature.Instance).Attack)
+	case "milled_cost":
+		return g.milledCost
 	}
 	return 0
 }
@@ -215,6 +255,35 @@ func (g *Game) cond(c card.Cond, s source) bool {
 	if c.BuildingInLane != nil &&
 		(st.Players[s.P].Lanes[s.Lane].Building != nil) != *c.BuildingInLane {
 		return false
+	}
+	if c.OpponentHandMax != nil && len(st.Players[s.P.Opp()].Hand) > *c.OpponentHandMax {
+		return false
+	}
+	if c.DiscardMin != nil && len(st.Players[s.P].Discard) < *c.DiscardMin {
+		return false
+	}
+	if c.Controls != "" {
+		found := false
+		for _, l := range st.Players[s.P].Lanes {
+			found = found || (l.Creature != nil && g.Card(l.Creature.Instance).Landscape == c.Controls)
+		}
+		if !found {
+			return false
+		}
+	}
+	if c.OnLandscape != "" {
+		if l := st.Players[s.P].Lanes[s.Lane]; l.FaceDown || l.Landscape != c.OnLandscape {
+			return false
+		}
+	}
+	if c.EnteredMax != nil {
+		n := 0
+		for _, e := range st.Entered[s.P] {
+			n += e
+		}
+		if n > *c.EnteredMax {
+			return false
+		}
 	}
 	if lc := c.Landscapes; lc != nil {
 		n := g.faceUp(s.P, lc.Type)
@@ -240,6 +309,22 @@ func (g *Game) attackable(target pos) bool {
 		}
 	})
 	return ok
+}
+
+// blocksTriggers reports whether the Creature entering or leaving play on p's
+// side of a Lane is stopped from triggering entering and leaving play effects
+// by an opposing Building (Palace of Bone).
+func (g *Game) blocksTriggers(p PlayerID, lane int) bool {
+	b := g.State.Players[p.Opp()].Lanes[lane].Building
+	if b == nil {
+		return false
+	}
+	for _, e := range g.Card(b.Instance).Effects {
+		if e.Kind == card.KindStatic && e.Restrict == card.RestrictOpposingNoEnterLeave {
+			return true
+		}
+	}
+	return false
 }
 
 // Attack and Defense are the current ATK and DEF of p's Creature in a Lane

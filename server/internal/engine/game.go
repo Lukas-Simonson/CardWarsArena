@@ -36,6 +36,8 @@ type Game struct {
 	cat card.Catalog
 	rng rand.PCG
 	cfg Config
+
+	milledCost int // the cost of the card last milled, for Green Merman
 }
 
 // NewGame validates the decks, shuffles, deals opening hands and returns a
@@ -104,6 +106,7 @@ func (g *Game) Clone() *Game {
 		for i := range src.Lanes {
 			if cr := src.Lanes[i].Creature; cr != nil {
 				v := *cr
+				v.Fired = append([]int(nil), cr.Fired...)
 				dst.Lanes[i].Creature = &v
 			}
 			if b := src.Lanes[i].Building; b != nil {

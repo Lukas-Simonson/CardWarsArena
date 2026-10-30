@@ -61,6 +61,9 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 	if e == nil {
 		return ErrNoAbility
 	}
+	if e.If != nil && !g.cond(*e.If, src.ctx.source()) {
+		return ErrCondition
+	}
 	if a.Kind == ActFloop {
 		if g.State.Turn == 1 {
 			return ErrFirstTurn
@@ -68,7 +71,8 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 		if *src.status != Ready {
 			return ErrNotReady
 		}
-	} else if g.State.ActionsLeft < e.Cost {
+	}
+	if g.State.ActionsLeft < e.Cost {
 		// Paying Actions for an ability needs no particular Landscape.
 		return ErrNoActions
 	}
@@ -87,9 +91,8 @@ func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	if a.Kind == ActFloop {
 		*src.status = Flooped
 		kind = EvFloop
-	} else {
-		g.State.ActionsLeft -= e.Cost
 	}
+	g.State.ActionsLeft -= e.Cost // a Floop may cost Actions too (Spirit Tower)
 	uid := 0
 	if src.ctx.creature != nil {
 		uid = src.ctx.creature.UID
