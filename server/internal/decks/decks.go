@@ -15,8 +15,9 @@ import (
 type Info struct {
 	Set        string                          `json:"set"`
 	Name       string                          `json:"name"`
-	Owner      string                          `json:"owner"` // "Finn" from "Finn's Blue Plains Deck"
-	Cards      []string                        `json:"-"`
+	Owner      string                          `json:"owner"`          // "Finn" from "Finn's Blue Plains Deck"
+	Cards      []string                        `json:"-"`              // the playable cards; the Hero is kept apart
+	Hero       string                          `json:"hero,omitempty"` // card id of the deck's Hero
 	Size       int                             `json:"size"`
 	Landscapes [engine.NumLanes]card.Landscape `json:"landscapes"`
 	LandOK     bool                            `json:"-"`
@@ -38,42 +39,36 @@ func (d Info) Playable() bool {
 	return d.LandOK && len(d.Cards) >= engine.MinDeckSize && d.Modelled == d.Distinct
 }
 
-// LandscapesFromName reads the Landscape types out of a deck name, such as
-// "Cornfield/Nice Lands". The data does not store them separately.
-func LandscapesFromName(name string) ([engine.NumLanes]card.Landscape, bool) {
+// LandscapesOf works out the four Landscapes a deck is played with from its
+// cards: the Landscape types they need (Rainbow cards fit any). One type fills
+// all four lanes, two take two lanes each (the more common one first). The
+// data does not store them separately.
+func LandscapesOf(cat card.Catalog, ids []string) ([engine.NumLanes]card.Landscape, bool) {
 	var out [engine.NumLanes]card.Landscape
-	lower := strings.ToLower(name)
-	type found struct {
-		at int
-		ls card.Landscape
-	}
-	var fs []found
-	for _, c := range []struct {
-		text string
-		ls   card.Landscape
-	}{
-		{"cornfield", card.Cornfield}, {"blue plains", card.BluePlains}, {"useless swamp", card.UselessSwamp},
-		{"nice lands", card.NiceLands}, {"sandy lands", card.SandyLands}, {"sandyland", card.SandyLands}, {"icy lands", card.IcyLands},
-	} {
-		if i := strings.Index(lower, c.text); i >= 0 {
-			dup := false
-			for _, f := range fs {
-				dup = dup || f.ls == c.ls
-			}
-			if !dup {
-				fs = append(fs, found{i, c.ls})
-			}
+	count := map[card.Landscape]int{}
+	for _, id := range ids {
+		if ls := cat[id].Landscape; ls != "" && ls != card.Rainbow {
+			count[ls]++
 		}
 	}
-	sort.Slice(fs, func(i, j int) bool { return fs[i].at < fs[j].at })
-	switch len(fs) {
+	var kinds []card.Landscape
+	for ls := range count {
+		kinds = append(kinds, ls)
+	}
+	sort.Slice(kinds, func(i, j int) bool {
+		if count[kinds[i]] != count[kinds[j]] {
+			return count[kinds[i]] > count[kinds[j]]
+		}
+		return kinds[i] < kinds[j]
+	})
+	switch len(kinds) {
 	case 1:
 		for i := range out {
-			out[i] = fs[0].ls
+			out[i] = kinds[0]
 		}
 	case 2:
 		for i := range out {
-			out[i] = fs[i/2].ls
+			out[i] = kinds[i/2]
 		}
 	default:
 		return out, false
@@ -104,8 +99,8 @@ func Find(cat card.Catalog) []Info {
 	}
 	var out []Info
 	for key := range seen {
-		d := Info{Set: key.set, Name: key.name, Owner: OwnerFromName(key.name), Cards: cat.Deck(key.set, key.name)}
-		d.Landscapes, d.LandOK = LandscapesFromName(key.name)
+		d := Info{Set: key.set, Name: key.name, Owner: OwnerFromName(key.name), Cards: cat.Deck(key.set, key.name), Hero: cat.Hero(key.set, key.name)}
+		d.Landscapes, d.LandOK = LandscapesOf(cat, d.Cards)
 		distinct := map[string]bool{}
 		for _, id := range d.Cards {
 			if !distinct[id] {
@@ -125,21 +120,30 @@ func Find(cat card.Catalog) []Info {
 }
 
 // Pick finds the single deck whose "SET Name" contains every word of query.
+// A query that names exactly one deck on its own ("finn") wins over matches on
+// the set's name too ("Finn Vs Jake").
 func Pick(decks []Info, query string) (Info, error) {
 	words := strings.Fields(strings.ToLower(query))
-	var hits []Info
-	for _, d := range decks {
-		k := strings.ToLower(d.Key())
-		ok := len(words) > 0
-		for _, w := range words {
-			ok = ok && strings.Contains(k, w)
+	match := func(text func(Info) string) []Info {
+		var hits []Info
+		for _, d := range decks {
+			k := strings.ToLower(text(d))
+			ok := len(words) > 0
+			for _, w := range words {
+				ok = ok && strings.Contains(k, w)
+			}
+			if ok {
+				hits = append(hits, d)
+			}
 		}
-		if ok {
-			hits = append(hits, d)
-		}
+		return hits
+	}
+	hits := match(func(d Info) string { return d.Name })
+	if len(hits) != 1 {
+		hits = match(Info.Key)
 	}
 	if len(hits) > 1 {
-		// Several decks share a name (2v2 versions of Jake's deck): prefer
+		// Several decks match: prefer
 		// the one that can actually be played.
 		var ready []Info
 		for _, h := range hits {
@@ -167,18 +171,18 @@ func Pick(decks []Info, query string) (Info, error) {
 // Table formats a deck list for people.
 func Table(decks []Info) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "%-6s %-62s %5s  %s\n", "SET", "DECK", "CARDS", "STATUS")
+	fmt.Fprintf(&b, "%-24s %-22s %5s  %s\n", "SET", "DECK", "CARDS", "STATUS")
 	for _, d := range decks {
 		status := "ready"
 		switch {
 		case !d.LandOK:
-			status = "needs Landscapes (not in data)"
+			status = "cannot tell its Landscapes from its cards"
 		case len(d.Cards) < engine.MinDeckSize:
 			status = fmt.Sprintf("incomplete (%d cards)", len(d.Cards))
 		case d.Modelled < d.Distinct:
 			status = fmt.Sprintf("%d of %d cards modelled", d.Modelled, d.Distinct)
 		}
-		fmt.Fprintf(&b, "%-6s %-62s %5d  %s\n", d.Set, d.Name, len(d.Cards), status)
+		fmt.Fprintf(&b, "%-24s %-22s %5d  %s\n", d.Set, d.Name, len(d.Cards), status)
 	}
 	return b.String()
 }

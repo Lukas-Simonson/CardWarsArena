@@ -16,8 +16,8 @@ func starterGame(t testing.TB, seed uint64) *Game {
 	if err != nil {
 		t.Fatal(err)
 	}
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("CP1", "Finn's Blue Plains Deck")}
-	jake := DeckSpec{cornfields, cat.Deck("CP1", "Jake's Cornfield Deck")}
+	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("Finn Vs Jake", "Finn's Deck")}
+	jake := DeckSpec{cornfields, cat.Deck("Finn Vs Jake", "Jake's Deck")}
 	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2), AllowUnimplemented: true}, [2]DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)
@@ -33,8 +33,8 @@ func strictStarterGame(t testing.TB, seed uint64) *Game {
 	if err != nil {
 		t.Fatal(err)
 	}
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("CP1", "Finn's Blue Plains Deck")}
-	jake := DeckSpec{cornfields, cat.Deck("CP1", "Jake's Cornfield Deck")}
+	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("Finn Vs Jake", "Finn's Deck")}
+	jake := DeckSpec{cornfields, cat.Deck("Finn Vs Jake", "Jake's Deck")}
 	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2)}, [2]DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)
@@ -244,7 +244,7 @@ func TestStarterDecksAreFullyModeled(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, deck := range [][]string{cat.Deck("CP1", "Finn's Blue Plains Deck"), cat.Deck("CP1", "Jake's Cornfield Deck")} {
+	for _, deck := range [][]string{cat.Deck("Finn Vs Jake", "Finn's Deck"), cat.Deck("Finn Vs Jake", "Jake's Deck")} {
 		if len(deck) != 40 {
 			t.Errorf("deck has %d cards", len(deck))
 		}

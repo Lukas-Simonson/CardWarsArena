@@ -14,8 +14,8 @@ func starterGame(t *testing.T, seed uint64) *engine.Game {
 	if err != nil {
 		t.Fatal(err)
 	}
-	finn := engine.DeckSpec{Landscapes: [4]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, Cards: cat.Deck("CP1", "Finn's Blue Plains Deck")}
-	jake := engine.DeckSpec{Landscapes: [4]card.Landscape{card.Cornfield, card.Cornfield, card.Cornfield, card.Cornfield}, Cards: cat.Deck("CP1", "Jake's Cornfield Deck")}
+	finn := engine.DeckSpec{Landscapes: [4]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, Cards: cat.Deck("Finn Vs Jake", "Finn's Deck")}
+	jake := engine.DeckSpec{Landscapes: [4]card.Landscape{card.Cornfield, card.Cornfield, card.Cornfield, card.Cornfield}, Cards: cat.Deck("Finn Vs Jake", "Jake's Deck")}
 	g, err := engine.NewGame(cat, engine.Config{Seed: seed, First: engine.PlayerID(seed % 2)}, [2]engine.DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)

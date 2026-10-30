@@ -3,7 +3,7 @@
 Go rules engine, card data and tooling for the Adventure Time Card Wars web port.
 
 ```
-cmd/cardimport   convert the raw card dump into data/cards
+cmd/cardimport   convert the card catalogue into data/cards
 cmd/cardwars     interactive terminal client (play and test)
 cmd/cardwarsd    WebSocket game server (rooms, bot opponent)
 internal/card    card model, effect schema, catalog loader
@@ -12,7 +12,7 @@ internal/bot     weighted-random computer player
 internal/decks   finds preconstructed decks in the card data
 internal/view    what one seat may see of a game (hidden information)
 internal/server  rooms, protocol, WebSocket handling
-data/            raw dump, generated cards, hand-written effects
+data/            the catalogue, generated cards, hand-written effects
 docs/            design notes (effects.md) and the client protocol (protocol.md)
 ```
 
@@ -24,7 +24,7 @@ go run ./cmd/cardwars --bot none           # hot-seat: both seats are you
 go run ./cmd/cardwars --bot both           # watch two bots
 go run ./cmd/cardwars --seed 42 --first 0  # replay a specific game
 go run ./cmd/cardwars --list-decks         # decks and whether they are playable
-go run ./cmd/cardwars --p0 "cp1 jake" --p1 "cp1 finn"
+go run ./cmd/cardwars --p0 "jake" --p1 "finn"
 ```
 
 Every turn lists the legal actions as a numbered menu; type a number. Other
@@ -48,7 +48,7 @@ without playing to it:
 Players are `0`, `1`, `me`, `opp`; lanes are 1-4; card names match by
 substring. `u` undoes sandbox edits too.
 
-Decks other than the two CP1 starters contain cards whose rules are not modelled
+Decks other than Finn's and Jake's contain cards whose rules are not modelled
 yet; `--allow-unmodelled` plays them with their text ignored.
 
 ## Running the server
@@ -66,7 +66,8 @@ browsers to play yourself (Create room / Join). The client protocol is in
 ```
 go test ./...                    # everything
 go test -short ./...             # fewer random games
-go run ./cmd/cardimport          # regenerate data/cards from data/raw/cards.json
+go run ./cmd/cardimport          # regenerate data/cards from data/CardWarsCatalogue.json
+                                 # (-image-base sets the URL the card scans are served from)
 ```
 
 Card rules live in `data/effects/*.json` (see `docs/effects.md`); never edit

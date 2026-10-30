@@ -203,7 +203,7 @@ func TestHelloAndHTTPEndpoints(t *testing.T) {
 	_ = c
 	for path, want := range map[string]string{
 		"/healthz":   "ok",
-		"/api/decks": "Finn's Blue Plains Deck",
+		"/api/decks": "Finn's Deck",
 		"/api/cards": "Cool Dog",
 		"/":          "<title>",
 	} {
@@ -245,7 +245,7 @@ func TestDecksEndpointMarksPlayability(t *testing.T) {
 	for _, d := range list {
 		ready[d.Name] = d.Playable
 	}
-	if !ready["Finn's Blue Plains Deck"] || !ready["Jake's Cornfield Deck"] || ready["BMO's Useless Swamp Deck"] {
+	if !ready["Finn's Deck"] || !ready["Jake's Deck"] || ready["BMO's Deck"] || ready["Lady's Deck"] {
 		t.Errorf("playable = %v", ready)
 	}
 }
@@ -254,7 +254,7 @@ func TestVersusBotRunsToTheEnd(t *testing.T) {
 	h := newHarness(t)
 	for seed := uint64(1); seed <= 5; seed++ {
 		c := h.dial()
-		h.createVsBot(c, "cp1 finn", seedOf(seed))
+		h.createVsBot(c, "finn", seedOf(seed))
 		final := c.play(rand.New(rand.NewPCG(seed, 1)))
 		if !final.View.Over || final.View.Winner == nil {
 			t.Fatalf("seed %d: not finished: %+v", seed, final.View)
@@ -268,7 +268,7 @@ func TestVersusBotRunsToTheEnd(t *testing.T) {
 func TestUpdatesAreSequentialAndPersonal(t *testing.T) {
 	h := newHarness(t)
 	c := h.dial()
-	h.createVsBot(c, "cp1 finn", seedOf(4))
+	h.createVsBot(c, "finn", seedOf(4))
 	prev, seen := 0, 0
 	for seen < 15 {
 		m := c.next()
@@ -299,10 +299,10 @@ func TestUpdatesAreSequentialAndPersonal(t *testing.T) {
 func TestTwoPlayersPlayAFullGame(t *testing.T) {
 	h := newHarness(t)
 	a, b := h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Name: "Ann", Deck: "cp1 finn"})
+	a.send(ClientMsg{Type: MsgCreate, Name: "Ann", Deck: "finn"})
 	a.expect(MsgJoined)
 	a.expect(MsgWaiting)
-	b.send(ClientMsg{Type: MsgJoin, Room: strings.ToLower(a.room), Name: "Bob", Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgJoin, Room: strings.ToLower(a.room), Name: "Bob", Deck: "jake"})
 	b.expect(MsgJoined)
 	if b.seat != 1 || a.seat != 0 {
 		t.Fatalf("seats %d %d", a.seat, b.seat)
@@ -341,9 +341,9 @@ func stateJSON(r *Room) string {
 func TestIllegalActionIsRejectedAndChangesNothing(t *testing.T) {
 	h := newHarness(t)
 	a, b := h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn", Seed: ptr(uint64(2))})
+	a.send(ClientMsg{Type: MsgCreate, Deck: "finn", Seed: ptr(uint64(2))})
 	a.expect(MsgJoined)
-	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
 	b.expect(MsgJoined)
 	a.expect(MsgUpdate)
 	b.expect(MsgUpdate)
@@ -375,7 +375,7 @@ func TestRequestErrors(t *testing.T) {
 	c.expectError(ErrUnknownDeck)
 	c.send(ClientMsg{Type: MsgCreate, Deck: "bmo"})
 	c.expectError(ErrDeckNotReady)
-	c.send(ClientMsg{Type: MsgJoin, Room: "ZZZZ", Deck: "cp1 finn"})
+	c.send(ClientMsg{Type: MsgJoin, Room: "ZZZZ", Deck: "finn"})
 	c.expectError(ErrRoomNotFound)
 	c.send(ClientMsg{Type: MsgRejoin, Room: "ZZZZ", Token: "x"})
 	c.expectError(ErrRoomNotFound)
@@ -383,44 +383,44 @@ func TestRequestErrors(t *testing.T) {
 	c.expectError(ErrBadRequest)
 	c.sendRaw([]byte("{not json"))
 	c.expectError(ErrBadRequest)
-	c.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	c.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	c.expect(MsgJoined)
 	c.send(ClientMsg{Type: MsgAction})
 	c.expectError(ErrBadRequest)
 	c.send(ClientMsg{Type: MsgAction, Action: &engine.Action{Kind: engine.ActDraw}})
 	c.expectError(ErrNotStarted)
-	c.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	c.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	c.expectError(ErrAlreadyInRoom)
-	c.send(ClientMsg{Type: MsgJoin, Room: c.room, Deck: "cp1 jake"})
+	c.send(ClientMsg{Type: MsgJoin, Room: c.room, Deck: "jake"})
 	c.expectError(ErrAlreadyInRoom)
 }
 
 func TestRoomFullAndOwnRoom(t *testing.T) {
 	h := newHarness(t)
 	a, b, c := h.dial(), h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	a.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	a.expect(MsgJoined)
-	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
 	b.expect(MsgJoined)
-	c.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "cp1 jake"})
+	c.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
 	c.expectError(ErrRoomFull)
 }
 
 func TestServerFull(t *testing.T) {
 	h := newHarness(t, func(c *Config) { c.MaxRooms = 1 })
 	a, b := h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	a.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	a.expect(MsgJoined)
-	b.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	b.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	b.expectError(ErrServerFull)
 }
 
 func TestRejoinAfterDisconnect(t *testing.T) {
 	h := newHarness(t)
 	a, b := h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Name: "Ann", Deck: "cp1 finn", Seed: ptr(uint64(3))})
+	a.send(ClientMsg{Type: MsgCreate, Name: "Ann", Deck: "finn", Seed: ptr(uint64(3))})
 	a.expect(MsgJoined)
-	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Name: "Bob", Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Name: "Bob", Deck: "jake"})
 	b.expect(MsgJoined)
 	a.expect(MsgUpdate)
 	b.expect(MsgUpdate)
@@ -471,9 +471,9 @@ func drainFor(c *tc, typ string, ok func(ServerMsg) bool) *ServerMsg {
 func TestLeaveClosesTheRoom(t *testing.T) {
 	h := newHarness(t)
 	a, b := h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	a.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	a.expect(MsgJoined)
-	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
 	b.expect(MsgJoined)
 	a.send(ClientMsg{Type: MsgLeave})
 	if m := b.expect(MsgRoomClosed); m.Message != "opponent left" {
@@ -483,28 +483,28 @@ func TestLeaveClosesTheRoom(t *testing.T) {
 		t.Errorf("rooms = %d", n)
 	}
 	// Both clients are free to start over.
-	b.send(ClientMsg{Type: MsgCreate, Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgCreate, Deck: "jake"})
 	b.expect(MsgJoined)
 }
 
 func TestHostLeavingAWaitingRoom(t *testing.T) {
 	h := newHarness(t)
 	a, b := h.dial(), h.dial()
-	a.send(ClientMsg{Type: MsgCreate, Deck: "cp1 finn"})
+	a.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
 	a.expect(MsgJoined)
 	a.send(ClientMsg{Type: MsgLeave})
 	deadline := time.Now().Add(2 * time.Second)
 	for h.srv.RoomCount() != 0 && time.Now().Before(deadline) {
 		time.Sleep(10 * time.Millisecond)
 	}
-	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "cp1 jake"})
+	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
 	b.expectError(ErrRoomNotFound)
 }
 
 func TestDroppedConnectionKeepsTheRoomForRejoin(t *testing.T) {
 	h := newHarness(t)
 	a := h.dial()
-	h.createVsBot(a, "cp1 finn", seedOf(6))
+	h.createVsBot(a, "finn", seedOf(6))
 	room, token := a.room, a.token
 	a.expect(MsgUpdate)
 	a.conn.CloseNow()
@@ -523,7 +523,7 @@ func TestDroppedConnectionKeepsTheRoomForRejoin(t *testing.T) {
 func TestIdleRoomsExpire(t *testing.T) {
 	h := newHarness(t, func(c *Config) { c.RoomTTL = time.Minute })
 	a := h.dial()
-	h.createVsBot(a, "cp1 finn")
+	h.createVsBot(a, "finn")
 	h.srv.sweep(time.Now().Add(30 * time.Second))
 	if h.srv.RoomCount() != 1 {
 		t.Fatal("a fresh room must not expire")
@@ -538,7 +538,7 @@ func TestIdleRoomsExpire(t *testing.T) {
 func TestSeedControl(t *testing.T) {
 	handOf := func(h *harness, seed uint64) string {
 		c := h.dial()
-		h.createVsBot(c, "cp1 finn", seedOf(seed))
+		h.createVsBot(c, "finn", seedOf(seed))
 		m := c.expect(MsgUpdate)
 		var cards []string
 		for _, in := range m.View.Players[0].Hand {
@@ -633,7 +633,7 @@ func TestNamesAreSanitised(t *testing.T) {
 func TestBotDeckDefaultsToTheOtherStarter(t *testing.T) {
 	h := newHarness(t)
 	c := h.dial()
-	h.createVsBot(c, "cp1 finn")
+	h.createVsBot(c, "finn")
 	m := c.expect(MsgUpdate)
 	if m.View.Players[1].Lanes[0].Landscape != card.Cornfield {
 		t.Errorf("the bot should play Jake's Cornfield deck, got %s", m.View.Players[1].Lanes[0].Landscape)
