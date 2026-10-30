@@ -1,0 +1,35 @@
+name: Card or rules problem
+description: A card does something different from what it says, or a rule is played wrongly
+labels: ["card-rules"]
+body:
+  - type: input
+    id: card
+    attributes:
+      label: Card
+      description: The card's name. If several cards are involved, name the main one and mention the others below.
+      placeholder: Sandsnake
+    validations:
+      required: true
+  - type: textarea
+    id: printed
+    attributes:
+      label: What the card says
+      description: Paste the card's text, or say where in the rulebook the rule is.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What the game did
+    validations:
+      required: true
+  - type: textarea
+    id: situation
+    attributes:
+      label: The situation
+      description: What was on the board, whose turn it was, and what you clicked. This is usually what decides how a card should work.
+  - type: input
+    id: room
+    attributes:
+      label: Room code
+      description: If the game is still running or you remember it.

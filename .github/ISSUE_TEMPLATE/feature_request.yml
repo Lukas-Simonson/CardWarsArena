@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest something new or a change to how the game plays or looks
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The problem or the missing thing, in your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything else you considered?
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part is it about?
+      multiple: true
+      options:
+        - Lobby and rooms
+        - The battle board
+        - Animations and pacing
+        - Cards and rules
+        - Decks and deck building
+        - Heroes
+        - Sound
+        - Something else

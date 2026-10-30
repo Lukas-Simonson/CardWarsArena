@@ -1,0 +1,60 @@
+name: Bug report
+description: Something in the game or the web client does not work
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping. For a card that does something different from what it says, please use the **Card or rules problem** form instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see? Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we make it happen again?
+      placeholder: |
+        1. Start a game against the bot with Finn's deck
+        2. Play Cool Dog into lane 2
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: How were you playing?
+      options:
+        - Against the bot
+        - Against a friend (room code)
+        - In the lobby, before a game
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: room
+    attributes:
+      label: Room code
+      description: If the game is still running or you remember it. Rooms are removed after 30 minutes without activity.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 130 on macOS, Safari on iPhone, …
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console errors
+      description: "Optional. Open the developer tools (F12), look at the Console tab, and paste any red errors."
+      render: text
