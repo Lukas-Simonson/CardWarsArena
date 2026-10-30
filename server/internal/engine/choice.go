@@ -19,17 +19,6 @@ func (g *Game) closeChoice() {
 	}
 }
 
-// choiceCtx is the effect context of a "may" Choice, or false when the card
-// that asked is no longer where it was.
-func (g *Game) choiceCtx(ch *Choice) (effCtx, bool) {
-	at := pos{ch.Controller, ch.Lane}
-	cr := g.creatureAt(at)
-	if cr == nil || cr.UID != ch.SourceUID {
-		return effCtx{}, false
-	}
-	return effCtx{p: ch.Controller, at: at, hasSrc: true, creature: cr}, true
-}
-
 func (g *Game) validateChoice(p PlayerID, a Action) error {
 	ch := g.State.Choice
 	if p != ch.Player {
@@ -53,19 +42,6 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 			}
 		}
 		return ErrNoSuchCard
-	case ChoiceMay:
-		if a.Kind == ActDecline {
-			return nil
-		}
-		ctx, ok := g.choiceCtx(ch)
-		if !ok {
-			return ErrNoTarget
-		}
-		usable, err := g.checkTargets(ch.Targets, a.Targets, ctx)
-		if !usable {
-			return ErrNoTarget
-		}
-		return err
 	}
 	return nil
 }
@@ -90,12 +66,6 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 			g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
 			ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
 		}
-	case ChoiceMay:
-		if a.Kind == ActChoose {
-			if ctx, ok := g.choiceCtx(ch); ok {
-				ev = g.runOps(ch.Then, ctx, a.Targets)
-			}
-		}
 	}
 	g.closeChoice()
 	return ev
@@ -116,17 +86,6 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 	case ChoiceReveal:
 		for _, in := range ch.Revealed {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})
-		}
-	case ChoiceMay:
-		out = append(out, Action{Kind: ActDecline})
-		if ctx, ok := g.choiceCtx(ch); ok {
-			combos := g.targetCombos(ch.Targets, ctx, maxTargetCombos)
-			if len(ch.Targets) == 0 {
-				combos = [][][]TargetRef{nil}
-			}
-			for _, t := range combos {
-				out = append(out, Action{Kind: ActChoose, Targets: t})
-			}
 		}
 	}
 	return out

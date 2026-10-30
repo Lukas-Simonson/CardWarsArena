@@ -107,6 +107,7 @@ func (g *Game) Clone() *Game {
 			if cr := src.Lanes[i].Creature; cr != nil {
 				v := *cr
 				v.Fired = append([]int(nil), cr.Fired...)
+				v.Offered = append([]Offer(nil), cr.Offered...)
 				dst.Lanes[i].Creature = &v
 			}
 			if b := src.Lanes[i].Building; b != nil {
@@ -155,6 +156,9 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 	if err := g.Validate(p, a); err != nil {
 		return nil, err
 	}
+	if !g.usesOffer(p, a) {
+		g.clearOffers() // anything else the player does lets the offers pass
+	}
 	var ev []Event
 	switch a.Kind {
 	case ActKeepHand:
@@ -174,7 +178,7 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 		ev = append(ev, g.doAbility(p, a)...)
 	case ActPlayPending:
 		ev = append(ev, g.doPending(p, a)...)
-	case ActChoose, ActDecline:
+	case ActChoose:
 		ev = append(ev, g.doChoice(p, a)...)
 	}
 	// State-based rules hold after every action, not just after combat.
@@ -195,12 +199,12 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 		return ErrNotYourTurn
 	}
 	if st.Choice != nil {
-		if a.Kind != ActChoose && a.Kind != ActDecline {
+		if a.Kind != ActChoose {
 			return ErrChoice
 		}
 		return g.validateChoice(p, a)
 	}
-	if a.Kind == ActChoose || a.Kind == ActDecline {
+	if a.Kind == ActChoose {
 		return ErrNoChoice
 	}
 	if st.Pending != nil && a.Kind != ActPlayPending {
@@ -251,6 +255,7 @@ func (g *Game) mulligan(p PlayerID) []Event {
 // startTurn begins p's turn: Ready all cards, draw a card, receive 2 Actions.
 func (g *Game) startTurn(p PlayerID) []Event {
 	st := &g.State
+	g.clearOffers()
 	st.Turn++
 	st.Active = p
 	st.Phase = PhaseMain

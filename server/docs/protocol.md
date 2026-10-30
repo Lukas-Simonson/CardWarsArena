@@ -140,7 +140,7 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `end_main` | main | go to the Fight phase (ends the turn on the first turn or with no one able to Fight) |
 | `attack` | fight | `lane` |
 | `play_pending` | after Silo of Truth | `lane`, `targets` |
-| `choose`, `decline` | while a `choice` is open | see "Choices" |
+| `choose` | while a `choice` is open | see "Choices" |
 
 `targets` is a list of target slots (an empty optional slot is `[]`, never `null`), each a list of references
 `{"kind":"creature|building|landscape|lane|discard_card|hand_card","player":0,"lane":1,"card":0}`
@@ -157,7 +157,6 @@ every other action is refused (`illegal_action`) until they answer.
 |---|---|---|
 | `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
 | `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
-| `may` | do this or not (Ms. Mummy at the start of your turn) | `decline`, or `choose` with `targets` for what it asks to be chosen |
 
 As always, send one of the objects in `view.legal`.
 

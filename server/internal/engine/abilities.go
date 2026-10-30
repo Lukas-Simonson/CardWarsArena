@@ -7,6 +7,8 @@ type abilitySource struct {
 	ctx     effCtx
 	effects []card.Effect
 	status  *Status
+	// real counts the card's own activated abilities; offers follow them.
+	real int
 }
 
 func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
@@ -21,15 +23,60 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 			return abilitySource{}, ErrNoAbility
 		}
 		ctx.creature = l.Creature
-		return abilitySource{ctx, g.effectsOf(l.Creature), &l.Creature.Status}, nil
+		effects := g.effectsOf(l.Creature)
+		src := abilitySource{ctx: ctx, effects: effects, status: &l.Creature.Status, real: countActivates(effects)}
+		if !l.Creature.Silenced {
+			// Offers are free activated abilities after the card's own.
+			src.effects = append(append([]card.Effect(nil), effects...), offerEffects(l.Creature.Offered)...)
+		}
+		return src, nil
 	case "building":
 		if l.Building == nil {
 			return abilitySource{}, ErrNoAbility
 		}
 		ctx.card = l.Building.CardID
-		return abilitySource{ctx, g.Card(l.Building.Instance).Effects, &l.Building.Status}, nil
+		effects := g.Card(l.Building.Instance).Effects
+		return abilitySource{ctx: ctx, effects: effects, status: &l.Building.Status, real: countActivates(effects)}, nil
 	}
 	return abilitySource{}, ErrNoAbility
+}
+
+func countActivates(effects []card.Effect) int {
+	n := 0
+	for _, e := range effects {
+		if e.Kind == card.KindActivate {
+			n++
+		}
+	}
+	return n
+}
+
+func offerEffects(offers []Offer) []card.Effect {
+	out := make([]card.Effect, len(offers))
+	for i, o := range offers {
+		out[i] = card.Effect{Kind: card.KindActivate, Targets: o.Targets, Do: o.Then}
+	}
+	return out
+}
+
+// usesOffer reports whether a is the use of an Offer.
+func (g *Game) usesOffer(p PlayerID, a Action) bool {
+	if a.Kind != ActActivate {
+		return false
+	}
+	src, err := g.abilitySource(p, a)
+	return err == nil && a.Index >= src.real
+}
+
+// clearOffers withdraws every Offer: the moment to use them has passed.
+func (g *Game) clearOffers() {
+	for p := range g.State.Players {
+		for i := range g.State.Players[p].Lanes {
+			if c := g.State.Players[p].Lanes[i].Creature; c != nil {
+				c.Offered = nil
+			}
+		}
+	}
 }
 
 // abilityEffect finds the Floop effect, or the Index-th activated ability.
@@ -92,6 +139,12 @@ func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	if a.Kind == ActFloop {
 		*src.status = Flooped
 		kind = EvFloop
+	}
+	if a.Kind == ActActivate && a.Index >= src.real {
+		// An Offer is used up, but the Creature's other Offers stay.
+		cr := src.ctx.creature
+		i := a.Index - src.real
+		cr.Offered = append(append([]Offer(nil), cr.Offered[:i]...), cr.Offered[i+1:]...)
 	}
 	g.State.ActionsLeft -= e.Cost // a Floop may cost Actions too (Spirit Tower)
 	uid := 0

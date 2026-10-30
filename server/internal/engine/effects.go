@@ -342,8 +342,7 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 		case "may":
 			if c.creature != nil {
-				g.ask(Choice{Player: c.p, Kind: ChoiceMay, Card: c.cardID(), Controller: c.p, Lane: c.at.Lane,
-					SourceUID: c.creature.UID, Targets: op.Targets, Then: op.Then})
+				c.creature.Offered = append(c.creature.Offered, Offer{Targets: op.Targets, Then: op.Then})
 			}
 		case "discount_next_creature":
 			g.State.CreatureDiscount += amt

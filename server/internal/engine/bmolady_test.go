@@ -557,25 +557,40 @@ func TestSpells(t *testing.T) {
 	})
 }
 
-func TestMsMummyAsksAtTheStartOfYourTurn(t *testing.T) {
+// mummyActions are p's activations of the Ms. Mummy in Lane 0.
+func mummyActions(g *Game, p PlayerID) []Action {
+	var out []Action
+	for _, a := range g.LegalActions(p) {
+		if a.Kind == ActActivate && a.Lane == 0 {
+			out = append(out, a)
+		}
+	}
+	return out
+}
+
+// At the start of your turn Ms. Mummy offers her ability on the card, free;
+// nothing stops the game to ask.
+func TestMsMummyOffersHerAbilityAtTheStartOfYourTurn(t *testing.T) {
 	g := ladyGame(t)
 	g.put(1, 0, "ms-mummy")
 	ally := g.put(1, 1, "fummy") // SandyLands, 2/7
 	g.State.Active = 0
 	g.endTurn(0) // player 1's turn begins
-	ch := g.State.Choice
-	if ch == nil || ch.Kind != ChoiceMay || ch.Player != 1 {
-		t.Fatalf("Ms. Mummy asks her controller: %+v", ch)
+	if g.State.Choice != nil {
+		t.Fatalf("no question is asked: %+v", g.State.Choice)
 	}
-	legal := g.LegalActions(1)
-	// No, yes with nobody helped, or yes helping the one SandyLands Creature.
-	if len(legal) != 3 || legal[0].Kind != ActDecline || len(legal[1].Targets[0]) != 0 || len(legal[2].Targets[0]) != 1 {
-		t.Fatalf("legal = %+v", legal)
+	// Without a target, or helping the one SandyLands Creature.
+	acts := mummyActions(g, 1)
+	if len(acts) != 2 || len(acts[0].Targets[0]) != 0 || len(acts[1].Targets[0]) != 1 {
+		t.Fatalf("activations = %+v", acts)
 	}
-	g.mustFail(t, 1, Action{Kind: ActDraw}, ErrChoice)
-	g.must(t, 1, legal[2])
+	left := g.State.ActionsLeft
+	g.must(t, 1, acts[1])
 	if g.State.Players[1].Lanes[0].Creature != nil || !handHas(g, 1, g.cardUID(1, "ms-mummy")) {
 		t.Error("Ms. Mummy returns to her owner's hand")
+	}
+	if g.State.ActionsLeft != left {
+		t.Errorf("the ability is free: Actions %d -> %d", left, g.State.ActionsLeft)
 	}
 	if ally.PermDEF != 1 || g.defOf(1, 1) != 8 {
 		t.Errorf("the chosen Creature gains 1 DEF for good: %d", g.defOf(1, 1))
@@ -586,17 +601,58 @@ func TestMsMummyAsksAtTheStartOfYourTurn(t *testing.T) {
 	}
 }
 
-func TestMsMummyCanBeDeclined(t *testing.T) {
+// The offer is for the start of the turn only: any other action lets it pass.
+func TestMsMummyOfferLapsesWhenYouDoSomethingElse(t *testing.T) {
+	for name, other := range map[string]Action{
+		"draw":     {Kind: ActDraw},
+		"end main": {Kind: ActEndMain},
+	} {
+		t.Run(name, func(t *testing.T) {
+			g := ladyGame(t)
+			g.put(1, 0, "ms-mummy")
+			g.State.Active = 0
+			g.endTurn(0)
+			if len(mummyActions(g, 1)) == 0 {
+				t.Fatal("the offer is there at the start of the turn")
+			}
+			g.must(t, 1, other)
+			if len(mummyActions(g, 1)) != 0 {
+				t.Error("the offer is gone once something else was done")
+			}
+			if g.State.Players[1].Lanes[0].Creature == nil {
+				t.Error("Ms. Mummy stays where she is")
+			}
+		})
+	}
+}
+
+// Using one Mummy leaves the other's offer; offers are made afresh each turn
+// rather than piling up.
+func TestOffersAreSeparateAndDoNotPileUp(t *testing.T) {
 	g := ladyGame(t)
 	g.put(1, 0, "ms-mummy")
-	g.put(1, 1, "fummy")
+	g.put(1, 1, "ms-mummy")
+	lane1 := func() []Action {
+		var out []Action
+		for _, a := range g.LegalActions(1) {
+			if a.Kind == ActActivate && a.Lane == 1 {
+				out = append(out, a)
+			}
+		}
+		return out
+	}
 	g.State.Active = 0
 	g.endTurn(0)
-	g.must(t, 1, Action{Kind: ActDecline})
-	if g.State.Players[1].Lanes[0].Creature == nil || g.State.Choice != nil {
-		t.Error("declining changes nothing")
+	first := len(lane1())
+	g.must(t, 1, mummyActions(g, 1)[0])
+	if len(lane1()) != first || first == 0 {
+		t.Fatalf("the second Mummy can still be used: %d, was %d", len(lane1()), first)
 	}
-	g.must(t, 1, Action{Kind: ActDraw})
+	g.endTurn(1)
+	g.endTurn(0) // player 1's next turn
+	if got := len(lane1()); got != first {
+		t.Errorf("a new turn offers once more, not on top of the old: %d, want %d", got, first)
+	}
 }
 
 // With no SandyLands Creature to help she may still go home.
@@ -605,7 +661,11 @@ func TestMsMummyWithoutATarget(t *testing.T) {
 	g.put(1, 0, "ms-mummy")
 	g.State.Active = 0
 	g.endTurn(0)
-	g.must(t, 1, Action{Kind: ActChoose, Targets: [][]TargetRef{{}}})
+	acts := mummyActions(g, 1)
+	if len(acts) != 1 {
+		t.Fatalf("activations = %+v", acts)
+	}
+	g.must(t, 1, acts[0])
 	if g.State.Players[1].Lanes[0].Creature != nil {
 		t.Error("she returned to her owner's hand")
 	}
@@ -613,18 +673,16 @@ func TestMsMummyWithoutATarget(t *testing.T) {
 
 func TestChoicesQueue(t *testing.T) {
 	g := ladyGame(t)
-	g.put(1, 0, "ms-mummy")
-	g.put(1, 1, "ms-mummy")
-	g.State.Active = 0
-	g.endTurn(0)
-	if g.State.Choice == nil || len(g.State.Queue) != 1 {
-		t.Fatalf("two Mummies ask one after the other: %+v / %d queued", g.State.Choice, len(g.State.Queue))
+	g.ask(Choice{Player: 1, Kind: ChoiceDiscard, Card: "first", Count: 1})
+	g.ask(Choice{Player: 1, Kind: ChoiceDiscard, Card: "second", Count: 1})
+	if g.State.Choice == nil || g.State.Choice.Card != "first" || len(g.State.Queue) != 1 {
+		t.Fatalf("two questions ask one after the other: %+v / %d queued", g.State.Choice, len(g.State.Queue))
 	}
-	g.must(t, 1, Action{Kind: ActDecline})
-	if g.State.Choice == nil || len(g.State.Queue) != 0 {
+	g.closeChoice()
+	if g.State.Choice == nil || g.State.Choice.Card != "second" || len(g.State.Queue) != 0 {
 		t.Fatal("the second question follows the first")
 	}
-	g.must(t, 1, Action{Kind: ActDecline})
+	g.closeChoice()
 	if g.State.Choice != nil {
 		t.Error("no more questions")
 	}

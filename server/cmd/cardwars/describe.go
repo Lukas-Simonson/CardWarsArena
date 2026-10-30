@@ -146,9 +146,7 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 		case engine.ChoiceReveal:
 			return "Put " + u.instName(a.Card) + " on the bottom of the deck"
 		}
-		return withTargets("Yes, "+u.g.Catalog()[ch.Card].Name+" does it", "targets", u.targets(me, a.Targets))
-	case engine.ActDecline:
-		return "No"
+		return "Choose"
 	case engine.ActPlayPending:
 		name := "the stolen card"
 		if st.Pending != nil {

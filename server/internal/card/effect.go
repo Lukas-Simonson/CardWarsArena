@@ -167,8 +167,9 @@ type Op struct {
 	Entering bool `json:"entering,omitempty"`
 	// Permanent makes mod_creature last as long as the Creature is in play.
 	Permanent bool `json:"permanent,omitempty"`
-	// may asks the controller whether to do Then, after choosing Targets
-	// (Ms. Mummy's "you may"). Slots in Then refer to Targets.
+	// may offers the controller a free ability until they do something else:
+	// to do Then, after choosing Targets (Ms. Mummy's "you may"). Slots in
+	// Then refer to Targets.
 	Targets []TargetSpec `json:"targets,omitempty"`
 	Then    []Op         `json:"then,omitempty"`
 }

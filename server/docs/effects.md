@@ -85,13 +85,18 @@ respect that, so a silenced Husker Knight is a 0/0 and dies.
 Most targets are chosen up front, with the action. A few cards need a decision
 from a player *during* resolution, and possibly from the other player. They open a
 **Choice** (`State.Choice`; further ones wait in `State.Queue`), which stops the game
-until it is answered, with `choose` or `decline` actions from the player who decides:
+until it is answered, with `choose` actions from the player who decides:
 
 - `discard_choice` (`who`, `amount`): that player picks the cards to discard from their hand.
   If they would discard their whole hand there is nothing to choose, and it just happens.
 - `ogre_gas`: the top 3 cards of your deck come out of it and are shown to both players; you
   put one on the bottom and the rest are discarded. With one card left it goes to the bottom.
-- `may` (`targets`, `then`): the controller says yes (choosing the `targets`) or no; yes runs `then`.
+
+Optional effects do not stop the game. `may` (`targets`, `then`) puts an **offer** on the
+Creature (`Creature.offered`): a free `activate` ability, listed after the card's own, that runs
+`then` on the chosen `targets`. It lasts until its controller does anything else (draw, play a
+card, end the main phase, use another ability), so a "you may" at the start of your turn shows up
+on the card, like a Floop, instead of interrupting every turn. Using one leaves the others.
 
 ## Pending free plays
 
@@ -115,6 +120,7 @@ stuck.
 - Silo of Truth "no cost" waives the additional cost too.
 
 - Ms. Mummy's "gains 1 DEF" is permanent, like Sand Eyebat's.
+- Ms. Mummy's offer is available from the start of your turn until you do anything else.
 - Palace of Bone stops the entering and leaving play triggers of Creatures opposite it,
   including other Creatures' "when a Creature enters play" triggers that they would set off.
 - Spirit Tower needs an empty Lane on your side as well as the Creature to take; the Creature

@@ -66,6 +66,8 @@ type Creature struct {
 	// Borrowed Creatures go back to their owner's side at the end of the turn
 	// (Spirit Tower).
 	Borrowed bool `json:"borrowed,omitempty"`
+	// Offered holds the optional abilities its triggers offer right now.
+	Offered []Offer `json:"offered,omitempty"`
 	// Fired lists the once-per-turn triggers already used this turn.
 	Fired []int `json:"fired,omitempty"`
 }
@@ -131,7 +133,6 @@ type Pending struct {
 const (
 	ChoiceDiscard = "discard" // a player picks cards from their hand to discard
 	ChoiceReveal  = "reveal"  // a player picks one of the revealed cards; the rest are discarded
-	ChoiceMay     = "may"     // a player decides whether to do something, and to what
 )
 
 // Choice is a decision that stops the game until a player makes it. It is
@@ -146,11 +147,12 @@ type Choice struct {
 	// reveal: the cards shown, out of the deck until the choice is made. The
 	// chosen one goes to the bottom of the deck and the rest are discarded.
 	Revealed []Instance `json:"revealed,omitempty"`
-	// may: the controller, Lane and UID of the Creature that asks, what is
-	// chosen, and what is done if the player says yes.
-	Controller PlayerID          `json:"controller,omitempty"`
-	Lane       int               `json:"lane,omitempty"`
-	SourceUID  int               `json:"source_uid,omitempty"`
-	Targets    []card.TargetSpec `json:"targets,omitempty"`
-	Then       []card.Op         `json:"then,omitempty"`
+}
+
+// Offer is an optional ability a trigger has put on a Creature ("you may",
+// Ms. Mummy). It appears as an activated ability of that Creature, at no cost,
+// until its controller does anything else.
+type Offer struct {
+	Targets []card.TargetSpec `json:"targets,omitempty"`
+	Then    []card.Op         `json:"then,omitempty"`
 }

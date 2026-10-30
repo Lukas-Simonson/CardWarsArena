@@ -18,8 +18,7 @@ const (
 	ActPlayPending ActionKind = "play_pending" // play the card taken by Silo of Truth for free (Lane, Targets)
 	ActFloop       ActionKind = "floop"        // main phase: Floop the card in Lane (Source: creature or building)
 	ActActivate    ActionKind = "activate"     // main phase: pay Actions for an ability of the card in Lane (Index picks which)
-	ActChoose      ActionKind = "choose"       // answer a pending Choice: Card (a hand or revealed card) or Targets
-	ActDecline     ActionKind = "decline"      // answer a "you may" Choice with no
+	ActChoose      ActionKind = "choose"       // answer a pending Choice: Card (a hand or revealed card)
 )
 
 // Action is a single player decision. It is the unit sent over the wire.
