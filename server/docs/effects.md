@@ -48,8 +48,8 @@ created with `AllowUnimplemented`.
   `mod_creature`, `move_creature`, `move_building`, `flip_landscape`,
   `ready_creature`, `bounce`, `destroy_building`, `gain_actions`,
   `return_from_discard`, `put_on_deck`, `discard`, `copy_floop` (Schoolhouse),
-  `steal_play` (Silo of Truth), `destroy_creature`, `mill`, `discard_random`,
-  `discount_next_creature`, `borrow_creature` (Spirit Tower) and `ogre_gas`. Ops reference
+  `steal_play` (Silo of Truth), `destroy_creature`, `mill`, `discard_choice`,
+  `discount_next_creature`, `borrow_creature` (Spirit Tower), `ogre_gas` and `may`. Ops reference
   target slots by index and may carry an `if` condition. `self` and `entering` act on the
   card itself or on the Creature that fired a `creature_enters` trigger instead of a slot;
   `permanent` makes `mod_creature` last while the Creature is in play.
@@ -80,6 +80,19 @@ All reads of a Creature's rules go through `effectsOf`. A Creature can be
 another card until end of turn (Schoolhouse). Statics, triggers and Floops all
 respect that, so a silenced Husker Knight is a 0/0 and dies.
 
+## Choices
+
+Most targets are chosen up front, with the action. A few cards need a decision
+from a player *during* resolution, and possibly from the other player. They open a
+**Choice** (`State.Choice`; further ones wait in `State.Queue`), which stops the game
+until it is answered, with `choose` or `decline` actions from the player who decides:
+
+- `discard_choice` (`who`, `amount`): that player picks the cards to discard from their hand.
+  If they would discard their whole hand there is nothing to choose, and it just happens.
+- `ogre_gas`: the top 3 cards of your deck come out of it and are shown to both players; you
+  put one on the bottom and the rest are discarded. With one card left it goes to the bottom.
+- `may` (`targets`, `then`): the controller says yes (choosing the `targets`) or no; yes runs `then`.
+
 ## Pending free plays
 
 Silo of Truth takes a random card from the opponent's hand. Because the card is
@@ -101,13 +114,7 @@ stuck.
   own Lane if that Lane has no Creature.
 - Silo of Truth "no cost" waives the additional cost too.
 
-- Where a card says an opponent "discards a card" (Abraca Amadeus, Bone Wand, Mace Stump) the
-  card is chosen at random: the engine has no way to ask the opponent mid-turn.
-- Ogre Gas reveals the top 3 cards, puts one chosen at random on the bottom and discards the
-  other two, for the same reason.
-- Ms. Mummy's "at the start of your turn, you may" is a free ability usable before any
-  Creature has entered play under your control that turn. "Gains 1 DEF" is permanent, like
-  Sand Eyebat's.
+- Ms. Mummy's "gains 1 DEF" is permanent, like Sand Eyebat's.
 - Palace of Bone stops the entering and leaving play triggers of Creatures opposite it,
   including other Creatures' "when a Creature enters play" triggers that they would set off.
 - Spirit Tower needs an empty Lane on your side as well as the Creature to take; the Creature

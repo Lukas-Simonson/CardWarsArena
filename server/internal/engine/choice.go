@@ -1,0 +1,133 @@
+package engine
+
+// ask opens a Choice, or queues it behind the one that is open.
+func (g *Game) ask(c Choice) {
+	if g.State.Choice == nil {
+		g.State.Choice = &c
+		return
+	}
+	g.State.Queue = append(g.State.Queue, c)
+}
+
+// closeChoice ends the open Choice and opens the next queued one.
+func (g *Game) closeChoice() {
+	g.State.Choice = nil
+	if len(g.State.Queue) > 0 {
+		next := g.State.Queue[0]
+		g.State.Queue = g.State.Queue[1:]
+		g.State.Choice = &next
+	}
+}
+
+// choiceCtx is the effect context of a "may" Choice, or false when the card
+// that asked is no longer where it was.
+func (g *Game) choiceCtx(ch *Choice) (effCtx, bool) {
+	at := pos{ch.Controller, ch.Lane}
+	cr := g.creatureAt(at)
+	if cr == nil || cr.UID != ch.SourceUID {
+		return effCtx{}, false
+	}
+	return effCtx{p: ch.Controller, at: at, hasSrc: true, creature: cr}, true
+}
+
+func (g *Game) validateChoice(p PlayerID, a Action) error {
+	ch := g.State.Choice
+	if p != ch.Player {
+		return ErrNotYourTurn
+	}
+	switch ch.Kind {
+	case ChoiceDiscard:
+		if a.Kind != ActChoose {
+			return ErrChoice
+		}
+		if g.handIndex(p, a.Card) < 0 {
+			return ErrNoSuchCard
+		}
+	case ChoiceReveal:
+		if a.Kind != ActChoose {
+			return ErrChoice
+		}
+		for _, in := range ch.Revealed {
+			if in.UID == a.Card {
+				return nil
+			}
+		}
+		return ErrNoSuchCard
+	case ChoiceMay:
+		if a.Kind == ActDecline {
+			return nil
+		}
+		ctx, ok := g.choiceCtx(ch)
+		if !ok {
+			return ErrNoTarget
+		}
+		usable, err := g.checkTargets(ch.Targets, a.Targets, ctx)
+		if !usable {
+			return ErrNoTarget
+		}
+		return err
+	}
+	return nil
+}
+
+func (g *Game) doChoice(p PlayerID, a Action) []Event {
+	ch := g.State.Choice
+	var ev []Event
+	switch ch.Kind {
+	case ChoiceDiscard:
+		ev = g.discardFromHand(p, a.Card)
+		ch.Count--
+		if ch.Count > 0 && len(g.State.Players[p].Hand) > 0 {
+			return ev // more to discard: the same Choice stays open
+		}
+	case ChoiceReveal:
+		pl := &g.State.Players[p]
+		for _, in := range ch.Revealed {
+			if in.UID == a.Card {
+				pl.Deck = append(pl.Deck, in)
+				continue
+			}
+			g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+			ev = append(ev, Event{Kind: EvDiscard, Player: p, Card: in.UID})
+		}
+	case ChoiceMay:
+		if a.Kind == ActChoose {
+			if ctx, ok := g.choiceCtx(ch); ok {
+				ev = g.runOps(ch.Then, ctx, a.Targets)
+			}
+		}
+	}
+	g.closeChoice()
+	return ev
+}
+
+// choiceActions lists every way p can answer the open Choice.
+func (g *Game) choiceActions(p PlayerID) []Action {
+	ch := g.State.Choice
+	if ch == nil || ch.Player != p {
+		return nil
+	}
+	var out []Action
+	switch ch.Kind {
+	case ChoiceDiscard:
+		for _, in := range g.State.Players[p].Hand {
+			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+	case ChoiceReveal:
+		for _, in := range ch.Revealed {
+			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+	case ChoiceMay:
+		out = append(out, Action{Kind: ActDecline})
+		if ctx, ok := g.choiceCtx(ch); ok {
+			combos := g.targetCombos(ch.Targets, ctx, maxTargetCombos)
+			if len(ch.Targets) == 0 {
+				combos = [][][]TargetRef{nil}
+			}
+			for _, t := range combos {
+				out = append(out, Action{Kind: ActChoose, Targets: t})
+			}
+		}
+	}
+	return out
+}

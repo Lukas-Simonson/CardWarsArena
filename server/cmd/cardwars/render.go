@@ -127,6 +127,9 @@ func (u *ui) board(me engine.PlayerID) string {
 	if st.Pending != nil {
 		fmt.Fprintf(&b, "!! %s stole %s and must play it for free.\n", u.who(st.Active), u.g.Card(st.Pending.Card).Name)
 	}
+	if ch := st.Choice; ch != nil {
+		fmt.Fprintf(&b, "!! %s must decide (%s, from %s).\n", u.who(ch.Player), ch.Kind, u.g.Catalog()[ch.Card].Name)
+	}
 	return b.String()
 }
 

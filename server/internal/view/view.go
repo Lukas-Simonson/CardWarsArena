@@ -48,6 +48,17 @@ type Player struct {
 	Mulliganed bool                  `json:"mulliganed"`
 }
 
+// Choice is a decision some player must make before the game goes on. Both
+// seats see it (an opponent's discard is public), and Revealed cards are shown
+// to both.
+type Choice struct {
+	Player   int               `json:"player"` // who decides
+	Kind     string            `json:"kind"`   // discard, reveal or may
+	Card     string            `json:"card"`   // the card that asks
+	Count    int               `json:"count,omitempty"`
+	Revealed []engine.Instance `json:"revealed,omitempty"`
+}
+
 // View is a complete picture of the game for one viewer.
 type View struct {
 	You            int              `json:"you"`
@@ -62,6 +73,7 @@ type View struct {
 	Awaiting       []int            `json:"awaiting"`
 	Players        [2]Player        `json:"players"` // indexed by seat
 	Pending        *engine.Instance `json:"pending,omitempty"`
+	Choice         *Choice          `json:"choice,omitempty"`
 	// Legal lists what the viewer may do right now (empty when it is not
 	// their decision). Long target lists are capped; see docs/protocol.md.
 	Legal []engine.Action `json:"legal"`
@@ -97,6 +109,9 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	if st.Pending != nil {
 		in := st.Pending.Card
 		v.Pending = &in
+	}
+	if ch := st.Choice; ch != nil {
+		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...)}
 	}
 	for p := engine.PlayerID(0); p < 2; p++ {
 		src := &st.Players[p]

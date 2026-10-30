@@ -96,8 +96,20 @@ func (g *Game) Instances() map[int]string {
 	if g.State.Pending != nil {
 		add(g.State.Pending.Card)
 	}
+	for _, ch := range append([]Choice{}, append(g.State.Queue, ptrVal(g.State.Choice)...)...) {
+		for _, in := range ch.Revealed {
+			add(in)
+		}
+	}
 	return out
 }
 
 // Catalog returns the card catalog the game was created with.
 func (g *Game) Catalog() card.Catalog { return g.cat }
+
+func ptrVal(c *Choice) []Choice {
+	if c == nil {
+		return nil
+	}
+	return []Choice{*c}
+}

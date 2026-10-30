@@ -18,6 +18,8 @@ const (
 	ActPlayPending ActionKind = "play_pending" // play the card taken by Silo of Truth for free (Lane, Targets)
 	ActFloop       ActionKind = "floop"        // main phase: Floop the card in Lane (Source: creature or building)
 	ActActivate    ActionKind = "activate"     // main phase: pay Actions for an ability of the card in Lane (Index picks which)
+	ActChoose      ActionKind = "choose"       // answer a pending Choice: Card (a hand or revealed card) or Targets
+	ActDecline     ActionKind = "decline"      // answer a "you may" Choice with no
 )
 
 // Action is a single player decision. It is the unit sent over the wire.
@@ -56,6 +58,8 @@ func (a Action) String() string {
 		return fmt.Sprintf("attack(lane=%d)", a.Lane)
 	case ActPlayPending:
 		return fmt.Sprintf("play_pending(lane=%d)", a.Lane)
+	case ActChoose:
+		return fmt.Sprintf("choose(card=%d)", a.Card)
 	case ActFloop, ActActivate:
 		return fmt.Sprintf("%s(%s lane=%d idx=%d)", a.Kind, a.Source, a.Lane, a.Index)
 	}
@@ -126,4 +130,6 @@ var (
 	ErrNoPending      = errors.New("there is no stolen card to play")
 	ErrBadTarget      = errors.New("invalid target choice")
 	ErrCondition      = errors.New("the card's condition is not met")
+	ErrChoice         = errors.New("a decision must be made first")
+	ErrNoChoice       = errors.New("there is no decision to make")
 )

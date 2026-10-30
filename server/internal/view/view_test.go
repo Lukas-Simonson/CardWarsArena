@@ -223,3 +223,46 @@ func TestViewJSONIsStable(t *testing.T) {
 		}
 	}
 }
+
+// A reveal Choice shows the revealed cards to both seats, but only the player
+// who must decide is offered actions.
+func TestChoiceIsVisibleToBothButOnlyOfferedToTheDecider(t *testing.T) {
+	cat, err := card.Load("../../data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, u := card.UselessSwamp, card.SandyLands
+	g, err := engine.NewGame(cat, engine.Config{Seed: 3, First: 0}, [2]engine.DeckSpec{
+		{Landscapes: [4]card.Landscape{s, s, s, s}, Cards: cat.Deck("BMO Vs Lady Rainicorn", "BMO's Deck")},
+		{Landscapes: [4]card.Landscape{u, u, u, u}, Cards: cat.Deck("BMO Vs Lady Rainicorn", "Lady's Deck")},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for p := engine.PlayerID(0); p < 2; p++ {
+		if _, err := g.Apply(p, engine.Action{Kind: engine.ActKeepHand}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	gas, _ := g.Give(0, "ogre-gas")
+	if _, err := g.Apply(0, engine.Action{Kind: engine.ActPlayCard, Card: gas.UID}); err != nil {
+		t.Fatal(err)
+	}
+	mine, theirs := Build(g, 0), Build(g, 1)
+	for _, v := range []View{mine, theirs} {
+		if v.Choice == nil || v.Choice.Kind != "reveal" || v.Choice.Player != 0 || len(v.Choice.Revealed) != 3 {
+			t.Fatalf("choice = %+v", v.Choice)
+		}
+		if len(v.Awaiting) != 1 || v.Awaiting[0] != 0 {
+			t.Errorf("awaiting %v", v.Awaiting)
+		}
+	}
+	if len(mine.Legal) != 3 || len(theirs.Legal) != 0 {
+		t.Errorf("legal: %d for the decider, %d for the other", len(mine.Legal), len(theirs.Legal))
+	}
+	for _, in := range mine.Choice.Revealed {
+		if got := FilterEvents(g, 1, []engine.Event{{Kind: engine.EvDiscard, Card: in.UID}})[0].CardID; got != in.CardID {
+			t.Errorf("revealed cards are named in events: %q", got)
+		}
+	}
+}

@@ -99,6 +99,7 @@ current `seq` and no events.
   "over": false, "winner": 1,            // winner only when over
   "awaiting": [0],                       // seats that must decide now (both, during mulligan)
   "pending": {"uid":9,"card":"cool-dog","owner":1},  // Silo of Truth: must be played first
+  "choice": {"player":1,"kind":"discard","card":"abraca-amadeus","count":2},  // see "Choices"
   "legal": [ …actions… ],                // only when you are in `awaiting`
   "players": [ { …seat 0… }, { …seat 1… } ]
 }
@@ -139,10 +140,26 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `end_main` | main | go to the Fight phase (ends the turn on the first turn or with no one able to Fight) |
 | `attack` | fight | `lane` |
 | `play_pending` | after Silo of Truth | `lane`, `targets` |
+| `choose`, `decline` | while a `choice` is open | see "Choices" |
 
 `targets` is a list of target slots (an empty optional slot is `[]`, never `null`), each a list of references
 `{"kind":"creature|building|landscape|lane|discard_card|hand_card","player":0,"lane":1,"card":0}`
 (`player` = whose side, `lane` for board things, `card` = uid for card piles).
+
+### Choices
+
+Some cards stop the game until a player decides, and that player need not be
+the active one. `view.choice` (sent to both seats) says who (`player`), what kind,
+and which card asked (`card`). The decider is the only seat in `awaiting`, and
+every other action is refused (`illegal_action`) until they answer.
+
+| `kind` | question | answer |
+|---|---|---|
+| `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
+| `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
+| `may` | do this or not (Ms. Mummy at the start of your turn) | `decline`, or `choose` with `targets` for what it asks to be chosen |
+
+As always, send one of the objects in `view.legal`.
 
 **Limit:** `legal` lists at most 64 target choices per card, so a card with a very
 wide choice (Patchy the Pumpkin with many Creatures) may offer only some of its

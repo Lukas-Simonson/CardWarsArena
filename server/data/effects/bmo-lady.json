@@ -294,7 +294,7 @@
      "self": true
     },
     {
-     "do": "discard_random",
+     "do": "discard_choice",
      "who": "opponent",
      "amount": {
       "n": 1,
@@ -329,31 +329,34 @@
  ],
  "ms-mummy": [
   {
-   "kind": "activate",
-   "if": {
-    "entered_max": 0
-   },
-   "targets": [
-    {
-     "what": "creature",
-     "side": "you",
-     "landscape": "sandy_lands",
-     "optional": true
-    }
-   ],
+   "kind": "trigger",
+   "on": "turn_start",
    "do": [
     {
-     "do": "bounce",
-     "self": true
-    },
-    {
-     "do": "mod_creature",
-     "slot": 0,
-     "stat": "def",
-     "amount": {
-      "n": 1
-     },
-     "permanent": true
+     "do": "may",
+     "targets": [
+      {
+       "what": "creature",
+       "side": "you",
+       "landscape": "sandy_lands",
+       "optional": true
+      }
+     ],
+     "then": [
+      {
+       "do": "bounce",
+       "self": true
+      },
+      {
+       "do": "mod_creature",
+       "slot": 0,
+       "stat": "def",
+       "amount": {
+        "n": 1
+       },
+       "permanent": true
+      }
+     ]
     }
    ]
   }
@@ -602,7 +605,7 @@
    "kind": "spell",
    "do": [
     {
-     "do": "discard_random",
+     "do": "discard_choice",
      "who": "opponent",
      "amount": {
       "n": 1,
@@ -626,7 +629,7 @@
    "kind": "spell",
    "do": [
     {
-     "do": "discard_random",
+     "do": "discard_choice",
      "who": "opponent",
      "amount": {
       "n": 1

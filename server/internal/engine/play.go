@@ -204,7 +204,13 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 
 // placedCtx is the effect context for the card most recently placed in a Lane.
 func (g *Game) placedCtx(p PlayerID, lane int) effCtx {
-	return effCtx{p: p, at: pos{p, lane}, hasSrc: true, creature: g.creatureAt(pos{p, lane})}
+	ctx := effCtx{p: p, at: pos{p, lane}, hasSrc: true, creature: g.creatureAt(pos{p, lane})}
+	if ctx.creature == nil {
+		if b := g.State.Players[p].Lanes[lane].Building; b != nil {
+			ctx.card = b.CardID
+		}
+	}
+	return ctx
 }
 
 // doPlay pays for and plays a validated card.
@@ -235,7 +241,7 @@ func (g *Game) resolvePlay(p PlayerID, in Instance, c *card.Card, a Action) []Ev
 		ev := []Event{{Kind: EvPlay, Player: p, Card: in.UID}}
 		g.State.SpellsThisTurn++
 		if e := spellEffect(c); e != nil {
-			ev = append(ev, g.runOps(e.Do, effCtx{p: p, at: pos{p, 0}}, a.Targets)...)
+			ev = append(ev, g.runOps(e.Do, effCtx{p: p, at: pos{p, 0}, card: c.ID}, a.Targets)...)
 		}
 		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
 		return ev
