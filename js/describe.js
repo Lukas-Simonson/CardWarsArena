@@ -74,6 +74,13 @@ export function describeAction(ctx, a) {
       const t = `Play ${c?.name ?? "the stolen card"} for free${c?.type === "spell" ? "" : ` into lane ${laneNo(a.lane)}`}`;
       return withTargets(ctx, t, "targets", a.targets);
     }
+    case "choose": {
+      const ch = v.choice;
+      if (ch?.kind === "discard") return `Discard ${instName(ctx, a.card)}`;
+      if (ch?.kind === "reveal") return `Put ${instName(ctx, a.card)} on the bottom of your deck`;
+      return withTargets(ctx, `Yes, use ${cardName(ctx, ch?.card)}`, "targets", a.targets);
+    }
+    case "decline": return "No thanks";
     case "attack": {
       const mine = me.lanes[a.lane ?? 0]?.creature;
       const foe = v.players[1 - v.you].lanes[a.lane ?? 0]?.creature;

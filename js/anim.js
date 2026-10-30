@@ -119,6 +119,14 @@ const END = {
   hit: (f) => f.delay + 900, hp: (f) => f.delay + 1000, hpbar: (f) => f.delay + 600, ghost: (f) => f.delay + 560,
 };
 
+/** When the last of these effects is over (for what should wait for them, such as a dialog). */
+export function restOf(fx) {
+  return fx.reduce((m, f) => {
+    const end = f.t === "turn" ? f.delay + BANNER_MS : f.t === "deal" || f.t === "oppdraw" ? f.delay + 500 : END[f.t]?.(f) ?? 0;
+    return Math.max(m, end);
+  }, 0);
+}
+
 const pct = (hp) => Math.max(0, Math.min(100, Math.round((hp / MAX_HP) * 100)));
 
 // ---------- playing them

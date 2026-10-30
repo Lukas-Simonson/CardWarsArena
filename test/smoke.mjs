@@ -52,7 +52,7 @@ function chooseByClicking(v, ctx, n) {
   problems.push(`game ${n}: picker did not settle for ${key}`);
   return fallback();
 }
-let actionsSeen = 0, described = 0, logLines = 0, picked = 0;
+let actionsSeen = 0, described = 0, logLines = 0, picked = 0, choicesAnswered = 0;
 
 async function playOne(n) {
   let state = initialState();
@@ -65,6 +65,7 @@ async function playOne(n) {
     const v = state.view;
     if (!v || v.over || !(v.awaiting.includes(v.you) && v.legal.length)) return;
     const a = chooseByClicking(v, { view: v, cards, names: state.names, known: state.known }, n);
+    if (v.choice) choicesAnswered++;
     conn.send({ type: "action", action: a, seq: state.seq });
   };
   const conn = new Connection({
@@ -107,7 +108,7 @@ for (let n = 0; n < games; n++) {
   const v = await playOne(n);
   console.log(`game ${n + 1}/${games}: over after turn ${v.turn}, winner seat ${v.winner}`);
 }
-console.log(`${actionsSeen} legal actions offered, ${described} described, ${picked} chosen by clicking, ${logLines} log lines`);
+console.log(`${actionsSeen} legal actions offered, ${described} described, ${picked} chosen by clicking, ${choicesAnswered} choices answered, ${logLines} log lines`);
 if (problems.length) {
   console.error(`\n${problems.length} problem(s):`);
   for (const p of [...new Set(problems)].slice(0, 20)) console.error(" - " + p);

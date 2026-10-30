@@ -16,6 +16,11 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
   const v = ctx.view;
   if (!v) return out;
   if (v.over) return { ...out, text: "Game over" };
+  if (v.choice) {
+    const by = cardName(ctx, v.choice.card);
+    if (myDecision) return { ...out, text: `${by}: make your choice in the dialog.` };
+    return { ...out, text: `Waiting for ${seatName(ctx, v.choice.player)} to decide (${by})…` };
+  }
   if (!myDecision) {
     const who = v.awaiting.map((s) => (s === v.you ? "you" : seatName(ctx, s))).join(" and ");
     return { ...out, text: v.awaiting.length ? `Waiting for ${who}…` : "" };

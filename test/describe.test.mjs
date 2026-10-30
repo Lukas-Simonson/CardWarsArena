@@ -149,3 +149,16 @@ test("selections compare by value", () => {
   assert.ok(!sameSelection(laneSelection(0, "creature"), laneSelection(0, "building")));
   assert.ok(!sameSelection(null, handSelection(1)));
 });
+
+test("actions that answer a Choice are described", async () => {
+  const { describeAction, isKnownAction } = await import("../js/describe.js");
+  const { view, ctxFor } = await import("./fixtures.mjs");
+  const reveal = ctxFor(view({ choice: { player: 0, kind: "reveal", card: "corn-scepter", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
+  assert.equal(describeAction(reveal, { kind: "choose", card: 40 }), "Put The Pig on the bottom of your deck");
+  const discard = ctxFor(view({ choice: { player: 0, kind: "discard", card: "corn-scepter", count: 1 } }));
+  assert.equal(describeAction(discard, { kind: "choose", card: 10 }), "Discard Cool Dog");
+  const may = ctxFor(view({ choice: { player: 0, kind: "may", card: "the-pig" } }));
+  assert.match(describeAction(may, { kind: "choose", targets: [[{ kind: "creature", player: 0, lane: 0 }]] }), /^Yes, use The Pig/);
+  assert.equal(describeAction(may, { kind: "decline" }), "No thanks");
+  assert.ok(isKnownAction(may, { kind: "decline" }));
+});

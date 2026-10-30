@@ -4,7 +4,7 @@
 // rules.
 import { h, svg } from "./dom.js";
 import { cardEl } from "./card.js";
-import { cardName, landscapeName, seatName } from "./describe.js";
+import { cardName, describeRef, landscapeName, seatName } from "./describe.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -49,7 +49,8 @@ export function renderGame(root, model, on) {
         battlefield(model2, on),
         handSection(model2, on),
         logPanel(state, ctx, on)),
-      h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect)))));
+      h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect))),
+    choiceModal(model2, on)));
 }
 
 /** Replace just the "Card up close" panel (used on hover, so the scene is not rebuilt). */
@@ -227,6 +228,61 @@ function buildingStrip(m, seat, i, on) {
   }, b
     ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, "Flooped"))
     : (mine ? "Building slot" : "No Building"));
+}
+
+// ---------- the modal for a Choice
+
+/**
+ * A Choice stops the game until someone decides (an opponent's spell makes
+ * you discard, Ogre Gas shows cards, Ms. Mummy asks). The player who decides
+ * gets a modal dialog over everything; nothing else can be done until it is
+ * answered, so it has no way to be dismissed.
+ */
+function choiceModal(m, on) {
+  const { ctx, me, myDecision, legal, ui } = m;
+  const v = ctx.view;
+  const ch = v.choice;
+  if (!ch || ch.player !== me || !myDecision || v.over) return null;
+  const by = cardName(ctx, ch.card);
+  const choose = legal.filter((a) => a.kind === "choose");
+  const cardButton = (inst, action) => {
+    const c = ctx.cards[inst.card];
+    return h("button", { type: "button", class: "modalopt cardopt", "aria-label": c?.name ?? "card", onclick: () => on.onAction(action) },
+      cardEl(c ?? { id: inst.card, name: inst.card }), h("span", { class: "cap" }, c?.name ?? inst.card));
+  };
+  let title, text, body;
+  if (ch.kind === "discard") {
+    title = `Discard ${ch.count} card${ch.count === 1 ? "" : "s"}`;
+    text = `${by} makes you discard. Choose from your hand:`;
+    body = h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
+      const action = choose.find((a) => a.card === inst.uid);
+      return action && cardButton(inst, action);
+    }));
+  } else if (ch.kind === "reveal") {
+    title = by;
+    text = "These are the top cards of your deck. Choose one to put on the bottom; the rest are discarded.";
+    body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
+      const action = choose.find((a) => a.card === inst.uid);
+      return action && cardButton(inst, action);
+    }));
+  } else {
+    title = by;
+    text = ctx.cards[ch.card]?.text ?? "Do you want to use it?";
+    body = h("div", { class: "modalrow" },
+      choose.map((a) => h("button", { type: "button", class: "btn-green modalopt", onclick: () => on.onAction(a) }, yesLabel(ctx, a))),
+      legal.filter((a) => a.kind === "decline").map((a) => h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(a) }, "No thanks")));
+  }
+  return h("div", { class: `modal-backdrop${ui.modalAgain ? " again" : ""}` },
+    h("div", { class: "modal parch", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-h" },
+      h("h2", { id: "modal-h" }, title),
+      h("p", {}, text),
+      body));
+}
+
+/** "Yes", or "Yes: Fummy (your, lane 2)" when the answer picks something. */
+function yesLabel(ctx, a) {
+  const picked = (a.targets ?? []).flat();
+  return picked.length ? `Yes: ${picked.map((r) => describeRef(ctx, r)).join(", ")}` : "Yes";
 }
 
 // ---------- overlays on the felt
