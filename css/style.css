@@ -124,7 +124,8 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .lane .info { display: flex; justify-content: center; }
 .lane .info small { font-size: 14px; color: #e3f0dc; }
 .tilewrap { position: relative; }
-.tilewrap .floop { position: absolute; z-index: 3; left: 8px; bottom: 8px; min-height: 34px; padding: 3px 10px 0; font-size: 15px; }
+.tilewrap .tileacts { position: absolute; z-index: 3; left: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.tilewrap .floop { min-height: 34px; padding: 3px 10px 0; font-size: 15px; }
 
 [data-land="cornfield"]     { --tile: #9cc43a; }
 [data-land="blue_plains"]   { --tile: #7aa6d6; }

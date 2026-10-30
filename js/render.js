@@ -16,7 +16,7 @@ const LOG_SHOWN = 40;
 /**
  * @param {HTMLElement} root  the #game element
  * @param {{state:object, cards:object, ui:{source:string, picker:object|null, awaitingKind:boolean, inspect:string|null, discard:number|null}}} model
- * @param {object} on  handlers: onHand onLane onFloop onToken onKind onSkip onConfirm onCancel
+ * @param {object} on  handlers: onHand onLane onFloop onAbility onToken onKind onSkip onConfirm onCancel
  *                     onAction onPending onInspect onDiscard onLeave
  */
 export function renderGame(root, model, on) {
@@ -132,7 +132,9 @@ function laneColumn(m, i, on) {
   const v = ctx.view;
   const mc = v.players[me].lanes[i].creature, oc = v.players[opp].lanes[i].creature;
   const fight = m.myDecision && v.phase === "fight";
-  const canFloop = (srcs[`lane:${i}:creature`] ?? []).some((a) => a.kind === "floop") && !ui.picker;
+  const mine = ui.picker ? [] : srcs[`lane:${i}:creature`] ?? [];
+  const canFloop = mine.some((a) => a.kind === "floop");
+  const abilities = [...new Set(mine.filter((a) => a.kind === "activate").map((a) => a.index ?? 0))].sort();
   return h("div", { class: "lane" },
     buildingStrip(m, opp, i, on),
     landName(ctx, opp, i),
@@ -140,7 +142,9 @@ function laneColumn(m, i, on) {
     laneInfo(m, i, mc, oc),
     h("div", { class: "tilewrap" },
       tile(m, me, i, on),
-      canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>")),
+      (canFloop || abilities.length > 0) && h("div", { class: "tileacts" },
+        abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": `Use ${cardName(ctx, mc?.card)}'s ability`, onclick: () => on.onAbility(i, "creature", n) }, "Use ability")),
+        canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>"))),
     landName(ctx, me, i),
     buildingStrip(m, me, i, on));
 }
