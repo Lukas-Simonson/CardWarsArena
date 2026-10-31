@@ -47,9 +47,10 @@ export function renderGame(root, model, on) {
     h("div", { class: "cols" },
       h("div", { class: "main" },
         battlefield(model2, on),
+        promptBar(model2, on),
         handSection(model2, on),
         logPanel(state, ctx, on)),
-      h("div", { class: "side" }, promptBar(model2, on), playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect))),
+      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect))),
     choiceModal(model2, on)));
 }
 
