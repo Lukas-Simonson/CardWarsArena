@@ -9,8 +9,8 @@
 //
 // Pure: no DOM. ctx = { view, cards } as in describe.js.
 
-// choose and decline answer a Choice (see the modal in render.js): they have no source on the board.
-const GENERAL_KINDS = new Set(["keep_hand", "mulligan", "draw", "end_main", "choose", "decline"]);
+// choose answers a Choice (see the modal in render.js): they have no source on the board.
+const GENERAL_KINDS = new Set(["keep_hand", "mulligan", "draw", "end_main", "choose"]);
 
 export const isGeneral = (a) => GENERAL_KINDS.has(a.kind);
 

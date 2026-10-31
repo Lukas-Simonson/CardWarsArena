@@ -151,10 +151,9 @@ test("prompt: asks which kind first", () => {
 
 // ---- choices (the modal)
 
-test("choose and decline answer a Choice and belong to no card on the board", () => {
+test("choose answers a Choice and belongs to no card on the board", () => {
   assert.ok(isGeneral({ kind: "choose", card: 12 }));
-  assert.ok(isGeneral({ kind: "decline" }));
-  assert.deepEqual(sources([{ kind: "choose", card: 12 }, { kind: "decline" }]), {});
+  assert.deepEqual(sources([{ kind: "choose", card: 12 }]), {});
 });
 
 test("prompt: a Choice tells the decider to use the dialog and everyone else to wait", () => {

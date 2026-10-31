@@ -31,6 +31,7 @@ let conn = null;
 let staging = false; // a cast spell is on show; what it did is shown when it ends
 let stageTimer = null;
 let modalSeq = -1;
+let actSeq = -1; // the update whose Floop buttons and highlights have been shown
 let pendingFx = null; // what to animate on the next render: the step from one view to the next
 
 // ---------- state changes
@@ -111,6 +112,7 @@ const on = {
   onHand(uid, cardId) { ui.inspect = cardId; toggle(`hand:${uid}`); },
   onLane(lane, source, cardId) { if (cardId) ui.inspect = cardId; toggle(`lane:${lane}:${source}`); },
   onFloop(lane, source) { select(`lane:${lane}:${source}`, "floop"); },
+  onAbility(lane, source, index) { select(`lane:${lane}:${source}`, `activate:${index}`); },
   onPending() { select("pending"); },
   onToken(token) { if (!staging && ui.picker?.pick(token)) settle(); },
   onKind(kind) { select(ui.source, kind); },
@@ -183,7 +185,12 @@ function render() {
     }
     // A dialog waits for the motion of this update to finish; a re-render of the same update does not replay it.
     const game = $("game");
-    game.style.setProperty("--modal-delay", `${Math.max(350, restOf(effects.filter((f) => f.t !== "cast")) + 150)}ms`);
+    const rest = restOf(effects.filter((f) => f.t !== "cast"));
+    game.style.setProperty("--modal-delay", `${Math.max(350, rest + 150)}ms`);
+    // What can be done now (buttons, highlights) waits for the motion too, but not on a re-render of the same update.
+    game.style.setProperty("--act-delay", `${rest}ms`);
+    game.classList.toggle("acts-again", actSeq === state.seq);
+    actSeq = state.seq;
     renderGame(game, { state, cards, ui: { ...ui, modalAgain: modalSeq === state.seq } }, on);
     if (state.view?.choice) {
       modalSeq = state.seq;

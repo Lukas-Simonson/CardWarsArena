@@ -118,13 +118,20 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .tile .stat { position: absolute; right: 8px; background: #48207c; border: 2px solid #1f1033; color: #fff; border-radius: 999px; padding: 0 10px; font-size: 14px; z-index: 2; }
 .tile .stat { bottom: 8px; }
 .tile.go { outline: 4px solid #7dd24c; outline-offset: 3px; }
+.tile.go, .strip.go { animation: act-outline 220ms ease-out both; animation-delay: var(--act-delay, 0ms); }
+.tilewrap .tileacts { animation: act-button 220ms ease-out both; animation-delay: var(--act-delay, 0ms); }
+@keyframes act-outline { from { outline-color: transparent; } }
+@keyframes act-button { from { opacity: 0; pointer-events: none; } }
+.acts-again .tile.go, .acts-again .strip.go, .acts-again .tileacts { animation: none; }
+@media (prefers-reduced-motion: reduce) { .tile.go, .strip.go, .tilewrap .tileacts { animation: none; } }
 .tile.sel { outline: 4px solid var(--gold); outline-offset: 3px; box-shadow: 0 0 18px 6px rgba(255,211,77,.55); }
 .tile.pick { outline: 4px dashed var(--gold); outline-offset: 3px; }
 .tile.pick.foe { outline-color: #ff6b5a; }
 .lane .info { display: flex; justify-content: center; }
 .lane .info small { font-size: 14px; color: #e3f0dc; }
 .tilewrap { position: relative; }
-.tilewrap .floop { position: absolute; z-index: 3; left: 8px; bottom: 8px; min-height: 34px; padding: 3px 10px 0; font-size: 15px; }
+.tilewrap .tileacts { position: absolute; z-index: 3; left: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.tilewrap .floop { min-height: 34px; padding: 3px 10px 0; font-size: 15px; }
 
 [data-land="cornfield"]     { --tile: #9cc43a; }
 [data-land="blue_plains"]   { --tile: #7aa6d6; }
@@ -244,7 +251,6 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .modalopt.cardopt .card { width: 100%; border-radius: 10px; box-shadow: 0 4px 0 rgba(0,0,0,.35); }
 .modalopt.cardopt .cap { font-size: 15px; line-height: 1.1; text-align: center; }
 .modalopt.cardopt:hover, .modalopt.cardopt:focus-visible { transform: translateY(-6px) scale(1.06); }
-.modalrow { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .modalrow .modalopt { min-height: 52px; font-size: 20px; padding: 6px 20px 0; }
 @keyframes modal-fade { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .modal-backdrop { animation: none; } }
