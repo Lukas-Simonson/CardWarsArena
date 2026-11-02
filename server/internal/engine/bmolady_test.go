@@ -44,11 +44,12 @@ func (g *Game) building(p PlayerID, lane int, id string) *Building {
 
 func crRef(p PlayerID, lane int) TargetRef { return TargetRef{Kind: "creature", Player: p, Lane: lane} }
 
-func TestAllFourStarterDecksAreFullyModelled(t *testing.T) {
+func TestAllStarterDecksAreFullyModelled(t *testing.T) {
 	realGame(t)
 	for _, d := range []struct{ set, name string }{
 		{"Finn Vs Jake", "Finn's Deck"}, {"Finn Vs Jake", "Jake's Deck"},
 		{"BMO Vs Lady Rainicorn", "BMO's Deck"}, {"BMO Vs Lady Rainicorn", "Lady's Deck"},
+		{"Princess Bubblegum Vs Lumpy Space Princess", "PB's Deck"}, {"Princess Bubblegum Vs Lumpy Space Princess", "LSP's Deck"},
 	} {
 		for _, id := range realCat.Deck(d.set, d.name) {
 			if !realCat[id].Implemented() {
@@ -717,16 +718,20 @@ func (g *Game) discardChoices(t *testing.T, p PlayerID, n int) {
 	}
 }
 
-// Every card of all four decks can be played through the real rules, so random
+// Every card of all six decks can be played through the real rules, so random
 // games must keep every invariant.
-func TestRandomPlayoutsOfAllFourDecks(t *testing.T) {
+func TestRandomPlayoutsOfAllSixDecks(t *testing.T) {
 	realGame(t)
 	decks := []struct {
 		set, name string
-		lands     card.Landscape
+		lands     [NumLanes]card.Landscape
 	}{
-		{"Finn Vs Jake", "Finn's Deck", card.BluePlains}, {"Finn Vs Jake", "Jake's Deck", card.Cornfield},
-		{"BMO Vs Lady Rainicorn", "BMO's Deck", card.UselessSwamp}, {"BMO Vs Lady Rainicorn", "Lady's Deck", card.SandyLands},
+		{"Finn Vs Jake", "Finn's Deck", [NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}},
+		{"Finn Vs Jake", "Jake's Deck", cornfields},
+		{"BMO Vs Lady Rainicorn", "BMO's Deck", [NumLanes]card.Landscape{card.UselessSwamp, card.UselessSwamp, card.UselessSwamp, card.UselessSwamp}},
+		{"BMO Vs Lady Rainicorn", "Lady's Deck", sandy},
+		{"Princess Bubblegum Vs Lumpy Space Princess", "PB's Deck", [NumLanes]card.Landscape{card.NiceLands, card.NiceLands, card.NiceLands, card.NiceLands}},
+		{"Princess Bubblegum Vs Lumpy Space Princess", "LSP's Deck", [NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.UselessSwamp, card.UselessSwamp}},
 	}
 	games := 60
 	if testing.Short() {
@@ -735,12 +740,12 @@ func TestRandomPlayoutsOfAllFourDecks(t *testing.T) {
 	seen := map[EventKind]int{}
 	finished := 0
 	for i := 0; i < games; i++ {
-		a, b := decks[i%4], decks[(i/4+i+1)%4]
+		a, b := decks[i%len(decks)], decks[(i/len(decks)+i+1)%len(decks)]
 		spec := func(d struct {
 			set, name string
-			lands     card.Landscape
+			lands     [NumLanes]card.Landscape
 		}) DeckSpec {
-			return DeckSpec{[NumLanes]card.Landscape{d.lands, d.lands, d.lands, d.lands}, realCat.Deck(d.set, d.name)}
+			return DeckSpec{d.lands, realCat.Deck(d.set, d.name)}
 		}
 		seed := uint64(i + 1)
 		g, err := NewGame(realCat, Config{Seed: seed, First: PlayerID(seed % 2)}, [2]DeckSpec{spec(a), spec(b)})

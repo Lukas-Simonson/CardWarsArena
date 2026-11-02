@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -135,7 +136,8 @@ func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 	var cards []card.Card
 	seen := map[string]string{}
 	decks := map[deckKey]bool{}
-	var heroes []int // indexes into cards
+	var heroes []int                     // indexes into cards
+	heroSets := map[int]map[string]int{} // a Hero's own listed sets, by index
 
 	for _, r := range raws {
 		t, ok := types[strings.ToLower(r.Type)]
@@ -154,7 +156,7 @@ func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 			Notes:   strings.TrimSpace(r.Notes),
 		}
 		if r.Image != "" {
-			c.ImageURL = imageBase + url.PathEscape(r.Image)
+			c.ImageURL = imageBase + url.PathEscape(webpName(r.Image))
 		}
 		if prev, dup := seen[c.ID]; dup {
 			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: id %q collides with %q", r.Name, c.ID, prev))
@@ -193,19 +195,29 @@ func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 			})
 		} else {
 			heroes = append(heroes, len(cards))
+			heroSets[len(cards)] = r.Sets
 		}
 
 		validate(&c, rep)
 		cards = append(cards, c)
 	}
 
-	// Heroes: each goes with the deck whose owner it is named for ("Lady Rainicorn" is Lady's).
+	// Heroes: each goes with the deck whose owner it is named for ("Lady Rainicorn" is Lady's), or else
+	// the one deck it lists itself.
 	for _, i := range heroes {
 		c := &cards[i]
 		var owned []deckKey
 		for d := range decks {
 			if c.Name == d.owner || strings.HasPrefix(c.Name, d.owner+" ") {
 				owned = append(owned, d)
+			}
+		}
+		if len(owned) == 0 && len(heroSets[i]) == 1 {
+			// Not named for its owner ("Princess Bubblegum" leads PB's deck): trust the one deck it lists.
+			for key := range heroSets[i] {
+				if m := setKeyRe.FindStringSubmatch(key); m != nil && decks[deckKey{m[1], m[2]}] {
+					owned = append(owned, deckKey{m[1], m[2]})
+				}
 			}
 		}
 		if len(owned) != 1 {
@@ -219,7 +231,7 @@ func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 	rep.Notes = append(rep.Notes,
 		"faction names normalized to snake_case Landscapes; card names and rules text kept exactly as given",
 		"set \"Finn Vs Jake (Finn)\" read as set \"Finn Vs Jake\", deck \"Finn's Deck\"",
-		"image file names turned into URLs under -image-base")
+		"image file names turned into URLs under -image-base, as .webp (the scans are converted before they are published)")
 
 	sort.Slice(cards, func(i, j int) bool { return cards[i].ID < cards[j].ID })
 	return cards, rep
@@ -253,4 +265,10 @@ var nonAlnum = regexp.MustCompile(`[^a-z0-9]+`)
 
 func slug(name string) string {
 	return strings.Trim(nonAlnum.ReplaceAllString(strings.ToLower(name), "-"), "-")
+}
+
+// webpName is the published name of a scan: the catalogue names the original
+// image, and the converted .webp copy is what is hosted.
+func webpName(file string) string {
+	return strings.TrimSuffix(file, path.Ext(file)) + ".webp"
 }

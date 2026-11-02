@@ -6,7 +6,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Abraca Amadeus.webp",
+    "image" : "Abraca Amadeus.png",
     "name" : "Abraca Amadeus",
     "notes" : "",
     "quantity" : 1,
@@ -14,6 +14,24 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "While Albino Eyebat has exactly 2 damage on it, it has +2 ATK.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Albino Eyebat.png",
+    "name" : "Albino Eyebat",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Return a random Rainbow card from your discard pile to your hand. If you control a Building in this Lane, gain 1 action.",
@@ -24,12 +42,84 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Ancient Scholar.webp",
+    "image" : "Ancient Scholar.png",
     "name" : "Ancient Scholar",
     "notes" : "",
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Finn)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "While Angel Heart has exactly 3 damage on it, it has +3 ATK.",
+    "attack" : 0,
+    "cost" : 0,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Angel Heart.png",
+    "name" : "Angel Heart",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Pay 1 action >>> Heal all damage from Angel of Chocolate.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Angel of Chocolate.png",
+    "name" : "Angel of Chocolate",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Pay 1 action >>> Heal all damage from Angel of Vanilla.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Angel of Vanilla.png",
+    "name" : "Angel of Vanilla",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "At the start of your turn, you may heal or deal 1 damage to each of your Creatures. (Choose for each Creature.)",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Apple Pieclops.png",
+    "name" : "Apple Pieclops",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
     },
     "type" : "Creature"
   },
@@ -42,7 +132,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Archer Dan.webp",
+    "image" : "Archer Dan.png",
     "name" : "Archer Dan",
     "notes" : "",
     "quantity" : 1,
@@ -56,7 +146,7 @@
     "extras" : {
 
     },
-    "image" : "BMO.webp",
+    "image" : "BMO.png",
     "name" : "BMO",
     "notes" : "",
     "quantity" : 1,
@@ -74,7 +164,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Beach Mummy.webp",
+    "image" : "Beach Mummy.png",
     "name" : "Beach Mummy",
     "notes" : "",
     "quantity" : 2,
@@ -92,7 +182,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Big Foot.webp",
+    "image" : "Big Foot.png",
     "name" : "Big Foot",
     "notes" : "",
     "quantity" : 2,
@@ -110,7 +200,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Blonde MerWitch.webp",
+    "image" : "Blonde MerWitch.png",
     "name" : "Blonde MerWitch",
     "notes" : "The seas are her cauldron, and her ingredients are anything that sinks.",
     "quantity" : 1,
@@ -126,17 +216,53 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Blood Fortress.webp",
+    "image" : "Blood Fortress.png",
     "name" : "Blood Fortress",
     "notes" : "",
-    "quantity" : 7,
+    "quantity" : 9,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2,
       "BMO Vs Lady Rainicorn (Lady)" : 2,
       "Finn Vs Jake (Finn)" : 1,
-      "Finn Vs Jake (Jake)" : 2
+      "Finn Vs Jake (Jake)" : 2,
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1,
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Heal up to 3 damage from target Creature you control.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Blue Candy.png",
+    "name" : "Blue Candy",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "If Blueberry Djinni replaces a Creature, draw 2 cards.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Blueberry Djinni.png",
+    "name" : "Blueberry Djinni",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Play only if you control a Useless Swamp Creature. Target opponent discards a card from their hand.",
@@ -145,7 +271,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Bone Wand.webp",
+    "image" : "Bone Wand.png",
     "name" : "Bone Wand",
     "notes" : "",
     "quantity" : 2,
@@ -155,21 +281,72 @@
     "type" : "Spell"
   },
   {
+    "ability" : "If Brain Gooey replaces a Creature, it has +2 ATK this turn.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Brain Gooey.png",
+    "name" : "Brain Gooey",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Target Useless Swamp Creature you control has +2 ATK this turn.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Brief Power.png",
+    "name" : "Brief Power",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Discard a card >>> Your Creature in this Lane cannot be targeted or attacked until the start of your next turn.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Cave of Solitude.png",
+    "name" : "Cave of Solitude",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Your Creature in this Lane has +3 DEF.",
     "cost" : 1,
     "extras" : {
 
     },
     "faction" : "Rainbow",
-    "image" : "Celestial Castle.webp",
+    "image" : "Celestial Castle.png",
     "name" : "Celestial Castle",
     "notes" : "",
-    "quantity" : 5,
+    "quantity" : 6,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 1,
       "BMO Vs Lady Rainicorn (Lady)" : 1,
       "Finn Vs Jake (Finn)" : 2,
-      "Finn Vs Jake (Jake)" : 1
+      "Finn Vs Jake (Jake)" : 1,
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
     },
     "type" : "Building"
   },
@@ -180,7 +357,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Cerebral Bloodstorm.webp",
+    "image" : "Cerebral Bloodstorm.png",
     "name" : "Cerebral Bloodstorm",
     "notes" : "",
     "quantity" : 5,
@@ -200,7 +377,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Chest Burster.webp",
+    "image" : "Chest Burster.png",
     "name" : "Chest Burster",
     "notes" : "",
     "quantity" : 2,
@@ -218,7 +395,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Cool Dog.webp",
+    "image" : "Cool Dog.png",
     "name" : "Cool Dog",
     "notes" : "",
     "quantity" : 2,
@@ -236,7 +413,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Corn Dog.webp",
+    "image" : "Corn Dog.png",
     "name" : "Corn Dog",
     "notes" : "",
     "quantity" : 1,
@@ -254,7 +431,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Corn Lord.webp",
+    "image" : "Corn Lord.png",
     "name" : "Corn Lord",
     "notes" : "",
     "quantity" : 1,
@@ -272,7 +449,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Corn Ronin.webp",
+    "image" : "Corn Ronin.png",
     "name" : "Corn Ronin",
     "notes" : "",
     "quantity" : 2,
@@ -288,7 +465,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Corn Scepter.webp",
+    "image" : "Corn Scepter.png",
     "name" : "Corn Scepter",
     "notes" : "",
     "quantity" : 2,
@@ -306,12 +483,48 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Cornataur.webp",
+    "image" : "Cornataur.png",
     "name" : "Cornataur",
     "notes" : "",
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Jake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "While Cotton Eyebat has exactly 4 damage on it, it has +4 ATK.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Cotton Eyebat.png",
+    "name" : "Cotton Eyebat",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "",
+    "attack" : 1,
+    "cost" : 0,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Cow.png",
+    "name" : "Cow",
+    "notes" : "Moo.",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
     },
     "type" : "Creature"
   },
@@ -322,7 +535,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Cross Pollination.webp",
+    "image" : "Cross Pollination.png",
     "name" : "Cross Pollination",
     "notes" : "",
     "quantity" : 1,
@@ -330,6 +543,24 @@
       "Finn Vs Jake (Jake)" : 1
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "FLOOP >>> You heal 1 hit point. (Can't go over 25)",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Cutie.png",
+    "name" : "Cutie",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "+1 ATK for every 5 cards in your discard pile.",
@@ -340,12 +571,30 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Dark Angel.webp",
+    "image" : "Dark Angel.png",
     "name" : "Dark Angel",
     "notes" : "",
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Discard a card >>> Dogboy has +2 ATK this turn. (Limit: Once per turn.)",
+    "attack" : 0,
+    "cost" : 0,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Dogboy.png",
+    "name" : "Dogboy",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
     },
     "type" : "Creature"
   },
@@ -358,7 +607,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Dr. Death.webp",
+    "image" : "Dr. Death.png",
     "name" : "Dr. Death",
     "notes" : "",
     "quantity" : 1,
@@ -376,12 +625,30 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Dragon Claw.webp",
+    "image" : "Dragon Claw.png",
     "name" : "Dragon Claw",
     "notes" : "",
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Finn)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Discard a card >>> Dragon Foot has +1 ATK this turn. (Limit: Five times per turn.)",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Dragon Foot.png",
+    "name" : "Dragon Foot",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
     },
     "type" : "Creature"
   },
@@ -394,7 +661,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Drooling Dude.webp",
+    "image" : "Drooling Dude.png",
     "name" : "Drooling Dude",
     "notes" : "The ladies love him, as long as they have waterproof shoes.",
     "quantity" : 1,
@@ -412,7 +679,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Embarrassing Bard.webp",
+    "image" : "Embarrassing Bard.png",
     "name" : "Embarrassing Bard",
     "notes" : "",
     "quantity" : 2,
@@ -430,7 +697,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Evil Eye.webp",
+    "image" : "Evil Eye.png",
     "name" : "Evil Eye",
     "notes" : "Evil is in the eye of the beholder.",
     "quantity" : 1,
@@ -448,12 +715,64 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Extraordinary Spider.webp",
+    "image" : "Extraordinary Spider.png",
     "name" : "Extraordinary Spider",
     "notes" : "",
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Each adjacent NiceLands Creature has +2 DEF.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Fairy Shepherd.png",
+    "name" : "Fairy Shepherd",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Your Creatures take no damage from opposing Creatures this turn.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Falling Star.png",
+    "name" : "Falling Star",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "+2 ATK for every 5 cards in your discard pile.",
+    "attack" : 0,
+    "cost" : 2,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Fatapillar.png",
+    "name" : "Fatapillar",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
     },
     "type" : "Creature"
   },
@@ -466,7 +785,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Field Reaper.webp",
+    "image" : "Field Reaper.png",
     "name" : "Field Reaper",
     "notes" : "",
     "quantity" : 1,
@@ -484,7 +803,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Field Stalker.webp",
+    "image" : "Field Stalker.png",
     "name" : "Field Stalker",
     "notes" : "",
     "quantity" : 2,
@@ -500,7 +819,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Field of Nightmares.webp",
+    "image" : "Field of Nightmares.png",
     "name" : "Field of Nightmares",
     "notes" : "",
     "quantity" : 2,
@@ -514,7 +833,7 @@
     "extras" : {
 
     },
-    "image" : "Finn.webp",
+    "image" : "Finn.png",
     "name" : "Finn",
     "notes" : "",
     "quantity" : 1,
@@ -532,12 +851,30 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Fummy.webp",
+    "image" : "Fummy.png",
     "name" : "Fummy",
     "notes" : "",
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (Lady)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "If Future Scholar replaces a Creature, gain 1 action.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Future Scholar.png",
+    "name" : "Future Scholar",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
     },
     "type" : "Creature"
   },
@@ -548,7 +885,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Gnome Snot.webp",
+    "image" : "Gnome Snot.png",
     "name" : "Gnome Snot",
     "notes" : "",
     "quantity" : 2,
@@ -556,6 +893,42 @@
       "Finn Vs Jake (Finn)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "If Goat replaces a Creature, draw a card.",
+    "attack" : 1,
+    "cost" : 0,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Goat.png",
+    "name" : "Goat",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "If Grape Djinni replaces a Creature, you may put a card from your discard pile on top of your deck.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Grape Djinni.png",
+    "name" : "Grape Djinni",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Pay 1 action >>> Return a random Useless Swamp Creature From your discard pile to your hand.",
@@ -566,7 +939,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Gray Eyebat.webp",
+    "image" : "Gray Eyebat.png",
     "name" : "Gray Eyebat",
     "notes" : "",
     "quantity" : 2,
@@ -584,7 +957,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Green Cactiball.webp",
+    "image" : "Green Cactiball.png",
     "name" : "Green Cactiball",
     "notes" : "",
     "quantity" : 2,
@@ -592,6 +965,22 @@
       "BMO Vs Lady Rainicorn (Lady)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Heal or deal 1 damage to target Creature.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Green Candy.png",
+    "name" : "Green Candy",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Destroy Green Mermaid >>> Deal 1 damage to each opposing Creature.",
@@ -602,7 +991,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Green Mermaid.webp",
+    "image" : "Green Mermaid.png",
     "name" : "Green Mermaid",
     "notes" : "",
     "quantity" : 2,
@@ -620,12 +1009,30 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Green Merman.webp",
+    "image" : "Green Merman.png",
     "name" : "Green Merman",
     "notes" : "",
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "If Headphone Jerk replaces a Creature, deal 3 damage to the opposing Creature in this Lane.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Headphone Jerk.png",
+    "name" : "Headphone Jerk",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
     },
     "type" : "Creature"
   },
@@ -638,12 +1045,30 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Heavenly Gazer.webp",
+    "image" : "Heavenly Gazer.png",
     "name" : "Heavenly Gazer",
     "notes" : "",
     "quantity" : 1,
     "sets" : {
       "Finn Vs Jake (Finn)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Discard a card >>> Herculeye has +4 ATK this turn. (Limit: Once per furn.)",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Herculeye.png",
+    "name" : "Herculeye",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
     },
     "type" : "Creature"
   },
@@ -656,7 +1081,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Hot Eyebat.webp",
+    "image" : "Hot Eyebat.png",
     "name" : "Hot Eyebat",
     "notes" : "",
     "quantity" : 2,
@@ -674,7 +1099,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Husker Knight.webp",
+    "image" : "Husker Knight.png",
     "name" : "Husker Knight",
     "notes" : "",
     "quantity" : 2,
@@ -692,7 +1117,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Husker Worm.webp",
+    "image" : "Husker Worm.png",
     "name" : "Husker Worm",
     "notes" : "",
     "quantity" : 2,
@@ -710,7 +1135,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Immortal Maize Walker.webp",
+    "image" : "Immortal Maize Walker.png",
     "name" : "Immortal Maize Walker",
     "notes" : "",
     "quantity" : 2,
@@ -720,11 +1145,29 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Discard a card >>> Deal 1 damage to the opposing Creature in this Lane.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Infinite Figure.png",
+    "name" : "Infinite Figure",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Creatures on facedown Landscapes you control have +2 ATK.",
     "extras" : {
 
     },
-    "image" : "Jake.webp",
+    "image" : "Jake.png",
     "name" : "Jake",
     "notes" : "",
     "quantity" : 1,
@@ -738,7 +1181,7 @@
     "extras" : {
 
     },
-    "image" : "Lady Rainicorn.webp",
+    "image" : "Lady Rainicorn.png",
     "name" : "Lady Rainicorn",
     "notes" : "",
     "quantity" : 1,
@@ -756,7 +1199,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Legion of Earlings.webp",
+    "image" : "Legion of Earlings.png",
     "name" : "Legion of Earlings",
     "notes" : "",
     "quantity" : 2,
@@ -774,7 +1217,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Lost Golem.webp",
+    "image" : "Lost Golem.png",
     "name" : "Lost Golem",
     "notes" : "",
     "quantity" : 1,
@@ -782,6 +1225,20 @@
       "BMO Vs Lady Rainicorn (Lady)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "The first time you replace a Creature on your turn, draw a card.",
+    "extras" : {
+
+    },
+    "image" : "Lumpy Space Princess.png",
+    "name" : "Lumpy Space Princess",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Hero"
   },
   {
     "ability" : "Destroy Mace Stump >>> Target opponent discards a card for every 5 cards in your discard pile.",
@@ -792,7 +1249,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Mace Stump.webp",
+    "image" : "Mace Stump.png",
     "name" : "Mace Stump",
     "notes" : "",
     "quantity" : 2,
@@ -808,7 +1265,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Magic Ring Ding.webp",
+    "image" : "Magic Ring Ding.png",
     "name" : "Magic Ring Ding",
     "notes" : "",
     "quantity" : 2,
@@ -816,6 +1273,22 @@
       "BMO Vs Lady Rainicorn (BMO)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "Your Creature in this Lane has +1 DEF for every 5 cards in your discard pile.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Mausoleum.png",
+    "name" : "Mausoleum",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "+2 DEF For every 5 cards in your discard pile.",
@@ -826,12 +1299,30 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Mouthball.webp",
+    "image" : "Mouthball.png",
     "name" : "Mouthball",
     "notes" : "",
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "While Ms. Fluff has exactly 7 damage on it, it has +7 ATK.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Ms. Fluff.png",
+    "name" : "Ms. Fluff",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
     },
     "type" : "Creature"
   },
@@ -844,7 +1335,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Ms. Mummy.webp",
+    "image" : "Ms. Mummy.png",
     "name" : "Ms. Mummy",
     "notes" : "",
     "quantity" : 1,
@@ -862,7 +1353,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Nice Ice Baby.webp",
+    "image" : "Nice Ice Baby.png",
     "name" : "Nice Ice Baby",
     "notes" : "",
     "quantity" : 2,
@@ -872,13 +1363,47 @@
     "type" : "Creature"
   },
   {
+    "ability" : "At the start of your turn, if Niceasaurus Rex has damage on it, draw a card.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Niceasaurus Rex.png",
+    "name" : "Niceasaurus Rex",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> If your opponent has no Creature in this Lane, they discard a card.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Night Tower.png",
+    "name" : "Night Tower",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Reveal the top 3 cards of your deck. Put one of them on the bottom of your deck and discard the rest.",
     "cost" : 0,
     "extras" : {
 
     },
     "faction" : "Rainbow",
-    "image" : "Ogre Gas.webp",
+    "image" : "Ogre Gas.png",
     "name" : "Ogre Gas",
     "notes" : "",
     "quantity" : 2,
@@ -894,7 +1419,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Palace of Bone.webp",
+    "image" : "Palace of Bone.png",
     "name" : "Palace of Bone",
     "notes" : "",
     "quantity" : 1,
@@ -902,6 +1427,22 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Move target Creature you control to an empty Blue Plains Landscape you control, then draw a card.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Pants Of Awesome.png",
+    "name" : "Pants Of Awesome",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "FLOOP >>> Deal 1 damage to target Creature. Do this once for each Cornfield Landscape you control. (May only target each Creature once.)",
@@ -912,7 +1453,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Patchy the Pumpkin.webp",
+    "image" : "Patchy the Pumpkin.png",
     "name" : "Patchy the Pumpkin",
     "notes" : "",
     "quantity" : 2,
@@ -930,7 +1471,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Peach Djinni.webp",
+    "image" : "Peach Djinni.png",
     "name" : "Peach Djinni",
     "notes" : "",
     "quantity" : 2,
@@ -948,7 +1489,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Phyllis.webp",
+    "image" : "Phyllis.png",
     "name" : "Phyllis",
     "notes" : "While the blade distracts you, her purse swings in for the whammy.",
     "quantity" : 1,
@@ -956,6 +1497,72 @@
       "Finn Vs Jake (Jake)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "When Pieclops enters play, heal 1 damage from each adjacent Creature.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Pieclops.png",
+    "name" : "Pieclops",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Each of your Creatures with no damage has +2 ATK this turn.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Piestorm.png",
+    "name" : "Piestorm",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Discard a card >>> Deal 1 damage to each opposing Creature. (Limit: Once per turn.)",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Pink Merwitch.png",
+    "name" : "Pink Merwitch",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Once per turn, you may deal 1 damage to one of your Creatures. That Creature has +1 ATK this turn.",
+    "extras" : {
+
+    },
+    "image" : "Princess Bubblegum.png",
+    "name" : "Princess Bubblegum",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
+    },
+    "type" : "Hero"
   },
   {
     "ability" : "When Psionic Architect enters play, you may ready one of your Flooped Creatures.",
@@ -966,7 +1573,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Psionic Architect.webp",
+    "image" : "Psionic Architect.png",
     "name" : "Psionic Architect",
     "notes" : "",
     "quantity" : 2,
@@ -984,12 +1591,46 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Punk Cat.webp",
+    "image" : "Punk Cat.png",
     "name" : "Punk Cat",
     "notes" : "",
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Finn)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Pay 1 less action to replace your Creature in this Lane.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Pyramidia.png",
+    "name" : "Pyramidia",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "At the start of your turn, you heal 1 hit point for each different Landscape type you control. (Can't go over 25)",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Rainbow Eyebat.png",
+    "name" : "Rainbow Eyebat",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
     },
     "type" : "Creature"
   },
@@ -1000,7 +1641,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Reclaim Landscape.webp",
+    "image" : "Reclaim Landscape.png",
     "name" : "Reclaim Landscape",
     "notes" : "",
     "quantity" : 2,
@@ -1018,7 +1659,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Red Eyeling.webp",
+    "image" : "Red Eyeling.png",
     "name" : "Red Eyeling",
     "notes" : "",
     "quantity" : 2,
@@ -1026,6 +1667,22 @@
       "BMO Vs Lady Rainicorn (BMO)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Target Creature you control has +X ATK this turn, where X is the amount of damage on it.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Ring Of Fluffy.png",
+    "name" : "Ring Of Fluffy",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "",
@@ -1036,7 +1693,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Sand Angel.webp",
+    "image" : "Sand Angel.png",
     "name" : "Sand Angel",
     "notes" : "Lie down in the sand, wave your arms and legs, and she will appear to you.",
     "quantity" : 2,
@@ -1054,7 +1711,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Sand Eyebat.webp",
+    "image" : "Sand Eyebat.png",
     "name" : "Sand Eyebat",
     "notes" : "",
     "quantity" : 2,
@@ -1072,7 +1729,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Sand Knights.webp",
+    "image" : "Sand Knights.png",
     "name" : "Sand Knights",
     "notes" : "",
     "quantity" : 1,
@@ -1088,7 +1745,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Sand Sphinx.webp",
+    "image" : "Sand Sphinx.png",
     "name" : "Sand Sphinx",
     "notes" : "",
     "quantity" : 2,
@@ -1106,7 +1763,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "SandWitch.webp",
+    "image" : "SandWitch.png",
     "name" : "SandWitch",
     "notes" : "",
     "quantity" : 2,
@@ -1124,7 +1781,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Sandhorn Devil.webp",
+    "image" : "Sandhorn Devil.png",
     "name" : "Sandhorn Devil",
     "notes" : "",
     "quantity" : 2,
@@ -1142,7 +1799,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Sandsnake.webp",
+    "image" : "Sandsnake.png",
     "name" : "Sandsnake",
     "notes" : "",
     "quantity" : 2,
@@ -1158,7 +1815,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Schoolhouse.webp",
+    "image" : "Schoolhouse.png",
     "name" : "Schoolhouse",
     "notes" : "",
     "quantity" : 1,
@@ -1176,7 +1833,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Shark.webp",
+    "image" : "Shark.png",
     "name" : "Shark",
     "notes" : "",
     "quantity" : 2,
@@ -1192,7 +1849,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Silo of Truth.webp",
+    "image" : "Silo of Truth.png",
     "name" : "Silo of Truth",
     "notes" : "",
     "quantity" : 1,
@@ -1202,13 +1859,31 @@
     "type" : "Building"
   },
   {
+    "ability" : "FLOOP >>> Discard the top 3 cards of your deck. For each Spell Jiscarded this way, target player discards a card.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Skeletal Hand.png",
+    "name" : "Skeletal Hand",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Return a random Useless Swamp Creature from your discard pile to your hand.",
     "cost" : 0,
     "extras" : {
 
     },
     "faction" : "Rainbow",
-    "image" : "Snake Eye Ring.webp",
+    "image" : "Snake Eye Ring.png",
     "name" : "Snake Eye Ring",
     "notes" : "",
     "quantity" : 2,
@@ -1218,13 +1893,31 @@
     "type" : "Spell"
   },
   {
+    "ability" : "When Snakemint deals damage to an opposing player, you heal that many hit points. (Can't go over 25.)",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Snakemint.png",
+    "name" : "Snakemint",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP and pay 1 action >>> If you control no Creatures in this Lane, move target Creature in this Lane to your side and ready it. At end of turn, return it to its owner's side.",
     "cost" : 2,
     "extras" : {
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Spirit Tower.webp",
+    "image" : "Spirit Tower.png",
     "name" : "Spirit Tower",
     "notes" : "",
     "quantity" : 1,
@@ -1232,6 +1925,58 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Discard a card >>> Heal 1 damage From Squatting Bald Man.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Squatting Bald Man.png",
+    "name" : "Squatting Bald Man",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "At the start of your turn, discard 2 cards or destroy Steakchop. Discard after your free draw.)",
+    "attack" : 4,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Steakchop.png",
+    "name" : "Steakchop",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Target player draws 5 cards.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Strength Crystal.png",
+    "name" : "Strength Crystal",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "+2 ATK for each of your Flooped Creatures.",
@@ -1242,7 +1987,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Struzann Djinn.webp",
+    "image" : "Struzann Djinn.png",
     "name" : "Struzann Djinn",
     "notes" : "",
     "quantity" : 2,
@@ -1250,6 +1995,22 @@
       "Finn Vs Jake (Finn)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Target Creature you control has +2 ATK for each Spell you played this turn (including this one).",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Subliminal Strength.png",
+    "name" : "Subliminal Strength",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "If you have 10 or more cards in your discard pile, pay 2 fewer actions to play Teeth Leaf.",
@@ -1260,7 +2021,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Teeth Leaf.webp",
+    "image" : "Teeth Leaf.png",
     "name" : "Teeth Leaf",
     "notes" : "",
     "quantity" : 1,
@@ -1276,7 +2037,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Teleport.webp",
+    "image" : "Teleport.png",
     "name" : "Teleport",
     "notes" : "",
     "quantity" : 6,
@@ -1296,7 +2057,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "The Mariachi.webp",
+    "image" : "The Mariachi.png",
     "name" : "The Mariachi",
     "notes" : "",
     "quantity" : 2,
@@ -1314,7 +2075,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "The Pig.webp",
+    "image" : "The Pig.png",
     "name" : "The Pig",
     "notes" : "",
     "quantity" : 2,
@@ -1324,13 +2085,29 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Target Creature you control has +1 ATK this turn for every 5 cards in your discard pile.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Toilet Of Doom.png",
+    "name" : "Toilet Of Doom",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "Draw a card for each of your empty Lanes.",
     "cost" : 1,
     "extras" : {
 
     },
     "faction" : "SandyLands",
-    "image" : "Tome of Ankhs.webp",
+    "image" : "Tome of Ankhs.png",
     "name" : "Tome of Ankhs",
     "notes" : "",
     "quantity" : 1,
@@ -1338,6 +2115,24 @@
       "BMO Vs Lady Rainicorn (Lady)" : 1
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "FLOOP >>> Swap Lanes with another one of your Creatures.",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Travelin Skeleton.png",
+    "name" : "Travelin Skeleton",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "When Travelin' Farmer leaves play, deal 1 damage to your opponent for each card in their hand.",
@@ -1348,7 +2143,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Travelin' Farmer.webp",
+    "image" : "Travelin' Farmer.png",
     "name" : "Travelin' Farmer",
     "notes" : "",
     "quantity" : 2,
@@ -1366,7 +2161,7 @@
 
     },
     "faction" : "Useless Swamp",
-    "image" : "Tree of Undeath.webp",
+    "image" : "Tree of Undeath.png",
     "name" : "Tree of Undeath",
     "notes" : "",
     "quantity" : 1,
@@ -1382,7 +2177,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Unempty Coffin.webp",
+    "image" : "Unempty Coffin.png",
     "name" : "Unempty Coffin",
     "notes" : "",
     "quantity" : 2,
@@ -1400,12 +2195,46 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Uni-Knight.webp",
+    "image" : "Uni-Knight.png",
     "name" : "Uni-Knight",
     "notes" : "",
     "quantity" : 1,
     "sets" : {
       "Finn Vs Jake (Finn)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Destroy target Building. You may deal 3 damage to a Creature in that Lane. Flip your Landscape in that Lane face down.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Volcano.png",
+    "name" : "Volcano",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "While Wall of Chocolate has no damage on it, it has +3 ATK.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Wall Of Chocolate.png",
+    "name" : "Wall Of Chocolate",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
     },
     "type" : "Creature"
   },
@@ -1418,7 +2247,7 @@
 
     },
     "faction" : "Cornfield",
-    "image" : "Wall of Ears.webp",
+    "image" : "Wall of Ears.png",
     "name" : "Wall of Ears",
     "notes" : "",
     "quantity" : 2,
@@ -1436,7 +2265,7 @@
 
     },
     "faction" : "SandyLands",
-    "image" : "Wall of Sand.webp",
+    "image" : "Wall of Sand.png",
     "name" : "Wall of Sand",
     "notes" : "",
     "quantity" : 2,
@@ -1454,7 +2283,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Wandering Bald Man.webp",
+    "image" : "Wandering Bald Man.png",
     "name" : "Wandering Bald Man",
     "notes" : "",
     "quantity" : 2,
@@ -1464,13 +2293,29 @@
     "type" : "Creature"
   },
   {
+    "ability" : "While your Creature in this Lane has no damage on it, it has +2 ATK.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Windmill Of Health.png",
+    "name" : "Windmill Of Health",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Each Creature that changed Lanes this turn has +2 ATK.",
     "cost" : 0,
     "extras" : {
 
     },
     "faction" : "Rainbow",
-    "image" : "Woad Blood.webp",
+    "image" : "Woad Blood.png",
     "name" : "Woad Blood",
     "notes" : "",
     "quantity" : 1,
@@ -1486,7 +2331,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Woad Mobile Home.webp",
+    "image" : "Woad Mobile Home.png",
     "name" : "Woad Mobile Home",
     "notes" : "",
     "quantity" : 2,
@@ -1502,7 +2347,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Woad Talisman.webp",
+    "image" : "Woad Talisman.png",
     "name" : "Woad Talisman",
     "notes" : "",
     "quantity" : 2,
@@ -1520,7 +2365,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Woadic Chief.webp",
+    "image" : "Woadic Chief.png",
     "name" : "Woadic Chief",
     "notes" : "",
     "quantity" : 1,
@@ -1538,7 +2383,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "Woadic Marauder.webp",
+    "image" : "Woadic Marauder.png",
     "name" : "Woadic Marauder",
     "notes" : "",
     "quantity" : 2,
@@ -1556,7 +2401,7 @@
 
     },
     "faction" : "Blue Plains",
-    "image" : "X-Large Spirit Soldier.webp",
+    "image" : "X-Large Spirit Soldier.png",
     "name" : "X-Large Spirit Soldier",
     "notes" : "",
     "quantity" : 2,
@@ -1572,7 +2417,7 @@
 
     },
     "faction" : "Rainbow",
-    "image" : "Zazo's Magic Seeds.webp",
+    "image" : "Zazo's Magic Seeds.png",
     "name" : "Zazo's Magic Seeds",
     "notes" : "",
     "quantity" : 2,

@@ -1,0 +1,970 @@
+{
+ "albino-eyebat": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self",
+      "damage": {
+       "min": 2,
+       "max": 2
+      }
+     },
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "angel-heart": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self",
+      "damage": {
+       "min": 3,
+       "max": 3
+      }
+     },
+     "amount": {
+      "n": 3
+     }
+    }
+   ]
+  }
+ ],
+ "cotton-eyebat": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self",
+      "damage": {
+       "min": 4,
+       "max": 4
+      }
+     },
+     "amount": {
+      "n": 4
+     }
+    }
+   ]
+  }
+ ],
+ "ms-fluff": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self",
+      "damage": {
+       "min": 7,
+       "max": 7
+      }
+     },
+     "amount": {
+      "n": 7
+     }
+    }
+   ]
+  }
+ ],
+ "wall-of-chocolate": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self",
+      "damage": {
+       "max": 0
+      }
+     },
+     "amount": {
+      "n": 3
+     }
+    }
+   ]
+  }
+ ],
+ "angel-of-chocolate": [
+  {
+   "kind": "activate",
+   "cost": 1,
+   "do": [
+    {
+     "do": "heal_creature",
+     "self": true,
+     "amount": {
+      "n": 99
+     }
+    }
+   ]
+  }
+ ],
+ "angel-of-vanilla": [
+  {
+   "kind": "activate",
+   "cost": 1,
+   "do": [
+    {
+     "do": "heal_creature",
+     "self": true,
+     "amount": {
+      "n": 99
+     }
+    }
+   ]
+  }
+ ],
+ "apple-pieclops": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "may",
+     "targets": [
+      {
+       "what": "creature",
+       "side": "you",
+       "optional": true,
+       "count": {
+        "n": 4
+       }
+      },
+      {
+       "what": "creature",
+       "side": "you",
+       "optional": true,
+       "count": {
+        "n": 4
+       }
+      }
+     ],
+     "then": [
+      {
+       "do": "heal_creature",
+       "slot": 0,
+       "amount": {
+        "n": 1
+       }
+      },
+      {
+       "do": "damage_creature",
+       "slot": 1,
+       "amount": {
+        "n": 1
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "blue-candy": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    }
+   ],
+   "do": [
+    {
+     "do": "heal_creature",
+     "slot": 0,
+     "amount": {
+      "n": 3
+     }
+    }
+   ]
+  }
+ ],
+ "blueberry-djinni": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "draw",
+     "who": "you",
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "replaced": true
+     }
+    }
+   ]
+  }
+ ],
+ "brain-gooey": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "replaced": true
+     }
+    }
+   ]
+  }
+ ],
+ "brief-power": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "landscape": "useless_swamp"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "cave-of-solitude": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "protect",
+     "all": {
+      "rel": "lane_ally"
+     }
+    }
+   ]
+  }
+ ],
+ "cow": [],
+ "cutie": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "heal_hero",
+     "who": "you",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "dogboy": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    }
+   ],
+   "limit": 1
+  }
+ ],
+ "dragon-foot": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "atk",
+     "amount": {
+      "n": 1
+     }
+    }
+   ],
+   "limit": 5
+  }
+ ],
+ "herculeye": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "atk",
+     "amount": {
+      "n": 4
+     }
+    }
+   ],
+   "limit": 1
+  }
+ ],
+ "fairy-shepherd": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "adjacent_allies",
+      "landscape": "nice_lands"
+     },
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "falling-star": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "no_combat_damage"
+    }
+   ]
+  }
+ ],
+ "fatapillar": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "future-scholar": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "gain_actions",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "replaced": true
+     }
+    }
+   ]
+  }
+ ],
+ "goat": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "draw",
+     "who": "you",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "replaced": true
+     }
+    }
+   ]
+  }
+ ],
+ "grape-djinni": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "discard_card",
+     "side": "you",
+     "optional": true
+    }
+   ],
+   "do": [
+    {
+     "do": "put_on_deck",
+     "slot": 0,
+     "if": {
+      "replaced": true
+     }
+    }
+   ]
+  }
+ ],
+ "green-candy": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "optional": true,
+     "group": "mode"
+    },
+    {
+     "what": "creature",
+     "optional": true,
+     "group": "mode"
+    }
+   ],
+   "do": [
+    {
+     "do": "heal_creature",
+     "slot": 0,
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "damage_creature",
+     "slot": 1,
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "headphone-jerk": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "lane_foe"
+     },
+     "amount": {
+      "n": 3
+     },
+     "if": {
+      "replaced": true
+     }
+    }
+   ]
+  }
+ ],
+ "infinite-figure": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "lane_foe"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "mausoleum": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "lane_ally"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "niceasaurus-rex": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "draw",
+     "who": "you",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "damage": {
+       "min": 1
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "night-tower": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "discard_choice",
+     "who": "opponent",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "opposing_creature_in_lane": false
+     }
+    }
+   ]
+  }
+ ],
+ "pants-of-awesome": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    },
+    {
+     "what": "lane",
+     "side": "you",
+     "landscape": "blue_plains",
+     "without": "creature"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "slot": 0,
+     "slot2": 1
+    },
+    {
+     "do": "draw",
+     "who": "you",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "pieclops": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "heal_creature",
+     "all": {
+      "rel": "adjacent_allies"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "piestorm": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "your",
+      "damage": {
+       "max": 0
+      }
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "pink-merwitch": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ],
+   "limit": 1
+  }
+ ],
+ "pyramidia": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "discount_replace",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "rainbow-eyebat": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "heal_hero",
+     "who": "you",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "landscape_types"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "ring-of-fluffy": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "damage",
+       "from_target": true
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "skeletal-hand": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "mill",
+     "who": "you",
+     "amount": {
+      "n": 3
+     }
+    },
+    {
+     "do": "discard_choice",
+     "who": "opponent",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "milled_spells"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "snakemint": [
+  {
+   "kind": "trigger",
+   "on": "deals_hero_damage",
+   "do": [
+    {
+     "do": "heal_hero",
+     "who": "you",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "damage_dealt"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "squatting-bald-man": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "heal_creature",
+     "self": true,
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "steakchop": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "upkeep",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "strength-crystal": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "draw",
+     "who": "you",
+     "amount": {
+      "n": 5
+     }
+    }
+   ]
+  }
+ ],
+ "subliminal-strength": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "spells_played"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "toilet-of-doom": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "travelin-skeleton": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "other": true
+    }
+   ],
+   "do": [
+    {
+     "do": "swap_creatures",
+     "self": true,
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "volcano": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "building"
+    },
+    {
+     "what": "creature",
+     "optional": true,
+     "lane_of": 0
+    }
+   ],
+   "do": [
+    {
+     "do": "destroy_building",
+     "slot": 0
+    },
+    {
+     "do": "damage_creature",
+     "slot": 1,
+     "amount": {
+      "n": 3
+     }
+    },
+    {
+     "do": "flip_landscape",
+     "slot": 0,
+     "face": "down",
+     "who": "you"
+    }
+   ]
+  }
+ ],
+ "windmill-of-health": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "lane_ally",
+      "damage": {
+       "max": 0
+      }
+     },
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ]
+}

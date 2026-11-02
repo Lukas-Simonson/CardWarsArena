@@ -54,5 +54,33 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lady%20Rainicorn.webp"
+  },
+  {
+    "id": "lumpy-space-princess",
+    "name": "Lumpy Space Princess",
+    "type": "hero",
+    "text": "The first time you replace a Creature on your turn, draw a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lumpy%20Space%20Princess.webp"
+  },
+  {
+    "id": "princess-bubblegum",
+    "name": "Princess Bubblegum",
+    "type": "hero",
+    "text": "Once per turn, you may deal 1 damage to one of your Creatures. That Creature has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Princess%20Bubblegum.webp"
   }
 ]

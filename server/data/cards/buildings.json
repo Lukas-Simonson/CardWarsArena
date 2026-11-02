@@ -26,9 +26,35 @@
         "deck": "Jake's Deck",
         "set": "Finn Vs Jake",
         "copies": 2
+      },
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      },
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Fortress.webp"
+  },
+  {
+    "id": "cave-of-solitude",
+    "name": "Cave of Solitude",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "text": "Discard a card \u003e\u003e\u003e Your Creature in this Lane cannot be targeted or attacked until the start of your next turn.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cave%20of%20Solitude.webp"
   },
   {
     "id": "celestial-castle",
@@ -57,9 +83,46 @@
         "deck": "Jake's Deck",
         "set": "Finn Vs Jake",
         "copies": 1
+      },
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Celestial%20Castle.webp"
+  },
+  {
+    "id": "mausoleum",
+    "name": "Mausoleum",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "Your Creature in this Lane has +1 DEF for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mausoleum.webp"
+  },
+  {
+    "id": "night-tower",
+    "name": "Night Tower",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e If your opponent has no Creature in this Lane, they discard a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Night%20Tower.webp"
   },
   {
     "id": "palace-of-bone",
@@ -76,6 +139,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Palace%20of%20Bone.webp"
+  },
+  {
+    "id": "pyramidia",
+    "name": "Pyramidia",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e Pay 1 less action to replace your Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pyramidia.webp"
   },
   {
     "id": "sand-sphinx",
@@ -140,6 +219,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spirit%20Tower.webp"
+  },
+  {
+    "id": "windmill-of-health",
+    "name": "Windmill Of Health",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "While your Creature in this Lane has no damage on it, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Windmill%20Of%20Health.webp"
   },
   {
     "id": "woad-mobile-home",

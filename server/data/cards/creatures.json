@@ -1,5 +1,23 @@
 [
   {
+    "id": "albino-eyebat",
+    "name": "Albino Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "While Albino Eyebat has exactly 2 damage on it, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Albino%20Eyebat.webp"
+  },
+  {
     "id": "ancient-scholar",
     "name": "Ancient Scholar",
     "type": "creature",
@@ -16,6 +34,78 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ancient%20Scholar.webp"
+  },
+  {
+    "id": "angel-heart",
+    "name": "Angel Heart",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 7,
+    "text": "While Angel Heart has exactly 3 damage on it, it has +3 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Angel%20Heart.webp"
+  },
+  {
+    "id": "angel-of-chocolate",
+    "name": "Angel of Chocolate",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "text": "Pay 1 action \u003e\u003e\u003e Heal all damage from Angel of Chocolate.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Angel%20of%20Chocolate.webp"
+  },
+  {
+    "id": "angel-of-vanilla",
+    "name": "Angel of Vanilla",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "Pay 1 action \u003e\u003e\u003e Heal all damage from Angel of Vanilla.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Angel%20of%20Vanilla.webp"
+  },
+  {
+    "id": "apple-pieclops",
+    "name": "Apple Pieclops",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 7,
+    "text": "At the start of your turn, you may heal or deal 1 damage to each of your Creatures. (Choose for each Creature.)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Apple%20Pieclops.webp"
   },
   {
     "id": "archer-dan",
@@ -88,6 +178,42 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blonde%20MerWitch.webp"
+  },
+  {
+    "id": "blueberry-djinni",
+    "name": "Blueberry Djinni",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "If Blueberry Djinni replaces a Creature, draw 2 cards.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blueberry%20Djinni.webp"
+  },
+  {
+    "id": "brain-gooey",
+    "name": "Brain Gooey",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "If Brain Gooey replaces a Creature, it has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Brain%20Gooey.webp"
   },
   {
     "id": "chest-burster",
@@ -198,6 +324,60 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cornataur.webp"
   },
   {
+    "id": "cotton-eyebat",
+    "name": "Cotton Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "While Cotton Eyebat has exactly 4 damage on it, it has +4 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cotton%20Eyebat.webp"
+  },
+  {
+    "id": "cow",
+    "name": "Cow",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "notes": "Moo.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cow.webp"
+  },
+  {
+    "id": "cutie",
+    "name": "Cutie",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e You heal 1 hit point. (Can't go over 25)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cutie.webp"
+  },
+  {
     "id": "dark-angel",
     "name": "Dark Angel",
     "type": "creature",
@@ -214,6 +394,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dark%20Angel.webp"
+  },
+  {
+    "id": "dogboy",
+    "name": "Dogboy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "text": "Discard a card \u003e\u003e\u003e Dogboy has +2 ATK this turn. (Limit: Once per turn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dogboy.webp"
   },
   {
     "id": "dr-death",
@@ -250,6 +448,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragon%20Claw.webp"
+  },
+  {
+    "id": "dragon-foot",
+    "name": "Dragon Foot",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "Discard a card \u003e\u003e\u003e Dragon Foot has +1 ATK this turn. (Limit: Five times per turn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragon%20Foot.webp"
   },
   {
     "id": "drooling-dude",
@@ -324,6 +540,42 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Extraordinary%20Spider.webp"
   },
   {
+    "id": "fairy-shepherd",
+    "name": "Fairy Shepherd",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "Each adjacent NiceLands Creature has +2 DEF.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fairy%20Shepherd.webp"
+  },
+  {
+    "id": "fatapillar",
+    "name": "Fatapillar",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 0,
+    "defense": 3,
+    "text": "+2 ATK for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fatapillar.webp"
+  },
+  {
     "id": "field-reaper",
     "name": "Field Reaper",
     "type": "creature",
@@ -376,6 +628,60 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fummy.webp"
+  },
+  {
+    "id": "future-scholar",
+    "name": "Future Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "If Future Scholar replaces a Creature, gain 1 action.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Future%20Scholar.webp"
+  },
+  {
+    "id": "goat",
+    "name": "Goat",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "text": "If Goat replaces a Creature, draw a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Goat.webp"
+  },
+  {
+    "id": "grape-djinni",
+    "name": "Grape Djinni",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "If Grape Djinni replaces a Creature, you may put a card from your discard pile on top of your deck.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Grape%20Djinni.webp"
   },
   {
     "id": "gray-eyebat",
@@ -450,6 +756,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Merman.webp"
   },
   {
+    "id": "headphone-jerk",
+    "name": "Headphone Jerk",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "If Headphone Jerk replaces a Creature, deal 3 damage to the opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Headphone%20Jerk.webp"
+  },
+  {
     "id": "heavenly-gazer",
     "name": "Heavenly Gazer",
     "type": "creature",
@@ -466,6 +790,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Heavenly%20Gazer.webp"
+  },
+  {
+    "id": "herculeye",
+    "name": "Herculeye",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 6,
+    "text": "Discard a card \u003e\u003e\u003e Herculeye has +4 ATK this turn. (Limit: Once per furn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Herculeye.webp"
   },
   {
     "id": "hot-eyebat",
@@ -540,6 +882,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Immortal%20Maize%20Walker.webp"
   },
   {
+    "id": "infinite-figure",
+    "name": "Infinite Figure",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "Discard a card \u003e\u003e\u003e Deal 1 damage to the opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Infinite%20Figure.webp"
+  },
+  {
     "id": "legion-of-earlings",
     "name": "Legion of Earlings",
     "type": "creature",
@@ -612,6 +972,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mouthball.webp"
   },
   {
+    "id": "ms-fluff",
+    "name": "Ms. Fluff",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "While Ms. Fluff has exactly 7 damage on it, it has +7 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ms.%20Fluff.webp"
+  },
+  {
     "id": "ms-mummy",
     "name": "Ms. Mummy",
     "type": "creature",
@@ -646,6 +1024,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Nice%20Ice%20Baby.webp"
+  },
+  {
+    "id": "niceasaurus-rex",
+    "name": "Niceasaurus Rex",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "At the start of your turn, if Niceasaurus Rex has damage on it, draw a card.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Niceasaurus%20Rex.webp"
   },
   {
     "id": "patchy-the-pumpkin",
@@ -702,6 +1098,42 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Phyllis.webp"
   },
   {
+    "id": "pieclops",
+    "name": "Pieclops",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "When Pieclops enters play, heal 1 damage from each adjacent Creature.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pieclops.webp"
+  },
+  {
+    "id": "pink-merwitch",
+    "name": "Pink Merwitch",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "Discard a card \u003e\u003e\u003e Deal 1 damage to each opposing Creature. (Limit: Once per turn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pink%20Merwitch.webp"
+  },
+  {
     "id": "psionic-architect",
     "name": "Psionic Architect",
     "type": "creature",
@@ -736,6 +1168,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Punk%20Cat.webp"
+  },
+  {
+    "id": "rainbow-eyebat",
+    "name": "Rainbow Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "At the start of your turn, you heal 1 hit point for each different Landscape type you control. (Can't go over 25)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rainbow%20Eyebat.webp"
   },
   {
     "id": "red-eyeling",
@@ -882,6 +1332,78 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Shark.webp"
   },
   {
+    "id": "skeletal-hand",
+    "name": "Skeletal Hand",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Discard the top 3 cards of your deck. For each Spell Jiscarded this way, target player discards a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Skeletal%20Hand.webp"
+  },
+  {
+    "id": "snakemint",
+    "name": "Snakemint",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "When Snakemint deals damage to an opposing player, you heal that many hit points. (Can't go over 25.)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snakemint.webp"
+  },
+  {
+    "id": "squatting-bald-man",
+    "name": "Squatting Bald Man",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "Discard a card \u003e\u003e\u003e Heal 1 damage From Squatting Bald Man.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Squatting%20Bald%20Man.webp"
+  },
+  {
+    "id": "steakchop",
+    "name": "Steakchop",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 4,
+    "defense": 4,
+    "text": "At the start of your turn, discard 2 cards or destroy Steakchop. Discard after your free draw.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Steakchop.webp"
+  },
+  {
     "id": "struzann-djinn",
     "name": "Struzann Djinn",
     "type": "creature",
@@ -972,6 +1494,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Travelin%27%20Farmer.webp"
   },
   {
+    "id": "travelin-skeleton",
+    "name": "Travelin Skeleton",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Swap Lanes with another one of your Creatures.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Travelin%20Skeleton.webp"
+  },
+  {
     "id": "tree-of-undeath",
     "name": "Tree of Undeath",
     "type": "creature",
@@ -1006,6 +1546,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Uni-Knight.webp"
+  },
+  {
+    "id": "wall-of-chocolate",
+    "name": "Wall Of Chocolate",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "While Wall of Chocolate has no damage on it, it has +3 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wall%20Of%20Chocolate.webp"
   },
   {
     "id": "wall-of-ears",

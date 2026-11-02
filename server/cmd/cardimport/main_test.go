@@ -33,8 +33,8 @@ func TestCatalogueConvertsCleanly(t *testing.T) {
 		}
 		seen[c.ID] = true
 	}
-	if len(seen) != 91 {
-		t.Errorf("got %d cards, want 91", len(seen))
+	if len(seen) != 140 {
+		t.Errorf("got %d cards, want 140", len(seen))
 	}
 }
 
@@ -52,12 +52,12 @@ func TestDecksAreWholeAndHaveTheirHero(t *testing.T) {
 			}
 		}
 	}
-	for deck, want := range map[string]int{"Finn's Deck": 40, "Jake's Deck": 40, "BMO's Deck": 41, "Lady's Deck": 40} {
+	for deck, want := range map[string]int{"Finn's Deck": 40, "Jake's Deck": 40, "BMO's Deck": 41, "Lady's Deck": 40, "PB's Deck": 40, "LSP's Deck": 40} {
 		if size[deck] != want {
 			t.Errorf("%s: %d cards, want %d", deck, size[deck], want)
 		}
 	}
-	if hero["Finn's Deck"] != "Finn" || hero["Lady's Deck"] != "Lady Rainicorn" || len(hero) != 4 {
+	if hero["Finn's Deck"] != "Finn" || hero["Lady's Deck"] != "Lady Rainicorn" || len(hero) != 6 {
 		t.Errorf("heroes: %v", hero)
 	}
 }
