@@ -141,6 +141,11 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return "Choose"
 		}
 		switch ch.Kind {
+		case engine.ChoiceUpkeep:
+			if a.Card == 0 {
+				return "Destroy " + u.g.Catalog()[ch.Card].Name
+			}
+			return "Discard " + u.instName(a.Card)
 		case engine.ChoiceDiscard:
 			return "Discard " + u.instName(a.Card)
 		case engine.ChoiceReveal:
@@ -211,6 +216,10 @@ func (u *ui) event(me engine.PlayerID, e engine.Event) string {
 		return fmt.Sprintf("%s takes %d damage", name(), e.Amount)
 	case engine.EvHPLoss:
 		return fmt.Sprintf("%s loses %d HP", u.who(e.Player), e.Amount)
+	case engine.EvHPGain:
+		return fmt.Sprintf("%s heals %d HP", u.who(e.Player), e.Amount)
+	case engine.EvHeal:
+		return fmt.Sprintf("%s heals %d damage", name(), e.Amount)
 	case engine.EvDie:
 		return fmt.Sprintf("%s is destroyed (lane %d)", name(), lane)
 	case engine.EvGameOver:

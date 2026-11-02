@@ -30,6 +30,9 @@ type Effect struct {
 	Reduce      *Value `json:"reduce,omitempty"`
 	ActionsOnly bool   `json:"actions_only,omitempty"`
 
+	// activate: how many times each turn it may be used (Dogboy: once).
+	Limit int `json:"limit,omitempty"`
+
 	// floop, activate, spell, trigger: what is chosen and what happens.
 	Targets []TargetSpec `json:"targets,omitempty"`
 	Do      []Op         `json:"do,omitempty"`
@@ -69,6 +72,9 @@ const (
 	// OnCreatureEnters fires when a Creature enters play under the card's
 	// controller's control (the card's Watch narrows which).
 	OnCreatureEnters = "creature_enters"
+	// OnHeroDamage fires on a Creature that has just dealt damage to the
+	// opposing player; Count "damage_dealt" is how much (Snakemint).
+	OnHeroDamage = "deals_hero_damage"
 )
 
 // Restrictions (Effect.Restrict).
@@ -109,8 +115,20 @@ type Count struct {
 // Selector picks creatures relative to the effect's source.
 type Selector struct {
 	Rel          string    `json:"rel"`
+	Damage       *Range    `json:"damage,omitempty"`    // only Creatures with this much damage on them
 	Landscape    Landscape `json:"landscape,omitempty"` // the creature card's own type
 	ChangedLanes bool      `json:"changed_lanes,omitempty"`
+}
+
+// Range bounds a number; an unset end is open.
+type Range struct {
+	Min *int `json:"min,omitempty"`
+	Max *int `json:"max,omitempty"`
+}
+
+// Has reports whether n is in the range.
+func (r Range) Has(n int) bool {
+	return (r.Min == nil || n >= *r.Min) && (r.Max == nil || n <= *r.Max)
 }
 
 // Cond is an extra requirement. All fields that are set must hold.
@@ -123,6 +141,8 @@ type Cond struct {
 	Controls               Landscape      `json:"controls,omitempty"`          // you control a Creature of this type
 	OnLandscape            Landscape      `json:"on_landscape,omitempty"`      // the card's Lane has this face-up Landscape
 	EnteredMax             *int           `json:"entered_max,omitempty"`       // at most this many of your Creatures entered play this turn
+	Damage                 *Range         `json:"damage,omitempty"`            // the card (a Creature) has this much damage on it
+	Replaced               *bool          `json:"replaced,omitempty"`          // the card replaced a Creature when it entered play
 }
 
 // LandscapeCond bounds how many face-up Landscapes of a type you control.
@@ -146,6 +166,12 @@ type TargetSpec struct {
 	Flooped      *bool     `json:"flooped,omitempty"`   // creatures
 	Optional     bool      `json:"optional,omitempty"`
 	Count        *Value    `json:"count,omitempty"` // up to this many distinct targets
+	// Other leaves out the card's own Lane. LaneOf limits the choice to the
+	// Lane of what was chosen for that earlier slot (Volcano). Specs sharing a
+	// Group need exactly one target between them (Green Candy: heal or damage).
+	Other  bool   `json:"other,omitempty"`
+	LaneOf *int   `json:"lane_of,omitempty"`
+	Group  string `json:"group,omitempty"`
 }
 
 // Op is one step of an effect.
@@ -187,6 +213,8 @@ var validOps = map[string]struct{ slots int }{
 	"gain_actions": {0}, "copy_floop": {0}, "steal_play": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
 	"destroy_creature": {0}, "mill": {0}, "discount_next_creature": {0},
 	"borrow_creature": {2}, "ogre_gas": {0}, "discard_choice": {0}, "may": {0},
+	"heal_creature": {0}, "heal_hero": {0}, "swap_creatures": {1}, "protect": {0},
+	"no_combat_damage": {0}, "discount_replace": {0}, "upkeep": {0},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -204,7 +232,7 @@ func (e *Effect) Validate(t Type) error {
 				return fmt.Errorf("mod stat %q", m.Stat)
 			}
 			switch m.To.Rel {
-			case "self", "lane_ally", "adjacent_allies", "your", "opposing", "any":
+			case "self", "lane_ally", "adjacent_allies", "your", "opposing", "any", "lane_foe":
 			default:
 				return fmt.Errorf("mod selector rel %q", m.To.Rel)
 			}
@@ -217,7 +245,7 @@ func (e *Effect) Validate(t Type) error {
 		}
 	case KindTrigger:
 		switch e.On {
-		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters:
+		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters, OnHeroDamage:
 		default:
 			return fmt.Errorf("unknown trigger %q", e.On)
 		}
@@ -232,8 +260,9 @@ func (e *Effect) Validate(t Type) error {
 			return fmt.Errorf("floop belongs to creatures and buildings")
 		}
 	case KindActivate:
-		if e.Cost < 1 && !(len(e.Do) > 0 && e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce")) {
-			return fmt.Errorf("activate needs a cost of at least 1 Action, or to remove its own card first")
+		free := len(e.Do) > 0 && ((e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce")) || e.Do[0].Do == "discard")
+		if e.Cost < 1 && !free {
+			return fmt.Errorf("activate needs a cost of at least 1 Action, or to remove or discard something first")
 		}
 	case KindPlayCondition:
 		if e.If == nil {
@@ -286,6 +315,9 @@ func validateSpecs(specs []TargetSpec) error {
 		default:
 			return fmt.Errorf("target %d: unknown side %q", i, ts.Side)
 		}
+		if ts.LaneOf != nil && (*ts.LaneOf < 0 || *ts.LaneOf >= i) {
+			return fmt.Errorf("target %d: lane_of must name an earlier slot", i)
+		}
 	}
 	return nil
 }
@@ -333,7 +365,8 @@ func (v Value) validate() error {
 	}
 	switch v.Per.Of {
 	case "landscapes", "landscape_types", "creatures", "flooped_creatures", "spells_played", "opponent_hand",
-		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost":
+		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost",
+		"milled_spells", "damage", "damage_dealt":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

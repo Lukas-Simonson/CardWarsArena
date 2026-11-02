@@ -78,6 +78,8 @@ const (
 	EvAttack    EventKind = "attack"
 	EvDamage    EventKind = "damage"  // Creature took damage
 	EvHPLoss    EventKind = "hp_loss" // a player lost Hit Points
+	EvHPGain    EventKind = "hp_gain" // a player healed Hit Points
+	EvHeal      EventKind = "heal"    // a Creature had damage healed
 	EvDie       EventKind = "die"
 	EvGameOver  EventKind = "game_over"
 	EvMove      EventKind = "move"      // a Creature or Building changed Lanes (Lane = destination)
@@ -131,4 +133,5 @@ var (
 	ErrCondition      = errors.New("the card's condition is not met")
 	ErrChoice         = errors.New("a decision must be made first")
 	ErrNoChoice       = errors.New("there is no decision to make")
+	ErrLimit          = errors.New("that ability has been used as often as it can be this turn")
 )

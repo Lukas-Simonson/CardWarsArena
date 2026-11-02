@@ -68,7 +68,14 @@ type Creature struct {
 	Borrowed bool `json:"borrowed,omitempty"`
 	// Offered holds the optional abilities its triggers offer right now.
 	Offered []Offer `json:"offered,omitempty"`
-	// Fired lists the once-per-turn triggers already used this turn.
+	// Replaced is set while the Creature has just replaced another on entering
+	// play, for "if X replaces a Creature" triggers.
+	Replaced bool `json:"replaced,omitempty"`
+	// Shielded Creatures cannot be targeted by the opponent or attacked until
+	// their controller's next turn starts (Cave of Solitude).
+	Shielded bool `json:"shielded,omitempty"`
+	// Fired lists the once-per-turn triggers and the uses of limited
+	// abilities this turn, by the index of the effect.
 	Fired []int `json:"fired,omitempty"`
 }
 
@@ -84,6 +91,9 @@ type Lane struct {
 	FaceDown  bool           `json:"face_down"`
 	Creature  *Creature      `json:"creature,omitempty"`
 	Building  *Building      `json:"building,omitempty"`
+	// ReplaceDiscount is how many Actions replacing the Creature here costs
+	// less this turn (Pyramidia).
+	ReplaceDiscount int `json:"replace_discount,omitempty"`
 }
 
 // Player is everything one player owns.
@@ -117,6 +127,9 @@ type State struct {
 	// CreatureDiscount is how many Actions the next Creature the active
 	// player plays costs less (Unempty Coffin).
 	CreatureDiscount int `json:"creature_discount,omitempty"`
+	// NoCombatDamage[p] means p's Creatures take no damage from opposing
+	// Creatures this turn (Falling Star).
+	NoCombatDamage [2]bool `json:"no_combat_damage,omitempty"`
 	// Choice is a decision someone must make before anything else happens;
 	// Queue holds those that arose while it was open.
 	Choice *Choice  `json:"choice,omitempty"`
@@ -133,6 +146,7 @@ type Pending struct {
 const (
 	ChoiceDiscard = "discard" // a player picks cards from their hand to discard
 	ChoiceReveal  = "reveal"  // a player picks one of the revealed cards; the rest are discarded
+	ChoiceUpkeep  = "upkeep"  // discard cards, or (Card 0) destroy the Creature that asks (Steakchop)
 )
 
 // Choice is a decision that stops the game until a player makes it. It is
@@ -144,6 +158,10 @@ type Choice struct {
 	Card   string   `json:"card"` // the card that asks
 	// discard: cards still to discard.
 	Count int `json:"count,omitempty"`
+	// upkeep: where the Creature that asks is. It becomes a discard Choice
+	// once the player starts discarding.
+	Lane      int `json:"lane,omitempty"`
+	SourceUID int `json:"source_uid,omitempty"`
 	// reveal: the cards shown, out of the deck until the choice is made. The
 	// chosen one goes to the bottom of the deck and the rest are discarded.
 	Revealed []Instance `json:"revealed,omitempty"`

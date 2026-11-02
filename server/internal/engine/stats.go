@@ -126,8 +126,15 @@ func (g *Game) selects(sel card.Selector, s source, target pos, t *Creature) boo
 		if target.P == s.P {
 			return false
 		}
+	case "lane_foe":
+		if target.P == s.P || target.Lane != s.Lane {
+			return false
+		}
 	case "any":
 	default:
+		return false
+	}
+	if sel.Damage != nil && !sel.Damage.Has(t.Damage) {
 		return false
 	}
 	if sel.Landscape != "" && g.Card(t.Instance).Landscape != sel.Landscape {
@@ -241,6 +248,15 @@ func (g *Game) count(c card.Count, s source) int {
 		return baseStat(g.Card(s.creature.Instance).Attack)
 	case "milled_cost":
 		return g.milledCost
+	case "milled_spells":
+		return g.milledSpells
+	case "damage_dealt":
+		return g.heroDamage
+	case "damage":
+		if s.creature == nil {
+			return 0
+		}
+		return s.creature.Damage
 	}
 	return 0
 }
@@ -285,6 +301,12 @@ func (g *Game) cond(c card.Cond, s source) bool {
 			return false
 		}
 	}
+	if c.Damage != nil && (s.creature == nil || !c.Damage.Has(s.creature.Damage)) {
+		return false
+	}
+	if c.Replaced != nil && (s.creature == nil || s.creature.Replaced != *c.Replaced) {
+		return false
+	}
 	if lc := c.Landscapes; lc != nil {
 		n := g.faceUp(s.P, lc.Type)
 		if (lc.Min != nil && n < *lc.Min) || (lc.Max != nil && n > *lc.Max) {
@@ -297,6 +319,9 @@ func (g *Game) cond(c card.Cond, s source) bool {
 // attackable reports whether the Creature at target may be Attacked. Cool Dog
 // protects the Creatures in the Lanes next to it.
 func (g *Game) attackable(target pos) bool {
+	if cr := g.creatureAt(target); cr != nil && cr.Shielded {
+		return false
+	}
 	ok := true
 	g.forEachSource(func(s source) {
 		if s.P != target.P || abs(s.Lane-target.Lane) != 1 {

@@ -12,9 +12,9 @@ created with `AllowUnimplemented`.
 | kind        | meaning |
 |-------------|---------|
 | `static`    | Always on while the card is in play: stat `mods` and/or a `restrict`ion |
-| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters` |
+| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters`, `deals_hero_damage` |
 | `floop`     | `FLOOP >>>` ability: exhaust (Ready only), then run `do`. `cost` adds Actions to pay |
-| `activate`  | `Pay N Action(s) >>>` ability, usable any number of times. `cost` 0 is allowed when the first op removes the card itself (`destroy_creature`/`bounce` with `self`) |
+| `activate`  | `Pay N Action(s) >>>` ability, usable any number of times. `cost` 0 is allowed when the first op removes the card itself (`destroy_creature`/`bounce` with `self`) or `discard`s a `hand_card` target ("Discard a card >>>"). `limit` caps the uses each turn |
 | `play_condition` | The card may only be played while `if` holds (Hot Eyebat, Bone Wand) |
 | `cost_mod`  | The card costs `reduce` less: Actions and Landscapes, or only Actions with `actions_only` |
 | `spell`     | Resolved when the Spell is played, then the Spell is discarded |
@@ -28,20 +28,26 @@ created with `AllowUnimplemented`.
   `spells_played`, `opponent_hand`, `discard` (your discard pile), `empty_lanes`,
   `entered_this_turn` (Creatures that entered play this turn; `scope: any` for both sides),
   `entered_adjacent` (entered on your side in the Lanes next to the card), `base_attack`
-  (the card's printed ATK) and `milled_cost` (the cost of the card `mill` last discarded).
+  (the card's printed ATK), `milled_cost` (the cost of the card `mill` last discarded),
+  `milled_spells` (how many Spells it discarded), `damage` (on the card, or on each chosen
+  Creature with `from_target`) and `damage_dealt` (what a Creature just did to a player).
   `div` counts whole groups ("for every 5 cards": `div: 5`), `card` limits `creatures` to one
   card, and `from_target` counts from each chosen Creature instead of the card. Landscape counts only see face-up ones.
   `creatures` with `type` matches the *card's* Landscape type (a Rainbow card is
   never a Cornfield Creature).
-- **Selector** `{rel, landscape?, changed_lanes?}`: which creatures. `rel` is
-  `self`, `lane_ally` (my creature in this Lane), `adjacent_allies`, `your`,
-  `opposing`, `any`.
+- **Selector** `{rel, landscape?, changed_lanes?, damage?}`: which creatures. `rel` is
+  `self`, `lane_ally` (my creature in this Lane), `lane_foe` (the opposing creature in this
+  Lane), `adjacent_allies`, `your`, `opposing`, `any`. `damage` is a `{min?, max?}` range the
+  creature's damage must be in ("exactly 2 damage", "no damage").
 - **Cond** `{opposing_creature_in_lane?, landscapes?{type,min?,max?}, building_in_lane?,
-  opponent_hand_max?, discard_min?, controls?, on_landscape?, entered_max?}`.
+  opponent_hand_max?, discard_min?, controls?, on_landscape?, entered_max?, damage?, replaced?}`
+  (`damage` is on the card itself, `replaced` is whether it replaced a Creature when it entered).
 - **Watch** (on a `creature_enters` trigger) `{landscape?, other?, your_turn?}`: which Creatures entering
   under your control fire it. `once_per_turn` limits the trigger to once each turn.
 - **TargetSpec**: one choice slot. `what` = `creature|building|landscape|lane|discard_card|hand_card`,
-  `side` = `you|opponent|any`, `in_lane`, `adjacent_lane`, `landscape`, `face_down`,
+  `side` = `you|opponent|any`, `in_lane`, `adjacent_lane`, `other` (not the card's own Lane),
+  `lane_of` (only the Lane of an earlier slot's choice), `group` (slots sharing one need exactly
+  one choice between them: "heal or deal 1 damage"), `landscape`, `face_down`,
   `without` (for lanes: `creature` or `building`), `card_type`, `optional`, and
   `count` (a Value: choose up to that many *distinct* targets).
 - **Op**: one step of `do`: `draw`, `damage_creature`, `damage_hero`,
@@ -49,7 +55,10 @@ created with `AllowUnimplemented`.
   `ready_creature`, `bounce`, `destroy_building`, `gain_actions`,
   `return_from_discard`, `put_on_deck`, `discard`, `copy_floop` (Schoolhouse),
   `steal_play` (Silo of Truth), `destroy_creature`, `mill`, `discard_choice`,
-  `discount_next_creature`, `borrow_creature` (Spirit Tower), `ogre_gas` and `may`. Ops reference
+  `discount_next_creature`, `borrow_creature` (Spirit Tower), `ogre_gas`, `may`, `heal_creature`
+  (`amount` is up to that much; 99 heals it all), `heal_hero` (never above 25), `swap_creatures`
+  (the card itself and slot), `protect` (Cave of Solitude), `no_combat_damage` (Falling Star),
+  `discount_replace` (Pyramidia) and `upkeep` (Steakchop). Ops reference
   target slots by index and may carry an `if` condition. `self` and `entering` act on the
   card itself or on the Creature that fired a `creature_enters` trigger instead of a slot;
   `permanent` makes `mod_creature` last while the Creature is in play.
@@ -120,6 +129,14 @@ stuck.
 - Silo of Truth "no cost" waives the additional cost too.
 
 - Ms. Mummy's "gains 1 DEF" is permanent, like Sand Eyebat's.
+- "Target player" (Skeletal Hand, Strength Crystal) is the opponent, or you, as the card says:
+  nobody benefits from pointing them the other way.
+- "Heal up to" and "heal all damage" use `heal_creature`; damage is never removed by anything else.
+- Cave of Solitude: its Creature cannot be targeted by the opponent's cards or attacked until your
+  next turn starts, but you can still target it yourself.
+- Pyramidia's discount applies to the next Creature played over your Creature in its Lane this turn.
+- Steakchop: with fewer than 2 cards in hand it is simply destroyed. After discarding one card you
+  must discard the second.
 - Ms. Mummy's offer is available from the start of your turn until you do anything else.
 - Palace of Bone stops the entering and leaving play triggers of Creatures opposite it,
   including other Creatures' "when a Creature enters play" triggers that they would set off.

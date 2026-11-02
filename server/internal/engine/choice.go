@@ -32,6 +32,16 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 		if g.handIndex(p, a.Card) < 0 {
 			return ErrNoSuchCard
 		}
+	case ChoiceUpkeep:
+		if a.Kind != ActChoose {
+			return ErrChoice
+		}
+		if a.Card == 0 {
+			return nil // destroy the Creature that asks
+		}
+		if g.handIndex(p, a.Card) < 0 {
+			return ErrNoSuchCard
+		}
 	case ChoiceReveal:
 		if a.Kind != ActChoose {
 			return ErrChoice
@@ -50,6 +60,19 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 	ch := g.State.Choice
 	var ev []Event
 	switch ch.Kind {
+	case ChoiceUpkeep:
+		if a.Card == 0 {
+			if cr := g.creatureAt(pos{p, ch.Lane}); cr != nil && cr.UID == ch.SourceUID {
+				ev = g.destroyAt(pos{p, ch.Lane})
+			}
+			break
+		}
+		ev = g.discardFromHand(p, a.Card)
+		ch.Count--
+		if ch.Count > 0 {
+			ch.Kind = ChoiceDiscard // having started, the rest must be discarded
+			return ev
+		}
 	case ChoiceDiscard:
 		ev = g.discardFromHand(p, a.Card)
 		ch.Count--
@@ -83,6 +106,11 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 		for _, in := range g.State.Players[p].Hand {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})
 		}
+	case ChoiceUpkeep:
+		for _, in := range g.State.Players[p].Hand {
+			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+		out = append(out, Action{Kind: ActChoose}) // destroy it instead
 	case ChoiceReveal:
 		for _, in := range ch.Revealed {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})

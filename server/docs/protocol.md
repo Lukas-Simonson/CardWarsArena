@@ -156,6 +156,7 @@ every other action is refused (`illegal_action`) until they answer.
 | `kind` | question | answer |
 |---|---|---|
 | `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
+| `upkeep` | discard `count` cards from your hand, or destroy the card that asks (Steakchop) | `choose` with `card` = a hand uid, or `choose` with no `card` to destroy it. After the first discard it becomes a `discard` choice |
 | `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
 
 As always, send one of the objects in `view.legal`.
@@ -173,7 +174,7 @@ query is planned.
 never see in a view (a Creature that entered play and returned to a hand in the
 same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
-`attack`, `damage`, `hp_loss`, `die`, `game_over`, `move`, `flip`, `ready`,
+`attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
 `discard`, `steal`, `abilities`. Events are for
 animation and the game log only: the view is always authoritative.

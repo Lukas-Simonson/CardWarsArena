@@ -37,7 +37,7 @@ func (g *Game) faceUp(p PlayerID, ls card.Landscape) int {
 // costFor is what playing c costs p right now: the Actions to pay and the
 // face-up Landscapes of its type needed. Normally both are the printed cost;
 // cost mods on the card and a pending Creature discount lower them.
-func (g *Game) costFor(p PlayerID, c *card.Card) (actions, lands int) {
+func (g *Game) costFor(p PlayerID, c *card.Card, lane int) (actions, lands int) {
 	if c.Cost == nil {
 		return 0, 0
 	}
@@ -55,6 +55,9 @@ func (g *Game) costFor(p PlayerID, c *card.Card) (actions, lands int) {
 	}
 	if c.Type == card.Creature && p == g.State.Active {
 		actions -= g.State.CreatureDiscount
+		if lane >= 0 && lane < NumLanes && g.State.Players[p].Lanes[lane].Creature != nil {
+			actions -= g.State.Players[p].Lanes[lane].ReplaceDiscount
+		}
 	}
 	return max(actions, 0), max(lands, 0)
 }
@@ -63,11 +66,11 @@ func (g *Game) costFor(p PlayerID, c *card.Card) (actions, lands int) {
 // both the number of Actions paid and the number of face-up Landscapes of the
 // card's type required. Rainbow and 0-cost cards need no Landscape, and 0-cost
 // cards need no Actions, so they remain playable after Actions are spent.
-func (g *Game) canAfford(p PlayerID, c *card.Card) error {
+func (g *Game) canAfford(p PlayerID, c *card.Card, lane int) error {
 	if c.Cost == nil {
 		return ErrNotPlayable
 	}
-	actions, lands := g.costFor(p, c)
+	actions, lands := g.costFor(p, c, lane)
 	if g.State.ActionsLeft < actions {
 		return ErrNoActions
 	}
@@ -106,7 +109,7 @@ func (g *Game) checkPlayable(p PlayerID, a Action) (Instance, *card.Card, error)
 	if c.Type != card.Spell && (a.Lane < 0 || a.Lane >= NumLanes) {
 		return in, c, ErrBadLane
 	}
-	if err := g.canAfford(p, c); err != nil {
+	if err := g.canAfford(p, c, a.Lane); err != nil {
 		return in, c, err
 	}
 	if !g.conditionsMet(p, c) {
@@ -193,12 +196,13 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 		lane.Building = &Building{Instance: in, Status: Ready}
 		return ev
 	}
+	replaced := lane.Creature != nil
 	if old := lane.Creature; old != nil {
 		// Replaced Creatures go to their owner's discard; damage is dropped.
 		ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
 		ev = append(ev, g.removeCreature(pos{p, laneIdx}, toDiscard)...)
 	}
-	lane.Creature = &Creature{Instance: in, Status: Ready}
+	lane.Creature = &Creature{Instance: in, Status: Ready, Replaced: replaced}
 	return ev
 }
 
@@ -220,10 +224,11 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	in := pl.Hand[idx]
 	pl.Hand = append(pl.Hand[:idx:idx], pl.Hand[idx+1:]...)
 	c := g.Card(in)
-	actions, _ := g.costFor(p, c)
+	actions, _ := g.costFor(p, c, a.Lane)
 	g.State.ActionsLeft -= actions
 	if c.Type == card.Creature {
 		g.State.CreatureDiscount = 0 // the discount is for the next Creature played
+		g.State.Players[p].Lanes[a.Lane].ReplaceDiscount = 0
 	}
 	var costEv []Event
 	if ce := costEffect(c); ce != nil {

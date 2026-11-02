@@ -80,21 +80,35 @@ func (g *Game) clearOffers() {
 }
 
 // abilityEffect finds the Floop effect, or the Index-th activated ability.
-func abilityEffect(effects []card.Effect, a Action) *card.Effect {
+func abilityEffect(effects []card.Effect, a Action) (*card.Effect, int) {
 	n := 0
 	for i := range effects {
 		e := &effects[i]
 		switch {
 		case a.Kind == ActFloop && e.Kind == card.KindFloop:
-			return e
+			return e, i
 		case a.Kind == ActActivate && e.Kind == card.KindActivate:
 			if n == a.Index {
-				return e
+				return e, i
 			}
 			n++
 		}
 	}
-	return nil
+	return nil, 0
+}
+
+// usesLeft reports whether a Creature may use effect i again this turn.
+func usesLeft(cr *Creature, e *card.Effect, i int) bool {
+	if e.Limit == 0 || cr == nil {
+		return true
+	}
+	used := 0
+	for _, f := range cr.Fired {
+		if f == i {
+			used++
+		}
+	}
+	return used < e.Limit
 }
 
 func (g *Game) validateAbility(p PlayerID, a Action) error {
@@ -105,9 +119,12 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 	if err != nil {
 		return err
 	}
-	e := abilityEffect(src.effects, a)
+	e, idx := abilityEffect(src.effects, a)
 	if e == nil {
 		return ErrNoAbility
+	}
+	if !usesLeft(src.ctx.creature, e, idx) {
+		return ErrLimit
 	}
 	if e.If != nil && !g.cond(*e.If, src.ctx.source()) {
 		return ErrCondition
@@ -134,7 +151,10 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 // doAbility pays the cost of a validated ability and resolves it.
 func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	src, _ := g.abilitySource(p, a)
-	e := abilityEffect(src.effects, a)
+	e, idx := abilityEffect(src.effects, a)
+	if e.Limit > 0 && src.ctx.creature != nil {
+		src.ctx.creature.Fired = append(src.ctx.creature.Fired, idx)
+	}
 	kind := EvActivate
 	if a.Kind == ActFloop {
 		*src.status = Flooped

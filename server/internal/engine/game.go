@@ -37,7 +37,9 @@ type Game struct {
 	rng rand.PCG
 	cfg Config
 
-	milledCost int // the cost of the card last milled, for Green Merman
+	milledCost   int // the cost of the card last milled, for Green Merman
+	milledSpells int // how many Spells the last mill discarded (Skeletal Hand)
+	heroDamage   int // damage a Creature just dealt to a player (Snakemint)
 }
 
 // NewGame validates the decks, shuffles, deals opening hands and returns a
@@ -264,6 +266,7 @@ func (g *Game) startTurn(p PlayerID) []Event {
 	for i := range pl.Lanes {
 		if c := pl.Lanes[i].Creature; c != nil {
 			c.Status = Ready
+			c.Shielded = false // "until the start of your next turn"
 		}
 		if b := pl.Lanes[i].Building; b != nil {
 			b.Status = Ready

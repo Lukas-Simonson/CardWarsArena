@@ -38,7 +38,7 @@ func sidesFor(side string, p PlayerID) []PlayerID {
 }
 
 // candidates lists every legal choice for one target slot.
-func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
+func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) []TargetRef {
 	var out []TargetRef
 	if spec.What == "hand_card" {
 		// Only ever the controller's own hand (discard costs).
@@ -68,6 +68,16 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
 			if spec.InLane && (!c.hasSrc || lane != c.at.Lane) {
 				continue
 			}
+			if spec.Other && c.hasSrc && lane == c.at.Lane {
+				continue
+			}
+			if spec.LaneOf != nil {
+				// Only the Lane of what was chosen for that earlier slot.
+				refs := slotRefs(spec.LaneOf, given)
+				if len(refs) != 1 || refs[0].Lane != lane {
+					continue
+				}
+			}
 			if spec.AdjacentLane && (!c.hasSrc || abs(lane-c.at.Lane) != 1) {
 				continue
 			}
@@ -75,7 +85,7 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
 			ok := false
 			switch spec.What {
 			case "creature":
-				if cr := l.Creature; cr != nil {
+				if cr := l.Creature; cr != nil && !(cr.Shielded && p != c.p) {
 					ok = (spec.Landscape == "" || g.Card(cr.Instance).Landscape == spec.Landscape) &&
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped)
 				}
@@ -91,6 +101,9 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx) []TargetRef {
 				}
 			case "lane":
 				ok = true
+				if spec.Landscape != "" && (l.FaceDown || l.Landscape != spec.Landscape) {
+					ok = false
+				}
 				if spec.Without == "creature" && l.Creature != nil {
 					ok = false
 				}
@@ -119,16 +132,19 @@ func (g *Game) slotMax(spec card.TargetSpec, c effCtx, n int) int {
 // ability cannot be used and a trigger does nothing; err is only set for
 // choices that are wrong while the effect is usable.
 func (g *Game) checkTargets(specs []card.TargetSpec, given [][]TargetRef, c effCtx) (usable bool, err error) {
+	if len(given) > len(specs) {
+		return true, ErrBadTarget
+	}
+	// A slot's choices can depend on the slots before it (LaneOf), so judge
+	// each against what was given for those.
 	cands := make([][]TargetRef, len(specs))
 	for i, spec := range specs {
-		cands[i] = g.candidates(spec, c)
+		cands[i] = g.candidates(spec, c, given)
 		if len(cands[i]) == 0 && !spec.Optional {
 			return false, nil
 		}
 	}
-	if len(given) > len(specs) {
-		return true, ErrBadTarget
-	}
+	groups := map[string]int{}
 	for i, spec := range specs {
 		var chosen []TargetRef
 		if i < len(given) {
@@ -149,6 +165,14 @@ func (g *Game) checkTargets(specs []card.TargetSpec, given [][]TargetRef, c effC
 			}
 			seen[ref] = true
 		}
+		if spec.Group != "" {
+			groups[spec.Group] += len(chosen)
+		}
+	}
+	for _, n := range groups {
+		if n != 1 {
+			return true, ErrBadTarget // exactly one choice among the group's slots
+		}
 	}
 	return true, nil
 }
@@ -165,37 +189,48 @@ func contains(list []TargetRef, r TargetRef) bool {
 // targetCombos enumerates complete target choices for an effect, capped so a
 // card with a wide slot cannot flood the legal-action list.
 func (g *Game) targetCombos(specs []card.TargetSpec, c effCtx, limit int) [][][]TargetRef {
-	var perSlot [][][]TargetRef // slot -> choice -> refs
-	for _, spec := range specs {
-		cands := g.candidates(spec, c)
-		max := g.slotMax(spec, c, len(cands))
-		lo := max
-		if spec.Optional {
-			lo = 0
-		}
-		var choices [][]TargetRef
-		for size := lo; size <= max; size++ {
-			choices = append(choices, subsets(cands, size)...)
-		}
-		if len(choices) == 0 {
-			return nil
-		}
-		perSlot = append(perSlot, choices)
-	}
 	out := [][][]TargetRef{nil}
-	for _, choices := range perSlot {
+	for _, spec := range specs {
 		var next [][][]TargetRef
 		for _, partial := range out {
-			for _, ch := range choices {
-				if len(next) >= limit {
-					break
-				}
-				next = append(next, append(append([][]TargetRef(nil), partial...), ch))
+			cands := g.candidates(spec, c, partial)
+			max := g.slotMax(spec, c, len(cands))
+			lo := max
+			if spec.Optional {
+				lo = 0
 			}
+			for size := lo; size <= max; size++ {
+				for _, ch := range subsets(cands, size) {
+					if len(next) >= limit {
+						break
+					}
+					next = append(next, append(append([][]TargetRef(nil), partial...), ch))
+				}
+			}
+		}
+		if len(next) == 0 {
+			return nil
 		}
 		out = next
 	}
-	return out
+	// Specs sharing a group need exactly one choice between them.
+	var kept [][][]TargetRef
+	for _, combo := range out {
+		groups := map[string]int{}
+		for i, spec := range specs {
+			if spec.Group != "" {
+				groups[spec.Group] += len(combo[i])
+			}
+		}
+		ok := true
+		for _, n := range groups {
+			ok = ok && n == 1
+		}
+		if ok {
+			kept = append(kept, combo)
+		}
+	}
+	return kept
 }
 
 func subsets(items []TargetRef, size int) [][]TargetRef {
@@ -299,12 +334,45 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 					ev = append(ev, Event{Kind: EvDamage, Player: at.P, Card: cr.UID, Lane: at.Lane, Amount: amt})
 				}
 			}
+		case "heal_creature":
+			// Heals up to amt; "all" is a large amount.
+			for _, at := range g.creaturesFor(op, c, given) {
+				cr := g.creatureAt(at)
+				if healed := min(amt, cr.Damage); healed > 0 {
+					cr.Damage -= healed
+					ev = append(ev, Event{Kind: EvHeal, Player: at.P, Card: cr.UID, Lane: at.Lane, Amount: healed})
+				}
+			}
+		case "heal_hero":
+			for _, p := range g.whoList(op.Who, c.p) {
+				pl := &g.State.Players[p]
+				if healed := min(amt, StartingHP-pl.HP); healed > 0 {
+					pl.HP += healed
+					ev = append(ev, Event{Kind: EvHPGain, Player: p, Amount: healed})
+				}
+			}
+		case "swap_creatures":
+			if refs := slotRefs(op.Slot, given); op.Self && len(refs) == 1 && c.hasSrc {
+				ev = append(ev, g.swapCreatures(c.at, pos{refs[0].Player, refs[0].Lane})...)
+			}
+		case "protect":
+			for _, at := range g.creaturesFor(op, c, given) {
+				g.creatureAt(at).Shielded = true
+			}
+		case "no_combat_damage":
+			g.State.NoCombatDamage[c.p] = true
+		case "discount_replace":
+			if c.hasSrc {
+				g.State.Players[c.p].Lanes[c.at.Lane].ReplaceDiscount += amt
+			}
+		case "upkeep":
+			ev = append(ev, g.upkeep(amt, c)...)
 		case "mod_creature":
 			for _, at := range g.creaturesFor(op, c, given) {
 				cr := g.creatureAt(at)
 				n := amt
 				if op.Amount != nil && op.Amount.Per != nil && op.Amount.Per.FromTarget {
-					n = g.value(*op.Amount, source{pos: at}) // counted from the chosen Creature
+					n = g.value(*op.Amount, source{pos: at, creature: cr}) // counted from the chosen Creature
 				}
 				switch {
 				case op.Permanent && op.Stat == "atk":
@@ -326,13 +394,10 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 		case "destroy_creature":
 			for _, at := range g.creaturesFor(op, c, given) {
-				if cr := g.creatureAt(at); cr != nil {
-					ev = append(ev, Event{Kind: EvDie, Player: at.P, Card: cr.UID, Lane: at.Lane})
-					ev = append(ev, g.removeCreature(at, toDiscard)...)
-				}
+				ev = append(ev, g.destroyAt(at)...)
 			}
 		case "mill":
-			g.milledCost = 0
+			g.milledCost, g.milledSpells = 0, 0
 			for _, p := range g.whoList(op.Who, c.p) {
 				ev = append(ev, g.mill(p, amt)...)
 			}
@@ -386,6 +451,9 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 		case "flip_landscape":
 			for _, r := range slotRefs(op.Slot, given) {
+				if op.Who == "you" {
+					r.Player = c.p // the controller's Landscape in the chosen Lane
+				}
 				l := &g.State.Players[r.Player].Lanes[r.Lane]
 				l.FaceDown = op.Face == "down"
 				ev = append(ev, Event{Kind: EvFlip, Player: r.Player, Lane: r.Lane})
@@ -429,6 +497,9 @@ func (g *Game) mill(p PlayerID, n int) []Event {
 		in := pl.Deck[0]
 		pl.Deck = pl.Deck[1:]
 		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+		if g.Card(in).Type == card.Spell {
+			g.milledSpells++
+		}
 		if cost := g.Card(in).Cost; cost != nil {
 			g.milledCost = *cost
 		} else {
@@ -456,6 +527,52 @@ func (g *Game) discardChoice(p PlayerID, n int, c effCtx) []Event {
 	}
 	g.ask(Choice{Player: p, Kind: ChoiceDiscard, Card: c.cardID(), Count: n})
 	return nil
+}
+
+// upkeep (Steakchop): the controller discards n cards or destroys the card
+// that asks. With too few cards in hand to discard there is nothing to choose.
+func (g *Game) upkeep(n int, c effCtx) []Event {
+	if c.creature == nil || g.creatureAt(c.at) != c.creature {
+		return nil
+	}
+	if len(g.State.Players[c.p].Hand) < n {
+		return g.destroyAt(c.at)
+	}
+	g.ask(Choice{Player: c.p, Kind: ChoiceUpkeep, Card: c.cardID(), Count: n, Lane: c.at.Lane, SourceUID: c.creature.UID})
+	return nil
+}
+
+// destroyAt destroys the Creature at at, as the destroy_creature op does.
+func (g *Game) destroyAt(at pos) []Event {
+	cr := g.creatureAt(at)
+	if cr == nil {
+		return nil
+	}
+	ev := []Event{{Kind: EvDie, Player: at.P, Card: cr.UID, Lane: at.Lane}}
+	return append(ev, g.removeCreature(at, toDiscard)...)
+}
+
+// swapCreatures exchanges the Creatures in two Lanes of one side. Both count
+// as having changed Lanes.
+func (g *Game) swapCreatures(a, b pos) []Event {
+	if a.P != b.P || a.Lane == b.Lane {
+		return nil
+	}
+	la, lb := &g.State.Players[a.P].Lanes[a.Lane], &g.State.Players[b.P].Lanes[b.Lane]
+	if la.Creature == nil || lb.Creature == nil {
+		return nil
+	}
+	la.Creature, lb.Creature = lb.Creature, la.Creature
+	la.Creature.ChangedLanes, lb.Creature.ChangedLanes = true, true
+	ev := []Event{
+		{Kind: EvMove, Player: a.P, Card: la.Creature.UID, Lane: a.Lane},
+		{Kind: EvMove, Player: b.P, Card: lb.Creature.UID, Lane: b.Lane},
+	}
+	for _, at := range []pos{a, b} {
+		cr := g.creatureAt(at)
+		ev = append(ev, g.fire(card.OnChangeLanes, effCtx{p: at.P, at: at, hasSrc: true, creature: cr}, g.effectsOf(cr), nil)...)
+	}
+	return ev
 }
 
 // discardFromHand moves one of p's hand cards to its owner's discard pile.

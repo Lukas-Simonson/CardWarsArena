@@ -1,5 +1,7 @@
 package engine
 
+import "cardwars/internal/card"
+
 // canAttack reports whether p's Creature in lane may start a Fight right now.
 func (g *Game) canAttack(p PlayerID, lane int) bool {
 	cr := g.State.Players[p].Lanes[lane].Creature
@@ -69,10 +71,19 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 		if dmg := g.atk(pos{p, a.Lane}); dmg > 0 {
 			g.State.Players[opp].HP -= dmg
 			ev = append(ev, Event{Kind: EvHPLoss, Player: opp, Lane: a.Lane, Amount: dmg})
+			g.heroDamage = dmg
+			ctx := effCtx{p: p, at: pos{p, a.Lane}, hasSrc: true, creature: att}
+			ev = append(ev, g.fire(card.OnHeroDamage, ctx, g.effectsOf(att), nil)...)
 		}
 	} else {
 		// Both Creatures deal damage to each other simultaneously.
 		toDef, toAtt := g.atk(pos{p, a.Lane}), g.atk(pos{opp, a.Lane})
+		if g.State.NoCombatDamage[opp] {
+			toDef = 0 // Falling Star
+		}
+		if g.State.NoCombatDamage[p] {
+			toAtt = 0
+		}
 		def.Damage += toDef
 		att.Damage += toAtt
 		if toDef > 0 {
@@ -144,10 +155,13 @@ func (g *Game) endTurn(p PlayerID) []Event {
 	g.State.SpellsThisTurn = 0
 	g.State.Entered = [2][NumLanes]int{}
 	g.State.CreatureDiscount = 0
+	g.State.NoCombatDamage = [2]bool{}
 	for i := range g.State.Players {
-		for _, l := range g.State.Players[i].Lanes {
+		for lane := range g.State.Players[i].Lanes {
+			l := &g.State.Players[i].Lanes[lane]
+			l.ReplaceDiscount = 0
 			if c := l.Creature; c != nil {
-				c.TempATK, c.TempDEF, c.ChangedLanes = 0, 0, false
+				c.TempATK, c.TempDEF, c.ChangedLanes, c.Replaced = 0, 0, false, false
 				c.Silenced, c.Lent = false, ""
 				c.Fired = nil
 			}
