@@ -119,6 +119,39 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 	return out
 }
 
+// withoutTaken drops the choices already made for earlier slots of the same
+// Distinct set as spec i.
+func withoutTaken(cands []TargetRef, specs []card.TargetSpec, i int, given [][]TargetRef) []TargetRef {
+	if specs[i].Distinct == "" {
+		return cands
+	}
+	var out []TargetRef
+	for _, r := range cands {
+		taken := false
+		for j := 0; j < i && j < len(given); j++ {
+			taken = taken || (specs[j].Distinct == specs[i].Distinct && contains(given[j], r))
+		}
+		if !taken {
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
+// labelsOf is the Labels of an action choosing for specs, or nil when none is set.
+func labelsOf(specs []card.TargetSpec) []string {
+	var out []string
+	any := false
+	for _, s := range specs {
+		out = append(out, s.Label)
+		any = any || s.Label != ""
+	}
+	if !any {
+		return nil
+	}
+	return out
+}
+
 func (g *Game) slotMax(spec card.TargetSpec, c effCtx, n int) int {
 	max := 1
 	if spec.Count != nil {
@@ -139,7 +172,7 @@ func (g *Game) checkTargets(specs []card.TargetSpec, given [][]TargetRef, c effC
 	// each against what was given for those.
 	cands := make([][]TargetRef, len(specs))
 	for i, spec := range specs {
-		cands[i] = g.candidates(spec, c, given)
+		cands[i] = withoutTaken(g.candidates(spec, c, given), specs, i, given)
 		if len(cands[i]) == 0 && !spec.Optional {
 			return false, nil
 		}
@@ -190,10 +223,10 @@ func contains(list []TargetRef, r TargetRef) bool {
 // card with a wide slot cannot flood the legal-action list.
 func (g *Game) targetCombos(specs []card.TargetSpec, c effCtx, limit int) [][][]TargetRef {
 	out := [][][]TargetRef{nil}
-	for _, spec := range specs {
+	for i, spec := range specs {
 		var next [][][]TargetRef
 		for _, partial := range out {
-			cands := g.candidates(spec, c, partial)
+			cands := withoutTaken(g.candidates(spec, c, partial), specs, i, partial)
 			max := g.slotMax(spec, c, len(cands))
 			lo := max
 			if spec.Optional {

@@ -37,6 +37,9 @@ type Action struct {
 	// Targets holds one list of choices per target slot of the effect being
 	// used (the Spell, enter-play trigger, Floop or activated ability).
 	Targets [][]TargetRef `json:"targets,omitempty"`
+	// Labels is sent with a legal action, one per target slot, saying what
+	// each choice is for. It is for display only and is ignored when played.
+	Labels []string `json:"labels,omitempty"`
 }
 
 // TargetRef names one chosen target. Kind is the TargetSpec "what":

@@ -47,7 +47,8 @@ created with `AllowUnimplemented`.
 - **TargetSpec**: one choice slot. `what` = `creature|building|landscape|lane|discard_card|hand_card`,
   `side` = `you|opponent|any`, `in_lane`, `adjacent_lane`, `other` (not the card's own Lane),
   `lane_of` (only the Lane of an earlier slot's choice), `group` (slots sharing one need exactly
-  one choice between them: "heal or deal 1 damage"), `landscape`, `face_down`,
+  one choice between them: "heal or deal 1 damage"), `distinct` (slots of one name may not pick
+  the same target), `label` (what the choice is for; sent with the legal action as `labels`), `landscape`, `face_down`,
   `without` (for lanes: `creature` or `building`), `card_type`, `optional`, and
   `count` (a Value: choose up to that many *distinct* targets).
 - **Op**: one step of `do`: `draw`, `damage_creature`, `damage_hero`,

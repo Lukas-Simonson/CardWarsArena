@@ -161,7 +161,7 @@ every other action is refused (`illegal_action`) until they answer.
 
 As always, send one of the objects in `view.legal`.
 
-**Limit:** `legal` lists at most 64 target choices per card, so a card with a very
+**Limit:** `legal` lists at most 128 target choices per card, so a card with a very
 wide choice (Patchy the Pumpkin with many Creatures) may offer only some of its
 legal plays. The server still *accepts* any legal choice, so a client may
 construct such a play from the same shape; a server-side "list all targets"

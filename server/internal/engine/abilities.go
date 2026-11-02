@@ -206,6 +206,7 @@ func (g *Game) abilityActions(p PlayerID) []Action {
 				for _, targets := range g.targetCombos(e.Targets, src.ctx, maxTargetCombos) {
 					b := a
 					b.Targets = targets
+					b.Labels = labelsOf(e.Targets)
 					out = append(out, b)
 				}
 			}

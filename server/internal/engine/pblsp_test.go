@@ -192,6 +192,36 @@ func TestApplePieclopsHealsOrDamagesEachOfYourCreatures(t *testing.T) {
 	}
 }
 
+// Each of your Creatures is healed, damaged or left alone, so 4 Creatures have
+// 3^4 choices, all of them listed, each labelled for what it does.
+func TestApplePieclopsListsEveryChoiceOnce(t *testing.T) {
+	g := pbGame(t)
+	g.put(1, 0, "apple-pieclops")
+	for lane := 1; lane < 4; lane++ {
+		g.put(1, lane, "cow")
+	}
+	g.State.Active = 0
+	g.endTurn(0)
+	n := 0
+	for _, a := range g.LegalActions(1) {
+		if a.Kind != ActActivate || a.Lane != 0 {
+			continue
+		}
+		n++
+		if len(a.Labels) != 2 || a.Labels[0] != "Heal 1 damage from" || a.Labels[1] != "Deal 1 damage to" {
+			t.Fatalf("labels = %v", a.Labels)
+		}
+		for _, r := range a.Targets[0] {
+			if contains(a.Targets[1], r) {
+				t.Fatalf("%+v is both healed and damaged", r)
+			}
+		}
+	}
+	if n != 81 {
+		t.Errorf("%d choices, want 81", n)
+	}
+}
+
 func TestReplacingACreatureTriggersTheReplacers(t *testing.T) {
 	g := pbGame(t)
 	hand := func() int { return len(g.State.Players[1].Hand) }

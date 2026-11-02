@@ -169,9 +169,13 @@ type TargetSpec struct {
 	// Other leaves out the card's own Lane. LaneOf limits the choice to the
 	// Lane of what was chosen for that earlier slot (Volcano). Specs sharing a
 	// Group need exactly one target between them (Green Candy: heal or damage).
-	Other  bool   `json:"other,omitempty"`
-	LaneOf *int   `json:"lane_of,omitempty"`
-	Group  string `json:"group,omitempty"`
+	// Label says what the choice is for ("Heal"), shown while choosing.
+	// Distinct names a set of slots whose choices may not overlap.
+	Label    string `json:"label,omitempty"`
+	Distinct string `json:"distinct,omitempty"`
+	Other    bool   `json:"other,omitempty"`
+	LaneOf   *int   `json:"lane_of,omitempty"`
+	Group    string `json:"group,omitempty"`
 }
 
 // Op is one step of an effect.

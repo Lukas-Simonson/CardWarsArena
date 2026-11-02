@@ -53,7 +53,7 @@ func (g *Game) LegalActions(p PlayerID) []Action {
 
 // maxTargetCombos caps how many target choices LegalActions lists per card.
 // Clients choose targets interactively and are not limited by this.
-const maxTargetCombos = 64
+const maxTargetCombos = 128
 
 // spellActions proposes the plays of a Spell, one per target choice.
 func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
@@ -65,10 +65,17 @@ func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
 	var out []Action
 	for _, cost := range g.costChoices(p, in) {
 		for _, targets := range choices {
-			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets})
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets, Labels: spellLabels(e)})
 		}
 	}
 	return out
+}
+
+func spellLabels(e *card.Effect) []string {
+	if e == nil {
+		return nil
+	}
+	return labelsOf(e.Targets)
 }
 
 // costChoices lists the ways to pay a card's additional cost; a card with no
@@ -103,7 +110,7 @@ func (g *Game) laneActions(p PlayerID, in Instance, lane int) []Action {
 	var out []Action
 	for _, cost := range costs {
 		for _, targets := range triggerChoices {
-			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets})
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets, Labels: spellLabels(e)})
 		}
 	}
 	return out

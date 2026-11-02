@@ -142,7 +142,9 @@
        "optional": true,
        "count": {
         "n": 4
-       }
+       },
+       "label": "Heal 1 damage from",
+       "distinct": "mode"
       },
       {
        "what": "creature",
@@ -150,7 +152,9 @@
        "optional": true,
        "count": {
         "n": 4
-       }
+       },
+       "label": "Deal 1 damage to",
+       "distinct": "mode"
       }
      ],
      "then": [
@@ -454,7 +458,8 @@
     {
      "what": "discard_card",
      "side": "you",
-     "optional": true
+     "optional": true,
+     "label": "Put on top of your deck"
     }
    ],
    "do": [
@@ -475,12 +480,14 @@
     {
      "what": "creature",
      "optional": true,
-     "group": "mode"
+     "group": "mode",
+     "label": "Heal 1 damage from"
     },
     {
      "what": "creature",
      "optional": true,
-     "group": "mode"
+     "group": "mode",
+     "label": "Deal 1 damage to"
     }
    ],
    "do": [
