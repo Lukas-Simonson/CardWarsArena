@@ -44,10 +44,13 @@ export function describeRef(ctx, r) {
   }
 }
 
-function withTargets(ctx, text, label, slots) {
+function withTargets(ctx, text, label, slots, labels) {
   if (!slots || slots.length === 0) return text;
   // An optional slot with nothing chosen may arrive as null or [].
-  const parts = slots.map((s) => (s?.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none"));
+  const parts = slots.map((s, i) => {
+    const what = s?.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none";
+    return labels?.[i] ? `${labels[i]} ${what}` : what;
+  });
   return `${text}  [${label}: ${parts.join("; ")}]`;
 }
 
@@ -67,12 +70,12 @@ export function describeAction(ctx, a) {
       const isSpell = c?.type === "spell";
       let t = `${isSpell ? "Cast" : "Play"} ${name} (cost ${c?.cost ?? "?"})${isSpell ? "" : ` into lane ${laneNo(a.lane)}`}`;
       t = withTargets(ctx, t, "discard", a.cost_targets);
-      return withTargets(ctx, t, "targets", a.targets);
+      return withTargets(ctx, t, "targets", a.targets, a.labels);
     }
     case "play_pending": {
       const c = ctx.cards?.[v.pending?.card];
       const t = `Play ${c?.name ?? "the stolen card"} for free${c?.type === "spell" ? "" : ` into lane ${laneNo(a.lane)}`}`;
-      return withTargets(ctx, t, "targets", a.targets);
+      return withTargets(ctx, t, "targets", a.targets, a.labels);
     }
     case "choose": {
       const ch = v.choice;
@@ -93,7 +96,7 @@ export function describeAction(ctx, a) {
       const src = a.source === "building" ? l.building : l.creature;
       const name = src ? cardName(ctx, src.card) : "?";
       const verb = a.kind === "floop" ? `Floop ${name}` : `Use ${name}'s ability`;
-      return withTargets(ctx, `${verb} (lane ${laneNo(a.lane)})`, "targets", a.targets);
+      return withTargets(ctx, `${verb} (lane ${laneNo(a.lane)})`, "targets", a.targets, a.labels);
     }
     default: return `(unknown action: ${JSON.stringify(a)})`;
   }

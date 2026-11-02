@@ -78,6 +78,15 @@ export function needsLane(a, ctx) {
   return !!c && c.type !== "spell";
 }
 
+/** What each of an action's choices is for, in the order of slotsOf ("" where the server said nothing). */
+export function slotLabels(a, ctx) {
+  const out = [];
+  if (needsLane(a, ctx)) out.push("");
+  for (const _ of a.cost_targets ?? []) out.push("");
+  (a.targets ?? []).forEach((_, i) => out.push(a.labels?.[i] ?? ""));
+  return out;
+}
+
 /** The choices an action needs, in order: each slot is a sorted list of tokens. */
 export function slotsOf(a, ctx) {
   const out = [];
@@ -124,6 +133,16 @@ export class ActionPicker {
       if (!this.done.every((d, k) => k < s.length && same(s[k], d))) return false;
       return i < s.length ? this.cur.every((t) => s[i].includes(t)) : this.cur.length === 0;
     });
+  }
+
+  /** What the slot being filled is for, as the server labelled it ("" if it did not). */
+  label() {
+    const i = this.done.length;
+    for (const a of this.consistent()) {
+      const l = slotLabels(a, this.ctx)[i];
+      if (l) return l;
+    }
+    return "";
   }
 
   /** What may be clicked next: { tokens, can_skip, skip_label }. */
