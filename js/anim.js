@@ -65,6 +65,8 @@ export function plan(prev, view, events = [], ctx = {}) {
       case "attack": fx.push({ t: "lunge", seat: e.player, lane: e.lane ?? 0, up: e.player === me }); break;
       case "damage": fx.push({ t: "hit", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay: fought ? HIT_DELAY : 0 }); break;
       case "hp_loss": fx.push({ t: "hp", seat: e.player, amount: e.amount, delay: fought ? HIT_DELAY : 0 }); break;
+      case "heal": fx.push({ t: "heal", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay: 0 }); break;
+      case "hp_gain": fx.push({ t: "hpgain", seat: e.player, amount: e.amount, delay: 0 }); break;
       case "turn_start": fx.push({ t: "turn", seat: e.player, mine: e.player === me }); break;
       case "play": if (ctx.cards?.[e.card_id]?.type === "spell") fx.push({ t: "cast", card: e.card_id, seat: e.player }); break;
     }
@@ -116,7 +118,7 @@ function bodyOf(kinds) {
 /** When each effect finishes, from its start of the update (see applyEffects). */
 const END = {
   drop: () => 380, settle: (f) => f.delay + 320, build: () => 320, lunge: () => LUNGE_MS,
-  hit: (f) => f.delay + 900, hp: (f) => f.delay + 1000, hpbar: (f) => f.delay + 600, ghost: (f) => f.delay + 560,
+  hit: (f) => f.delay + 900, heal: (f) => f.delay + 900, hpgain: (f) => f.delay + 1000, hp: (f) => f.delay + 1000, hpbar: (f) => f.delay + 600, ghost: (f) => f.delay + 560,
 };
 
 /** When the last of these effects is over (for what should wait for them, such as a dialog). */
@@ -176,6 +178,16 @@ export function applyEffects(root, fx, ctx) {
         const t = tile(f.seat, f.lane);
         play(t?.querySelector(".card"), [{ transform: "none", filter: "none" }, { transform: "translateX(-7px) rotate(-3deg)", filter: "brightness(1.9) saturate(2)", offset: 0.2 }, { transform: "translateX(7px) rotate(3deg)", offset: 0.45 }, { transform: "translateX(-4px)", offset: 0.7 }, { transform: "none", filter: "none" }], { duration: 420, delay: f.delay });
         if (t && f.amount) spawn(t, text("fx-float", `-${f.amount}`), [{ opacity: 0, transform: "translate(-50%, 0) scale(.5)" }, { opacity: 1, transform: "translate(-50%, -12px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(-50%, -52px) scale(1)" }], { duration: 900, delay: f.delay });
+        break;
+      }
+      case "heal": {
+        const t = tile(f.seat, f.lane);
+        if (t && f.amount) spawn(t, text("fx-float heal", `+${f.amount}`), [{ opacity: 0, transform: "translate(-50%, 0) scale(.5)" }, { opacity: 1, transform: "translate(-50%, -12px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(-50%, -52px) scale(1)" }], { duration: 900, delay: f.delay });
+        break;
+      }
+      case "hpgain": {
+        const shield = q(`.shield[data-seat="${f.seat}"]`);
+        if (shield && f.amount) spawn(shield, text("fx-float side heal", `+${f.amount}`), [{ opacity: 0, transform: "translate(0, 0) scale(.5)" }, { opacity: 1, transform: "translate(0, -10px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(0, -44px) scale(1)" }], { duration: 1000, delay: f.delay });
         break;
       }
       case "hp": {

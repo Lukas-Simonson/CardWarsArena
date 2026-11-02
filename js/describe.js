@@ -76,7 +76,8 @@ export function describeAction(ctx, a) {
     }
     case "choose": {
       const ch = v.choice;
-      if (ch?.kind === "discard") return `Discard ${instName(ctx, a.card)}`;
+      if (ch?.kind === "upkeep" && !a.card) return `Destroy ${cardName(ctx, ch.card)}`;
+      if (ch?.kind === "discard" || ch?.kind === "upkeep") return `Discard ${instName(ctx, a.card)}`;
       if (ch?.kind === "reveal") return `Put ${instName(ctx, a.card)} on the bottom of your deck`;
       return "Choose";
     }
@@ -116,6 +117,8 @@ export function describeEvent(ctx, e) {
     case "attack": return `${who} fights with ${n()} (lane ${laneNo(e.lane)})`;
     case "damage": return `${n()} takes ${e.amount} damage`;
     case "hp_loss": return `${who} loses ${e.amount} HP`;
+    case "hp_gain": return `${who} heals ${e.amount} HP`;
+    case "heal": return `${n()} heals ${e.amount} damage`;
     case "die": return `${n()} is destroyed`;
     case "game_over": return `*** ${who} wins! ***`;
     case "move": return `${n()} moves to lane ${laneNo(e.lane)}`;

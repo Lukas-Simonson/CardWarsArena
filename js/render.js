@@ -270,6 +270,16 @@ function choiceModal(m, on) {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
+  } else if (ch.kind === "upkeep") {
+    const destroy = choose.find((a) => !a.card);
+    title = `${by}: upkeep`;
+    text = `Discard ${ch.count} cards from your hand, or destroy ${by}.`;
+    body = h("div", {},
+      h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
+        const action = choose.find((a) => a.card === inst.uid);
+        return action && cardButton(inst, action);
+      })),
+      destroy && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(destroy) }, `Destroy ${by}`)));
   } else {
     return null;
   }
