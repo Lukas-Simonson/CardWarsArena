@@ -78,6 +78,15 @@ export function needsLane(a, ctx) {
   return !!c && c.type !== "spell";
 }
 
+/** What each of an action's choices is for, in the order of slotsOf ("" where the server said nothing). */
+export function slotLabels(a, ctx) {
+  const out = [];
+  if (needsLane(a, ctx)) out.push("");
+  for (const _ of a.cost_targets ?? []) out.push("");
+  (a.targets ?? []).forEach((_, i) => out.push(a.labels?.[i] ?? ""));
+  return out;
+}
+
 /** The choices an action needs, in order: each slot is a sorted list of tokens. */
 export function slotsOf(a, ctx) {
   const out = [];
@@ -126,6 +135,16 @@ export class ActionPicker {
     });
   }
 
+  /** What the slot being filled is for, as the server labelled it ("" if it did not). */
+  label() {
+    const i = this.done.length;
+    for (const a of this.consistent()) {
+      const l = slotLabels(a, this.ctx)[i];
+      if (l) return l;
+    }
+    return "";
+  }
+
   /** What may be clicked next: { tokens, can_skip, skip_label }. */
   options() {
     const i = this.done.length;
@@ -142,7 +161,9 @@ export class ActionPicker {
       const s = this.slots.get(a);
       return i < s.length && same(cur, s[i]);
     });
-    return { tokens: list, can_skip, skip_label: this.cur.length === 0 ? "None" : "Done" };
+    // When a labelled step follows, say so: "Next: Deal 1 damage to" is clearer than "Done".
+    const next = live.map((a) => slotLabels(a, this.ctx)[i + 1]).find(Boolean);
+    return { tokens: list, can_skip, skip_label: next ? `Next: ${next}` : this.cur.length === 0 ? "None" : "Done" };
   }
 
   /** Close slots that every remaining candidate agrees are finished. */

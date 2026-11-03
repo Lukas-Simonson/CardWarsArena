@@ -104,7 +104,7 @@ test("events name a card by card_id even if it was never in a view", () => {
 });
 
 test("every event kind the server can send has a description", () => {
-  const kinds = ["mulligan", "keep_hand", "turn_start", "draw", "play", "replace", "attack", "damage", "hp_loss", "die", "game_over", "move", "flip", "ready", "bounce", "destroy", "return", "deck_top", "actions", "floop", "activate", "discard", "steal", "abilities"];
+  const kinds = ["mulligan", "keep_hand", "turn_start", "draw", "play", "replace", "attack", "damage", "hp_loss", "hp_gain", "heal", "die", "game_over", "move", "flip", "ready", "bounce", "destroy", "return", "deck_top", "actions", "floop", "activate", "discard", "steal", "abilities"];
   for (const k of kinds) assert.notEqual(describeEvent(ctx, { kind: k, player: 0, card: 20, amount: 1 }), k, `${k} falls through to its raw name`);
 });
 
@@ -155,6 +155,9 @@ test("actions that answer a Choice are described", async () => {
   const { view, ctxFor } = await import("./fixtures.mjs");
   const reveal = ctxFor(view({ choice: { player: 0, kind: "reveal", card: "corn-scepter", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
   assert.equal(describeAction(reveal, { kind: "choose", card: 40 }), "Put The Pig on the bottom of your deck");
+  const upkeep = ctxFor(view({ choice: { player: 0, kind: "upkeep", card: "the-pig", count: 2 } }));
+  assert.equal(describeAction(upkeep, { kind: "choose" }), "Destroy The Pig");
+  assert.equal(describeAction(upkeep, { kind: "choose", card: 10 }), "Discard Cool Dog");
   const discard = ctxFor(view({ choice: { player: 0, kind: "discard", card: "corn-scepter", count: 1 } }));
   assert.equal(describeAction(discard, { kind: "choose", card: 10 }), "Discard Cool Dog");
 });

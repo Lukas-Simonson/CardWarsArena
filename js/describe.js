@@ -44,10 +44,13 @@ export function describeRef(ctx, r) {
   }
 }
 
-function withTargets(ctx, text, label, slots) {
+function withTargets(ctx, text, label, slots, labels) {
   if (!slots || slots.length === 0) return text;
   // An optional slot with nothing chosen may arrive as null or [].
-  const parts = slots.map((s) => (s?.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none"));
+  const parts = slots.map((s, i) => {
+    const what = s?.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none";
+    return labels?.[i] ? `${labels[i]} ${what}` : what;
+  });
   return `${text}  [${label}: ${parts.join("; ")}]`;
 }
 
@@ -67,16 +70,17 @@ export function describeAction(ctx, a) {
       const isSpell = c?.type === "spell";
       let t = `${isSpell ? "Cast" : "Play"} ${name} (cost ${c?.cost ?? "?"})${isSpell ? "" : ` into lane ${laneNo(a.lane)}`}`;
       t = withTargets(ctx, t, "discard", a.cost_targets);
-      return withTargets(ctx, t, "targets", a.targets);
+      return withTargets(ctx, t, "targets", a.targets, a.labels);
     }
     case "play_pending": {
       const c = ctx.cards?.[v.pending?.card];
       const t = `Play ${c?.name ?? "the stolen card"} for free${c?.type === "spell" ? "" : ` into lane ${laneNo(a.lane)}`}`;
-      return withTargets(ctx, t, "targets", a.targets);
+      return withTargets(ctx, t, "targets", a.targets, a.labels);
     }
     case "choose": {
       const ch = v.choice;
-      if (ch?.kind === "discard") return `Discard ${instName(ctx, a.card)}`;
+      if (ch?.kind === "upkeep" && !a.card) return `Destroy ${cardName(ctx, ch.card)}`;
+      if (ch?.kind === "discard" || ch?.kind === "upkeep") return `Discard ${instName(ctx, a.card)}`;
       if (ch?.kind === "reveal") return `Put ${instName(ctx, a.card)} on the bottom of your deck`;
       return "Choose";
     }
@@ -92,7 +96,7 @@ export function describeAction(ctx, a) {
       const src = a.source === "building" ? l.building : l.creature;
       const name = src ? cardName(ctx, src.card) : "?";
       const verb = a.kind === "floop" ? `Floop ${name}` : `Use ${name}'s ability`;
-      return withTargets(ctx, `${verb} (lane ${laneNo(a.lane)})`, "targets", a.targets);
+      return withTargets(ctx, `${verb} (lane ${laneNo(a.lane)})`, "targets", a.targets, a.labels);
     }
     default: return `(unknown action: ${JSON.stringify(a)})`;
   }
@@ -116,6 +120,8 @@ export function describeEvent(ctx, e) {
     case "attack": return `${who} fights with ${n()} (lane ${laneNo(e.lane)})`;
     case "damage": return `${n()} takes ${e.amount} damage`;
     case "hp_loss": return `${who} loses ${e.amount} HP`;
+    case "hp_gain": return `${who} heals ${e.amount} HP`;
+    case "heal": return `${n()} heals ${e.amount} damage`;
     case "die": return `${n()} is destroyed`;
     case "game_over": return `*** ${who} wins! ***`;
     case "move": return `${n()} moves to lane ${laneNo(e.lane)}`;

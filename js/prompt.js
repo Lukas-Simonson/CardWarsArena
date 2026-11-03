@@ -45,7 +45,8 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
     }
     return out;
   }
-  out.text = `${instruction(opts.tokens)} for ${name}`;
+  const label = picker.label();
+  out.text = label ? `${label}: ${instruction(opts.tokens).toLowerCase()} for ${name}` : `${instruction(opts.tokens)} for ${name}`;
   if (opts.can_skip) out.skip = opts.skip_label;
   return out;
 }

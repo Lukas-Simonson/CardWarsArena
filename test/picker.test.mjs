@@ -163,3 +163,32 @@ test("prompt: a Choice tells the decider to use the dialog and everyone else to 
   const theirs = ctxFor(view({ choice: { ...choice, player: 1 }, awaiting: [1] }));
   assert.match(buildPrompt(theirs, false, "", null, false).text, /Waiting for Jake to decide \(Corn Scepter\)/);
 });
+
+test("the picker says what each choice is for", async () => {
+  const { ActionPicker } = await import("../js/picker.js");
+  const { ctxFor, view } = await import("./fixtures.mjs");
+  const ref = (lane) => ({ kind: "creature", player: 0, lane });
+  const act = (heal, hurt) => ({ kind: "activate", lane: 0, targets: [heal, hurt], labels: ["Heal 1 damage from", "Deal 1 damage to"] });
+  const p = new ActionPicker([act([ref(1)], []), act([], [ref(1)]), act([ref(1)], [ref(2)])], ctxFor(view()));
+  assert.equal(p.label(), "Heal 1 damage from");
+  p.pick("creature:0:1"); // both remaining choices heal it, so that slot is done
+  assert.equal(p.label(), "Deal 1 damage to");
+
+  const q = new ActionPicker([act([], []), act([ref(1)], []), act([ref(1), ref(2)], []), act([], [ref(1)])], ctxFor(view()));
+  assert.equal(q.options().skip_label, "Next: Deal 1 damage to", "the button names the step it leads to");
+  q.pick("creature:0:1");
+  assert.equal(q.options().skip_label, "Next: Deal 1 damage to");
+  q.skip();
+  assert.equal(q.options().skip_label, "None", "the last step just ends");
+});
+
+test("prompt: a labelled choice says what it is for", () => {
+  const ctx = ctxFor(view());
+  const me = ctx.view.players[ctx.view.you];
+  const mine = me.lanes.findIndex((l) => l.creature);
+  const ref = (lane) => ({ kind: "creature", player: ctx.view.you, lane });
+  const act = (heal, hurt) => ({ kind: "activate", lane: mine, targets: [heal, hurt], labels: ["Heal 1 damage from", "Deal 1 damage to"] });
+  const picker = new ActionPicker([act([ref(mine)], []), act([], [ref(mine)])], ctx);
+  const p = buildPrompt(ctx, true, `lane:${mine}:creature`, picker, false);
+  assert.match(p.text, /^Heal 1 damage from: choose a target for /);
+});
