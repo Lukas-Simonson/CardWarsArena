@@ -173,6 +173,13 @@ test("the picker says what each choice is for", async () => {
   assert.equal(p.label(), "Heal 1 damage from");
   p.pick("creature:0:1"); // both remaining choices heal it, so that slot is done
   assert.equal(p.label(), "Deal 1 damage to");
+
+  const q = new ActionPicker([act([], []), act([ref(1)], []), act([ref(1), ref(2)], []), act([], [ref(1)])], ctxFor(view()));
+  assert.equal(q.options().skip_label, "Next: Deal 1 damage to", "the button names the step it leads to");
+  q.pick("creature:0:1");
+  assert.equal(q.options().skip_label, "Next: Deal 1 damage to");
+  q.skip();
+  assert.equal(q.options().skip_label, "None", "the last step just ends");
 });
 
 test("prompt: a labelled choice says what it is for", () => {
