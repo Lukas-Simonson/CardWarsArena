@@ -1,0 +1,255 @@
+[
+  {
+    "id": "blood-fortress",
+    "name": "Blood Fortress",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Your Creature in this Lane has +1 ATK.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      },
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      },
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      },
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      },
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      },
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Fortress.webp"
+  },
+  {
+    "id": "cave-of-solitude",
+    "name": "Cave of Solitude",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "text": "Discard a card \u003e\u003e\u003e Your Creature in this Lane cannot be targeted or attacked until the start of your next turn.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cave%20of%20Solitude.webp"
+  },
+  {
+    "id": "celestial-castle",
+    "name": "Celestial Castle",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Your Creature in this Lane has +3 DEF.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      },
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      },
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      },
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      },
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Celestial%20Castle.webp"
+  },
+  {
+    "id": "mausoleum",
+    "name": "Mausoleum",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "Your Creature in this Lane has +1 DEF for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mausoleum.webp"
+  },
+  {
+    "id": "night-tower",
+    "name": "Night Tower",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e If your opponent has no Creature in this Lane, they discard a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Night%20Tower.webp"
+  },
+  {
+    "id": "palace-of-bone",
+    "name": "Palace of Bone",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "Opposing Creatures in this Lane do not trigger entering or leaving play effects.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Palace%20of%20Bone.webp"
+  },
+  {
+    "id": "pyramidia",
+    "name": "Pyramidia",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e Pay 1 less action to replace your Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pyramidia.webp"
+  },
+  {
+    "id": "sand-sphinx",
+    "name": "Sand Sphinx",
+    "type": "building",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "text": "FLOOP \u003e\u003e\u003e Return a Creature you control in this Lane to its owner's hand.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sand%20Sphinx.webp"
+  },
+  {
+    "id": "schoolhouse",
+    "name": "Schoolhouse",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e Your Creature in this Lane loses all abilities and gains the Floop ability of a random Creature (with a Floop ability) in your discard pile until end of turn.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Schoolhouse.webp"
+  },
+  {
+    "id": "silo-of-truth",
+    "name": "Silo of Truth",
+    "type": "building",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Pay 2 actions \u003e\u003e\u003e Steal a random card from your opponent's hand and play it at no cost.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Silo%20of%20Truth.webp"
+  },
+  {
+    "id": "spirit-tower",
+    "name": "Spirit Tower",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "text": "FLOOP and pay 1 action \u003e\u003e\u003e If you control no Creatures in this Lane, move target Creature in this Lane to your side and ready it. At end of turn, return it to its owner's side.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spirit%20Tower.webp"
+  },
+  {
+    "id": "windmill-of-health",
+    "name": "Windmill Of Health",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "While your Creature in this Lane has no damage on it, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Windmill%20Of%20Health.webp"
+  },
+  {
+    "id": "woad-mobile-home",
+    "name": "Woad Mobile Home",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e Move a Creature in an adjacent Lane to this Lane (if empty).",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woad%20Mobile%20Home.webp"
+  }
+]

@@ -1,0 +1,470 @@
+[
+  {
+    "id": "abraca-amadeus",
+    "name": "Abraca Amadeus",
+    "type": "spell",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "text": "Target opponent discards a card from their hand for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Abraca%20Amadeus.webp"
+  },
+  {
+    "id": "blue-candy",
+    "name": "Blue Candy",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "Heal up to 3 damage from target Creature you control.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blue%20Candy.webp"
+  },
+  {
+    "id": "bone-wand",
+    "name": "Bone Wand",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Play only if you control a Useless Swamp Creature. Target opponent discards a card from their hand.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Bone%20Wand.webp"
+  },
+  {
+    "id": "brief-power",
+    "name": "Brief Power",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Target Useless Swamp Creature you control has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Brief%20Power.webp"
+  },
+  {
+    "id": "cerebral-bloodstorm",
+    "name": "Cerebral Bloodstorm",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Deal 1 damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      },
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      },
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cerebral%20Bloodstorm.webp"
+  },
+  {
+    "id": "corn-scepter",
+    "name": "Corn Scepter",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Deal 1 damage to target Creature for each Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Corn%20Scepter.webp"
+  },
+  {
+    "id": "cross-pollination",
+    "name": "Cross Pollination",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 2,
+    "text": "Each of your Cornfield Creatures has +1 ATK this turn for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cross%20Pollination.webp"
+  },
+  {
+    "id": "falling-star",
+    "name": "Falling Star",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "text": "Your Creatures take no damage from opposing Creatures this turn.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Falling%20Star.webp"
+  },
+  {
+    "id": "field-of-nightmares",
+    "name": "Field of Nightmares",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Deal 1 damage to your opponent for each card in their hand.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20of%20Nightmares.webp"
+  },
+  {
+    "id": "gnome-snot",
+    "name": "Gnome Snot",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "Draw 3 cards.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Gnome%20Snot.webp"
+  },
+  {
+    "id": "green-candy",
+    "name": "Green Candy",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Heal or deal 1 damage to target Creature.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Candy.webp"
+  },
+  {
+    "id": "magic-ring-ding",
+    "name": "Magic Ring Ding",
+    "type": "spell",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "text": "Each of your Creatures has +1 ATK this turn for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Magic%20Ring%20Ding.webp"
+  },
+  {
+    "id": "ogre-gas",
+    "name": "Ogre Gas",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Reveal the top 3 cards of your deck. Put one of them on the bottom of your deck and discard the rest.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ogre%20Gas.webp"
+  },
+  {
+    "id": "pants-of-awesome",
+    "name": "Pants Of Awesome",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "Move target Creature you control to an empty Blue Plains Landscape you control, then draw a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pants%20Of%20Awesome.webp"
+  },
+  {
+    "id": "piestorm",
+    "name": "Piestorm",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "Each of your Creatures with no damage has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Piestorm.webp"
+  },
+  {
+    "id": "reclaim-landscape",
+    "name": "Reclaim Landscape",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "You may flip one of your Landscapes face up, and you may move one of your Buildings to any of your Lanes without one.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Reclaim%20Landscape.webp"
+  },
+  {
+    "id": "ring-of-fluffy",
+    "name": "Ring Of Fluffy",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "text": "Target Creature you control has +X ATK this turn, where X is the amount of damage on it.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ring%20Of%20Fluffy.webp"
+  },
+  {
+    "id": "snake-eye-ring",
+    "name": "Snake Eye Ring",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Return a random Useless Swamp Creature from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snake%20Eye%20Ring.webp"
+  },
+  {
+    "id": "strength-crystal",
+    "name": "Strength Crystal",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "text": "Target player draws 5 cards.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Strength%20Crystal.webp"
+  },
+  {
+    "id": "subliminal-strength",
+    "name": "Subliminal Strength",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "Target Creature you control has +2 ATK for each Spell you played this turn (including this one).",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Subliminal%20Strength.webp"
+  },
+  {
+    "id": "teleport",
+    "name": "Teleport",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Move one of your Creatures to one of your empty Landscapes.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      },
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      },
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Teleport.webp"
+  },
+  {
+    "id": "toilet-of-doom",
+    "name": "Toilet Of Doom",
+    "type": "spell",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "Target Creature you control has +1 ATK this turn for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Toilet%20Of%20Doom.webp"
+  },
+  {
+    "id": "tome-of-ankhs",
+    "name": "Tome of Ankhs",
+    "type": "spell",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "text": "Draw a card for each of your empty Lanes.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tome%20of%20Ankhs.webp"
+  },
+  {
+    "id": "unempty-coffin",
+    "name": "Unempty Coffin",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Reduce the cost of the next Creature you play this turn by 2 actions.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Unempty%20Coffin.webp"
+  },
+  {
+    "id": "volcano",
+    "name": "Volcano",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Destroy target Building. You may deal 3 damage to a Creature in that Lane. Flip your Landscape in that Lane face down.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Volcano.webp"
+  },
+  {
+    "id": "woad-blood",
+    "name": "Woad Blood",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Each Creature that changed Lanes this turn has +2 ATK.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woad%20Blood.webp"
+  },
+  {
+    "id": "woad-talisman",
+    "name": "Woad Talisman",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Target Blue Plains Creature you control has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woad%20Talisman.webp"
+  },
+  {
+    "id": "zazo-s-magic-seeds",
+    "name": "Zazo's Magic Seeds",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Target SandyLands Creature has +2 ATK for each Creature that entered play into an adjacent Lane this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Zazo%27s%20Magic%20Seeds.webp"
+  }
+]

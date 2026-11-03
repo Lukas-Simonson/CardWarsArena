@@ -4,11 +4,11 @@ name: cardwars
 # then point your reverse proxy (or a browser) at port 8088.
 services:
   server:
-    build: ../server
+    build: ./server
     restart: unless-stopped
     read_only: true
   web:
-    build: .
+    build: ./web
     restart: unless-stopped
     depends_on: [server]
     healthcheck:
