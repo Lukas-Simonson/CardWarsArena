@@ -219,12 +219,12 @@ function fillDecks(list) {
   mine.value = load("cw.deck") && [...mine.options].some((o) => o.value === load("cw.deck")) ? load("cw.deck") : mine.options[0]?.value ?? "";
 }
 
-/** The kinds of bot the server offers; an older server without /api/bots keeps the plain "Random". */
+/** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
 function fillBots({ default: first, bots }) {
   const sel = $("bot");
-  sel.replaceChildren(...bots.map((name) => new Option(name[0].toUpperCase() + name.slice(1), name === first ? "" : name)));
+  sel.replaceChildren(...bots.map((name) => new Option(name[0].toUpperCase() + name.slice(1), name)));
   const saved = load("cw.bot");
-  if (saved && bots.includes(saved)) sel.value = saved;
+  sel.value = bots.includes(saved) ? saved : bots.includes("heuristic") ? "heuristic" : first;
 }
 
 async function loadCatalog() {
