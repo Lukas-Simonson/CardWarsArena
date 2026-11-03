@@ -24,6 +24,8 @@ type Creature struct {
 	Silenced     bool   `json:"silenced,omitempty"`
 	Lent         string `json:"lent,omitempty"`
 	ChangedLanes bool   `json:"changed_lanes,omitempty"`
+	// Types, when set, are the Landscape types it has now instead of its card's own.
+	Types []card.Landscape `json:"types,omitempty"`
 }
 
 // Building is a Building in play.
@@ -38,18 +40,22 @@ type Lane struct {
 	FaceDown  bool           `json:"face_down"`
 	Creature  *Creature      `json:"creature,omitempty"`
 	Building  *Building      `json:"building,omitempty"`
+	// Extra are the Buildings here besides Building (Burly Lumberjack).
+	Extra []Building `json:"extra,omitempty"`
 }
 
 // Player is one seat. Hand is only filled in for the viewer's own seat.
 type Player struct {
-	HP         int                   `json:"hp"`
-	DeckCount  int                   `json:"deck_count"`
-	HandCount  int                   `json:"hand_count"`
-	Hand       []engine.Instance     `json:"hand,omitempty"`
-	Discard    []engine.Instance     `json:"discard"` // public
-	Lanes      [engine.NumLanes]Lane `json:"lanes"`
-	Kept       bool                  `json:"kept"`
-	Mulliganed bool                  `json:"mulliganed"`
+	HP        int               `json:"hp"`
+	DeckCount int               `json:"deck_count"`
+	HandCount int               `json:"hand_count"`
+	Hand      []engine.Instance `json:"hand,omitempty"`
+	// RainbowHand lists the UIDs of the cards in Hand that are Rainbow cards this turn.
+	RainbowHand []int                 `json:"rainbow_hand,omitempty"`
+	Discard     []engine.Instance     `json:"discard"` // public
+	Lanes       [engine.NumLanes]Lane `json:"lanes"`
+	Kept        bool                  `json:"kept"`
+	Mulliganed  bool                  `json:"mulliganed"`
 }
 
 // Choice is a decision some player must make before the game goes on. Both
@@ -121,6 +127,9 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	}
 	if ch := st.Choice; ch != nil {
 		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...)}
+		if ch.Kind == engine.ChoiceSearch && ch.Player != viewer {
+			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
+		}
 	}
 	for p := engine.PlayerID(0); p < 2; p++ {
 		src := &st.Players[p]
@@ -134,6 +143,11 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 		}
 		if p == viewer {
 			pv.Hand = append([]engine.Instance{}, src.Hand...)
+			for _, in := range src.Hand {
+				if g.IsRainbowInHand(in.UID) {
+					pv.RainbowHand = append(pv.RainbowHand, in.UID)
+				}
+			}
 		}
 		for i, l := range src.Lanes {
 			lv := Lane{Landscape: l.Landscape, FaceDown: l.FaceDown}
@@ -150,9 +164,15 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 					Lent:         c.Lent,
 					ChangedLanes: c.ChangedLanes,
 				}
+				if types := g.CreatureTypes(p, i); len(types) != 1 || types[0] != g.Card(c.Instance).Landscape {
+					lv.Creature.Types = types
+				}
 			}
 			if b := l.Building; b != nil {
 				lv.Building = &Building{Instance: b.Instance, Status: string(b.Status)}
+			}
+			for _, b := range l.Extra {
+				lv.Extra = append(lv.Extra, Building{Instance: b.Instance, Status: string(b.Status)})
 			}
 			pv.Lanes[i] = lv
 		}

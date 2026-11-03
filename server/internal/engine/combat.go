@@ -58,39 +58,67 @@ func (g *Game) validateAttack(p PlayerID, a Action) error {
 	return nil
 }
 
-// doAttack Activates p's Creature in a.Lane to Fight.
+// doAttack Activates p's Creature in a.Lane to Fight. Effects of the attack
+// itself come first; one of them may stop to ask who fights (Pied Piper), and
+// the Fight goes on once that is answered.
 func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	att := g.State.Players[p].Lanes[a.Lane].Creature
 	att.Status = Fought
 	ev := []Event{{Kind: EvAttack, Player: p, Card: att.UID, Lane: a.Lane}}
+	ctx := effCtx{p: p, at: pos{p, a.Lane}, hasSrc: true, creature: att}
+	ev = append(ev, g.fire(card.OnAttacks, ctx, g.effectsOf(att), nil)...)
+	if g.State.Choice != nil {
+		return ev
+	}
+	return append(ev, g.fight(p, a.Lane, a.Lane)...)
+}
 
+// fight resolves a Fight in lane between the Creature of p in fromLane, which
+// is normally the one in lane, and the opposing Creature there. It then ends
+// the turn if nothing is left to Fight.
+func (g *Game) fight(p PlayerID, lane, fromLane int) []Event {
+	var ev []Event
+	from := pos{p, fromLane}
+	att := g.creatureAt(from)
 	opp := p.Opp()
-	def := g.State.Players[opp].Lanes[a.Lane].Creature
+	def := g.State.Players[opp].Lanes[lane].Creature
 	if def == nil {
 		// Nothing in the way: the Creature hits the opposing Hero.
-		if dmg := g.atk(pos{p, a.Lane}); dmg > 0 {
+		if dmg := g.atk(from); dmg > 0 {
 			g.State.Players[opp].HP -= dmg
-			ev = append(ev, Event{Kind: EvHPLoss, Player: opp, Lane: a.Lane, Amount: dmg})
+			ev = append(ev, Event{Kind: EvHPLoss, Player: opp, Lane: lane, Amount: dmg})
 			g.heroDamage = dmg
-			ctx := effCtx{p: p, at: pos{p, a.Lane}, hasSrc: true, creature: att}
+			ctx := effCtx{p: p, at: from, hasSrc: true, creature: att}
 			ev = append(ev, g.fire(card.OnHeroDamage, ctx, g.effectsOf(att), nil)...)
+			ev = append(ev, g.fire(card.OnDealsDamage, ctx, g.effectsOf(att), nil)...)
 		}
 	} else {
 		// Both Creatures deal damage to each other simultaneously.
-		toDef, toAtt := g.atk(pos{p, a.Lane}), g.atk(pos{opp, a.Lane})
+		toDef, toAtt := g.atk(from), g.atk(pos{opp, lane})
 		if g.State.NoCombatDamage[opp] {
 			toDef = 0 // Falling Star
 		}
 		if g.State.NoCombatDamage[p] {
 			toAtt = 0
 		}
-		def.Damage += toDef
-		att.Damage += toAtt
+		defAt := pos{opp, lane}
+		toDef, toAtt = g.hurt(defAt, toDef), g.hurt(from, toAtt)
 		if toDef > 0 {
-			ev = append(ev, Event{Kind: EvDamage, Player: opp, Card: def.UID, Lane: a.Lane, Amount: toDef})
+			ev = append(ev, Event{Kind: EvDamage, Player: opp, Card: def.UID, Lane: lane, Amount: toDef})
 		}
 		if toAtt > 0 {
-			ev = append(ev, Event{Kind: EvDamage, Player: p, Card: att.UID, Lane: a.Lane, Amount: toAtt})
+			ev = append(ev, Event{Kind: EvDamage, Player: p, Card: att.UID, Lane: fromLane, Amount: toAtt})
+		}
+		for _, d := range []struct {
+			at     pos
+			dealt  int
+			dealer *Creature
+		}{{from, toDef, att}, {defAt, toAtt, def}} {
+			if d.dealt > 0 {
+				g.heroDamage = d.dealt
+				ctx := effCtx{p: d.at.P, at: d.at, hasSrc: true, creature: d.dealer}
+				ev = append(ev, g.fire(card.OnDealsDamage, ctx, g.effectsOf(d.dealer), nil)...)
+			}
 		}
 	}
 
@@ -102,6 +130,17 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 		ev = append(ev, g.endTurn(p)...)
 	}
 	return ev
+}
+
+// hurt puts damage on the Creature at at and returns how much went on:
+// Blood Castle raises every amount it sees.
+func (g *Game) hurt(at pos, amt int) int {
+	if amt > 0 {
+		amt += g.staticMod("damage_taken", at)
+	}
+	amt = max(amt, 0)
+	g.creatureAt(at).Damage += amt
+	return amt
 }
 
 // settle applies state-based rules: Creatures with damage >= DEF are
@@ -153,6 +192,7 @@ func (g *Game) endTurn(p PlayerID) []Event {
 		}
 	}
 	g.State.SpellsThisTurn = 0
+	g.State.Played, g.State.RainbowHand = nil, nil
 	g.State.Entered = [2][NumLanes]int{}
 	g.State.CreatureDiscount = 0
 	g.State.NoCombatDamage = [2]bool{}
@@ -161,7 +201,7 @@ func (g *Game) endTurn(p PlayerID) []Event {
 			l := &g.State.Players[i].Lanes[lane]
 			l.ReplaceDiscount = 0
 			if c := l.Creature; c != nil {
-				c.TempATK, c.TempDEF, c.ChangedLanes, c.Replaced = 0, 0, false, false
+				c.TempATK, c.TempDEF, c.ChangedLanes, c.Replaced, c.Rainbow = 0, 0, false, false, false
 				c.Silenced, c.Lent = false, ""
 				c.Fired = nil
 			}

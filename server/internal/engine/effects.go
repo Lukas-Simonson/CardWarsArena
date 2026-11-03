@@ -2,6 +2,7 @@ package engine
 
 import (
 	"math/rand/v2"
+	"slices"
 
 	"cardwars/internal/card"
 )
@@ -86,8 +87,9 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 			switch spec.What {
 			case "creature":
 				if cr := l.Creature; cr != nil && !(cr.Shielded && p != c.p) {
-					ok = (spec.Landscape == "" || g.Card(cr.Instance).Landscape == spec.Landscape) &&
-						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped)
+					ok = (spec.Landscape == "" || g.isType(pos{p, lane}, spec.Landscape)) &&
+						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
+						(!spec.Ready || cr.Status == Ready) && (!spec.Damaged || cr.Damage > 0)
 				}
 			case "building":
 				ok = l.Building != nil
@@ -362,9 +364,8 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "damage_creature":
 			for _, at := range g.creaturesFor(op, c, given) {
 				cr := g.creatureAt(at)
-				cr.Damage += amt
-				if amt > 0 {
-					ev = append(ev, Event{Kind: EvDamage, Player: at.P, Card: cr.UID, Lane: at.Lane, Amount: amt})
+				if dealt := g.hurt(at, amt); dealt > 0 {
+					ev = append(ev, Event{Kind: EvDamage, Player: at.P, Card: cr.UID, Lane: at.Lane, Amount: dealt})
 				}
 			}
 		case "heal_creature":
@@ -436,8 +437,48 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 		case "discard_choice":
 			for _, p := range g.whoList(op.Who, c.p) {
-				ev = append(ev, g.discardChoice(p, amt, c)...)
+				ev = append(ev, g.discardChoice(p, amt, c, op.RainbowActions)...)
 			}
+		case "exhaust":
+			for _, at := range g.creaturesFor(op, c, given) {
+				if cr := g.creatureAt(at); cr.Status == Ready {
+					cr.Status = Flooped
+				}
+			}
+		case "play_building":
+			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
+			if len(from) == 1 && len(to) == 1 && to[0].Player == c.p {
+				if in, ok := g.inDiscard(from[0].Player, from[0].Card); ok && g.Card(in).Type == card.Building {
+					g.takeFromDiscard(from[0].Player, in.UID)
+					ev = append(ev, g.putBuilding(c.p, in, to[0].Lane)...)
+				}
+			}
+		case "search_building":
+			if refs := slotRefs(op.Slot, given); len(refs) == 1 {
+				g.searchBuilding(c.p, refs[0].Lane, c)
+			}
+		case "move_damage":
+			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
+			if len(from) == 1 && len(to) == 1 && from[0].Player == c.p && to[0].Player == c.p {
+				ev = append(ev, g.startMoveDamage(c.p, from[0].Lane, to[0].Lane, c)...)
+			}
+		case "make_rainbow":
+			for _, at := range g.creaturesFor(op, c, given) {
+				g.creatureAt(at).Rainbow = true
+			}
+		case "rainbow_hand":
+			for _, r := range slotRefs(op.Slot, given) {
+				if !slices.Contains(g.State.RainbowHand, r.Card) {
+					g.State.RainbowHand = append(g.State.RainbowHand, r.Card)
+				}
+				ev = append(ev, Event{Kind: EvReveal, Player: r.Player, Card: r.Card})
+			}
+		case "rebound":
+			if cr := c.creature; cr != nil && len(g.State.Players[cr.Owner].Hand) > 0 {
+				g.ask(Choice{Player: cr.Owner, Kind: ChoiceRebound, Card: c.cardID(), SourceUID: cr.UID})
+			}
+		case "redirect_attack":
+			ev = append(ev, g.askRedirect(c)...)
 		case "may":
 			if c.creature != nil {
 				c.creature.Offered = append(c.creature.Offered, Offer{Targets: op.Targets, Then: op.Then})
@@ -494,9 +535,8 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "destroy_building":
 			for _, r := range slotRefs(op.Slot, given) {
 				l := &g.State.Players[r.Player].Lanes[r.Lane]
-				if b := l.Building; b != nil {
+				if b := l.takeBuilding(); b != nil {
 					g.State.Players[b.Owner].Discard = append(g.State.Players[b.Owner].Discard, b.Instance)
-					l.Building = nil
 					ev = append(ev, Event{Kind: EvDestroy, Player: r.Player, Card: b.UID, Lane: r.Lane})
 				}
 			}
@@ -545,7 +585,7 @@ func (g *Game) mill(p PlayerID, n int) []Event {
 
 // discardChoice makes p discard n cards from their hand, by their own choice.
 // When they would have to discard their whole hand there is nothing to choose.
-func (g *Game) discardChoice(p PlayerID, n int, c effCtx) []Event {
+func (g *Game) discardChoice(p PlayerID, n int, c effCtx, bonus int) []Event {
 	pl := &g.State.Players[p]
 	n = min(n, len(pl.Hand))
 	if n <= 0 {
@@ -554,11 +594,108 @@ func (g *Game) discardChoice(p PlayerID, n int, c effCtx) []Event {
 	if n == len(pl.Hand) {
 		var ev []Event
 		for len(pl.Hand) > 0 {
-			ev = append(ev, g.discardFromHand(p, pl.Hand[0].UID)...)
+			ev = append(ev, g.discardForBonus(p, pl.Hand[0].UID, bonus)...)
 		}
 		return ev
 	}
-	g.ask(Choice{Player: p, Kind: ChoiceDiscard, Card: c.cardID(), Count: n})
+	g.ask(Choice{Player: p, Kind: ChoiceDiscard, Card: c.cardID(), Count: n, Bonus: bonus})
+	return nil
+}
+
+// discardForBonus discards a card from hand; if bonus is set and the card is
+// a Rainbow card, p gains that many Actions (Fiddling Ferret).
+func (g *Game) discardForBonus(p PlayerID, uid, bonus int) []Event {
+	rainbow := false
+	for _, in := range g.State.Players[p].Hand {
+		if in.UID == uid {
+			rainbow = g.rainbowCard(in)
+		}
+	}
+	ev := g.discardFromHand(p, uid)
+	if bonus > 0 && rainbow && len(ev) > 0 {
+		g.State.ActionsLeft += bonus
+		ev = append(ev, Event{Kind: EvActions, Player: p, Amount: bonus})
+	}
+	return ev
+}
+
+// putBuilding puts a Building that is not coming from the hand into play.
+func (g *Game) putBuilding(p PlayerID, in Instance, lane int) []Event {
+	ev := g.place(p, in, lane)
+	ev = append(ev, Event{Kind: EvPlay, Player: p, Card: in.UID, Lane: lane})
+	return append(ev, g.fire(card.OnEnterPlay, g.placedCtx(p, lane), g.Card(in).Effects, nil)...)
+}
+
+// inDiscard finds a card in p's discard pile.
+func (g *Game) inDiscard(p PlayerID, uid int) (Instance, bool) {
+	for _, in := range g.State.Players[p].Discard {
+		if in.UID == uid {
+			return in, true
+		}
+	}
+	return Instance{}, false
+}
+
+// searchBuilding (Deforestation) lets p pick a Building from their deck to put
+// into play in a Lane. The deck is shuffled afterwards, even if there was none.
+func (g *Game) searchBuilding(p PlayerID, lane int, c effCtx) {
+	pl := &g.State.Players[p]
+	var found []Instance
+	for _, in := range pl.Deck {
+		if g.Card(in).Type == card.Building {
+			found = append(found, in)
+		}
+	}
+	if len(found) == 0 {
+		g.shuffle(pl.Deck)
+		return
+	}
+	g.ask(Choice{Player: p, Kind: ChoiceSearch, Card: c.cardID(), Lane: lane, Revealed: found})
+}
+
+// startMoveDamage (Friendship Bracelet) moves damage from p's Creature in
+// one Lane to their Creature in another. With a choice of amounts, p is asked.
+func (g *Game) startMoveDamage(p PlayerID, from, to int, c effCtx) []Event {
+	a, b := g.creatureAt(pos{p, from}), g.creatureAt(pos{p, to})
+	if a == nil || b == nil || a == b || a.Damage == 0 {
+		return nil
+	}
+	if a.Damage == 1 {
+		return g.moveDamage(p, from, to, 1)
+	}
+	g.ask(Choice{Player: p, Kind: ChoiceMoveDamage, Card: c.cardID(), Lane: from, Other: to, Count: a.Damage})
+	return nil
+}
+
+// moveDamage takes n damage off p's Creature in from and puts it on the one in to.
+func (g *Game) moveDamage(p PlayerID, from, to, n int) []Event {
+	a, b := g.creatureAt(pos{p, from}), g.creatureAt(pos{p, to})
+	if a == nil || b == nil || n < 1 || n > a.Damage {
+		return nil
+	}
+	a.Damage -= n
+	b.Damage += n
+	return []Event{
+		{Kind: EvHeal, Player: p, Card: a.UID, Lane: from, Amount: n},
+		{Kind: EvDamage, Player: p, Card: b.UID, Lane: to, Amount: n},
+	}
+}
+
+// askRedirect (Pied Piper): when the Creature that attacks fights a Creature,
+// its controller may pick a Flooped Creature of theirs to fight it instead.
+func (g *Game) askRedirect(c effCtx) []Event {
+	if !c.hasSrc || g.creatureAt(pos{c.p.Opp(), c.at.Lane}) == nil {
+		return nil
+	}
+	var cands []Instance
+	for lane, l := range g.State.Players[c.p].Lanes {
+		if cr := l.Creature; cr != nil && cr.Status == Flooped && lane != c.at.Lane {
+			cands = append(cands, cr.Instance)
+		}
+	}
+	if len(cands) > 0 {
+		g.ask(Choice{Player: c.p, Kind: ChoiceRedirect, Card: c.cardID(), Lane: c.at.Lane, Revealed: cands})
+	}
 	return nil
 }
 
@@ -708,7 +845,11 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 		owner.Discard = append(owner.Discard, cr.Instance)
 	}
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
-	return append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
+	ev = append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
+	if to == toDiscard {
+		ev = append(ev, g.fire(card.OnDiscarded, ctx, g.effectsOf(cr), nil)...)
+	}
+	return ev
 }
 
 // moveCreature moves a Creature to an empty Lane. Within one side that is a
@@ -740,7 +881,7 @@ func (g *Game) moveBuilding(from pos, lane int) []Event {
 	if b == nil || lane == from.Lane || pl.Lanes[lane].Building != nil {
 		return nil
 	}
-	pl.Lanes[from.Lane].Building = nil
+	pl.Lanes[from.Lane].takeBuilding()
 	pl.Lanes[lane].Building = b
 	return []Event{{Kind: EvMove, Player: from.P, Card: b.UID, Lane: lane}}
 }

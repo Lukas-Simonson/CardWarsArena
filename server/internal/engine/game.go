@@ -116,6 +116,11 @@ func (g *Game) Clone() *Game {
 				v := *b
 				dst.Lanes[i].Building = &v
 			}
+			dst.Lanes[i].Extra = nil
+			for _, b := range src.Lanes[i].Extra {
+				v := *b
+				dst.Lanes[i].Extra = append(dst.Lanes[i].Extra, &v)
+			}
 		}
 	}
 	if g.State.Choice != nil {
@@ -124,6 +129,11 @@ func (g *Game) Clone() *Game {
 		c.State.Choice = &ch
 	}
 	c.State.Queue = append([]Choice(nil), g.State.Queue...)
+	for i := range c.State.Queue {
+		c.State.Queue[i].Revealed = append([]Instance(nil), c.State.Queue[i].Revealed...)
+	}
+	c.State.Played = append([]PlayedCard(nil), g.State.Played...)
+	c.State.RainbowHand = append([]int(nil), g.State.RainbowHand...)
 	return &c
 }
 
@@ -149,6 +159,7 @@ func (g *Game) draw(p PlayerID, n int) []Instance {
 	drawn := append([]Instance(nil), pl.Deck[:n]...)
 	pl.Deck = pl.Deck[n:]
 	pl.Hand = append(pl.Hand, drawn...)
+	g.State.Drawn[p] += n
 	return drawn
 }
 
@@ -258,6 +269,7 @@ func (g *Game) mulligan(p PlayerID) []Event {
 func (g *Game) startTurn(p PlayerID) []Event {
 	st := &g.State
 	g.clearOffers()
+	st.Drawn = [2]int{}
 	st.Turn++
 	st.Active = p
 	st.Phase = PhaseMain

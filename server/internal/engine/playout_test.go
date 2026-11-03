@@ -82,8 +82,8 @@ func (g *Game) checkInvariants(total [2]int) error {
 					return fmt.Errorf("negative damage")
 				}
 			}
-			if l.Building != nil {
-				if err := count(l.Building.Instance, "building"); err != nil {
+			for _, b := range l.buildings() {
+				if err := count(b.Instance, "building"); err != nil {
 					return err
 				}
 			}
@@ -101,6 +101,9 @@ func (g *Game) checkInvariants(total [2]int) error {
 		}
 	}
 	for _, ch := range append(append([]Choice{}, st.Queue...), ptrVal(st.Choice)...) {
+		if ch.Kind != ChoiceReveal {
+			continue // other choices list cards that sit in a deck or on the board
+		}
 		for _, in := range ch.Revealed {
 			if err := count(in, "revealed"); err != nil {
 				return err
@@ -113,7 +116,7 @@ func (g *Game) checkInvariants(total [2]int) error {
 	if st.ActionsLeft < 0 { // effects such as Ancient Scholar can grant extra Actions
 		return fmt.Errorf("actions left %d", st.ActionsLeft)
 	}
-	if st.Phase == PhaseFight && !g.hasAttacker(st.Active) {
+	if st.Phase == PhaseFight && st.Choice == nil && !g.hasAttacker(st.Active) { // a Choice may be holding up a Fight
 		return fmt.Errorf("fight phase with nothing Ready: the turn should have ended")
 	}
 	return nil

@@ -117,9 +117,13 @@ A player:
                "creature": { "uid":7,"card":"cool-dog","owner":0,
                              "damage":2,"status":"ready",   // ready | flooped | fought
                              "attack":2,"defense":7,         // current values, modifiers included
-                             "protected":false,"stolen":false,"silenced":false,"lent":"","changed_lanes":false },
-               "building": { "uid":8,"card":"blood-fortress","owner":0,"status":"ready" } } ] }  // 4 lanes
+                             "protected":false,"stolen":false,"silenced":false,"lent":"","changed_lanes":false,
+                             "types":["rainbow"] },          // only when its Landscape types are not its card's own
+               "building": { "uid":8,"card":"blood-fortress","owner":0,"status":"ready" },
+               "extra": [ { "uid":9,"card":"farmhouse","owner":0,"status":"ready" } ] } ] }  // 4 lanes; extra only with Burly Lumberjack
 ```
+
+`rainbow_hand` (your seat only) lists the uids in `hand` that are Rainbow cards until the end of the turn (Woadic Weirdo).
 
 Lane index 0–3 is the same Lane on both sides: `players[0].lanes[2]` faces
 `players[1].lanes[2]`. **Hidden information is absent, not hidden**: the
@@ -168,6 +172,10 @@ every other action is refused (`illegal_action`) until they answer.
 | `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
 | `upkeep` | discard `count` cards from your hand, or destroy the card that asks (Steakchop) | `choose` with `card` = a hand uid, or `choose` with no `card` to destroy it. After the first discard it becomes a `discard` choice |
 | `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
+| `search` | the Buildings in your deck, `revealed` (only the decider is sent them): pick one to put into play, then the deck is shuffled (Deforestation) | `choose` with `card` = the revealed uid |
+| `rebound` | discard a card from your hand to return the card that asks from your discard pile to your hand (Impossible Possum) | `choose` with `card` = a hand uid, or `choose` with no `card` to leave it |
+| `redirect` | the Creature that attacked may be replaced by one of your Flooped Creatures, `revealed` (Pied Piper); the Fight waits for the answer | `choose` with `card` = the Flooped Creature's uid, or `choose` with no `card` to fight with the attacker |
+| `move_damage` | move damage between two of your Creatures; `count` is the most you may move (Friendship Bracelet) | `choose` with `card` = how much, 1 to `count` |
 
 As always, send one of the objects in `view.legal`.
 
@@ -186,7 +194,7 @@ same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`. Events are for
+`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown). Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Running

@@ -1,6 +1,10 @@
 package engine
 
-import "cardwars/internal/card"
+import (
+	"slices"
+
+	"cardwars/internal/card"
+)
 
 // requireMain checks that p may act in the main phase.
 func (g *Game) requireMain(p PlayerID) error {
@@ -66,7 +70,7 @@ func (g *Game) costFor(p PlayerID, c *card.Card, lane int) (actions, lands int) 
 // both the number of Actions paid and the number of face-up Landscapes of the
 // card's type required. Rainbow and 0-cost cards need no Landscape, and 0-cost
 // cards need no Actions, so they remain playable after Actions are spent.
-func (g *Game) canAfford(p PlayerID, c *card.Card, lane int) error {
+func (g *Game) canAfford(p PlayerID, in Instance, c *card.Card, lane int) error {
 	if c.Cost == nil {
 		return ErrNotPlayable
 	}
@@ -74,7 +78,7 @@ func (g *Game) canAfford(p PlayerID, c *card.Card, lane int) error {
 	if g.State.ActionsLeft < actions {
 		return ErrNoActions
 	}
-	if lands > 0 && c.Landscape != card.Rainbow && g.faceUp(p, c.Landscape) < lands {
+	if lands > 0 && !g.rainbowCard(in) && g.landscapeCount(p, c.Landscape) < lands {
 		return ErrLandscapes
 	}
 	return nil
@@ -109,7 +113,7 @@ func (g *Game) checkPlayable(p PlayerID, a Action) (Instance, *card.Card, error)
 	if c.Type != card.Spell && (a.Lane < 0 || a.Lane >= NumLanes) {
 		return in, c, ErrBadLane
 	}
-	if err := g.canAfford(p, c, a.Lane); err != nil {
+	if err := g.canAfford(p, in, c, a.Lane); err != nil {
 		return in, c, err
 	}
 	if !g.conditionsMet(p, c) {
@@ -189,11 +193,16 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 	lane := &pl.Lanes[laneIdx]
 	var ev []Event
 	if g.Card(in).Type == card.Building {
-		if old := lane.Building; old != nil {
+		b := &Building{Instance: in, Status: Ready}
+		if lane.Building != nil && g.allowsExtraBuildings(pos{p, laneIdx}) {
+			lane.Extra = append(lane.Extra, b) // Burly Lumberjack: this one stays beside the others
+			return ev
+		}
+		for _, old := range lane.dropBuildings() {
 			g.State.Players[old.Owner].Discard = append(g.State.Players[old.Owner].Discard, old.Instance)
 			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
 		}
-		lane.Building = &Building{Instance: in, Status: Ready}
+		lane.Building = b
 		return ev
 	}
 	replaced := lane.Creature != nil
@@ -224,6 +233,8 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	in := pl.Hand[idx]
 	pl.Hand = append(pl.Hand[:idx:idx], pl.Hand[idx+1:]...)
 	c := g.Card(in)
+	rainbow := g.rainbowCard(in) // judged before the card leaves hand, which ends Weirdo's spell on it
+	g.State.RainbowHand = slices.DeleteFunc(g.State.RainbowHand, func(uid int) bool { return uid == in.UID })
 	actions, _ := g.costFor(p, c, a.Lane)
 	g.State.ActionsLeft -= actions
 	if c.Type == card.Creature {
@@ -234,7 +245,15 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	if ce := costEffect(c); ce != nil {
 		costEv = g.runOps(ce.Do, effCtx{p: p, playing: a.Card}, a.CostTargets)
 	}
+	g.State.Played = append(g.State.Played, PlayedCard{CardID: in.CardID, Rainbow: rainbow})
 	return append(costEv, g.resolvePlay(p, in, c, a)...)
+}
+
+// allowsExtraBuildings reports whether the Creature in a Lane lets more
+// Buildings be played there without replacing the one that is there.
+func (g *Game) allowsExtraBuildings(at pos) bool {
+	cr := g.creatureAt(at)
+	return cr != nil && hasRestrict(g.effectsOf(cr), card.RestrictExtraBuildings)
 }
 
 // resolvePlay puts a paid-for card into play, or resolves a Spell.

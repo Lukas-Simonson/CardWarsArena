@@ -74,6 +74,9 @@ type Creature struct {
 	// Shielded Creatures cannot be targeted by the opponent or attacked until
 	// their controller's next turn starts (Cave of Solitude).
 	Shielded bool `json:"shielded,omitempty"`
+	// Rainbow means the Creature has lost its Landscape type and is a Rainbow
+	// Creature until the end of the turn (Puppy Parade).
+	Rainbow bool `json:"rainbow,omitempty"`
 	// Fired lists the once-per-turn triggers and the uses of limited
 	// abilities this turn, by the index of the effect.
 	Fired []int `json:"fired,omitempty"`
@@ -91,6 +94,9 @@ type Lane struct {
 	FaceDown  bool           `json:"face_down"`
 	Creature  *Creature      `json:"creature,omitempty"`
 	Building  *Building      `json:"building,omitempty"`
+	// Extra holds the Buildings played here besides Building while a Creature
+	// allowed it (Burly Lumberjack). They stay if that Creature leaves.
+	Extra []*Building `json:"extra,omitempty"`
 	// ReplaceDiscount is how many Actions replacing the Creature here costs
 	// less this turn (Pyramidia).
 	ReplaceDiscount int `json:"replace_discount,omitempty"`
@@ -130,6 +136,14 @@ type State struct {
 	// NoCombatDamage[p] means p's Creatures take no damage from opposing
 	// Creatures this turn (Falling Star).
 	NoCombatDamage [2]bool `json:"no_combat_damage,omitempty"`
+	// Played lists the cards the active player has played this turn, for
+	// "if you played a Rainbow card" and "for each Dog or Puppy" rules.
+	Played []PlayedCard `json:"played,omitempty"`
+	// Drawn counts the cards each player has drawn this turn.
+	Drawn [2]int `json:"drawn,omitempty"`
+	// RainbowHand holds the UIDs of hand cards that are Rainbow cards until the
+	// end of the turn (Woadic Weirdo).
+	RainbowHand []int `json:"rainbow_hand,omitempty"`
 	// Choice is a decision someone must make before anything else happens;
 	// Queue holds those that arose while it was open.
 	Choice *Choice  `json:"choice,omitempty"`
@@ -147,7 +161,21 @@ const (
 	ChoiceDiscard = "discard" // a player picks cards from their hand to discard
 	ChoiceReveal  = "reveal"  // a player picks one of the revealed cards; the rest are discarded
 	ChoiceUpkeep  = "upkeep"  // discard cards, or (Card 0) destroy the Creature that asks (Steakchop)
+	// search: pick a Building out of your deck to put into play (Deforestation)
+	ChoiceSearch = "search"
+	// rebound: discard a card to return the Creature that asks to your hand, or (Card 0) not (Impossible Possum)
+	ChoiceRebound = "rebound"
+	// redirect: pick the Flooped Creature that fights instead, or (Card 0) the one that attacked (Pied Piper)
+	ChoiceRedirect = "redirect"
+	// move_damage: pick how much damage to move from one of your Creatures to another (Friendship Bracelet)
+	ChoiceMoveDamage = "move_damage"
 )
+
+// PlayedCard is a card played this turn, as it was when it was played.
+type PlayedCard struct {
+	CardID  string `json:"card"`
+	Rainbow bool   `json:"rainbow,omitempty"` // a Rainbow card at the time, however it got to be
+}
 
 // Choice is a decision that stops the game until a player makes it. It is
 // the general form of Pending: the player who must decide need not be the
@@ -162,6 +190,11 @@ type Choice struct {
 	// once the player starts discarding.
 	Lane      int `json:"lane,omitempty"`
 	SourceUID int `json:"source_uid,omitempty"`
+	// Other is a second Lane: where search puts the Building is Lane; for
+	// move_damage Lane is the Creature the damage leaves and Other the one it goes to.
+	Other int `json:"other,omitempty"`
+	// Bonus, on a discard Choice, is the Actions gained if a Rainbow card is discarded.
+	Bonus int `json:"bonus,omitempty"`
 	// reveal: the cards shown, out of the deck until the choice is made. The
 	// chosen one goes to the bottom of the deck and the rest are discarded.
 	Revealed []Instance `json:"revealed,omitempty"`
