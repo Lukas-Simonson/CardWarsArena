@@ -8,6 +8,7 @@ import { isMyDecision } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
 import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
 import { Pacer } from "./pacer.js";
+import { preloadArt } from "./preload.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -58,6 +59,7 @@ function onServerMessage(msg) {
 function dispatch(msg) {
   const before = state;
   state = reduce(state, msg, cards);
+  if (msg.view) preloadArt(msg.view.preload, cards);
   if (msg.type === "update") resetSelection(); // the position changed: old clicks no longer apply
   if (msg.type === "update" && before.view && state.seq !== before.seq) pendingFx = { seq: state.seq, prev: before.view, events: msg.events ?? [] };
   if (msg.type === "joined") sstore("cw.session", JSON.stringify({ server, room: msg.room, token: msg.token }));

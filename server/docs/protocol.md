@@ -97,6 +97,7 @@ current `seq` and no events.
   "you": 0, "phase": "main", "turn": 4, "active": 0, "first": 1,
   "actions_left": 2, "spells_this_turn": 0,
   "over": false, "winner": 1,            // winner only when over
+  "preload": ["cool-dog", "the-pig"],   // card ids whose art to fetch early (see "Hidden information")
   "awaiting": [0],                       // seats that must decide now (both, during mulligan)
   "pending": {"uid":9,"card":"cool-dog","owner":1},  // Silo of Truth: must be played first
   "choice": {"player":1,"kind":"discard","card":"abraca-amadeus","count":2},  // see "Choices"
@@ -124,6 +125,15 @@ Lane index 0–3 is the same Lane on both sides: `players[0].lanes[2]` faces
 `players[1].lanes[2]`. **Hidden information is absent, not hidden**: the
 opponent has `hand_count` but no `hand`, and neither deck's contents are sent.
 Opponent draws arrive as events with `card: 0`.
+
+### Hidden information: `preload`
+
+The one place hidden cards are named is `preload`, a list of card ids that lets the client
+fetch their art before it is needed: the opponent's hand and your next 3 draws, together, with
+repeats removed and sorted, so nothing says which card is which or in what order. Whoever reads
+the traffic still learns that those cards are somewhere in the opponent's hand or on top of
+their own deck. This is a deliberate trade for faster-loading art, not an oversight. Without
+it nothing would be known until a card is played or drawn. Drop the field to remove the leak.
 
 ## Actions
 

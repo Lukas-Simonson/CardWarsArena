@@ -34,3 +34,13 @@ Changes go through a branch and a pull request, with
 [Conventional Commits](https://www.conventionalcommits.org/) messages and
 [Conventional Branches](https://conventional-branch.github.io/) names (`feat/...`, `fix/...`).
 Issues for either half go in this repository.
+
+## Known limitations
+
+- **Card art preloading names hidden cards.** To have art ready before a card is played or drawn,
+  the server sends each player a `preload` list of card ids: the opponent's hand plus your next
+  3 draws, mixed, de-duplicated and sorted so it does not say which is which. A modified client,
+  or anyone reading the network traffic, can still learn that those cards are in the opponent's
+  hand or on top of the deck. Everything else hidden (hands, deck order) is never sent. It is a
+  deliberate trade for faster loading; see `server/docs/protocol.md` ("Hidden information") and
+  remove the field if it matters for your games.

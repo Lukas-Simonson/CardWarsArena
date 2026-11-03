@@ -1,9 +1,13 @@
 // Package view builds what one player is allowed to see of a game. A client
 // is only ever sent a View, never the engine state: the opponent's hand and
-// both decks are absent from it, not merely hidden.
+// both decks are absent from it, not merely hidden. The one exception is the
+// Preload list of card ids, which lets a client fetch card art early and so
+// names the opponent's hand and the viewer's next draws, unlabelled.
 package view
 
 import (
+	"sort"
+
 	"cardwars/internal/card"
 	"cardwars/internal/engine"
 )
@@ -74,6 +78,10 @@ type View struct {
 	Players        [2]Player        `json:"players"` // indexed by seat
 	Pending        *engine.Instance `json:"pending,omitempty"`
 	Choice         *Choice          `json:"choice,omitempty"`
+	// Preload names cards whose art the client may fetch ahead of time: the
+	// opponent's hand and the viewer's next draws, mixed together and sorted so
+	// nothing says which is which. See docs/protocol.md for what this gives away.
+	Preload []string `json:"preload"`
 	// Legal lists what the viewer may do right now (empty when it is not
 	// their decision). Long target lists are capped; see docs/protocol.md.
 	Legal []engine.Action `json:"legal"`
@@ -93,6 +101,7 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 		Over:           st.Phase == engine.PhaseOver,
 		Awaiting:       []int{},
 		Legal:          []engine.Action{},
+		Preload:        preloadHints(st, viewer),
 	}
 	if v.Over {
 		w := int(st.Winner)
@@ -196,5 +205,27 @@ func FilterEvents(g *engine.Game, viewer engine.PlayerID, events []engine.Event)
 			out[i].CardID = names[e.Card]
 		}
 	}
+	return out
+}
+
+// preloadTop is how many of the viewer's next draws are hinted.
+const preloadTop = 3
+
+// preloadHints is the set of card ids behind the opponent's hand and the
+// viewer's top cards of deck, sorted and without repeats.
+func preloadHints(st *engine.State, viewer engine.PlayerID) []string {
+	seen := map[string]bool{}
+	for _, in := range st.Players[viewer.Opp()].Hand {
+		seen[in.CardID] = true
+	}
+	deck := st.Players[viewer].Deck
+	for i := 0; i < preloadTop && i < len(deck); i++ {
+		seen[deck[i].CardID] = true
+	}
+	out := make([]string, 0, len(seen))
+	for id := range seen {
+		out = append(out, id)
+	}
+	sort.Strings(out)
 	return out
 }
