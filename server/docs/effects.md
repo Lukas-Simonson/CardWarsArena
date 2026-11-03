@@ -189,5 +189,4 @@ stuck.
   give twice the bonus.
 - Cake and Fionna's Hero rules are not played by the engine (like every Hero).
 
-All six preconstructed decks of the first three sets (Finn's, Jake's, BMO's, Lady's, PB's and LSP's) are fully
-modelled, as are the cards of Cake's Deck and Fionna's Deck; those two are 39 cards each in the catalogue.
+All eight preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's and Fionna's) are fully modelled.

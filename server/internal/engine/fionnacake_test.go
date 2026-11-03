@@ -472,11 +472,13 @@ func TestImpossiblePossumCanStayInTheDiscardPile(t *testing.T) {
 	g.State.Active, g.State.Phase, g.State.Turn = 0, PhaseFight, 4
 	g.must(t, 0, Action{Kind: ActAttack, Lane: 0})
 	g.must(t, 1, Action{Kind: ActChoose})
-	for _, in := range g.State.Players[1].Hand {
+	for _, in := range g.State.Players[1].Discard {
 		if in.CardID == "impossible-possum" {
-			t.Fatal("it came back anyway")
+			goto stayed
 		}
 	}
+	t.Fatal("it did not stay in the discard pile")
+stayed:
 	if g.State.Choice != nil {
 		t.Error("the choice is still open")
 	}

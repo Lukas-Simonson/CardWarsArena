@@ -64,9 +64,7 @@ func TestFindAndPick(t *testing.T) {
 		t.Errorf("the full key should work too: %+v %v", byKey, err)
 	}
 	for _, d := range all {
-		// Every card is modelled and the deck has a Hero and Landscapes. The 39 cards of
-		// the Fionna vs Cake decks are one short of the minimum, so Ready is not asked.
-		if d.Modelled != d.Distinct || !d.LandOK || d.Hero == "" || (d.Set != "Fionna Vs Cake" && !d.Ready) {
+		if !d.Ready || !d.LandOK || d.Hero == "" {
 			t.Errorf("%s: ready=%v landscapes=%v hero=%q modelled=%d/%d", d.Key(), d.Ready, d.LandOK, d.Hero, d.Modelled, d.Distinct)
 		}
 	}

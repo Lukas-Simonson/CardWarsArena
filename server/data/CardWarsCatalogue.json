@@ -1710,9 +1710,9 @@
     "image" : "Lonely Panda.png",
     "name" : "Lonely Panda",
     "notes" : "",
-    "quantity" : 1,
+    "quantity" : 2,
     "sets" : {
-      "Fionna Vs Cake (Fionna)" : 1
+      "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Creature"
   },
@@ -1746,9 +1746,9 @@
     "image" : "Lumbercaddy.png",
     "name" : "Lumbercaddy",
     "notes" : "",
-    "quantity" : 1,
+    "quantity" : 2,
     "sets" : {
-      "Fionna Vs Cake (Cake)" : 1
+      "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Creature"
   },
