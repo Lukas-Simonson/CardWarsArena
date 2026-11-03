@@ -73,8 +73,8 @@ make it fast.
 
 ## Docker
 
-`docker-compose.yml` runs the game server and this client behind one port, so the
-browser sees a single origin (no CORS or `-origins` needed):
+`docker-compose.yml` in the repository root runs the game server and this client behind one
+port, so the browser sees a single origin (no CORS or `-origins` needed):
 
 ```bash
 docker compose up -d --build   # then open http://localhost:8088
