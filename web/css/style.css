@@ -191,7 +191,8 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .hbtn.pick .card { box-shadow: 0 0 0 4px #ff6b5a, 0 0 18px 6px rgba(255,107,90,.55); }
 .hbtn.off { opacity: .62; }
 .hbtn.rainbow .card { box-shadow: 0 0 0 3px #fff, 0 0 16px 5px rgba(255,92,200,.55), 0 0 22px 8px rgba(80,200,255,.4); }
-.strip .row .tag.more { background: #f5e3a3; }
+.stripgroup { display: flex; flex-direction: column; gap: 4px; }
+.strip.extra { height: 36px; }
 .acts { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 4px; }
 .acts .actcount { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .acts .orb { width: 52px; height: 52px; font-size: 30px; padding-top: 4px; box-shadow: 0 0 0 4px #7d9bb3, 0 0 0 6px var(--ink); }

@@ -227,14 +227,21 @@ function buildingStrip(m, seat, i, on) {
     if (b) on.onInspect(b.card);
   };
   const card = b && ctx.cards[b.card];
-  return h("button", {
+  const main = h("button", {
     type: "button", class: classes.join(" "), onclick: click, "data-seat": seat, "data-lane": i,
-    title: extra.length ? [b, ...extra].map((x) => cardName(ctx, x.card)).join(", ") : null,
     "aria-label": `${mine ? "Your" : "Opponent"} Building slot, Lane ${i + 1}${b ? `: ${[b, ...extra].map((x) => cardName(ctx, x.card)).join(", ")}` : ", empty"}`,
     onmouseenter: b ? () => on.onInspect(b.card, true) : null,
   }, b
-    ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, "Flooped"), extra.length > 0 && h("span", { class: "tag more" }, `+${extra.length}`))
+    ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, "Flooped"))
     : (mine ? "Building slot" : "No Building"));
+  if (extra.length === 0) return main;
+  // Burly Lumberjack: the other Buildings in the Lane, each on a line of its own to read and inspect.
+  return h("div", { class: "stripgroup" }, main, extra.map((x) => h("button", {
+    type: "button", class: `strip extra ${mine ? "mine" : "theirs"}`, "data-seat": seat, "data-lane": i,
+    "aria-label": `${mine ? "Your" : "Opponent"} extra Building, Lane ${i + 1}: ${cardName(ctx, x.card)}`,
+    onclick: () => on.onInspect(x.card), onmouseenter: () => on.onInspect(x.card, true),
+  }, h("span", { class: "row" }, h("span", { class: "orb" }, ctx.cards[x.card]?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, x.card)),
+    x.status === "flooped" && h("span", { class: "tag" }, "Flooped")))));
 }
 
 // ---------- the modal for a Choice
