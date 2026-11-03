@@ -126,6 +126,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Archer%20Dan.webp"
   },
   {
+    "id": "archer-danica",
+    "name": "Archer Danica",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 6,
+    "text": "FLOOP and destroy a Building you control \u003e\u003e\u003e Deal 3 damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Archer%20Danica.webp"
+  },
+  {
     "id": "beach-mummy",
     "name": "Beach Mummy",
     "type": "creature",
@@ -214,6 +232,43 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Brain%20Gooey.webp"
+  },
+  {
+    "id": "burly-lumberjack",
+    "name": "Burly Lumberjack",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "You may play additional Buildings in this Lane.",
+    "clarification": "If this card leaves play, the additional Buildings remain in play.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Burly%20Lumberjack.webp"
+  },
+  {
+    "id": "business-dog",
+    "name": "Business Dog",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "+2 ATK for each card you have played with \"Dog\" or \"Puppy\" in its title this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Business%20Dog.webp"
   },
   {
     "id": "chest-burster",
@@ -324,6 +379,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cornataur.webp"
   },
   {
+    "id": "corns-templar",
+    "name": "Corns Templar",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Heal 1 damage From Corns Templar.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Corns%20Templar.webp"
+  },
+  {
     "id": "cotton-eyebat",
     "name": "Cotton Eyebat",
     "type": "creature",
@@ -358,6 +431,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cow.webp"
+  },
+  {
+    "id": "crazy-cat-lady",
+    "name": "Crazy Cat Lady",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "text": "Rainbow Creatures you control have +1 ATK.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Crazy%20Cat%20Lady.webp"
   },
   {
     "id": "cutie",
@@ -486,6 +577,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Drooling%20Dude.webp"
   },
   {
+    "id": "druid-of-the-cob",
+    "name": "Druid of the Cob",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "Flooped Creatures you control have +1 ATK.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Druid%20of%20the%20Cob.webp"
+  },
+  {
     "id": "embarrassing-bard",
     "name": "Embarrassing Bard",
     "type": "creature",
@@ -502,6 +611,25 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Embarrassing%20Bard.webp"
+  },
+  {
+    "id": "emboldened-retriever",
+    "name": "Emboldened Retriever",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "Each time Emboldened Retriever attacks, you may draw a card.",
+    "notes": "\"Much ball. Wow.\"",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Emboldened%20Retriever.webp"
   },
   {
     "id": "evil-eye",
@@ -574,6 +702,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fatapillar.webp"
+  },
+  {
+    "id": "fiddling-ferret",
+    "name": "Fiddling Ferret",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card, then discard a card. If you discard a Rainbow card this way, gain 1 action.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fiddling%20Ferret.webp"
   },
   {
     "id": "field-reaper",
@@ -792,6 +938,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Heavenly%20Gazer.webp"
   },
   {
+    "id": "helping-hand",
+    "name": "Helping Hand",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Return a Building from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Helping%20Hand.webp"
+  },
+  {
     "id": "herculeye",
     "name": "Herculeye",
     "type": "creature",
@@ -828,6 +992,41 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hot%20Eyebat.webp"
   },
   {
+    "id": "hunkclops",
+    "name": "Hunkclops",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hunkclops.webp"
+  },
+  {
+    "id": "husker-champion",
+    "name": "Husker Champion",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "+2 ATK and +2 DEF if you control a Building in this Lane.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Champion.webp"
+  },
+  {
     "id": "husker-knight",
     "name": "Husker Knight",
     "type": "creature",
@@ -844,6 +1043,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Knight.webp"
+  },
+  {
+    "id": "husker-valkyrie",
+    "name": "Husker Valkyrie",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "text": "+2 ATK and +2 DEF if you control a Building in this Lane.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Valkyrie.webp"
   },
   {
     "id": "husker-worm",
@@ -882,6 +1099,42 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Immortal%20Maize%20Walker.webp"
   },
   {
+    "id": "impossible-possum",
+    "name": "Impossible Possum",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "When this goes into your discard pile, you may discard a card to return Impossible Possum to your hand.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Impossible%20Possum.webp"
+  },
+  {
+    "id": "infant-scholar",
+    "name": "Infant Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "+3 ATK if you played one or more Rainbow cards this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Infant%20Scholar.webp"
+  },
+  {
     "id": "infinite-figure",
     "name": "Infinite Figure",
     "type": "creature",
@@ -898,6 +1151,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Infinite%20Figure.webp"
+  },
+  {
+    "id": "kernel-queen",
+    "name": "Kernel Queen",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "+1 ATK for each Flooped Creature you control.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Kernel%20Queen.webp"
   },
   {
     "id": "legion-of-earlings",
@@ -918,6 +1189,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Legion%20of%20Earlings.webp"
   },
   {
+    "id": "lonely-panda",
+    "name": "Lonely Panda",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "If you do not control any other Creatures when Lonely Panda enters play, draw a card.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lonely%20Panda.webp"
+  },
+  {
     "id": "lost-golem",
     "name": "Lost Golem",
     "type": "creature",
@@ -934,6 +1223,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lost%20Golem.webp"
+  },
+  {
+    "id": "lumbercaddy",
+    "name": "Lumbercaddy",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Move target Building you control to any Lane without one.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lumbercaddy.webp"
   },
   {
     "id": "mace-stump",
@@ -970,6 +1277,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mouthball.webp"
+  },
+  {
+    "id": "mr-slicer",
+    "name": "Mr. Slicer",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "FLOOP \u003e\u003e\u003e Deal 2 damage to target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mr.%20Slicer.webp"
   },
   {
     "id": "ms-fluff",
@@ -1116,6 +1441,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pieclops.webp"
   },
   {
+    "id": "pied-piper",
+    "name": "Pied Piper",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "When Pied Piper attacks an opposing Creature, you may have a Flooped Creature you control attack it instead.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pied%20Piper.webp"
+  },
+  {
     "id": "pink-merwitch",
     "name": "Pink Merwitch",
     "type": "creature",
@@ -1134,6 +1477,42 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pink%20Merwitch.webp"
   },
   {
+    "id": "pony",
+    "name": "Pony",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "notes": "Who's a pretty pony? CLOMP Yes you are!",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pony.webp"
+  },
+  {
+    "id": "popcorn-butteredfly",
+    "name": "Popcorn Butteredfly",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each Building you control.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Popcorn%20Butteredfly.webp"
+  },
+  {
     "id": "psionic-architect",
     "name": "Psionic Architect",
     "type": "creature",
@@ -1150,6 +1529,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Psionic%20Architect.webp"
+  },
+  {
+    "id": "psionic-swashbuckler",
+    "name": "Psionic Swashbuckler",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "When Psionic Swashbuckler enters play, you may deal 3 damage to target Flooped Creature.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Psionic%20Swashbuckler.webp"
   },
   {
     "id": "punk-cat",
@@ -1440,6 +1837,25 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Teeth%20Leaf.webp"
   },
   {
+    "id": "the-dog",
+    "name": "The Dog",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Opposing Buildings in this Lane lose all abilities while The Dog is Flooped.",
+    "notes": "\"Woof.\"",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/The%20Dog.webp"
+  },
+  {
     "id": "the-mariachi",
     "name": "The Mariachi",
     "type": "creature",
@@ -1474,6 +1890,60 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/The%20Pig.webp"
+  },
+  {
+    "id": "tiny-elephant",
+    "name": "Tiny Elephant",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "While in play, Tiny Elephant is both a Blue Plains and a Rainbow Creature.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tiny%20Elephant.webp"
+  },
+  {
+    "id": "tornado-wall-of-fire",
+    "name": "Tornado Wall Of Fire",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 0,
+    "defense": 10,
+    "text": "FLOOP \u003e\u003e\u003e +3 ATK while Flooped.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tornado%20Wall%20Of%20Fire.webp"
+  },
+  {
+    "id": "tough-lumberjill",
+    "name": "Tough Lumberjill",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "text": "When Tough Lumberjill enters play, deal 1 damage to your opponent for each Building you control.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tough%20Lumberjill.webp"
   },
   {
     "id": "travelin-farmer",
@@ -1546,6 +2016,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Uni-Knight.webp"
+  },
+  {
+    "id": "vampire-lord",
+    "name": "Vampire Lord",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 1,
+    "defense": 8,
+    "text": "When Vampire Lord deals damage, it heals an equal amount of damage.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Vampire%20Lord.webp"
   },
   {
     "id": "wall-of-chocolate",
@@ -1638,6 +2126,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Chief.webp"
   },
   {
+    "id": "woadic-enchantress",
+    "name": "Woadic Enchantress",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "Creatures in this Lane cannot use Floop abilities.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Enchantress.webp"
+  },
+  {
     "id": "woadic-marauder",
     "name": "Woadic Marauder",
     "type": "creature",
@@ -1654,6 +2160,42 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Marauder.webp"
+  },
+  {
+    "id": "woadic-matriarch",
+    "name": "Woadic Matriarch",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "+1 ATK for each of your Rainbow Creatures.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Matriarch.webp"
+  },
+  {
+    "id": "woadic-weirdo",
+    "name": "Woadic Weirdo",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Reveal a card from your hand. That card becomes a Rainbow card until the end of your turn. (It has no Landscape type.)",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Weirdo.webp"
   },
   {
     "id": "x-large-spirit-soldier",

@@ -122,6 +122,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cross%20Pollination.webp"
   },
   {
+    "id": "deforestation",
+    "name": "Deforestation",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 2,
+    "text": "To play this card, you must exhaust one of your Creatures. Search your deck for a Building and put it into play. Then shuffle your deck.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Deforestation.webp"
+  },
+  {
     "id": "falling-star",
     "name": "Falling Star",
     "type": "spell",
@@ -154,6 +170,54 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20of%20Nightmares.webp"
   },
   {
+    "id": "friendship-bracelet",
+    "name": "Friendship Bracelet",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Swap any amount of damage between two of your Creatures.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Friendship%20Bracelet.webp"
+  },
+  {
+    "id": "furious-furor",
+    "name": "Furious Furor",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Target Creature has +2 ATK this turn for each Flooped Creature you control.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Furious%20Furor.webp"
+  },
+  {
+    "id": "glorious-gramophone",
+    "name": "Glorious Gramophone",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "Draw 4 cards, then discard any 2 cards.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Glorious%20Gramophone.webp"
+  },
+  {
     "id": "gnome-snot",
     "name": "Gnome Snot",
     "type": "spell",
@@ -184,6 +248,38 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Candy.webp"
+  },
+  {
+    "id": "harvest-moon",
+    "name": "Harvest Moon",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 2,
+    "text": "Put a Building from your discard pile into play.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Harvest%20Moon.webp"
+  },
+  {
+    "id": "log-rhythm",
+    "name": "Log Rhythm",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Each of your Creatures in a Lane with a Building you control has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Log%20Rhythm.webp"
   },
   {
     "id": "magic-ring-ding",
@@ -250,6 +346,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Piestorm.webp"
   },
   {
+    "id": "puppy-parade",
+    "name": "Puppy Parade",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "text": "Heal 2 damage from each of your Creatures. Your Creatures lose their Landscape type and become Rainbow Creatures this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Puppy%20Parade.webp"
+  },
+  {
     "id": "reclaim-landscape",
     "name": "Reclaim Landscape",
     "type": "spell",
@@ -280,6 +392,38 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ring%20Of%20Fluffy.webp"
+  },
+  {
+    "id": "river-of-swords",
+    "name": "River of Swords",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 2,
+    "text": "Each of your Creatures has +2 ATK this turn. Draw 2 cards.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/River%20of%20Swords.webp"
+  },
+  {
+    "id": "singing-sword",
+    "name": "Singing Sword",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Target Creature has +1 ATK for every 2 cards you have drawn this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Singing%20Sword.webp"
   },
   {
     "id": "snake-eye-ring",
@@ -328,6 +472,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Subliminal%20Strength.webp"
+  },
+  {
+    "id": "sword-bouquet",
+    "name": "Sword Bouquet",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Deal 1 damage to target Creature for every card you have drawn this turn.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sword%20Bouquet.webp"
   },
   {
     "id": "teleport",
@@ -402,6 +562,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Unempty%20Coffin.webp"
+  },
+  {
+    "id": "void-thimble",
+    "name": "Void Thimble",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Lose 2 hit points, gain 1 action.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Void%20Thimble.webp"
   },
   {
     "id": "volcano",

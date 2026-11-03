@@ -162,8 +162,13 @@ func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: id %q collides with %q", r.Name, c.ID, prev))
 		}
 		seen[c.ID] = r.Name
-		if len(r.Extras) > 0 {
-			rep.Problems = append(rep.Problems, fmt.Sprintf("%s: has extras, which the importer does not read", r.Name))
+		for key, val := range r.Extras {
+			text, isText := val.(string)
+			if key != "Clarification" || !isText {
+				rep.Problems = append(rep.Problems, fmt.Sprintf("%s: has an extra %q, which the importer does not read", r.Name, key))
+				continue
+			}
+			c.Clarification = strings.TrimSpace(text)
 		}
 
 		if r.Faction != "" {

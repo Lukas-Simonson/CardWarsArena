@@ -24,6 +24,9 @@ const (
 	Rainbow      Landscape = "rainbow"
 )
 
+// Landscapes lists the types a Landscape card can have.
+var Landscapes = []Landscape{Cornfield, BluePlains, UselessSwamp, NiceLands, SandyLands, IcyLands}
+
 // AbilityKind is the printed category of a card's ability, as recorded in the
 // source data. It is a hint, not authoritative; see Card.Effects.
 type AbilityKind string
@@ -59,8 +62,10 @@ type Card struct {
 	Ability   AbilityKind `json:"ability,omitempty"`
 	Text      string      `json:"text,omitempty"`
 	Notes     string      `json:"notes,omitempty"` // flavour text
-	Printings []Printing  `json:"printings,omitempty"`
-	ImageURL  string      `json:"image_url,omitempty"`
+	// Clarification is the official ruling printed with the card, if any.
+	Clarification string     `json:"clarification,omitempty"`
+	Printings     []Printing `json:"printings,omitempty"`
+	ImageURL      string     `json:"image_url,omitempty"`
 
 	// Effects and Modeled come from data/effects, not from the card files.
 	// Modeled means someone has written down this card's rules (possibly none).

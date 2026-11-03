@@ -1,5 +1,21 @@
 [
   {
+    "id": "blood-castle",
+    "name": "Blood Castle",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Each time an opposing Creature in this Lane takes damage, increase the amount by 1.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Castle.webp"
+  },
+  {
     "id": "blood-fortress",
     "name": "Blood Fortress",
     "type": "building",
@@ -39,6 +55,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Fortress.webp"
+  },
+  {
+    "id": "cabin-of-many-woods",
+    "name": "Cabin of Many Woods",
+    "type": "building",
+    "landscape": "cornfield",
+    "cost": 5,
+    "text": "Cabin of Many Woods costs 1 less to play for each Flooped Creature you control. Your Creature in this Lane has +5 DEF.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cabin%20of%20Many%20Woods.webp"
   },
   {
     "id": "cave-of-solitude",
@@ -93,6 +125,71 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Celestial%20Castle.webp"
   },
   {
+    "id": "celestial-fortress",
+    "name": "Celestial Fortress",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "The opposing Creature in this Lane has -2 DEF.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Celestial%20Fortress.webp"
+  },
+  {
+    "id": "charming-city",
+    "name": "Charming City",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "All Creatures in this Lane lose their Landscape type and become Rainbow Creatures.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Charming%20City.webp"
+  },
+  {
+    "id": "farmhouse",
+    "name": "Farmhouse",
+    "type": "building",
+    "landscape": "cornfield",
+    "cost": 2,
+    "text": "Farmhouse counts as an additional Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Farmhouse.webp"
+  },
+  {
+    "id": "learning-center",
+    "name": "Learning Center",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "text": "Learning Center gains the game text of Buildings you control in adjacent Lanes (but not their names.",
+    "clarification": "This card does not gain the name of the Buildings that it copies. So if an Oil Refinery is in an adjacent Lane, Learning Center grants +2 DEF to the Creature on its Landscape, but it does not count as an Oil Refinery itself.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Learning%20Center.webp"
+  },
+  {
     "id": "mausoleum",
     "name": "Mausoleum",
     "type": "building",
@@ -123,6 +220,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Night%20Tower.webp"
+  },
+  {
+    "id": "oil-refinery",
+    "name": "Oil Refinery",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "text": "Your Creature in this Lane has +2 DEF for each Oil Refinery you control.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Oil%20Refinery.webp"
   },
   {
     "id": "palace-of-bone",
