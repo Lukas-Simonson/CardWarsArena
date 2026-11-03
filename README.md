@@ -21,6 +21,23 @@ That starts the game server and the web client behind one port. To develop inste
 server (`go run ./cmd/cardwarsd -origins 'localhost:*'` in `server/`) and the client
 (`npm start` in `web/`), then open http://localhost:5173/. Each directory's README has the details.
 
+## CI and images
+
+GitHub Actions (`.github/workflows/`) runs on every pull request and on `main`: `gofmt`, `go vet` and
+`go test` for the server, `npm test` for the web client, a smoke test that plays whole games through the
+client against a real server, and a Docker build of both images.
+
+When `main` changes, the same images are pushed to GitHub's container registry for `linux/amd64` and
+`linux/arm64`, as `ghcr.io/lukas-simonson/cardwarstcg-server` and `-web`, tagged `latest` and `sha-<commit>`.
+To run them instead of building:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+The first push creates private packages. Make them public under the repository's Packages settings, or
+`docker login ghcr.io` with a personal access token that has `read:packages` on the machine that pulls.
+
 ## Tests
 
 ```bash

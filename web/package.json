@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node serve.mjs",
-    "test": "node --test test/",
+    "test": "node --test \"test/*.test.mjs\"",
     "smoke": "node test/smoke.mjs"
   },
   "engines": { "node": ">=22" }
