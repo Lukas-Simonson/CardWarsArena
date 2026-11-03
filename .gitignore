@@ -1,5 +1,8 @@
 node_modules/
 .DS_Store
+.claude/
+.ignore
+.mcp.json
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
