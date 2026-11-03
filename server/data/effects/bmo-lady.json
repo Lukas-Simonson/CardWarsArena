@@ -1,0 +1,742 @@
+{
+ "palace-of-bone": [
+  {
+   "kind": "static",
+   "restrict": "opposing_no_enter_leave_triggers"
+  }
+ ],
+ "sand-sphinx": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "in_lane": true
+    }
+   ],
+   "do": [
+    {
+     "do": "bounce",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "spirit-tower": [
+  {
+   "kind": "floop",
+   "cost": 1,
+   "targets": [
+    {
+     "what": "creature",
+     "side": "opponent",
+     "in_lane": true
+    },
+    {
+     "what": "lane",
+     "side": "you",
+     "in_lane": true,
+     "without": "creature"
+    }
+   ],
+   "do": [
+    {
+     "do": "borrow_creature",
+     "slot": 0,
+     "slot2": 1
+    }
+   ]
+  }
+ ],
+ "beach-mummy": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "adjacent_lane": true
+    }
+   ],
+   "do": [
+    {
+     "do": "bounce",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "chest-burster": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "opponent",
+     "amount": {
+      "n": 3
+     },
+     "if": {
+      "opponent_hand_max": 0
+     }
+    }
+   ]
+  }
+ ],
+ "dark-angel": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "dr-death": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    },
+    {
+     "what": "creature",
+     "side": "opponent",
+     "in_lane": true
+    }
+   ],
+   "do": [
+    {
+     "do": "destroy_creature",
+     "slot": 0
+    },
+    {
+     "do": "destroy_creature",
+     "slot": 1
+    }
+   ]
+  }
+ ],
+ "extraordinary-spider": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "opponent",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "fummy": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "gain_actions",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "gray-eyebat": [
+  {
+   "kind": "activate",
+   "cost": 1,
+   "do": [
+    {
+     "do": "return_from_discard",
+     "random": true,
+     "filter": {
+      "landscape": "useless_swamp",
+      "type": "creature"
+     }
+    }
+   ]
+  }
+ ],
+ "green-cactiball": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "creatures",
+       "card": "green-cactiball"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "green-mermaid": [
+  {
+   "kind": "activate",
+   "do": [
+    {
+     "do": "destroy_creature",
+     "self": true
+    },
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "green-merman": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "mill",
+     "who": "you",
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "milled_cost"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "hot-eyebat": [
+  {
+   "kind": "play_condition",
+   "if": {
+    "discard_min": 10
+   }
+  }
+ ],
+ "immortal-maize-walker": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "base_attack"
+      }
+     },
+     "if": {
+      "on_landscape": "cornfield"
+     }
+    }
+   ]
+  }
+ ],
+ "lost-golem": [
+  {
+   "kind": "cost_mod",
+   "reduce": {
+    "n": 1,
+    "per": {
+     "of": "entered_this_turn"
+    }
+   }
+  }
+ ],
+ "mace-stump": [
+  {
+   "kind": "activate",
+   "do": [
+    {
+     "do": "destroy_creature",
+     "self": true
+    },
+    {
+     "do": "discard_choice",
+     "who": "opponent",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "mouthball": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "ms-mummy": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "may",
+     "targets": [
+      {
+       "what": "creature",
+       "side": "you",
+       "landscape": "sandy_lands",
+       "optional": true
+      }
+     ],
+     "then": [
+      {
+       "do": "bounce",
+       "self": true
+      },
+      {
+       "do": "mod_creature",
+       "slot": 0,
+       "stat": "def",
+       "amount": {
+        "n": 1
+       },
+       "permanent": true
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "peach-djinni": [
+  {
+   "kind": "trigger",
+   "on": "creature_enters",
+   "watch": {
+    "landscape": "sandy_lands"
+   },
+   "do": [
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "atk",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "red-eyeling": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "discard_card",
+     "side": "you",
+     "cost": 0
+    }
+   ],
+   "do": [
+    {
+     "do": "return_from_discard",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "sand-eyebat": [
+  {
+   "kind": "trigger",
+   "on": "creature_enters",
+   "watch": {
+    "other": true
+   },
+   "do": [
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "def",
+     "amount": {
+      "n": 1
+     },
+     "permanent": true
+    }
+   ]
+  }
+ ],
+ "sand-knights": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "landscapes": {
+       "type": "blue_plains",
+       "min": 1
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "sandhorn-devil": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "any"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "sandsnake": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "opponent",
+     "in_lane": true
+    }
+   ],
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 4
+     }
+    }
+   ]
+  }
+ ],
+ "sandwitch": [
+  {
+   "kind": "trigger",
+   "on": "creature_enters",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "opponent",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "shark": [
+  {
+   "kind": "trigger",
+   "on": "creature_enters",
+   "watch": {
+    "landscape": "sandy_lands",
+    "your_turn": true
+   },
+   "do": [
+    {
+     "do": "mod_creature",
+     "entering": true,
+     "stat": "atk",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "teeth-leaf": [
+  {
+   "kind": "cost_mod",
+   "reduce": {
+    "n": 2
+   },
+   "actions_only": true,
+   "if": {
+    "discard_min": 10
+   }
+  }
+ ],
+ "the-mariachi": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature"
+    }
+   ],
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "entered_this_turn",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "tree-of-undeath": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "return_from_discard",
+     "random": true,
+     "filter": {
+      "type": "creature"
+     }
+    }
+   ]
+  }
+ ],
+ "wall-of-sand": [
+  {
+   "kind": "trigger",
+   "on": "creature_enters",
+   "once_per_turn": true,
+   "watch": {
+    "landscape": "sandy_lands",
+    "other": true,
+    "your_turn": true
+   },
+   "do": [
+    {
+     "do": "mod_creature",
+     "self": true,
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "wandering-bald-man": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "mill",
+     "who": "you",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "abraca-amadeus": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "discard_choice",
+     "who": "opponent",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "bone-wand": [
+  {
+   "kind": "play_condition",
+   "if": {
+    "controls": "useless_swamp"
+   }
+  },
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "discard_choice",
+     "who": "opponent",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "magic-ring-ding": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "your"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "discard",
+       "div": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "ogre-gas": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "ogre_gas"
+    }
+   ]
+  }
+ ],
+ "snake-eye-ring": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "return_from_discard",
+     "random": true,
+     "filter": {
+      "landscape": "useless_swamp",
+      "type": "creature"
+     }
+    }
+   ]
+  }
+ ],
+ "tome-of-ankhs": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "draw",
+     "who": "you",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "empty_lanes"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "unempty-coffin": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "discount_next_creature",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "zazo-s-magic-seeds": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "landscape": "sandy_lands"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "entered_adjacent",
+       "from_target": true
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

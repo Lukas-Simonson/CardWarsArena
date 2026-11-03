@@ -1,0 +1,1676 @@
+[
+  {
+    "id": "albino-eyebat",
+    "name": "Albino Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "While Albino Eyebat has exactly 2 damage on it, it has +2 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Albino%20Eyebat.webp"
+  },
+  {
+    "id": "ancient-scholar",
+    "name": "Ancient Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Return a random Rainbow card from your discard pile to your hand. If you control a Building in this Lane, gain 1 action.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ancient%20Scholar.webp"
+  },
+  {
+    "id": "angel-heart",
+    "name": "Angel Heart",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 7,
+    "text": "While Angel Heart has exactly 3 damage on it, it has +3 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Angel%20Heart.webp"
+  },
+  {
+    "id": "angel-of-chocolate",
+    "name": "Angel of Chocolate",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 7,
+    "text": "Pay 1 action \u003e\u003e\u003e Heal all damage from Angel of Chocolate.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Angel%20of%20Chocolate.webp"
+  },
+  {
+    "id": "angel-of-vanilla",
+    "name": "Angel of Vanilla",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "Pay 1 action \u003e\u003e\u003e Heal all damage from Angel of Vanilla.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Angel%20of%20Vanilla.webp"
+  },
+  {
+    "id": "apple-pieclops",
+    "name": "Apple Pieclops",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 7,
+    "text": "At the start of your turn, you may heal or deal 1 damage to each of your Creatures. (Choose for each Creature.)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Apple%20Pieclops.webp"
+  },
+  {
+    "id": "archer-dan",
+    "name": "Archer Dan",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Destroy target Building in Archer Dan's Lane.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Archer%20Dan.webp"
+  },
+  {
+    "id": "beach-mummy",
+    "name": "Beach Mummy",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Return a Creature in an adjacent Lane to its owner's hand.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Beach%20Mummy.webp"
+  },
+  {
+    "id": "big-foot",
+    "name": "Big Foot",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Flip target facedown Landscape you control face up.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Big%20Foot.webp"
+  },
+  {
+    "id": "blonde-merwitch",
+    "name": "Blonde MerWitch",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "notes": "The seas are her cauldron, and her ingredients are anything that sinks.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blonde%20MerWitch.webp"
+  },
+  {
+    "id": "blueberry-djinni",
+    "name": "Blueberry Djinni",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "If Blueberry Djinni replaces a Creature, draw 2 cards.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blueberry%20Djinni.webp"
+  },
+  {
+    "id": "brain-gooey",
+    "name": "Brain Gooey",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "If Brain Gooey replaces a Creature, it has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Brain%20Gooey.webp"
+  },
+  {
+    "id": "chest-burster",
+    "name": "Chest Burster",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 10,
+    "text": "At the start of your turn, deal 3 damage to each opponent who has no cards in hand.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Chest%20Burster.webp"
+  },
+  {
+    "id": "cool-dog",
+    "name": "Cool Dog",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "Your Creatures on adjacent Lanes may not be attacked.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cool%20Dog.webp"
+  },
+  {
+    "id": "corn-dog",
+    "name": "Corn Dog",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 12,
+    "text": "Corn Dog has +1 DEF for each Cornfield Landscape you control. If you control 3 or fewer Cornfield Landscapes, Corn Dog has +1 ATK.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Corn%20Dog.webp"
+  },
+  {
+    "id": "corn-lord",
+    "name": "Corn Lord",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 7,
+    "text": "+1 ATK for each of your other Cornfield Creatures.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Corn%20Lord.webp"
+  },
+  {
+    "id": "corn-ronin",
+    "name": "Corn Ronin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "+1 ATK for each adjacent Cornfield Landscape.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Corn%20Ronin.webp"
+  },
+  {
+    "id": "cornataur",
+    "name": "Cornataur",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "When Cornataur enters play, deal 1 damage to your opponent for each Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cornataur.webp"
+  },
+  {
+    "id": "cotton-eyebat",
+    "name": "Cotton Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "While Cotton Eyebat has exactly 4 damage on it, it has +4 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cotton%20Eyebat.webp"
+  },
+  {
+    "id": "cow",
+    "name": "Cow",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "notes": "Moo.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cow.webp"
+  },
+  {
+    "id": "cutie",
+    "name": "Cutie",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e You heal 1 hit point. (Can't go over 25)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cutie.webp"
+  },
+  {
+    "id": "dark-angel",
+    "name": "Dark Angel",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5,
+    "text": "+1 ATK for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dark%20Angel.webp"
+  },
+  {
+    "id": "dogboy",
+    "name": "Dogboy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "text": "Discard a card \u003e\u003e\u003e Dogboy has +2 ATK this turn. (Limit: Once per turn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dogboy.webp"
+  },
+  {
+    "id": "dr-death",
+    "name": "Dr. Death",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP and destroy a Creature you control \u003e\u003e\u003e Destroy target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dr.%20Death.webp"
+  },
+  {
+    "id": "dragon-claw",
+    "name": "Dragon Claw",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Move one of your Creatures to an empty Lane.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragon%20Claw.webp"
+  },
+  {
+    "id": "dragon-foot",
+    "name": "Dragon Foot",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "Discard a card \u003e\u003e\u003e Dragon Foot has +1 ATK this turn. (Limit: Five times per turn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragon%20Foot.webp"
+  },
+  {
+    "id": "drooling-dude",
+    "name": "Drooling Dude",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "notes": "The ladies love him, as long as they have waterproof shoes.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Drooling%20Dude.webp"
+  },
+  {
+    "id": "embarrassing-bard",
+    "name": "Embarrassing Bard",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 5,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each of your Flooped Creatures (including this one).",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Embarrassing%20Bard.webp"
+  },
+  {
+    "id": "evil-eye",
+    "name": "Evil Eye",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "notes": "Evil is in the eye of the beholder.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Evil%20Eye.webp"
+  },
+  {
+    "id": "extraordinary-spider",
+    "name": "Extraordinary Spider",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "At the start of your turn, deal 1 damage to target opponent for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Extraordinary%20Spider.webp"
+  },
+  {
+    "id": "fairy-shepherd",
+    "name": "Fairy Shepherd",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "Each adjacent NiceLands Creature has +2 DEF.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fairy%20Shepherd.webp"
+  },
+  {
+    "id": "fatapillar",
+    "name": "Fatapillar",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 0,
+    "defense": 3,
+    "text": "+2 ATK for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fatapillar.webp"
+  },
+  {
+    "id": "field-reaper",
+    "name": "Field Reaper",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 4,
+    "text": "To play this card, you must discard a card. When Field Reaper enters play, move target Creature in this Lane to an adjacent empty Lane you control.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20Reaper.webp"
+  },
+  {
+    "id": "field-stalker",
+    "name": "Field Stalker",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 10,
+    "text": "At the start of your turn, each player draws a card.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20Stalker.webp"
+  },
+  {
+    "id": "fummy",
+    "name": "Fummy",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Gain 1 action this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fummy.webp"
+  },
+  {
+    "id": "future-scholar",
+    "name": "Future Scholar",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "If Future Scholar replaces a Creature, gain 1 action.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Future%20Scholar.webp"
+  },
+  {
+    "id": "goat",
+    "name": "Goat",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "text": "If Goat replaces a Creature, draw a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Goat.webp"
+  },
+  {
+    "id": "grape-djinni",
+    "name": "Grape Djinni",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "If Grape Djinni replaces a Creature, you may put a card from your discard pile on top of your deck.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Grape%20Djinni.webp"
+  },
+  {
+    "id": "gray-eyebat",
+    "name": "Gray Eyebat",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "Pay 1 action \u003e\u003e\u003e Return a random Useless Swamp Creature From your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Gray%20Eyebat.webp"
+  },
+  {
+    "id": "green-cactiball",
+    "name": "Green Cactiball",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 4,
+    "text": "+2 ATK for each Green Cactiball you control.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Cactiball.webp"
+  },
+  {
+    "id": "green-mermaid",
+    "name": "Green Mermaid",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9,
+    "text": "Destroy Green Mermaid \u003e\u003e\u003e Deal 1 damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Mermaid.webp"
+  },
+  {
+    "id": "green-merman",
+    "name": "Green Merman",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 0,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Put the top card of your deck into your discard pile. Deal damage to each opposing Creature equal to the discarded card's action cost.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Merman.webp"
+  },
+  {
+    "id": "headphone-jerk",
+    "name": "Headphone Jerk",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "If Headphone Jerk replaces a Creature, deal 3 damage to the opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Headphone%20Jerk.webp"
+  },
+  {
+    "id": "heavenly-gazer",
+    "name": "Heavenly Gazer",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 5,
+    "text": "FLOOP \u003e\u003e\u003e Put a Spell from your discard pile on top of your deck.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Heavenly%20Gazer.webp"
+  },
+  {
+    "id": "herculeye",
+    "name": "Herculeye",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 6,
+    "text": "Discard a card \u003e\u003e\u003e Herculeye has +4 ATK this turn. (Limit: Once per furn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Herculeye.webp"
+  },
+  {
+    "id": "hot-eyebat",
+    "name": "Hot Eyebat",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 4,
+    "defense": 4,
+    "text": "Play Hot Eyebat only if you have 10 or more cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hot%20Eyebat.webp"
+  },
+  {
+    "id": "husker-knight",
+    "name": "Husker Knight",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 0,
+    "defense": 0,
+    "text": "+1 ATK and +2 DEF for each Cornfield Landscape you control.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Knight.webp"
+  },
+  {
+    "id": "husker-worm",
+    "name": "Husker Worm",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 5,
+    "defense": 4,
+    "text": "When Husker Worm enters play, flip one of your Cornfield Landscapes face down.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Worm.webp"
+  },
+  {
+    "id": "immortal-maize-walker",
+    "name": "Immortal Maize Walker",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "While Immortal Maize Walker is on a Cornfield Landscape, its ATK value is tripled.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Immortal%20Maize%20Walker.webp"
+  },
+  {
+    "id": "infinite-figure",
+    "name": "Infinite Figure",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "Discard a card \u003e\u003e\u003e Deal 1 damage to the opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Infinite%20Figure.webp"
+  },
+  {
+    "id": "legion-of-earlings",
+    "name": "Legion of Earlings",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "When Legion of Earlings enters play, you may return target Creature in this Lane to its owner's hand.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Legion%20of%20Earlings.webp"
+  },
+  {
+    "id": "lost-golem",
+    "name": "Lost Golem",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 3,
+    "attack": 5,
+    "defense": 6,
+    "text": "Lost Golem costs 1 less to play for each other Creature you have played this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lost%20Golem.webp"
+  },
+  {
+    "id": "mace-stump",
+    "name": "Mace Stump",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "text": "Destroy Mace Stump \u003e\u003e\u003e Target opponent discards a card for every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mace%20Stump.webp"
+  },
+  {
+    "id": "mouthball",
+    "name": "Mouthball",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "text": "+2 DEF For every 5 cards in your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mouthball.webp"
+  },
+  {
+    "id": "ms-fluff",
+    "name": "Ms. Fluff",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "While Ms. Fluff has exactly 7 damage on it, it has +7 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ms.%20Fluff.webp"
+  },
+  {
+    "id": "ms-mummy",
+    "name": "Ms. Mummy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4,
+    "text": "At the start of your turn, you may return Ms. Mummy to its owner's hand. If you do, target SandyLands Creature you control gains 1 DEF.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ms.%20Mummy.webp"
+  },
+  {
+    "id": "nice-ice-baby",
+    "name": "Nice Ice Baby",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 2,
+    "text": "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Nice%20Ice%20Baby.webp"
+  },
+  {
+    "id": "niceasaurus-rex",
+    "name": "Niceasaurus Rex",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "At the start of your turn, if Niceasaurus Rex has damage on it, draw a card.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Niceasaurus%20Rex.webp"
+  },
+  {
+    "id": "patchy-the-pumpkin",
+    "name": "Patchy the Pumpkin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5,
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 damage to target Creature. Do this once for each Cornfield Landscape you control. (May only target each Creature once.)",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Patchy%20the%20Pumpkin.webp"
+  },
+  {
+    "id": "peach-djinni",
+    "name": "Peach Djinni",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 6,
+    "text": "When a SandyLands Creature enters play under your control, Peach Djinni has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Peach%20Djinni.webp"
+  },
+  {
+    "id": "phyllis",
+    "name": "Phyllis",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "notes": "While the blade distracts you, her purse swings in for the whammy.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Phyllis.webp"
+  },
+  {
+    "id": "pieclops",
+    "name": "Pieclops",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "When Pieclops enters play, heal 1 damage from each adjacent Creature.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pieclops.webp"
+  },
+  {
+    "id": "pink-merwitch",
+    "name": "Pink Merwitch",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "Discard a card \u003e\u003e\u003e Deal 1 damage to each opposing Creature. (Limit: Once per turn.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pink%20Merwitch.webp"
+  },
+  {
+    "id": "psionic-architect",
+    "name": "Psionic Architect",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "When Psionic Architect enters play, you may ready one of your Flooped Creatures.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Psionic%20Architect.webp"
+  },
+  {
+    "id": "punk-cat",
+    "name": "Punk Cat",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "Each Creature that changed Lanes this turn has +2 ATK.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Punk%20Cat.webp"
+  },
+  {
+    "id": "rainbow-eyebat",
+    "name": "Rainbow Eyebat",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "At the start of your turn, you heal 1 hit point for each different Landscape type you control. (Can't go over 25)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rainbow%20Eyebat.webp"
+  },
+  {
+    "id": "red-eyeling",
+    "name": "Red Eyeling",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Return a card with cost 0 from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Red%20Eyeling.webp"
+  },
+  {
+    "id": "sand-angel",
+    "name": "Sand Angel",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "notes": "Lie down in the sand, wave your arms and legs, and she will appear to you.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sand%20Angel.webp"
+  },
+  {
+    "id": "sand-eyebat",
+    "name": "Sand Eyebat",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "text": "When another Creature enters play under your control, Sand Eyebat gains 1 DEF.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sand%20Eyebat.webp"
+  },
+  {
+    "id": "sand-knights",
+    "name": "Sand Knights",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "+2 ATK if you control a Blue Plains Landscape.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sand%20Knights.webp"
+  },
+  {
+    "id": "sandhorn-devil",
+    "name": "Sandhorn Devil",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 6,
+    "text": "When Sandhorn Devil enters play, deal 1 damage to every Creature in play (including your own).",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sandhorn%20Devil.webp"
+  },
+  {
+    "id": "sandsnake",
+    "name": "Sandsnake",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 9,
+    "text": "When Sandsnake enters play, deal 4 damage to target opposing Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sandsnake.webp"
+  },
+  {
+    "id": "sandwitch",
+    "name": "SandWitch",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 12,
+    "text": "When SandWitch or another Creature enters play under your control, deal 1 damage to your opponent.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/SandWitch.webp"
+  },
+  {
+    "id": "shark",
+    "name": "Shark",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "When a SandyLands Creature enters play during your turn (including Shark), it has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Shark.webp"
+  },
+  {
+    "id": "skeletal-hand",
+    "name": "Skeletal Hand",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Discard the top 3 cards of your deck. For each Spell Jiscarded this way, target player discards a card.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Skeletal%20Hand.webp"
+  },
+  {
+    "id": "snakemint",
+    "name": "Snakemint",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "When Snakemint deals damage to an opposing player, you heal that many hit points. (Can't go over 25.)",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snakemint.webp"
+  },
+  {
+    "id": "squatting-bald-man",
+    "name": "Squatting Bald Man",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "Discard a card \u003e\u003e\u003e Heal 1 damage From Squatting Bald Man.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Squatting%20Bald%20Man.webp"
+  },
+  {
+    "id": "steakchop",
+    "name": "Steakchop",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 4,
+    "defense": 4,
+    "text": "At the start of your turn, discard 2 cards or destroy Steakchop. Discard after your free draw.)",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Steakchop.webp"
+  },
+  {
+    "id": "struzann-djinn",
+    "name": "Struzann Djinn",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 11,
+    "text": "+2 ATK for each of your Flooped Creatures.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Struzann%20Djinn.webp"
+  },
+  {
+    "id": "teeth-leaf",
+    "name": "Teeth Leaf",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 10,
+    "text": "If you have 10 or more cards in your discard pile, pay 2 fewer actions to play Teeth Leaf.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Teeth%20Leaf.webp"
+  },
+  {
+    "id": "the-mariachi",
+    "name": "The Mariachi",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 damage to target Creature for each Creature that entered play this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/The%20Mariachi.webp"
+  },
+  {
+    "id": "the-pig",
+    "name": "The Pig",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Flip target Cornfield Landscape in this Lane face down.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/The%20Pig.webp"
+  },
+  {
+    "id": "travelin-farmer",
+    "name": "Travelin' Farmer",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 12,
+    "text": "When Travelin' Farmer leaves play, deal 1 damage to your opponent for each card in their hand.",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Travelin%27%20Farmer.webp"
+  },
+  {
+    "id": "travelin-skeleton",
+    "name": "Travelin Skeleton",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Swap Lanes with another one of your Creatures.",
+    "printings": [
+      {
+        "deck": "LSP's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Travelin%20Skeleton.webp"
+  },
+  {
+    "id": "tree-of-undeath",
+    "name": "Tree of Undeath",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Return a random Creature from your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tree%20of%20Undeath.webp"
+  },
+  {
+    "id": "uni-knight",
+    "name": "Uni-Knight",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4,
+    "text": "Pay 1 action \u003e\u003e\u003e Target Creature in this Lane has -10 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Uni-Knight.webp"
+  },
+  {
+    "id": "wall-of-chocolate",
+    "name": "Wall Of Chocolate",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "While Wall of Chocolate has no damage on it, it has +3 ATK.",
+    "printings": [
+      {
+        "deck": "PB's Deck",
+        "set": "Princess Bubblegum Vs Lumpy Space Princess",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wall%20Of%20Chocolate.webp"
+  },
+  {
+    "id": "wall-of-ears",
+    "name": "Wall of Ears",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "text": "+1 DEF for each Cornfield Landscape in play (counting all players).",
+    "printings": [
+      {
+        "deck": "Jake's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wall%20of%20Ears.webp"
+  },
+  {
+    "id": "wall-of-sand",
+    "name": "Wall of Sand",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 12,
+    "text": "If one or more other SandyLands Creatures enter play during your turn, Wall of Sand has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lady's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wall%20of%20Sand.webp"
+  },
+  {
+    "id": "wandering-bald-man",
+    "name": "Wandering Bald Man",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 10,
+    "text": "At the start of your turn, put the top card of your deck into your discard pile.",
+    "printings": [
+      {
+        "deck": "BMO's Deck",
+        "set": "BMO Vs Lady Rainicorn",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wandering%20Bald%20Man.webp"
+  },
+  {
+    "id": "woadic-chief",
+    "name": "Woadic Chief",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "+2 ATK for each Spell you have played this turn.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Chief.webp"
+  },
+  {
+    "id": "woadic-marauder",
+    "name": "Woadic Marauder",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "text": "When Woadic Marauder changes Lanes during a turn, draw a card.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Marauder.webp"
+  },
+  {
+    "id": "x-large-spirit-soldier",
+    "name": "X-Large Spirit Soldier",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9,
+    "text": "Each adjacent Creature has +1 ATK.",
+    "printings": [
+      {
+        "deck": "Finn's Deck",
+        "set": "Finn Vs Jake",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/X-Large%20Spirit%20Soldier.webp"
+  }
+]
