@@ -2,6 +2,7 @@ package view
 
 import (
 	"encoding/json"
+	"sort"
 	"strings"
 	"testing"
 
@@ -85,6 +86,49 @@ func TestViewNeverContainsHiddenCards(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+func TestPreloadMixesTheOpponentsHandAndYourNextDraws(t *testing.T) {
+	g := newGame(t, 1)
+	for viewer := engine.PlayerID(0); viewer < 2; viewer++ {
+		want := map[string]bool{}
+		for _, in := range g.State.Players[viewer.Opp()].Hand {
+			want[in.CardID] = true
+		}
+		for _, in := range g.State.Players[viewer].Deck[:3] {
+			want[in.CardID] = true
+		}
+		got := Build(g, viewer).Preload
+		if len(got) != len(want) || !sort.StringsAreSorted(got) {
+			t.Fatalf("viewer %d: %v is not the sorted set %v", viewer, got, want)
+		}
+		for _, id := range got {
+			if !want[id] {
+				t.Errorf("viewer %d: %s is neither in the opponent's hand nor on top of the deck", viewer, id)
+			}
+		}
+		// Their own cards beyond the top 3 are never named.
+		mine := map[string]bool{}
+		for _, in := range g.State.Players[viewer].Deck[3:] {
+			mine[in.CardID] = true
+		}
+		for _, in := range g.State.Players[viewer].Deck[:3] {
+			delete(mine, in.CardID)
+		}
+		for _, in := range g.State.Players[viewer.Opp()].Hand {
+			delete(mine, in.CardID)
+		}
+		for id := range mine {
+			for _, got := range got {
+				if got == id {
+					t.Errorf("viewer %d: %s from deeper in the deck was hinted", viewer, id)
+				}
+			}
+		}
+	}
+	if b, _ := json.Marshal(Build(g, 0)); !strings.Contains(string(b), `"preload":[`) {
+		t.Error("preload is always a list")
 	}
 }
 
