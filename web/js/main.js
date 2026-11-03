@@ -145,7 +145,7 @@ document.addEventListener("keydown", (e) => {
 
 const form = () => ({ name: $("name").value, deck: $("deck").value });
 
-$("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_deck: $("botdeck").value || undefined });
+$("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_deck: $("botdeck").value || undefined, bot: $("bot").value || undefined });
 $("create").onclick = () => send({ type: "create", ...form(), vs_bot: false });
 const joinRoom = () => { const room = $("code").value.trim().toUpperCase(); if (room) send({ type: "join", room, ...form() }); };
 $("join").onclick = joinRoom;
@@ -154,6 +154,7 @@ $("applyServer").onclick = () => applyServer($("server").value);
 $("server").addEventListener("keydown", (e) => { if (e.key === "Enter") applyServer($("server").value); });
 $("name").onchange = () => store("cw.name", $("name").value);
 $("deck").onchange = () => store("cw.deck", $("deck").value);
+$("bot").onchange = () => store("cw.bot", $("bot").value);
 
 // ---------- rendering
 
@@ -218,11 +219,20 @@ function fillDecks(list) {
   mine.value = load("cw.deck") && [...mine.options].some((o) => o.value === load("cw.deck")) ? load("cw.deck") : mine.options[0]?.value ?? "";
 }
 
+/** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
+function fillBots({ default: first, bots }) {
+  const sel = $("bot");
+  sel.replaceChildren(...bots.map((name) => new Option(name[0].toUpperCase() + name.slice(1), name)));
+  const saved = load("cw.bot");
+  sel.value = bots.includes(saved) ? saved : bots.includes("heuristic") ? "heuristic" : first;
+}
+
 async function loadCatalog() {
   catalogError = "";
   try {
-    const [c, d] = await Promise.all([fetch(`${server}/api/cards`), fetch(`${server}/api/decks`)]);
+    const [c, d, b] = await Promise.all([fetch(`${server}/api/cards`), fetch(`${server}/api/decks`), fetch(`${server}/api/bots`).catch(() => null)]);
     if (!c.ok || !d.ok) throw new Error(`HTTP ${c.status}/${d.status}`);
+    if (b?.ok) fillBots(await b.json());
     cards = Object.fromEntries((await c.json()).map((x) => [x.id, x]));
     fillDecks(await d.json());
     $("lobbyhint").textContent = decks.length ? "" : "The server reports no playable decks.";

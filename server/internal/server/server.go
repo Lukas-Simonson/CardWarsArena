@@ -15,6 +15,7 @@ import (
 	"time"
 	"unicode"
 
+	"cardwars/internal/bot"
 	"cardwars/internal/card"
 	"cardwars/internal/decks"
 	"cardwars/internal/engine"
@@ -195,7 +196,11 @@ func (s *Server) create(sink Sink, m ClientMsg) (*Room, string, error) {
 		return nil, "", err
 	}
 	var botDeck decks.Info
+	var opponent bot.Bot
 	if m.VsBot {
+		if opponent, err = bot.New(m.Bot); err != nil {
+			return nil, "", fail(ErrBadRequest, err.Error())
+		}
 		if botDeck, err = s.botDeckFor(m.BotDeck, deck); err != nil {
 			return nil, "", err
 		}
@@ -214,7 +219,7 @@ func (s *Server) create(sink Sink, m ClientMsg) (*Room, string, error) {
 	for s.rooms[id] != nil {
 		id = newRoomCode()
 	}
-	r := &Room{id: id, srv: s, vsBot: m.VsBot, seed: seed, touched: time.Now(), onClose: s.removeRoom}
+	r := &Room{id: id, srv: s, vsBot: m.VsBot, bot: opponent, seed: seed, touched: time.Now(), onClose: s.removeRoom}
 	host := &seat{name: cleanName(m.Name, "Player"), token: newToken(), deck: deck, sink: sink}
 	r.seats[0] = host
 	if m.VsBot {
@@ -245,6 +250,10 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { w.Write([]byte("ok\n")) })
 	mux.HandleFunc("GET /api/decks", s.handleDecks)
 	mux.HandleFunc("GET /api/cards", s.handleCards)
+	mux.HandleFunc("GET /api/bots", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"default": bot.Default, "bots": bot.Names()})
+	})
 	mux.HandleFunc("GET /ws", s.handleWS)
 	mux.HandleFunc("GET /{$}", s.handleDebugPage)
 	return s.withCORS(mux)

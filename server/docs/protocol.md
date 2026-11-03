@@ -22,6 +22,7 @@ Plain HTTP endpoints:
 
 | path | |
 |---|---|
+| `GET /api/bots` | `{"default":"heuristic","bots":["heuristic","random"]}`: the bots `create` may ask for |
 | `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `landscapes`, `hero` (card id), `playable` |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
 | `GET /healthz` | `ok` |
@@ -58,7 +59,8 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
 ```
 
 - `deck` is words matched against `"SET Deck name"` (`"finn"`, or `"Finn Vs Jake Finn"`); words that name one deck on its own win over the set's name. The match must
-  be unique and playable. `bot_deck` defaults to the next playable deck.
+  be unique and playable. `bot_deck` defaults to the next playable deck. `bot` (with `vs_bot`) names the bot
+  from `/api/bots`; the default is `heuristic`, and an unknown name is a `bad_request`.
 - `seed` (create only) is honoured only when the server runs with `-dev`.
 - **Always send `seq`** with an action: the `seq` of the update you chose it from.
   If anything has happened since (the bot moved, the opponent acted) the server
