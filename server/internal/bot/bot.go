@@ -1,7 +1,8 @@
-// Package bot chooses actions for a computer-controlled player. It is a
-// weighted-random player: it follows the rulebook's mulligan advice, prefers
-// developing its board and Fighting over stalling, and otherwise picks any
-// legal action. It only ever returns actions the engine reports as legal.
+// Package bot chooses actions for a computer-controlled player. Several bots
+// are available by name (see New): Heuristic, the default, scores what each
+// legal action leads to, and Random follows the rulebook's mulligan advice,
+// prefers developing its board and Fighting over stalling, and otherwise picks
+// any legal action. Every bot only returns actions the engine reports as legal.
 package bot
 
 import (
@@ -21,7 +22,7 @@ type Bot interface {
 }
 
 // Default is the bot used when none is asked for.
-const Default = "random"
+const Default = "heuristic"
 
 var registry = map[string]Bot{
 	"random":    Random{},
@@ -52,7 +53,7 @@ func New(name string) (Bot, error) {
 	return b, nil
 }
 
-// Choose plays as the default bot.
+// Choose plays as the Random bot (the terminal client and the tests use it).
 func Choose(g *engine.Game, p engine.PlayerID, rng *rand.Rand) (engine.Action, bool) {
 	return Random{}.Choose(g, p, rng)
 }

@@ -53,7 +53,7 @@ type ClientMsg struct {
 	Name    string         `json:"name,omitempty"`     // display name (create, join)
 	Deck    string         `json:"deck,omitempty"`     // words from GET /api/decks (create, join)
 	VsBot   bool           `json:"vs_bot,omitempty"`   // create: play the computer
-	Bot     string         `json:"bot,omitempty"`      // create with vs_bot: which bot (see GET /api/bots); default random
+	Bot     string         `json:"bot,omitempty"`      // create with vs_bot: which bot (see GET /api/bots); default heuristic
 	BotDeck string         `json:"bot_deck,omitempty"` // create: the computer's deck (default: any other playable deck)
 	Room    string         `json:"room,omitempty"`     // join, rejoin
 	Token   string         `json:"token,omitempty"`    // rejoin

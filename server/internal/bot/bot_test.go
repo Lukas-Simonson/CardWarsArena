@@ -107,7 +107,7 @@ func TestBotReturnsFalseWhenNothingToDo(t *testing.T) {
 }
 
 func TestRegistry(t *testing.T) {
-	if got := Names(); len(got) != 2 || got[0] != Default || got[1] != "heuristic" {
+	if got := Names(); len(got) != 2 || got[0] != "heuristic" || got[1] != "random" {
 		t.Errorf("names %v", got)
 	}
 	for _, name := range append(Names(), "") {
