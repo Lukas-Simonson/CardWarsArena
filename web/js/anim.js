@@ -21,6 +21,12 @@ const AFTER_CAST_MS = 1300;     // time for the damage and a death that follow i
 const STATUS_XF = { ready: "rotate(0deg) scale(1)", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
 const xfOf = (status) => STATUS_XF[status] ?? STATUS_XF.ready;
 
+/** The rotation (degrees) and scale a status transform from STATUS_XF stands for. */
+export function turnOf(xf) {
+  const m = /rotate\((-?[\d.]+)deg\) scale\(([\d.]+)\)/.exec(xf ?? "");
+  return { rot: m ? Number(m[1]) : 0, scale: m ? Number(m[2]) : 1 };
+}
+
 /** uid -> {seat, lane, thing} for the Creatures (or Buildings) in a view. */
 function index(view, key) {
   const out = new Map();
@@ -163,9 +169,18 @@ export function applyEffects(root, fx, ctx) {
       case "drop":
         play(tile(f.seat, f.lane)?.querySelector(".card"), [{ transform: `translateY(${f.seat === ctx.view.you ? "50px" : "-50px"}) scale(1.6)`, opacity: 0 }, { opacity: 1, offset: 0.6 }, { transform: "none" }], { duration: 380, composite: "replace", easing: "cubic-bezier(.2,.9,.3,1.2)" });
         break;
-      case "settle":
-        play(tile(f.seat, f.lane)?.querySelector(".at"), [{ transform: `translate(-50%, -50%) ${f.from}` }, { transform: `translate(-50%, -50%) ${f.to}` }], { duration: 320, delay: f.delay, composite: "replace" });
+      case "settle": {
+        // A turned card is smaller by width, not scale (see .tile .at), so the turn animates both.
+        const at = tile(f.seat, f.lane)?.querySelector(".at");
+        if (!at) break;
+        const from = turnOf(f.from), to = turnOf(f.to);
+        const w = parseFloat(getComputedStyle(at).width) || at.offsetWidth;
+        play(at, [
+          { transform: `translate(-50%, -50%) rotate(${from.rot}deg)`, width: `${(w * from.scale) / to.scale}px` },
+          { transform: `translate(-50%, -50%) rotate(${to.rot}deg)`, width: `${w}px` },
+        ], { duration: 320, delay: f.delay, composite: "replace" });
         break;
+      }
       case "build":
         play(q(`.strip[data-seat="${f.seat}"][data-lane="${f.lane}"] .row`), [{ transform: "scale(1.4)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 320, composite: "replace" });
         break;

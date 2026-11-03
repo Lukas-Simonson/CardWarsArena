@@ -7,6 +7,14 @@ const next = (mutate) => { const v = structuredClone(view()); mutate(v); return 
 const ctx = { cards };
 const kinds = (fx) => fx.map((f) => f.t);
 
+test("a status transform is read as a rotation and a scale", async () => {
+  const { turnOf } = await import("../js/anim.js");
+  assert.deepEqual(turnOf("rotate(0deg) scale(1)"), { rot: 0, scale: 1 });
+  assert.deepEqual(turnOf("rotate(-90deg) scale(0.7)"), { rot: -90, scale: 0.7 });
+  assert.deepEqual(turnOf("rotate(90deg) scale(0.7)"), { rot: 90, scale: 0.7 });
+  assert.deepEqual(turnOf(undefined), { rot: 0, scale: 1 });
+});
+
 test("nothing is animated for the first view or an unchanged one", () => {
   assert.deepEqual(plan(null, view(), [], ctx), []);
   assert.deepEqual(plan(view(), view(), [], ctx), []);
