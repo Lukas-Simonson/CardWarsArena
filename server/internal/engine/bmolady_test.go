@@ -14,8 +14,8 @@ func ladyGame(t *testing.T) *Game {
 	t.Helper()
 	realGame(t) // loads the catalog
 	swamp := [NumLanes]card.Landscape{card.UselessSwamp, card.UselessSwamp, card.UselessSwamp, card.UselessSwamp}
-	bmo := DeckSpec{swamp, realCat.Deck("BMO Vs Lady Rainicorn", "BMO's Deck")}
-	lady := DeckSpec{sandy, realCat.Deck("BMO Vs Lady Rainicorn", "Lady's Deck")}
+	bmo := DeckSpec{Landscapes: swamp, Cards: realCat.Deck("BMO Vs Lady Rainicorn", "BMO's Deck")}
+	lady := DeckSpec{Landscapes: sandy, Cards: realCat.Deck("BMO Vs Lady Rainicorn", "Lady's Deck")}
 	g, err := NewGame(realCat, Config{Seed: 1, First: 0}, [2]DeckSpec{bmo, lady})
 	if err != nil {
 		t.Fatal(err)
@@ -745,7 +745,7 @@ func TestRandomPlayoutsOfAllSixDecks(t *testing.T) {
 			set, name string
 			lands     [NumLanes]card.Landscape
 		}) DeckSpec {
-			return DeckSpec{d.lands, realCat.Deck(d.set, d.name)}
+			return DeckSpec{Landscapes: d.lands, Cards: realCat.Deck(d.set, d.name), Hero: realCat.Hero(d.set, d.name)}
 		}
 		seed := uint64(i + 1)
 		g, err := NewGame(realCat, Config{Seed: seed, First: PlayerID(seed % 2)}, [2]DeckSpec{spec(a), spec(b)})

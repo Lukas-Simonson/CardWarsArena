@@ -111,6 +111,11 @@ type Player struct {
 	Lanes      [NumLanes]Lane `json:"lanes"`
 	Kept       bool           `json:"kept"`       // finished the mulligan decision
 	Mulliganed bool           `json:"mulliganed"` // used their one mulligan
+	// Hero is the Hero card that came with the deck; its rules apply all game
+	// (zero when a game is made without one). HeroFired are the once-per-turn
+	// triggers and limited abilities it has used this turn, by effect index.
+	Hero      Instance `json:"hero"`
+	HeroFired []int    `json:"hero_fired,omitempty"`
 }
 
 // State is the complete, serializable game state.
@@ -141,6 +146,9 @@ type State struct {
 	Played []PlayedCard `json:"played,omitempty"`
 	// Drawn counts the cards each player has drawn this turn.
 	Drawn [2]int `json:"drawn,omitempty"`
+	// Returned counts the Creatures each player returned to their hand this
+	// turn, from play or from their discard pile (Lady Rainicorn).
+	Returned [2]int `json:"returned,omitempty"`
 	// RainbowHand holds the UIDs of hand cards that are Rainbow cards until the
 	// end of the turn (Woadic Weirdo).
 	RainbowHand []int `json:"rainbow_hand,omitempty"`

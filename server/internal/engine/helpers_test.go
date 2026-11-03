@@ -53,7 +53,7 @@ func newTestGame(t *testing.T, first PlayerID, top0, top1 []string) *Game {
 		return append(cards, repeat("Grunt", 20)...)
 	}
 	g, err := NewGame(testCatalog(), Config{Seed: 1, First: first, SkipDeckRules: true},
-		[2]DeckSpec{{cornfields, build(top0)}, {cornfields, build(top1)}})
+		[2]DeckSpec{{Landscapes: cornfields, Cards: build(top0)}, {Landscapes: cornfields, Cards: build(top1)}})
 	if err != nil {
 		t.Fatal(err)
 	}

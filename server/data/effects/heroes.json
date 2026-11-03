@@ -1,0 +1,32 @@
+{
+  "bmo": [
+    {"kind": "activate", "targets": [{"what": "hand_card"}, {"what": "creature"}],
+     "do": [{"do": "discard", "slot": 0}, {"do": "damage_creature", "slot": 1, "amount": {"n": 1}}]}
+  ],
+  "cake": [
+    {"kind": "trigger", "on": "building_played",
+     "do": [{"do": "heal_creature", "all": {"rel": "your", "with_building": true}, "amount": {"n": 2}}]}
+  ],
+  "finn": [
+    {"kind": "static", "grant": {"to": {"rel": "your", "damage": {"max": 0}},
+     "ability": {"kind": "floop", "targets": [{"what": "creature"}], "do": [{"do": "damage_creature", "slot": 0, "amount": {"n": 1}}]}}}
+  ],
+  "fionna": [
+    {"kind": "static", "mods": [{"stat": "atk", "to": {"rel": "your", "landscape": "rainbow"}, "amount": {"n": 1}, "if": {"landscape_types": {"max": 1}}}]}
+  ],
+  "jake": [
+    {"kind": "static", "mods": [{"stat": "atk", "to": {"rel": "your", "face_down": true}, "amount": {"n": 2}}]}
+  ],
+  "lady-rainicorn": [
+    {"kind": "trigger", "on": "returns", "once_per_turn": true, "if": {"returned": {"min": 2}},
+     "do": [{"do": "heal_hero", "who": "you", "amount": {"n": 2}}]}
+  ],
+  "lumpy-space-princess": [
+    {"kind": "trigger", "on": "replaces", "once_per_turn": true,
+     "do": [{"do": "draw", "who": "you", "amount": {"n": 1}}]}
+  ],
+  "princess-bubblegum": [
+    {"kind": "activate", "limit": 1, "targets": [{"what": "creature", "side": "you"}],
+     "do": [{"do": "damage_creature", "slot": 0, "amount": {"n": 1}}, {"do": "mod_creature", "slot": 0, "stat": "atk", "amount": {"n": 1}}]}
+  ]
+}

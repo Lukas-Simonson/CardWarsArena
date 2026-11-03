@@ -83,12 +83,12 @@ func TestDeckRules(t *testing.T) {
 		cfg  Config
 		deck DeckSpec
 	}{
-		"too small":         {Config{}, DeckSpec{cornfields, repeat("Grunt", 3)}},
-		"four copies":       {Config{}, DeckSpec{cornfields, append(repeat("Grunt", 4), fillers(36)...)}},
-		"unknown card":      {relaxed, DeckSpec{cornfields, []string{"Nope"}}},
-		"hero in deck":      {relaxed, DeckSpec{cornfields, []string{"Hero Guy"}}},
-		"unimplemented":     {relaxed, DeckSpec{cornfields, []string{"Magic Text"}}},
-		"rainbow landscape": {relaxed, DeckSpec{rainbow, []string{"Grunt"}}},
+		"too small":         {Config{}, DeckSpec{Landscapes: cornfields, Cards: repeat("Grunt", 3)}},
+		"four copies":       {Config{}, DeckSpec{Landscapes: cornfields, Cards: append(repeat("Grunt", 4), fillers(36)...)}},
+		"unknown card":      {relaxed, DeckSpec{Landscapes: cornfields, Cards: []string{"Nope"}}},
+		"hero in deck":      {relaxed, DeckSpec{Landscapes: cornfields, Cards: []string{"Hero Guy"}}},
+		"unimplemented":     {relaxed, DeckSpec{Landscapes: cornfields, Cards: []string{"Magic Text"}}},
+		"rainbow landscape": {relaxed, DeckSpec{Landscapes: rainbow, Cards: []string{"Grunt"}}},
 	}
 	for name, tc := range bad {
 		if _, err := NewGame(cat, tc.cfg, [2]DeckSpec{tc.deck, tc.deck}); err == nil {
@@ -97,11 +97,11 @@ func TestDeckRules(t *testing.T) {
 	}
 
 	allow := Config{SkipDeckRules: true, AllowUnimplemented: true}
-	text := DeckSpec{cornfields, []string{"Magic Text"}}
+	text := DeckSpec{Landscapes: cornfields, Cards: []string{"Magic Text"}}
 	if _, err := NewGame(cat, allow, [2]DeckSpec{text, text}); err != nil {
 		t.Errorf("AllowUnimplemented: %v", err)
 	}
-	legal := DeckSpec{cornfields, append(repeat("Grunt", 3), fillers(37)...)}
+	legal := DeckSpec{Landscapes: cornfields, Cards: append(repeat("Grunt", 3), fillers(37)...)}
 	if _, err := NewGame(cat, Config{}, [2]DeckSpec{legal, legal}); err != nil {
 		t.Errorf("legal 40-card deck rejected: %v", err)
 	}

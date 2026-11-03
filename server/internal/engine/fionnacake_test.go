@@ -17,7 +17,7 @@ func fcGame(t *testing.T) *Game {
 	realGame(t)
 	mix := [NumLanes]card.Landscape{card.Cornfield, card.Cornfield, card.BluePlains, card.BluePlains}
 	g, err := NewGame(realCat, Config{Seed: 1, First: 0, SkipDeckRules: true}, [2]DeckSpec{
-		{mix, realCat.Deck(fcSet, "Cake's Deck")}, {mix, realCat.Deck(fcSet, "Fionna's Deck")},
+		{Landscapes: mix, Cards: realCat.Deck(fcSet, "Cake's Deck"), Hero: "cake"}, {Landscapes: mix, Cards: realCat.Deck(fcSet, "Fionna's Deck"), Hero: "fionna"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -713,7 +713,7 @@ func TestFionnaCakeRandomPlayoutsKeepInvariants(t *testing.T) {
 	seen := map[EventKind]int{}
 	for seed := uint64(1); seed <= uint64(games); seed++ {
 		g, err := NewGame(realCat, Config{Seed: seed, First: PlayerID(seed % 2), SkipDeckRules: true}, [2]DeckSpec{
-			{mixC, realCat.Deck(fcSet, "Cake's Deck")}, {mixB, realCat.Deck(fcSet, "Fionna's Deck")},
+			{Landscapes: mixC, Cards: realCat.Deck(fcSet, "Cake's Deck"), Hero: "cake"}, {Landscapes: mixB, Cards: realCat.Deck(fcSet, "Fionna's Deck"), Hero: "fionna"},
 		})
 		if err != nil {
 			t.Fatal(err)

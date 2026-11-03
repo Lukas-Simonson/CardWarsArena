@@ -9,9 +9,18 @@ type abilitySource struct {
 	status  *Status
 	// real counts the card's own activated abilities; offers follow them.
 	real int
+	// fired records the uses of limited abilities this turn; nil for Buildings.
+	fired *[]int
 }
 
 func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
+	if a.Source == "hero" {
+		effects := g.heroEffects(p)
+		if len(effects) == 0 {
+			return abilitySource{}, ErrNoAbility
+		}
+		return abilitySource{ctx: g.heroCtx(p), effects: effects, real: countActivates(effects), fired: &g.State.Players[p].HeroFired}, nil
+	}
 	if a.Lane < 0 || a.Lane >= NumLanes {
 		return abilitySource{}, ErrBadLane
 	}
@@ -24,7 +33,7 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 		}
 		ctx.creature = l.Creature
 		effects := g.effectsOf(l.Creature)
-		src := abilitySource{ctx: ctx, effects: effects, status: &l.Creature.Status, real: countActivates(effects)}
+		src := abilitySource{ctx: ctx, effects: effects, status: &l.Creature.Status, real: countActivates(effects), fired: &l.Creature.Fired}
 		if !l.Creature.Silenced {
 			// Offers are free activated abilities after the card's own.
 			src.effects = append(append([]card.Effect(nil), effects...), offerEffects(l.Creature.Offered)...)
@@ -97,13 +106,13 @@ func abilityEffect(effects []card.Effect, a Action) (*card.Effect, int) {
 	return nil, 0
 }
 
-// usesLeft reports whether a Creature may use effect i again this turn.
-func usesLeft(cr *Creature, e *card.Effect, i int) bool {
-	if e.Limit == 0 || cr == nil {
+// usesLeft reports whether effect i may be used again this turn.
+func usesLeft(fired *[]int, e *card.Effect, i int) bool {
+	if e.Limit == 0 || fired == nil {
 		return true
 	}
 	used := 0
-	for _, f := range cr.Fired {
+	for _, f := range *fired {
 		if f == i {
 			used++
 		}
@@ -123,7 +132,7 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 	if e == nil {
 		return ErrNoAbility
 	}
-	if !usesLeft(src.ctx.creature, e, idx) {
+	if !usesLeft(src.fired, e, idx) {
 		return ErrLimit
 	}
 	if e.If != nil && !g.cond(*e.If, src.ctx.source()) {
@@ -155,8 +164,8 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	src, _ := g.abilitySource(p, a)
 	e, idx := abilityEffect(src.effects, a)
-	if e.Limit > 0 && src.ctx.creature != nil {
-		src.ctx.creature.Fired = append(src.ctx.creature.Fired, idx)
+	if e.Limit > 0 && src.fired != nil {
+		*src.fired = append(*src.fired, idx)
 	}
 	kind := EvActivate
 	if a.Kind == ActFloop {
@@ -170,10 +179,13 @@ func (g *Game) doAbility(p PlayerID, a Action) []Event {
 		cr.Offered = append(append([]Offer(nil), cr.Offered[:i]...), cr.Offered[i+1:]...)
 	}
 	g.State.ActionsLeft -= e.Cost // a Floop may cost Actions too (Spirit Tower)
-	uid := 0
-	if src.ctx.creature != nil {
+	var uid int
+	switch {
+	case src.ctx.creature != nil:
 		uid = src.ctx.creature.UID
-	} else {
+	case src.ctx.hero:
+		uid = g.State.Players[p].Hero.UID
+	default:
 		uid = g.State.Players[p].Lanes[a.Lane].Building.UID
 	}
 	ev := []Event{{Kind: kind, Player: p, Card: uid, Lane: a.Lane}}
@@ -182,37 +194,42 @@ func (g *Game) doAbility(p PlayerID, a Action) []Event {
 
 // abilityActions proposes every Floop and activated ability p could use.
 func (g *Game) abilityActions(p PlayerID) []Action {
-	var out []Action
+	out := g.abilitiesOf(p, Action{Source: "hero"}, nil)
 	for lane := 0; lane < NumLanes; lane++ {
 		for _, source := range []string{"creature", "building"} {
-			probe := Action{Lane: lane, Source: source}
-			src, err := g.abilitySource(p, probe)
-			if err != nil {
-				continue
-			}
-			activate := 0
-			for _, e := range src.effects {
-				a := Action{Lane: lane, Source: source}
-				switch e.Kind {
-				case card.KindFloop:
-					a.Kind = ActFloop
-				case card.KindActivate:
-					a.Kind, a.Index = ActActivate, activate
-					activate++
-				default:
-					continue
-				}
-				if len(e.Targets) == 0 {
-					out = append(out, a)
-					continue
-				}
-				for _, targets := range g.targetCombos(e.Targets, src.ctx, maxTargetCombos) {
-					b := a
-					b.Targets = targets
-					b.Labels = labelsOf(e.Targets)
-					out = append(out, b)
-				}
-			}
+			out = g.abilitiesOf(p, Action{Lane: lane, Source: source}, out)
+		}
+	}
+	return out
+}
+
+// abilitiesOf adds to out every ability of the card that probe names.
+func (g *Game) abilitiesOf(p PlayerID, probe Action, out []Action) []Action {
+	src, err := g.abilitySource(p, probe)
+	if err != nil {
+		return out
+	}
+	activate := 0
+	for _, e := range src.effects {
+		a := Action{Lane: probe.Lane, Source: probe.Source}
+		switch e.Kind {
+		case card.KindFloop:
+			a.Kind = ActFloop
+		case card.KindActivate:
+			a.Kind, a.Index = ActActivate, activate
+			activate++
+		default:
+			continue
+		}
+		if len(e.Targets) == 0 {
+			out = append(out, a)
+			continue
+		}
+		for _, targets := range g.targetCombos(e.Targets, src.ctx, maxTargetCombos) {
+			b := a
+			b.Targets = targets
+			b.Labels = labelsOf(e.Targets)
+			out = append(out, b)
 		}
 	}
 	return out

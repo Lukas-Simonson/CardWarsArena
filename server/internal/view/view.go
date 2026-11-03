@@ -46,7 +46,9 @@ type Lane struct {
 
 // Player is one seat. Hand is only filled in for the viewer's own seat.
 type Player struct {
-	HP        int               `json:"hp"`
+	HP int `json:"hp"`
+	// Hero is the Hero card that came with the deck; its abilities appear in Legal with source "hero".
+	Hero      *engine.Instance  `json:"hero,omitempty"`
 	DeckCount int               `json:"deck_count"`
 	HandCount int               `json:"hand_count"`
 	Hand      []engine.Instance `json:"hand,omitempty"`
@@ -140,6 +142,10 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 			Discard:    append([]engine.Instance{}, src.Discard...),
 			Kept:       src.Kept,
 			Mulliganed: src.Mulliganed,
+		}
+		if src.Hero.CardID != "" {
+			h := src.Hero
+			pv.Hero = &h
 		}
 		if p == viewer {
 			pv.Hand = append([]engine.Instance{}, src.Hand...)

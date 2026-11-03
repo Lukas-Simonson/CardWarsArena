@@ -15,7 +15,8 @@ type effCtx struct {
 	creature *Creature // the source, when it is a Creature
 	playing  int       // UID of the card being played (not a legal hand_card choice)
 	entering *pos      // for creature_enters triggers: the Creature that entered
-	card     string    // the source card's id when it is not a Creature (a Spell or Building)
+	card     string    // the source card's id when it is not a Creature (a Spell, Building or Hero)
+	hero     bool      // the source is its controller's Hero
 }
 
 // cardID is the id of the card using the effect.
@@ -26,7 +27,7 @@ func (c effCtx) cardID() string {
 	return c.card
 }
 
-func (c effCtx) source() source { return source{pos: c.at, creature: c.creature} }
+func (c effCtx) source() source { return source{pos: c.at, creature: c.creature, hero: c.hero} }
 
 func sidesFor(side string, p PlayerID) []PlayerID {
 	switch side {
@@ -815,7 +816,11 @@ func (g *Game) returnFromDiscard(op card.Op, c effCtx, given [][]TargetRef) []Ev
 		return nil
 	}
 	pl.Hand = append(pl.Hand, in)
-	return []Event{{Kind: EvReturn, Player: c.p, Card: in.UID}}
+	ev := []Event{{Kind: EvReturn, Player: c.p, Card: in.UID}}
+	if g.Card(in).Type == card.Creature {
+		ev = append(ev, g.noteReturn(c.p)...)
+	}
+	return ev
 }
 
 type destination int
@@ -841,6 +846,7 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 	case toHand:
 		owner.Hand = append(owner.Hand, cr.Instance)
 		ev = append(ev, Event{Kind: EvBounce, Player: cr.Owner, Card: cr.UID, Lane: at.Lane})
+		ev = append(ev, g.noteReturn(cr.Owner)...)
 	default:
 		owner.Discard = append(owner.Discard, cr.Instance)
 	}

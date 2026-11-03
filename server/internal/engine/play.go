@@ -196,14 +196,14 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 		b := &Building{Instance: in, Status: Ready}
 		if lane.Building != nil && g.allowsExtraBuildings(pos{p, laneIdx}) {
 			lane.Extra = append(lane.Extra, b) // Burly Lumberjack: this one stays beside the others
-			return ev
+			return append(ev, g.fireHero(p, card.OnBuildingPlayed)...)
 		}
 		for _, old := range lane.dropBuildings() {
 			g.State.Players[old.Owner].Discard = append(g.State.Players[old.Owner].Discard, old.Instance)
 			ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
 		}
 		lane.Building = b
-		return ev
+		return append(ev, g.fireHero(p, card.OnBuildingPlayed)...)
 	}
 	replaced := lane.Creature != nil
 	if old := lane.Creature; old != nil {
@@ -212,6 +212,9 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 		ev = append(ev, g.removeCreature(pos{p, laneIdx}, toDiscard)...)
 	}
 	lane.Creature = &Creature{Instance: in, Status: Ready, Replaced: replaced}
+	if replaced && g.State.Active == p {
+		ev = append(ev, g.fireHero(p, card.OnReplaces)...)
+	}
 	return ev
 }
 
