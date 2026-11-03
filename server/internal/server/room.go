@@ -42,6 +42,7 @@ type Room struct {
 	g          *engine.Game
 	seq        int
 	vsBot      bool
+	bot        bot.Bot
 	seed       uint64
 	closed     bool
 	botRunning bool
@@ -270,7 +271,7 @@ func (r *Room) runBot() {
 			if r.seats[p] == nil || !r.seats[p].isBot {
 				continue
 			}
-			a, ok := bot.Choose(r.g, p, r.brng)
+			a, ok := r.bot.Choose(r.g, p, r.brng)
 			if !ok {
 				continue
 			}

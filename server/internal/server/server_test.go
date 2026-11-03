@@ -219,6 +219,7 @@ func TestHelloAndHTTPEndpoints(t *testing.T) {
 		"/healthz":   "ok",
 		"/api/decks": "Finn's Deck",
 		"/api/cards": "Cool Dog",
+		"/api/bots":  "heuristic",
 		"/":          "<title>",
 	} {
 		resp, err := http.Get(h.ts.URL + path)
@@ -690,4 +691,13 @@ func TestCORSForSeparateWebClients(t *testing.T) {
 	if got := get(closed, closed.ts.URL).Get("Access-Control-Allow-Origin"); got != closed.ts.URL {
 		t.Errorf("same-origin: %q", got)
 	}
+}
+
+func TestCreateChoosesTheBot(t *testing.T) {
+	h := newHarness(t)
+	a := h.dial()
+	h.createVsBot(a, "finn", func(m *ClientMsg) { m.Bot = "heuristic" })
+	b := h.dial()
+	b.send(ClientMsg{Type: MsgCreate, Name: "Tester", Deck: "finn", VsBot: true, Bot: "nope"})
+	b.expectError(ErrBadRequest)
 }

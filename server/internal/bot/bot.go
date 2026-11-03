@@ -5,14 +5,63 @@
 package bot
 
 import (
+	"fmt"
 	"math/rand/v2"
+	"sort"
+	"strings"
 
 	"cardwars/internal/card"
 	"cardwars/internal/engine"
 )
 
-// Choose returns the action player p should take, or false if p has none.
+// Bot chooses actions for a computer-controlled player. Every Bot returns only
+// actions the engine reports as legal, and false when the player has none.
+type Bot interface {
+	Choose(g *engine.Game, p engine.PlayerID, rng *rand.Rand) (engine.Action, bool)
+}
+
+// Default is the bot used when none is asked for.
+const Default = "random"
+
+var registry = map[string]Bot{
+	"random":    Random{},
+	"heuristic": Heuristic{},
+}
+
+// Names lists the available bots, the default first.
+func Names() []string {
+	out := []string{Default}
+	for name := range registry {
+		if name != Default {
+			out = append(out, name)
+		}
+	}
+	sort.Strings(out[1:])
+	return out
+}
+
+// New returns the bot with this name; "" is the default.
+func New(name string) (Bot, error) {
+	if name == "" {
+		name = Default
+	}
+	b, ok := registry[name]
+	if !ok {
+		return nil, fmt.Errorf("unknown bot %q (have %s)", name, strings.Join(Names(), ", "))
+	}
+	return b, nil
+}
+
+// Choose plays as the default bot.
 func Choose(g *engine.Game, p engine.PlayerID, rng *rand.Rand) (engine.Action, bool) {
+	return Random{}.Choose(g, p, rng)
+}
+
+// Random is a weighted-random player.
+type Random struct{}
+
+// Choose returns the action player p should take, or false if p has none.
+func (Random) Choose(g *engine.Game, p engine.PlayerID, rng *rand.Rand) (engine.Action, bool) {
 	legal := g.LegalActions(p)
 	if len(legal) == 0 {
 		return engine.Action{}, false

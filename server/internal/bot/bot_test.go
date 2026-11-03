@@ -105,3 +105,67 @@ func TestBotReturnsFalseWhenNothingToDo(t *testing.T) {
 		t.Error("no action expected after game over")
 	}
 }
+
+func TestRegistry(t *testing.T) {
+	if got := Names(); len(got) != 2 || got[0] != Default || got[1] != "heuristic" {
+		t.Errorf("names %v", got)
+	}
+	for _, name := range append(Names(), "") {
+		if _, err := New(name); err != nil {
+			t.Errorf("New(%q): %v", name, err)
+		}
+	}
+	if _, err := New("nope"); err == nil {
+		t.Error("an unknown bot should be an error")
+	}
+}
+
+// playWith runs a game where each seat uses its own bot and returns the winner.
+func playWith(t *testing.T, g *engine.Game, bots [2]Bot, rng *rand.Rand) engine.PlayerID {
+	t.Helper()
+	for n := 0; n < 20000; n++ {
+		if g.State.Phase == engine.PhaseOver {
+			return g.State.Winner
+		}
+		acted := false
+		for _, p := range []engine.PlayerID{g.State.Active, g.State.Active.Opp()} {
+			a, ok := bots[p].Choose(g, p, rng)
+			if !ok {
+				continue
+			}
+			if _, err := g.Apply(p, a); err != nil {
+				t.Fatalf("bot chose illegal action %s: %v", a, err)
+			}
+			acted = true
+			break
+		}
+		if !acted {
+			t.Fatalf("nobody can act in phase %s", g.State.Phase)
+		}
+	}
+	t.Fatal("game did not finish")
+	return 0
+}
+
+// The heuristic bot must beat the random one clearly, from either seat.
+func TestHeuristicBeatsRandom(t *testing.T) {
+	games := 60
+	if testing.Short() {
+		games = 20
+	}
+	won := 0
+	for seed := uint64(1); seed <= uint64(games); seed++ {
+		bots := [2]Bot{Heuristic{}, Random{}}
+		if seed%2 == 0 {
+			bots = [2]Bot{Random{}, Heuristic{}}
+		}
+		w := playWith(t, starterGame(t, seed), bots, rand.New(rand.NewPCG(seed, 5)))
+		if bots[w] == (Heuristic{}) {
+			won++
+		}
+	}
+	t.Logf("heuristic won %d of %d", won, games)
+	if won*100 < games*70 {
+		t.Errorf("heuristic won only %d of %d games against random", won, games)
+	}
+}
