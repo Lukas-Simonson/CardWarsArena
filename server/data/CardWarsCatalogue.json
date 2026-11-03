@@ -142,6 +142,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP and destroy a Building you control >>> Deal 3 damage to each opposing Creature.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Archer Danica.png",
+    "name" : "Archer Danica",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Discard a card from your hand >>> Deal 1 damage to target Creature.",
     "extras" : {
 
@@ -208,6 +226,22 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Each time an opposing Creature in this Lane takes damage, increase the amount by 1.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Blood Castle.png",
+    "name" : "Blood Castle",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Building"
   },
   {
     "ability" : "Your Creature in this Lane has +1 ATK.",
@@ -315,6 +349,72 @@
     "type" : "Spell"
   },
   {
+    "ability" : "You may play additional Buildings in this Lane.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+      "Clarification" : "If this card leaves play, the additional Buildings remain in play."
+    },
+    "faction" : "Cornfield",
+    "image" : "Burly Lumberjack.png",
+    "name" : "Burly Lumberjack",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+2 ATK for each card you have played with \"Dog\" or \"Puppy\" in its title this turn.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Business Dog.png",
+    "name" : "Business Dog",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Cabin of Many Woods costs 1 less to play for each Flooped Creature you control. Your Creature in this Lane has +5 DEF.",
+    "cost" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Cabin of Many Woods.png",
+    "name" : "Cabin of Many Woods",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "Each time you play a Building, heal 2 damage from each of your Creatures in a Lane with a Building you control.",
+    "extras" : {
+
+    },
+    "image" : "Cake.png",
+    "name" : "Cake",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Hero"
+  },
+  {
     "ability" : "Discard a card >>> Your Creature in this Lane cannot be targeted or attacked until the start of your next turn.",
     "cost" : 2,
     "extras" : {
@@ -351,6 +451,22 @@
     "type" : "Building"
   },
   {
+    "ability" : "The opposing Creature in this Lane has -2 DEF.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Celestial Fortress.png",
+    "name" : "Celestial Fortress",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Deal 1 damage to each opposing Creature.",
     "cost" : 1,
     "extras" : {
@@ -367,6 +483,22 @@
       "Finn Vs Jake (Finn)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "All Creatures in this Lane lose their Landscape type and become Rainbow Creatures.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Charming City.png",
+    "name" : "Charming City",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "At the start of your turn, deal 3 damage to each opponent who has no cards in hand.",
@@ -493,6 +625,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Heal 1 damage From Corns Templar.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Corns Templar.png",
+    "name" : "Corns Templar",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "While Cotton Eyebat has exactly 4 damage on it, it has +4 ATK.",
     "attack" : 1,
     "cost" : 1,
@@ -525,6 +675,24 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Rainbow Creatures you control have +1 ATK.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Crazy Cat Lady.png",
+    "name" : "Crazy Cat Lady",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Creature"
   },
@@ -579,6 +747,22 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "To play this card, you must exhaust one of your Creatures. Search your deck for a Building and put it into play. Then shuffle your deck.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Deforestation.png",
+    "name" : "Deforestation",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Discard a card >>> Dogboy has +2 ATK this turn. (Limit: Once per turn.)",
@@ -671,6 +855,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Flooped Creatures you control have +1 ATK.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Druid of the Cob.png",
+    "name" : "Druid of the Cob",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP >>> Draw a card for each of your Flooped Creatures (including this one).",
     "attack" : 1,
     "cost" : 2,
@@ -685,6 +887,24 @@
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Finn)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Each time Emboldened Retriever attacks, you may draw a card. ",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Emboldened Retriever.png",
+    "name" : "Emboldened Retriever",
+    "notes" : "\"Much ball. Wow.\"",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Creature"
   },
@@ -759,6 +979,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Farmhouse counts as an additional Cornfield Landscape you control.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Farmhouse.png",
+    "name" : "Farmhouse",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "+2 ATK for every 5 cards in your discard pile.",
     "attack" : 0,
     "cost" : 2,
@@ -773,6 +1009,24 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Draw a card, then discard a card. If you discard a Rainbow card this way, gain 1 action.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Fiddling Ferret.png",
+    "name" : "Fiddling Ferret",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
     },
     "type" : "Creature"
   },
@@ -843,6 +1097,36 @@
     "type" : "Hero"
   },
   {
+    "ability" : "While you control only one Landscape type, your Rainbow Creatures have +1 ATK.",
+    "extras" : {
+
+    },
+    "image" : "Fionna.png",
+    "name" : "Fionna",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Hero"
+  },
+  {
+    "ability" : "Swap any amount of damage between two of your Creatures.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Friendship Bracelet.png",
+    "name" : "Friendship Bracelet",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "FLOOP >>> Gain 1 action this turn.",
     "attack" : 2,
     "cost" : 1,
@@ -861,6 +1145,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Target Creature has +2 ATK this turn for each Flooped Creature you control.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Furious Furor.png",
+    "name" : "Furious Furor",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "If Future Scholar replaces a Creature, gain 1 action.",
     "attack" : 2,
     "cost" : 2,
@@ -877,6 +1177,22 @@
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Draw 4 cards, then discard any 2 cards.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Glorious Gramophone.png",
+    "name" : "Glorious Gramophone",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Draw 3 cards.",
@@ -1019,6 +1335,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Put a Building from your discard pile into play.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Harvest Moon.png",
+    "name" : "Harvest Moon",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "If Headphone Jerk replaces a Creature, deal 3 damage to the opposing Creature in this Lane.",
     "attack" : 2,
     "cost" : 2,
@@ -1051,6 +1383,24 @@
     "quantity" : 1,
     "sets" : {
       "Finn Vs Jake (Finn)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Return a Building from your discard pile to your hand.",
+    "attack" : 1,
+    "cost" : 0,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Helping Hand.png",
+    "name" : "Helping Hand",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Creature"
   },
@@ -1091,6 +1441,42 @@
     "type" : "Creature"
   },
   {
+    "ability" : "",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Hunkclops.png",
+    "name" : "Hunkclops",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+2 ATK and +2 DEF if you control a Building in this Lane.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Husker Champion.png",
+    "name" : "Husker Champion",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+1 ATK and +2 DEF for each Cornfield Landscape you control.",
     "attack" : 0,
     "cost" : 2,
@@ -1105,6 +1491,24 @@
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Jake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+2 ATK and +2 DEF if you control a Building in this Lane.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Husker Valkyrie.png",
+    "name" : "Husker Valkyrie",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Creature"
   },
@@ -1145,6 +1549,42 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When this goes into your discard pile, you may discard a card to return Impossible Possum to your hand.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Impossible Possum.png",
+    "name" : "Impossible Possum",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+3 ATK if you played one or more Rainbow cards this turn.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Infant Scholar.png",
+    "name" : "Infant Scholar",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Discard a card >>> Deal 1 damage to the opposing Creature in this Lane.",
     "attack" : 1,
     "cost" : 1,
@@ -1177,6 +1617,24 @@
     "type" : "Hero"
   },
   {
+    "ability" : "+1 ATK for each Flooped Creature you control.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Kernel Queen.png",
+    "name" : "Kernel Queen",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "If you return 2 or more Creatures to your hand from play or your discard pile during your turn, heal 2 HP.",
     "extras" : {
 
@@ -1189,6 +1647,22 @@
       "BMO Vs Lady Rainicorn (Lady)" : 1
     },
     "type" : "Hero"
+  },
+  {
+    "ability" : "Learning Center gains the game text of Buildings you control in adjacent Lanes (but not their names.",
+    "cost" : 2,
+    "extras" : {
+      "Clarification" : "This card does not gain the name of the Buildings that it copies. So if an Oil Refinery is in an adjacent Lane, Learning Center grants +2 DEF to the Creature on its Landscape, but it does not count as an Oil Refinery itself."
+    },
+    "faction" : "Blue Plains",
+    "image" : "Learning Center.png",
+    "name" : "Learning Center",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "When Legion of Earlings enters play, you may return target Creature in this Lane to its owner's hand.",
@@ -1209,6 +1683,40 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Each of your Creatures in a Lane with a Building you control has +2 ATK this turn.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Log Rhythm.png",
+    "name" : "Log Rhythm",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "If you do not control any other Creatures when Lonely Panda enters play, draw a card.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Lonely Panda.png",
+    "name" : "Lonely Panda",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Lost Golem costs 1 less to play for each other Creature you have played this turn.",
     "attack" : 5,
     "cost" : 3,
@@ -1223,6 +1731,24 @@
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (Lady)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Move target Building you control to any Lane without one.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Lumbercaddy.png",
+    "name" : "Lumbercaddy",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Creature"
   },
@@ -1305,6 +1831,24 @@
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Deal 2 damage to target opposing Creature in this Lane.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Mr. Slicer.png",
+    "name" : "Mr. Slicer",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
     },
     "type" : "Creature"
   },
@@ -1413,6 +1957,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Your Creature in this Lane has +2 DEF for each Oil Refinery you control.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Oil Refinery.png",
+    "name" : "Oil Refinery",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Opposing Creatures in this Lane do not trigger entering or leaving play effects.",
     "cost" : 1,
     "extras" : {
@@ -1517,6 +2077,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Pied Piper attacks an opposing Creature, you may have a Flooped Creature you control attack it instead.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Pied Piper.png",
+    "name" : "Pied Piper",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Each of your Creatures with no damage has +2 ATK this turn.",
     "cost" : 1,
     "extras" : {
@@ -1547,6 +2125,42 @@
     "quantity" : 1,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "",
+    "attack" : 1,
+    "cost" : 0,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Pony.png",
+    "name" : "Pony",
+    "notes" : "Who's a pretty pony? CLOMP Yes you are!",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Draw a card for each Building you control.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Popcorn Butteredfly.png",
+    "name" : "Popcorn Butteredfly",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Creature"
   },
@@ -1583,6 +2197,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Psionic Swashbuckler enters play, you may deal 3 damage to target Flooped Creature.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Psionic Swashbuckler.png",
+    "name" : "Psionic Swashbuckler",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Each Creature that changed Lanes this turn has +2 ATK.",
     "attack" : 2,
     "cost" : 1,
@@ -1599,6 +2231,22 @@
       "Finn Vs Jake (Finn)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Heal 2 damage from each of your Creatures. Your Creatures lose their Landscape type and become Rainbow Creatures this turn.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Puppy Parade.png",
+    "name" : "Puppy Parade",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "FLOOP >>> Pay 1 less action to replace your Creature in this Lane.",
@@ -1681,6 +2329,22 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Each of your Creatures has +2 ATK this turn. Draw 2 cards.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "River of Swords.png",
+    "name" : "River of Swords",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
     },
     "type" : "Spell"
   },
@@ -1859,6 +2523,22 @@
     "type" : "Building"
   },
   {
+    "ability" : "Target Creature has +1 ATK for every 2 cards you have drawn this turn.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Singing Sword.png",
+    "name" : "Singing Sword",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "FLOOP >>> Discard the top 3 cards of your deck. For each Spell Jiscarded this way, target player discards a card.",
     "attack" : 3,
     "cost" : 2,
@@ -2013,6 +2693,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Deal 1 damage to target Creature for every card you have drawn this turn.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Sword Bouquet.png",
+    "name" : "Sword Bouquet",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "If you have 10 or more cards in your discard pile, pay 2 fewer actions to play Teeth Leaf.",
     "attack" : 3,
     "cost" : 2,
@@ -2047,6 +2743,24 @@
       "Finn Vs Jake (Jake)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "FLOOP >>> Opposing Buildings in this Lane lose all abilities while The Dog is Flooped. ",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "The Dog.png",
+    "name" : "The Dog",
+    "notes" : "\"Woof.\"",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Deal 1 damage to target Creature for each Creature that entered play this turn.",
@@ -2085,6 +2799,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "While in play, Tiny Elephant is both a Blue Plains and a Rainbow Creature.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Tiny Elephant.png",
+    "name" : "Tiny Elephant",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Target Creature you control has +1 ATK this turn for every 5 cards in your discard pile.",
     "cost" : 1,
     "extras" : {
@@ -2115,6 +2847,42 @@
       "BMO Vs Lady Rainicorn (Lady)" : 1
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "FLOOP >>> +3 ATK while Flooped.",
+    "attack" : 0,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Tornado Wall Of Fire.png",
+    "name" : "Tornado Wall Of Fire",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Tough Lumberjill enters play, deal 1 damage to your opponent for each Building you control.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Tough Lumberjill.png",
+    "name" : "Tough Lumberjill",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Swap Lanes with another one of your Creatures.",
@@ -2203,6 +2971,40 @@
       "Finn Vs Jake (Finn)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "When Vampire Lord deals damage, it heals an equal amount of damage.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Vampire Lord.png",
+    "name" : "Vampire Lord",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Lose 2 hit points, gain 1 action.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Void Thimble.png",
+    "name" : "Void Thimble",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Destroy target Building. You may deal 3 damage to a Creature in that Lane. Flip your Landscape in that Lane face down.",
@@ -2375,6 +3177,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Creatures in this Lane cannot use Floop abilities.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Woadic Enchantress.png",
+    "name" : "Woadic Enchantress",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "When Woadic Marauder changes Lanes during a turn, draw a card.",
     "attack" : 3,
     "cost" : 2,
@@ -2389,6 +3209,42 @@
     "quantity" : 2,
     "sets" : {
       "Finn Vs Jake (Finn)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+1 ATK for each of your Rainbow Creatures.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Woadic Matriarch.png",
+    "name" : "Woadic Matriarch",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Reveal a card from your hand. That card becomes a Rainbow card until the end of your turn. (It has no Landscape type.)",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Blue Plains",
+    "image" : "Woadic Weirdo.png",
+    "name" : "Woadic Weirdo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Creature"
   },

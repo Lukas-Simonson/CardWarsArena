@@ -64,7 +64,7 @@ export function instruction(tokens) {
     switch ([...kinds][0]) {
       case "dest":
       case "lane": return "Choose a lane";
-      case "hand_card": return "Choose a card to discard";
+      case "hand_card": return "Choose a card from your hand";
       case "discard_card": return "Choose a card from the discard pile";
       case "landscape": return "Choose a Landscape";
       case "building": return "Choose a Building";

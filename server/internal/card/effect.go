@@ -33,6 +33,9 @@ type Effect struct {
 	// activate: how many times each turn it may be used (Dogboy: once).
 	Limit int `json:"limit,omitempty"`
 
+	// static with restrict counts_as_landscape: the Landscape type it adds.
+	As Landscape `json:"as,omitempty"`
+
 	// floop, activate, spell, trigger: what is chosen and what happens.
 	Targets []TargetSpec `json:"targets,omitempty"`
 	Do      []Op         `json:"do,omitempty"`
@@ -75,6 +78,15 @@ const (
 	// OnHeroDamage fires on a Creature that has just dealt damage to the
 	// opposing player; Count "damage_dealt" is how much (Snakemint).
 	OnHeroDamage = "deals_hero_damage"
+	// OnDealsDamage fires on a Creature that has just dealt damage in a Fight,
+	// to a Creature or a player; Count "damage_dealt" is how much (Vampire Lord).
+	OnDealsDamage = "deals_damage"
+	// OnAttacks fires on a Creature that has just been Activated to Fight,
+	// before any damage is dealt (Pied Piper, Emboldened Retriever).
+	OnAttacks = "attacks"
+	// OnDiscarded fires on a Creature that has just gone from play into a
+	// discard pile (not back to a hand): Impossible Possum.
+	OnDiscarded = "discarded"
 )
 
 // Restrictions (Effect.Restrict).
@@ -82,11 +94,32 @@ const (
 	RestrictAdjacentAlliesNotAttackable = "adjacent_allies_not_attackable"
 	// Opposing Creatures in the Lane do not trigger entering or leaving play effects (Palace of Bone).
 	RestrictOpposingNoEnterLeave = "opposing_no_enter_leave_triggers"
+	// Every Creature in the Lane is Rainbow, without its own Landscape type (Charming City).
+	RestrictLaneRainbow = "lane_rainbow"
+	// The card is also a Rainbow Creature (Tiny Elephant).
+	RestrictAlsoRainbow = "also_rainbow"
+	// Creatures in the Lane, on both sides, cannot use Floop abilities (Woadic Enchantress).
+	RestrictLaneNoFloop = "lane_no_floop"
+	// More Buildings may be played in the Lane without replacing the one there (Burly Lumberjack).
+	RestrictExtraBuildings = "extra_buildings"
+	// Opposing Buildings in the Lane have no abilities while the Creature is Flooped (The Dog).
+	RestrictSilenceOpposingBuildings = "silence_opposing_buildings"
+	// The Building counts as one more face-up Landscape, of type As (Farmhouse).
+	RestrictCountsAsLandscape = "counts_as_landscape"
+	// The Building has the rules of the Buildings you control in adjacent Lanes (Learning Center).
+	RestrictCopyAdjacentBuildings = "copy_adjacent_buildings"
 )
 
-// Mod adjusts the ATK or DEF of every creature matching To.
+var validRestricts = map[string]bool{
+	RestrictAdjacentAlliesNotAttackable: true, RestrictOpposingNoEnterLeave: true, RestrictLaneRainbow: true,
+	RestrictAlsoRainbow: true, RestrictLaneNoFloop: true, RestrictExtraBuildings: true,
+	RestrictSilenceOpposingBuildings: true, RestrictCountsAsLandscape: true, RestrictCopyAdjacentBuildings: true,
+}
+
+// Mod adjusts the ATK or DEF of every creature matching To. The stat
+// "damage_taken" instead raises each amount of damage they take (Blood Castle).
 type Mod struct {
-	Stat   string   `json:"stat"` // "atk" or "def"
+	Stat   string   `json:"stat"` // "atk", "def" or "damage_taken"
 	To     Selector `json:"to"`
 	Amount Value    `json:"amount"`
 	If     *Cond    `json:"if,omitempty"`
@@ -105,11 +138,13 @@ type Count struct {
 	Card string `json:"card,omitempty"` // creatures: only this card
 	// FromTarget counts from the point of view of each chosen Creature
 	// instead of the card (Zazo's Magic Seeds).
-	FromTarget bool      `json:"from_target,omitempty"`
-	Scope      string    `json:"scope,omitempty"` // "you" (default) or "any"
-	Type       Landscape `json:"type,omitempty"`
-	Adjacent   bool      `json:"adjacent,omitempty"`
-	Other      bool      `json:"other,omitempty"`
+	FromTarget bool   `json:"from_target,omitempty"`
+	Scope      string `json:"scope,omitempty"` // "you" (default) or "any"
+	// Words, for played_titled: a played card counts if its name has one of them.
+	Words    []string  `json:"words,omitempty"`
+	Type     Landscape `json:"type,omitempty"`
+	Adjacent bool      `json:"adjacent,omitempty"`
+	Other    bool      `json:"other,omitempty"`
 }
 
 // Selector picks creatures relative to the effect's source.
@@ -118,6 +153,8 @@ type Selector struct {
 	Damage       *Range    `json:"damage,omitempty"`    // only Creatures with this much damage on them
 	Landscape    Landscape `json:"landscape,omitempty"` // the creature card's own type
 	ChangedLanes bool      `json:"changed_lanes,omitempty"`
+	Flooped      *bool     `json:"flooped,omitempty"`       // only Flooped (or only not Flooped) Creatures
+	WithBuilding bool      `json:"with_building,omitempty"` // only Creatures in a Lane where their controller has a Building
 }
 
 // Range bounds a number; an unset end is open.
@@ -143,6 +180,15 @@ type Cond struct {
 	EnteredMax             *int           `json:"entered_max,omitempty"`       // at most this many of your Creatures entered play this turn
 	Damage                 *Range         `json:"damage,omitempty"`            // the card (a Creature) has this much damage on it
 	Replaced               *bool          `json:"replaced,omitempty"`          // the card replaced a Creature when it entered play
+	Flooped                *bool          `json:"flooped,omitempty"`           // the card (a Creature) is Flooped
+	OtherCreatures         *Range         `json:"other_creatures,omitempty"`   // you control this many Creatures besides the card
+	Played                 *PlayedCond    `json:"played,omitempty"`            // cards of a type you played this turn
+}
+
+// PlayedCond bounds how many cards of a Landscape type you played this turn.
+type PlayedCond struct {
+	Landscape Landscape `json:"landscape"`
+	Min       *int      `json:"min,omitempty"`
 }
 
 // LandscapeCond bounds how many face-up Landscapes of a type you control.
@@ -164,6 +210,8 @@ type TargetSpec struct {
 	CardType     Type      `json:"card_type,omitempty"` // discard_card
 	Cost         *int      `json:"cost,omitempty"`      // discard_card
 	Flooped      *bool     `json:"flooped,omitempty"`   // creatures
+	Ready        bool      `json:"ready,omitempty"`     // creatures: only Ready ones (not Flooped or Fought)
+	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
 	Optional     bool      `json:"optional,omitempty"`
 	Count        *Value    `json:"count,omitempty"` // up to this many distinct targets
 	// Other leaves out the card's own Lane. LaneOf limits the choice to the
@@ -197,6 +245,9 @@ type Op struct {
 	Entering bool `json:"entering,omitempty"`
 	// Permanent makes mod_creature last as long as the Creature is in play.
 	Permanent bool `json:"permanent,omitempty"`
+	// RainbowActions, on discard_choice: Actions gained if a Rainbow card is
+	// among those discarded (Fiddling Ferret).
+	RainbowActions int `json:"rainbow_actions,omitempty"`
 	// may offers the controller a free ability until they do something else:
 	// to do Then, after choosing Targets (Ms. Mummy's "you may"). Slots in
 	// Then refer to Targets.
@@ -219,6 +270,8 @@ var validOps = map[string]struct{ slots int }{
 	"borrow_creature": {2}, "ogre_gas": {0}, "discard_choice": {0}, "may": {0},
 	"heal_creature": {0}, "heal_hero": {0}, "swap_creatures": {1}, "protect": {0},
 	"no_combat_damage": {0}, "discount_replace": {0}, "upkeep": {0},
+	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
+	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -228,11 +281,14 @@ func (e *Effect) Validate(t Type) error {
 		if len(e.Mods) == 0 && e.Restrict == "" {
 			return fmt.Errorf("static effect has no mods or restrict")
 		}
-		if e.Restrict != "" && e.Restrict != RestrictAdjacentAlliesNotAttackable && e.Restrict != RestrictOpposingNoEnterLeave {
+		if e.Restrict != "" && !validRestricts[e.Restrict] {
 			return fmt.Errorf("unknown restrict %q", e.Restrict)
 		}
+		if (e.Restrict == RestrictCountsAsLandscape) != (e.As != "") {
+			return fmt.Errorf("as goes with counts_as_landscape, and only with it")
+		}
 		for _, m := range e.Mods {
-			if m.Stat != "atk" && m.Stat != "def" {
+			if m.Stat != "atk" && m.Stat != "def" && m.Stat != "damage_taken" {
 				return fmt.Errorf("mod stat %q", m.Stat)
 			}
 			switch m.To.Rel {
@@ -249,7 +305,8 @@ func (e *Effect) Validate(t Type) error {
 		}
 	case KindTrigger:
 		switch e.On {
-		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters, OnHeroDamage:
+		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters, OnHeroDamage,
+			OnDealsDamage, OnAttacks, OnDiscarded:
 		default:
 			return fmt.Errorf("unknown trigger %q", e.On)
 		}
@@ -294,8 +351,8 @@ func (e *Effect) Validate(t Type) error {
 			return fmt.Errorf("additional costs belong to cards that are played")
 		}
 		for i, op := range e.Do {
-			if op.Do != "discard" {
-				return fmt.Errorf("additional cost op %d: only discard is supported, got %q", i, op.Do)
+			if op.Do != "discard" && op.Do != "exhaust" {
+				return fmt.Errorf("additional cost op %d: only discard and exhaust are supported, got %q", i, op.Do)
 			}
 		}
 	default:
@@ -370,7 +427,7 @@ func (v Value) validate() error {
 	switch v.Per.Of {
 	case "landscapes", "landscape_types", "creatures", "flooped_creatures", "spells_played", "opponent_hand",
 		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost",
-		"milled_spells", "damage", "damage_dealt":
+		"milled_spells", "damage", "damage_dealt", "buildings", "played_titled", "drawn_this_turn":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

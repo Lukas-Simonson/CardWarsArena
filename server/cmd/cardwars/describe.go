@@ -150,6 +150,20 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return "Discard " + u.instName(a.Card)
 		case engine.ChoiceReveal:
 			return "Put " + u.instName(a.Card) + " on the bottom of the deck"
+		case engine.ChoiceSearch:
+			return "Put " + u.instName(a.Card) + " into play from the deck"
+		case engine.ChoiceRebound:
+			if a.Card == 0 {
+				return "Leave " + u.g.Catalog()[ch.Card].Name + " in the discard pile"
+			}
+			return "Discard " + u.instName(a.Card) + " to return " + u.g.Catalog()[ch.Card].Name + " to your hand"
+		case engine.ChoiceRedirect:
+			if a.Card == 0 {
+				return u.g.Catalog()[ch.Card].Name + " fights"
+			}
+			return u.instName(a.Card) + " fights instead"
+		case engine.ChoiceMoveDamage:
+			return fmt.Sprintf("Move %d damage", a.Card)
 		}
 		return "Choose"
 	case engine.ActPlayPending:

@@ -39,8 +39,8 @@ func (g *Game) fireTurnStart(p PlayerID) []Event {
 		if l.Creature != nil {
 			items = append(items, item{g.effectsOf(l.Creature), effCtx{p: p, at: pos{p, i}, hasSrc: true, creature: l.Creature}})
 		}
-		if l.Building != nil {
-			items = append(items, item{g.Card(l.Building.Instance).Effects, effCtx{p: p, at: pos{p, i}, hasSrc: true, card: l.Building.CardID}})
+		for _, b := range l.buildings() {
+			items = append(items, item{g.buildingEffects(pos{p, i}, b), effCtx{p: p, at: pos{p, i}, hasSrc: true, card: b.CardID}})
 		}
 	}
 	var ev []Event
@@ -64,8 +64,8 @@ func (g *Game) fireWatchers(p PlayerID, lane int) []Event {
 		if l.Creature != nil {
 			ev = append(ev, g.watch(g.effectsOf(l.Creature), effCtx{p: p, at: at, hasSrc: true, creature: l.Creature, entering: &pos{p, lane}}, ent)...)
 		}
-		if l.Building != nil {
-			ev = append(ev, g.watch(g.Card(l.Building.Instance).Effects, effCtx{p: p, at: at, hasSrc: true, entering: &pos{p, lane}}, ent)...)
+		for _, b := range l.buildings() {
+			ev = append(ev, g.watch(g.buildingEffects(at, b), effCtx{p: p, at: at, hasSrc: true, entering: &pos{p, lane}}, ent)...)
 		}
 	}
 	return ev
@@ -78,7 +78,7 @@ func (g *Game) watch(effects []card.Effect, ctx effCtx, ent *Creature) []Event {
 			continue
 		}
 		if w := e.Watch; w != nil {
-			if (w.Landscape != "" && g.Card(ent.Instance).Landscape != w.Landscape) ||
+			if (w.Landscape != "" && !g.isType(*ctx.entering, w.Landscape)) ||
 				(w.Other && ctx.creature == ent) ||
 				(w.YourTurn && g.State.Active != ctx.p) {
 				continue

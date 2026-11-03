@@ -52,6 +52,31 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 			}
 		}
 		return ErrNoSuchCard
+	case ChoiceSearch:
+		for _, in := range ch.Revealed {
+			if in.UID == a.Card {
+				return nil
+			}
+		}
+		return ErrNoSuchCard
+	case ChoiceRebound:
+		if a.Card != 0 && g.handIndex(p, a.Card) < 0 {
+			return ErrNoSuchCard
+		}
+	case ChoiceRedirect:
+		if a.Card == 0 {
+			return nil
+		}
+		for _, in := range ch.Revealed {
+			if in.UID == a.Card {
+				return nil
+			}
+		}
+		return ErrNoSuchCard
+	case ChoiceMoveDamage:
+		if a.Card < 1 || a.Card > ch.Count {
+			return ErrBadTarget
+		}
 	}
 	return nil
 }
@@ -74,11 +99,40 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 			return ev
 		}
 	case ChoiceDiscard:
-		ev = g.discardFromHand(p, a.Card)
+		ev = g.discardForBonus(p, a.Card, ch.Bonus)
 		ch.Count--
 		if ch.Count > 0 && len(g.State.Players[p].Hand) > 0 {
 			return ev // more to discard: the same Choice stays open
 		}
+	case ChoiceSearch:
+		pl := &g.State.Players[p]
+		for i, in := range pl.Deck {
+			if in.UID == a.Card {
+				pl.Deck = append(pl.Deck[:i:i], pl.Deck[i+1:]...)
+				ev = g.putBuilding(p, in, ch.Lane)
+				break
+			}
+		}
+		g.shuffle(pl.Deck)
+	case ChoiceRebound:
+		if a.Card == 0 {
+			break
+		}
+		ev = g.discardFromHand(p, a.Card)
+		if in, ok := g.takeFromDiscard(p, ch.SourceUID); ok {
+			g.State.Players[p].Hand = append(g.State.Players[p].Hand, in)
+			ev = append(ev, Event{Kind: EvReturn, Player: p, Card: in.UID})
+		}
+	case ChoiceRedirect:
+		lane := ch.Lane
+		for l, ln := range g.State.Players[p].Lanes {
+			if ln.Creature != nil && ln.Creature.UID == a.Card && a.Card != 0 {
+				lane = l
+			}
+		}
+		ev = g.fight(p, ch.Lane, lane)
+	case ChoiceMoveDamage:
+		ev = g.moveDamage(p, ch.Lane, ch.Other, a.Card)
 	case ChoiceReveal:
 		pl := &g.State.Players[p]
 		for _, in := range ch.Revealed {
@@ -111,9 +165,23 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})
 		}
 		out = append(out, Action{Kind: ActChoose}) // destroy it instead
-	case ChoiceReveal:
+	case ChoiceReveal, ChoiceSearch:
 		for _, in := range ch.Revealed {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+	case ChoiceRebound:
+		for _, in := range g.State.Players[p].Hand {
+			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+		out = append(out, Action{Kind: ActChoose}) // keep it in the discard pile
+	case ChoiceRedirect:
+		for _, in := range ch.Revealed {
+			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+		out = append(out, Action{Kind: ActChoose}) // the Creature that attacked fights
+	case ChoiceMoveDamage:
+		for n := 1; n <= ch.Count; n++ {
+			out = append(out, Action{Kind: ActChoose, Card: n})
 		}
 	}
 	return out

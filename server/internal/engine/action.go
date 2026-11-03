@@ -98,6 +98,7 @@ const (
 	EvDiscard   EventKind = "discard"   // a card was discarded from hand
 	EvSteal     EventKind = "steal"     // a card was taken from the opponent's hand
 	EvAbilities EventKind = "abilities" // a Creature's abilities changed (Lane, Card)
+	EvReveal    EventKind = "reveal"    // a card in hand was shown (Card)
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.
@@ -137,4 +138,5 @@ var (
 	ErrChoice         = errors.New("a decision must be made first")
 	ErrNoChoice       = errors.New("there is no decision to make")
 	ErrLimit          = errors.New("that ability has been used as often as it can be this turn")
+	ErrNoFloop        = errors.New("Creatures in this Lane cannot use Floop abilities")
 )

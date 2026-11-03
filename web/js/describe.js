@@ -82,6 +82,10 @@ export function describeAction(ctx, a) {
       if (ch?.kind === "upkeep" && !a.card) return `Destroy ${cardName(ctx, ch.card)}`;
       if (ch?.kind === "discard" || ch?.kind === "upkeep") return `Discard ${instName(ctx, a.card)}`;
       if (ch?.kind === "reveal") return `Put ${instName(ctx, a.card)} on the bottom of your deck`;
+      if (ch?.kind === "search") return `Put ${instName(ctx, a.card)} into play from your deck`;
+      if (ch?.kind === "rebound") return a.card ? `Discard ${instName(ctx, a.card)} to return ${cardName(ctx, ch.card)} to your hand` : `Leave ${cardName(ctx, ch.card)} in the discard pile`;
+      if (ch?.kind === "redirect") return a.card ? `${instName(ctx, a.card)} fights instead` : `${cardName(ctx, ch.card)} fights`;
+      if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
       return "Choose";
     }
     case "attack": {
@@ -137,6 +141,7 @@ export function describeEvent(ctx, e) {
     case "discard": return `${who} discards ${n()}`;
     case "steal": return `${who} steals ${n()} from the opponent's hand`;
     case "abilities": return `${n()}'s abilities change`;
+    case "reveal": return `${who} reveals ${n()}`;
     default: return e.kind;
   }
 }

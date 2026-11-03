@@ -24,8 +24,8 @@ func (g *Game) forEachSource(fn func(source)) {
 			if l.Creature != nil {
 				fn(source{at, l.Creature, g.effectsOf(l.Creature)})
 			}
-			if l.Building != nil {
-				fn(source{at, nil, g.Card(l.Building.Instance).Effects})
+			for _, b := range l.buildings() {
+				fn(source{at, nil, g.buildingEffects(at, b)})
 			}
 		}
 	}
@@ -137,7 +137,13 @@ func (g *Game) selects(sel card.Selector, s source, target pos, t *Creature) boo
 	if sel.Damage != nil && !sel.Damage.Has(t.Damage) {
 		return false
 	}
-	if sel.Landscape != "" && g.Card(t.Instance).Landscape != sel.Landscape {
+	if sel.Landscape != "" && !g.isType(target, sel.Landscape) {
+		return false
+	}
+	if sel.Flooped != nil && (t.Status == Flooped) != *sel.Flooped {
+		return false
+	}
+	if sel.WithBuilding && g.State.Players[target.P].Lanes[target.Lane].Building == nil {
 		return false
 	}
 	if sel.ChangedLanes && !t.ChangedLanes {
@@ -177,6 +183,9 @@ func (g *Game) count(c card.Count, s source) int {
 					n++
 				}
 			}
+			if !c.Adjacent {
+				n += g.extraLandscapes(p, c.Type)
+			}
 		}
 		return n
 	case "landscape_types":
@@ -186,16 +195,21 @@ func (g *Game) count(c card.Count, s source) int {
 				seen[l.Landscape] = true
 			}
 		}
+		for _, ls := range card.Landscapes {
+			if g.extraLandscapes(s.P, ls) > 0 {
+				seen[ls] = true
+			}
+		}
 		return len(seen)
 	case "creatures", "flooped_creatures":
 		n := 0
 		for _, p := range players {
-			for _, l := range st.Players[p].Lanes {
+			for i, l := range st.Players[p].Lanes {
 				cr := l.Creature
 				if cr == nil || (c.Other && cr == s.creature) {
 					continue
 				}
-				if c.Type != "" && g.Card(cr.Instance).Landscape != c.Type {
+				if c.Type != "" && !g.isType(pos{p, i}, c.Type) {
 					continue
 				}
 				if c.Card != "" && cr.CardID != c.Card {
@@ -208,6 +222,19 @@ func (g *Game) count(c card.Count, s source) int {
 			}
 		}
 		return n
+	case "buildings":
+		n := 0
+		for _, p := range players {
+			n += g.buildingCount(p, c.Card)
+		}
+		return n
+	case "played_titled":
+		if s.P != st.Active {
+			return 0
+		}
+		return g.playedTitled(c.Words)
+	case "drawn_this_turn":
+		return st.Drawn[s.P]
 	case "spells_played":
 		if s.P != st.Active {
 			return 0
@@ -280,8 +307,8 @@ func (g *Game) cond(c card.Cond, s source) bool {
 	}
 	if c.Controls != "" {
 		found := false
-		for _, l := range st.Players[s.P].Lanes {
-			found = found || (l.Creature != nil && g.Card(l.Creature.Instance).Landscape == c.Controls)
+		for i, l := range st.Players[s.P].Lanes {
+			found = found || (l.Creature != nil && g.isType(pos{s.P, i}, c.Controls))
 		}
 		if !found {
 			return false
@@ -307,8 +334,31 @@ func (g *Game) cond(c card.Cond, s source) bool {
 	if c.Replaced != nil && (s.creature == nil || s.creature.Replaced != *c.Replaced) {
 		return false
 	}
+	if c.Flooped != nil && (s.creature == nil || (s.creature.Status == Flooped) != *c.Flooped) {
+		return false
+	}
+	if c.OtherCreatures != nil {
+		n := 0
+		for _, l := range st.Players[s.P].Lanes {
+			if l.Creature != nil && l.Creature != s.creature {
+				n++
+			}
+		}
+		if !c.OtherCreatures.Has(n) {
+			return false
+		}
+	}
+	if pc := c.Played; pc != nil {
+		n := 0
+		if s.P == st.Active {
+			n = g.playedOfType(pc.Landscape)
+		}
+		if pc.Min != nil && n < *pc.Min {
+			return false
+		}
+	}
 	if lc := c.Landscapes; lc != nil {
-		n := g.faceUp(s.P, lc.Type)
+		n := g.landscapeCount(s.P, lc.Type)
 		if (lc.Min != nil && n < *lc.Min) || (lc.Max != nil && n > *lc.Max) {
 			return false
 		}
@@ -340,12 +390,8 @@ func (g *Game) attackable(target pos) bool {
 // side of a Lane is stopped from triggering entering and leaving play effects
 // by an opposing Building (Palace of Bone).
 func (g *Game) blocksTriggers(p PlayerID, lane int) bool {
-	b := g.State.Players[p.Opp()].Lanes[lane].Building
-	if b == nil {
-		return false
-	}
-	for _, e := range g.Card(b.Instance).Effects {
-		if e.Kind == card.KindStatic && e.Restrict == card.RestrictOpposingNoEnterLeave {
+	for _, b := range g.State.Players[p.Opp()].Lanes[lane].buildings() {
+		if hasRestrict(g.buildingEffects(pos{p.Opp(), lane}, b), card.RestrictOpposingNoEnterLeave) {
 			return true
 		}
 	}

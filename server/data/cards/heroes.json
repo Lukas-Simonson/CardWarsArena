@@ -14,6 +14,20 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/BMO.webp"
   },
   {
+    "id": "cake",
+    "name": "Cake",
+    "type": "hero",
+    "text": "Each time you play a Building, heal 2 damage from each of your Creatures in a Lane with a Building you control.",
+    "printings": [
+      {
+        "deck": "Cake's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cake.webp"
+  },
+  {
     "id": "finn",
     "name": "Finn",
     "type": "hero",
@@ -26,6 +40,20 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Finn.webp"
+  },
+  {
+    "id": "fionna",
+    "name": "Fionna",
+    "type": "hero",
+    "text": "While you control only one Landscape type, your Rainbow Creatures have +1 ATK.",
+    "printings": [
+      {
+        "deck": "Fionna's Deck",
+        "set": "Fionna Vs Cake",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fionna.webp"
   },
   {
     "id": "jake",

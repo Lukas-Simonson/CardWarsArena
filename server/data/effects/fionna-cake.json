@@ -1,0 +1,861 @@
+{
+ "archer-danica": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "destroy_building",
+     "slot": 0
+    },
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing"
+     },
+     "amount": {
+      "n": 3
+     }
+    }
+   ],
+   "targets": [
+    {
+     "what": "building",
+     "side": "you",
+     "label": "Destroy"
+    }
+   ]
+  }
+ ],
+ "blood-castle": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "damage_taken",
+     "to": {
+      "rel": "lane_foe"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "burly-lumberjack": [
+  {
+   "kind": "static",
+   "restrict": "extra_buildings"
+  }
+ ],
+ "business-dog": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "played_titled",
+       "words": [
+        "Dog",
+        "Puppy"
+       ]
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "cabin-of-many-woods": [
+  {
+   "kind": "cost_mod",
+   "reduce": {
+    "n": 1,
+    "per": {
+     "of": "flooped_creatures"
+    }
+   }
+  },
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "lane_ally"
+     },
+     "amount": {
+      "n": 5
+     }
+    }
+   ]
+  }
+ ],
+ "celestial-fortress": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "lane_foe"
+     },
+     "amount": {
+      "n": -2
+     }
+    }
+   ]
+  }
+ ],
+ "charming-city": [
+  {
+   "kind": "static",
+   "restrict": "lane_rainbow"
+  }
+ ],
+ "corns-templar": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "heal_creature",
+     "self": true,
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "crazy-cat-lady": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "your",
+      "landscape": "rainbow"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "deforestation": [
+  {
+   "kind": "additional_cost",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "ready": true,
+     "label": "Exhaust"
+    }
+   ],
+   "do": [
+    {
+     "do": "exhaust",
+     "slot": 0
+    }
+   ]
+  },
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "search_building",
+     "slot": 0
+    }
+   ],
+   "targets": [
+    {
+     "what": "lane",
+     "side": "you",
+     "label": "Put it in"
+    }
+   ]
+  }
+ ],
+ "druid-of-the-cob": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "your",
+      "flooped": true
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "emboldened-retriever": [
+  {
+   "kind": "trigger",
+   "on": "attacks",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "farmhouse": [
+  {
+   "kind": "static",
+   "restrict": "counts_as_landscape",
+   "as": "cornfield"
+  }
+ ],
+ "fiddling-ferret": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "discard_choice",
+     "amount": {
+      "n": 1
+     },
+     "rainbow_actions": 1
+    }
+   ]
+  }
+ ],
+ "friendship-bracelet": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "move_damage",
+     "slot": 0,
+     "slot2": 1
+    }
+   ],
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "damaged": true,
+     "label": "Take damage from"
+    },
+    {
+     "what": "creature",
+     "side": "you",
+     "distinct": "pair",
+     "label": "Give it to"
+    }
+   ]
+  }
+ ],
+ "furious-furor": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "flooped_creatures"
+      }
+     }
+    }
+   ],
+   "targets": [
+    {
+     "what": "creature"
+    }
+   ]
+  }
+ ],
+ "glorious-gramophone": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 4
+     }
+    },
+    {
+     "do": "discard_choice",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "harvest-moon": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "play_building",
+     "slot": 0,
+     "slot2": 1
+    }
+   ],
+   "targets": [
+    {
+     "what": "discard_card",
+     "side": "you",
+     "card_type": "building",
+     "label": "Put into play"
+    },
+    {
+     "what": "lane",
+     "side": "you",
+     "label": "in"
+    }
+   ]
+  }
+ ],
+ "helping-hand": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "return_from_discard",
+     "slot": 0
+    }
+   ],
+   "targets": [
+    {
+     "what": "discard_card",
+     "side": "you",
+     "card_type": "building",
+     "label": "Return"
+    }
+   ]
+  }
+ ],
+ "hunkclops": [],
+ "husker-champion": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "building_in_lane": true
+     }
+    },
+    {
+     "stat": "def",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "building_in_lane": true
+     }
+    }
+   ]
+  }
+ ],
+ "husker-valkyrie": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "building_in_lane": true
+     }
+    },
+    {
+     "stat": "def",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "building_in_lane": true
+     }
+    }
+   ]
+  }
+ ],
+ "impossible-possum": [
+  {
+   "kind": "trigger",
+   "on": "discarded",
+   "do": [
+    {
+     "do": "rebound"
+    }
+   ]
+  }
+ ],
+ "infant-scholar": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 3
+     },
+     "if": {
+      "played": {
+       "landscape": "rainbow",
+       "min": 1
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "kernel-queen": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "flooped_creatures"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "learning-center": [
+  {
+   "kind": "static",
+   "restrict": "copy_adjacent_buildings"
+  }
+ ],
+ "log-rhythm": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "your",
+      "with_building": true
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "lonely-panda": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "other_creatures": {
+       "max": 0
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "lumbercaddy": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "move_building",
+     "slot": 0,
+     "slot2": 1
+    }
+   ],
+   "targets": [
+    {
+     "what": "building",
+     "side": "you",
+     "label": "Move"
+    },
+    {
+     "what": "lane",
+     "side": "you",
+     "without": "building",
+     "label": "to"
+    }
+   ]
+  }
+ ],
+ "mr-slicer": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 2
+     }
+    }
+   ],
+   "targets": [
+    {
+     "what": "creature",
+     "side": "opponent",
+     "in_lane": true
+    }
+   ]
+  }
+ ],
+ "oil-refinery": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "lane_ally"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "buildings",
+       "card": "oil-refinery"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "pied-piper": [
+  {
+   "kind": "trigger",
+   "on": "attacks",
+   "do": [
+    {
+     "do": "redirect_attack"
+    }
+   ]
+  }
+ ],
+ "pony": [],
+ "popcorn-butteredfly": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "buildings"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "psionic-swashbuckler": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 3
+     }
+    }
+   ],
+   "targets": [
+    {
+     "what": "creature",
+     "side": "any",
+     "flooped": true,
+     "optional": true
+    }
+   ]
+  }
+ ],
+ "puppy-parade": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "heal_creature",
+     "all": {
+      "rel": "your"
+     },
+     "amount": {
+      "n": 2
+     }
+    },
+    {
+     "do": "make_rainbow",
+     "all": {
+      "rel": "your"
+     }
+    }
+   ]
+  }
+ ],
+ "river-of-swords": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "your"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    },
+    {
+     "do": "draw",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "singing-sword": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "drawn_this_turn",
+       "div": 2
+      }
+     }
+    }
+   ],
+   "targets": [
+    {
+     "what": "creature"
+    }
+   ]
+  }
+ ],
+ "sword-bouquet": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "drawn_this_turn"
+      }
+     }
+    }
+   ],
+   "targets": [
+    {
+     "what": "creature"
+    }
+   ]
+  }
+ ],
+ "the-dog": [
+  {
+   "kind": "floop",
+   "do": []
+  },
+  {
+   "kind": "static",
+   "restrict": "silence_opposing_buildings"
+  }
+ ],
+ "tiny-elephant": [
+  {
+   "kind": "static",
+   "restrict": "also_rainbow"
+  }
+ ],
+ "tornado-wall-of-fire": [
+  {
+   "kind": "floop",
+   "do": []
+  },
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 3
+     },
+     "if": {
+      "flooped": true
+     }
+    }
+   ]
+  }
+ ],
+ "tough-lumberjill": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "opponent",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "buildings"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "vampire-lord": [
+  {
+   "kind": "trigger",
+   "on": "deals_damage",
+   "do": [
+    {
+     "do": "heal_creature",
+     "self": true,
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "damage_dealt"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "void-thimble": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "you",
+     "amount": {
+      "n": 2
+     }
+    },
+    {
+     "do": "gain_actions",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "woadic-enchantress": [
+  {
+   "kind": "static",
+   "restrict": "lane_no_floop"
+  }
+ ],
+ "woadic-matriarch": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "creatures",
+       "type": "rainbow"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "woadic-weirdo": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "rainbow_hand",
+     "slot": 0
+    }
+   ],
+   "targets": [
+    {
+     "what": "hand_card",
+     "label": "Reveal"
+    }
+   ]
+  }
+ ]
+}

@@ -12,13 +12,13 @@ created with `AllowUnimplemented`.
 | kind        | meaning |
 |-------------|---------|
 | `static`    | Always on while the card is in play: stat `mods` and/or a `restrict`ion |
-| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters`, `deals_hero_damage` |
+| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters`, `deals_hero_damage`, `deals_damage` (a Fight dealt it damage to a Creature or player), `attacks` (just activated to Fight, before damage) and `discarded` (went from play to a discard pile, not to a hand) |
 | `floop`     | `FLOOP >>>` ability: exhaust (Ready only), then run `do`. `cost` adds Actions to pay |
 | `activate`  | `Pay N Action(s) >>>` ability, usable any number of times. `cost` 0 is allowed when the first op removes the card itself (`destroy_creature`/`bounce` with `self`) or `discard`s a `hand_card` target ("Discard a card >>>"). `limit` caps the uses each turn |
 | `play_condition` | The card may only be played while `if` holds (Hot Eyebat, Bone Wand) |
 | `cost_mod`  | The card costs `reduce` less: Actions and Landscapes, or only Actions with `actions_only` |
 | `spell`     | Resolved when the Spell is played, then the Spell is discarded |
-| `additional_cost` | Paid when the card is played (Field Reaper discards a card); its targets travel in the action's `cost_targets` |
+| `additional_cost` | Paid when the card is played (Field Reaper discards a card, Deforestation exhausts a Creature); its targets travel in the action's `cost_targets` |
 
 ## Pieces
 
@@ -30,18 +30,23 @@ created with `AllowUnimplemented`.
   `entered_adjacent` (entered on your side in the Lanes next to the card), `base_attack`
   (the card's printed ATK), `milled_cost` (the cost of the card `mill` last discarded),
   `milled_spells` (how many Spells it discarded), `damage` (on the card, or on each chosen
-  Creature with `from_target`) and `damage_dealt` (what a Creature just did to a player).
+  Creature with `from_target`), `damage_dealt` (what a Creature just did in a Fight), `buildings`
+  (the Buildings you control, or only those of the card named by `card`), `played_titled`
+  (cards you played this turn whose name has one of `words`) and `drawn_this_turn`.
   `div` counts whole groups ("for every 5 cards": `div: 5`), `card` limits `creatures` to one
   card, and `from_target` counts from each chosen Creature instead of the card. Landscape counts only see face-up ones.
-  `creatures` with `type` matches the *card's* Landscape type (a Rainbow card is
-  never a Cornfield Creature).
-- **Selector** `{rel, landscape?, changed_lanes?, damage?}`: which creatures. `rel` is
+  `creatures` with `type` matches the Creature's Landscape types *now* (see "Landscape types"
+  below): a Rainbow Creature is never a Cornfield Creature.
+- **Selector** `{rel, landscape?, changed_lanes?, damage?, flooped?, with_building?}`: which creatures. `rel` is
   `self`, `lane_ally` (my creature in this Lane), `lane_foe` (the opposing creature in this
-  Lane), `adjacent_allies`, `your`, `opposing`, `any`. `damage` is a `{min?, max?}` range the
+  Lane), `adjacent_allies`, `your`, `opposing`, `any`. `flooped` picks Flooped (or only not Flooped) Creatures, `with_building` those in a Lane where
+  their controller has a Building. `damage` is a `{min?, max?}` range the
   creature's damage must be in ("exactly 2 damage", "no damage").
 - **Cond** `{opposing_creature_in_lane?, landscapes?{type,min?,max?}, building_in_lane?,
   opponent_hand_max?, discard_min?, controls?, on_landscape?, entered_max?, damage?, replaced?}`
   (`damage` is on the card itself, `replaced` is whether it replaced a Creature when it entered).
+  Also `flooped` (the card is Flooped), `other_creatures` (a `{min?, max?}` range for how many Creatures
+  you control besides the card) and `played` (`{landscape, min}`: cards of that type you played this turn).
 - **Watch** (on a `creature_enters` trigger) `{landscape?, other?, your_turn?}`: which Creatures entering
   under your control fire it. `once_per_turn` limits the trigger to once each turn.
 - **TargetSpec**: one choice slot. `what` = `creature|building|landscape|lane|discard_card|hand_card`,
@@ -49,7 +54,7 @@ created with `AllowUnimplemented`.
   `lane_of` (only the Lane of an earlier slot's choice), `group` (slots sharing one need exactly
   one choice between them: "heal or deal 1 damage"), `distinct` (slots of one name may not pick
   the same target), `label` (what the choice is for; sent with the legal action as `labels`), `landscape`, `face_down`,
-  `without` (for lanes: `creature` or `building`), `card_type`, `optional`, and
+  `without` (for lanes: `creature` or `building`), `ready` and `damaged` (creatures), `card_type`, `optional`, and
   `count` (a Value: choose up to that many *distinct* targets).
 - **Op**: one step of `do`: `draw`, `damage_creature`, `damage_hero`,
   `mod_creature`, `move_creature`, `move_building`, `flip_landscape`,
@@ -59,10 +64,34 @@ created with `AllowUnimplemented`.
   `discount_next_creature`, `borrow_creature` (Spirit Tower), `ogre_gas`, `may`, `heal_creature`
   (`amount` is up to that much; 99 heals it all), `heal_hero` (never above 25), `swap_creatures`
   (the card itself and slot), `protect` (Cave of Solitude), `no_combat_damage` (Falling Star),
-  `discount_replace` (Pyramidia) and `upkeep` (Steakchop). Ops reference
+  `discount_replace` (Pyramidia), `upkeep` (Steakchop), `exhaust` (Ready Creatures become
+  Flooped), `play_building` (a Building from a discard pile into a Lane), `search_building`
+  (Deforestation), `move_damage` (Friendship Bracelet), `make_rainbow` (until end of turn),
+  `rainbow_hand` (a card in hand is Rainbow until end of turn), `rebound` (Impossible Possum) and
+  `redirect_attack` (Pied Piper). `discard_choice` may carry `rainbow_actions`: Actions gained if a
+  Rainbow card is among those discarded. Ops reference
   target slots by index and may carry an `if` condition. `self` and `entering` act on the
   card itself or on the Creature that fired a `creature_enters` trigger instead of a slot;
   `permanent` makes `mod_creature` last while the Creature is in play.
+
+## Landscape types, Rainbow and Buildings
+
+A Creature's Landscape types are worked out each time they are asked for (`creatureTypes`): its card's
+own type, but only Rainbow when a Rainbow rule applies (Charming City's Lane, or `Creature.Rainbow`
+from Puppy Parade), plus Rainbow for a card with the `also_rainbow` restriction (Tiny Elephant).
+A card in hand is Rainbow if it is printed that way or Woadic Weirdo has made it so
+(`State.RainbowHand`); that matters for what it costs to play, for Infant Scholar and for Fiddling Ferret.
+
+`static` effects with a `restrict` do rule-changing jobs: `lane_rainbow`, `also_rainbow`,
+`lane_no_floop`, `extra_buildings`, `silence_opposing_buildings`, `counts_as_landscape` (with `as`) and
+`copy_adjacent_buildings`. A Mod with the stat `damage_taken` raises every amount of damage the Creatures it
+selects take (Blood Castle).
+
+A Lane normally holds one Building. While a Creature with `extra_buildings` is in the Lane, Buildings played
+there are added as `Lane.Extra` instead of replacing the one there. Everything that looks at Buildings
+(statics, counts, triggers, Landscape counts) sees all of them; abilities, targets, destroying and moving
+only deal with the first, and when it leaves the next one takes its place. Playing a Building in a Lane
+without such a Creature replaces all of them.
 
 ## Targets are chosen up front
 
@@ -145,4 +174,19 @@ stuck.
   goes home to the same Lane at the end of the turn (if its owner has put nothing there).
 - Zazo's Magic Seeds counts Creatures that entered play this turn on the target's side.
 
-All four starter decks (Finn's, Jake's, BMO's and Lady's) are fully modelled.
+- Impossible Possum only returns when it goes from play to its owner's discard pile (dying, being
+  replaced or destroyed), not when it is discarded from hand or deck. Its owner decides.
+- "Exhaust" (Deforestation) makes a Ready Creature Flooped.
+- Emboldened Retriever draws whenever it attacks: there is no reason to refuse.
+- Pied Piper asks before the Fight, once a Flooped Creature of yours could take its place. The
+  Flooped Creature stays Flooped, and fights the Creature opposite Pied Piper. Pied Piper is spent either way.
+- Friendship Bracelet moves any amount of damage from one of your Creatures to another; "swap" in
+  either direction is the same as moving the difference. Cards moved this way are not "dealt".
+- Business Dog counts itself (it has "Dog" in its title), and Infant Scholar counts a card made Rainbow
+  by Woadic Weirdo. Cards played for free (Silo of Truth) are not counted.
+- Vampire Lord heals in combat only: damage from its own ability would need its own ruling.
+- Learning Center has the rules of the Buildings beside it, once for each, so two Oil Refineries beside it
+  give twice the bonus.
+- Cake and Fionna's Hero rules are not played by the engine (like every Hero).
+
+All eight preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's and Fionna's) are fully modelled.

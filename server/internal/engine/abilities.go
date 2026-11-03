@@ -35,7 +35,7 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 			return abilitySource{}, ErrNoAbility
 		}
 		ctx.card = l.Building.CardID
-		effects := g.Card(l.Building.Instance).Effects
+		effects := g.buildingEffects(ctx.at, l.Building)
 		return abilitySource{ctx: ctx, effects: effects, status: &l.Building.Status, real: countActivates(effects)}, nil
 	}
 	return abilitySource{}, ErrNoAbility
@@ -133,6 +133,9 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 		if g.State.Turn == 1 {
 			return ErrFirstTurn
 		}
+		if src.ctx.creature != nil && g.floopsBlocked(a.Lane) {
+			return ErrNoFloop
+		}
 		if *src.status != Ready {
 			return ErrNotReady
 		}
@@ -213,4 +216,15 @@ func (g *Game) abilityActions(p PlayerID) []Action {
 		}
 	}
 	return out
+}
+
+// floopsBlocked reports whether a Creature in a Lane may not use Floop
+// abilities because of a Creature in that Lane on either side (Woadic Enchantress).
+func (g *Game) floopsBlocked(lane int) bool {
+	for p := PlayerID(0); p < 2; p++ {
+		if cr := g.State.Players[p].Lanes[lane].Creature; cr != nil && hasRestrict(g.effectsOf(cr), card.RestrictLaneNoFloop) {
+			return true
+		}
+	}
+	return false
 }

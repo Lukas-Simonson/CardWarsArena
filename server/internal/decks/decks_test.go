@@ -65,7 +65,7 @@ func TestFindAndPick(t *testing.T) {
 	}
 	for _, d := range all {
 		if !d.Ready || !d.LandOK || d.Hero == "" {
-			t.Errorf("%s: ready=%v landscapes=%v hero=%q", d.Key(), d.Ready, d.LandOK, d.Hero)
+			t.Errorf("%s: ready=%v landscapes=%v hero=%q modelled=%d/%d", d.Key(), d.Ready, d.LandOK, d.Hero, d.Modelled, d.Distinct)
 		}
 	}
 	if _, err := Pick(all, "deck"); err == nil {

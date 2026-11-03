@@ -65,9 +65,8 @@ func (g *Game) Clear(p PlayerID, lane int) error {
 		return ErrBadLane
 	}
 	g.removeCreature(pos{p, lane}, toDiscard)
-	if b := g.State.Players[p].Lanes[lane].Building; b != nil {
+	for _, b := range g.State.Players[p].Lanes[lane].dropBuildings() {
 		g.State.Players[b.Owner].Discard = append(g.State.Players[b.Owner].Discard, b.Instance)
-		g.State.Players[p].Lanes[lane].Building = nil
 	}
 	g.settle()
 	return nil
@@ -88,8 +87,8 @@ func (g *Game) Instances() map[int]string {
 			if l.Creature != nil {
 				add(l.Creature.Instance)
 			}
-			if l.Building != nil {
-				add(l.Building.Instance)
+			for _, b := range l.buildings() {
+				add(b.Instance)
 			}
 		}
 	}
