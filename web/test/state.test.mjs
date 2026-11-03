@@ -118,6 +118,12 @@ test("learnCards sees hands, discards, lanes and the pending card", () => {
   assert.equal(known[99], "field-reaper");
 });
 
+test("learnCards names a Hero, so the log can say whose ability was used", () => {
+  const v = view();
+  v.players[0].hero = { uid: 2, card: "the-pig", owner: 0 };
+  assert.equal(learnCards({}, v)[2], "the-pig");
+});
+
 test("isMyDecision needs awaiting and legal actions", () => {
   const withLegal = reduce(reduce(initialState(), joined(), cards), update(1, view({ legal: [{ kind: "draw" }] })), cards);
   assert.equal(isMyDecision(withLegal), true);

@@ -176,3 +176,14 @@ test("actions that answer a Choice are described", async () => {
 test("showing a card in hand reads in the log", () => {
   assert.match(describeEvent(ctx, { kind: "reveal", player: 0, card: 10 }), /reveals Cool Dog$/);
 });
+
+test("a Hero's ability is described by the Hero, and selects as the Hero", () => {
+  const v = view();
+  v.players[0].hero = { uid: 2, card: "the-pig", owner: 0 };
+  const c = ctxFor(v);
+  const a = { kind: "activate", source: "hero", index: 0, targets: [[{ kind: "creature", player: 1, lane: 0 }]] };
+  assert.equal(describeAction(c, a), "Use The Pig's ability  [targets: Cool Dog (opp's, lane 1)]");
+  assert.equal(isKnownAction(c, a), true);
+  assert.equal(actionMatches(a, { type: "lane", lane: 0, source: "hero" }), true);
+  assert.equal(actionMatches(a, laneSelection(0, "creature")), false);
+});

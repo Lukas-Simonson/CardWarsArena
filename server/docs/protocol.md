@@ -112,6 +112,7 @@ A player:
 
 ```jsonc
 { "hp": 25, "deck_count": 35, "hand_count": 5,
+  "hero": {"uid":2,"card":"finn","owner":0},         // the deck's Hero, public; its abilities are in `legal`
   "hand": [{"uid":3,"card":"the-pig","owner":0}],   // ONLY your own seat
   "discard": [ … ],                                  // public, both seats
   "kept": true, "mulliganed": false,
@@ -152,7 +153,7 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `play_card` | main | `card` (hand uid), `lane` (not for Spells), `cost_targets`, `targets` |
 | `draw` | main | spend 1 Action to draw |
 | `floop` | main | `lane`, `source` (`creature`/`building`), `targets` |
-| `activate` | main | `lane`, `source`, `index`, `targets` |
+| `activate` | main | `lane`, `source`, `index`, `targets`; `source: "hero"` for a Hero's ability (no `lane`) |
 | `end_main` | main | go to the Fight phase (ends the turn on the first turn or with no one able to Fight) |
 | `attack` | fight | `lane` |
 | `play_pending` | after Silo of Truth | `lane`, `targets` |

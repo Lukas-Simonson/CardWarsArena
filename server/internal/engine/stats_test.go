@@ -22,8 +22,8 @@ func realGame(t *testing.T) *Game {
 			t.Fatal(err)
 		}
 	})
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, realCat.Deck("Finn Vs Jake", "Finn's Deck")}
-	jake := DeckSpec{cornfields, realCat.Deck("Finn Vs Jake", "Jake's Deck")}
+	finn := DeckSpec{Landscapes: [NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, Cards: realCat.Deck("Finn Vs Jake", "Finn's Deck")}
+	jake := DeckSpec{Landscapes: cornfields, Cards: realCat.Deck("Finn Vs Jake", "Jake's Deck")}
 	g, err := NewGame(realCat, Config{Seed: 1, First: 0, AllowUnimplemented: true}, [2]DeckSpec{jake, finn})
 	if err != nil {
 		t.Fatal(err)

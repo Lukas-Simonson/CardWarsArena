@@ -270,7 +270,7 @@ func TestBuildingsCanFloop(t *testing.T) {
 	cat := testCatalog()
 	cat["Well"] = &card.Card{ID: "Well", Name: "Well", Type: card.Building, Landscape: card.Rainbow, Cost: ip(0), Modeled: true,
 		Effects: []card.Effect{{Kind: card.KindFloop, Do: []card.Op{{Do: "draw", Who: "you", Amount: &card.Value{N: 1}}}}}}
-	d := DeckSpec{cornfields, repeat("Grunt", 12)}
+	d := DeckSpec{Landscapes: cornfields, Cards: repeat("Grunt", 12)}
 	g, err := NewGame(cat, Config{Seed: 1, SkipDeckRules: true}, [2]DeckSpec{d, d})
 	if err != nil {
 		t.Fatal(err)

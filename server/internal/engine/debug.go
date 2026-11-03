@@ -78,6 +78,9 @@ func (g *Game) Instances() map[int]string {
 	out := map[int]string{}
 	add := func(in Instance) { out[in.UID] = in.CardID }
 	for _, pl := range g.State.Players {
+		if pl.Hero.CardID != "" {
+			add(pl.Hero)
+		}
 		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard} {
 			for _, in := range list {
 				add(in)

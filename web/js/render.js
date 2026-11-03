@@ -85,7 +85,8 @@ function topbar({ ctx, me }, on) {
       h("span", { class: "ink", style: "font-size:17px" }, phase)));
 }
 
-function playerBar({ ctx, me, ui, tokens }, seat, on) {
+function playerBar(m, seat, on) {
+  const { ctx, me, ui, tokens } = m;
   const v = ctx.view, p = v.players[seat], mine = seat === me;
   const hpw = Math.max(0, Math.min(100, Math.round((p.hp / MAX_HP) * 100)));
   const backs = !mine && Array.from({ length: Math.min(p.hand_count, 10) }, () => h("div", { class: "back", "aria-hidden": "true" }, h("i")));
@@ -100,9 +101,28 @@ function playerBar({ ctx, me, ui, tokens }, seat, on) {
     h("div", { class: "pname" },
       h("div", { class: "h" }, mine ? `${seatName(ctx, seat)} (you)` : seatName(ctx, seat)),
       h("div", { class: "sub" }, mine ? `${p.hand?.length ?? 0} in hand` : `${p.hand_count} in hand`)),
+    heroChip(m, seat, on),
     backs && h("div", { class: "backs", "aria-hidden": "true" }, backs),
     !mine && h("div", { class: "counts" }, h("span", { class: "well", style: "padding:2px 10px;border-radius:999px" }, `Deck ${p.deck_count}`), pile("Discard", p.discard.length, true)),
     h("div", { class: "well hpbar", "data-seat": seat, "aria-hidden": "true" }, h("div", { style: `width:${hpw}%` })));
+}
+
+/** The player's Hero: click to read it; on my side, its abilities show as buttons while I may use them. */
+function heroChip(m, seat, on) {
+  const { ctx, me, srcs, ui } = m;
+  const hero = ctx.view.players[seat].hero;
+  if (!hero) return null;
+  const mine = seat === me;
+  const name = cardName(ctx, hero.card);
+  const acts = mine && !ui.picker ? srcs.hero ?? [] : [];
+  const abilities = [...new Set(acts.filter((a) => a.kind === "activate").map((a) => a.index ?? 0))].sort();
+  return h("div", { class: "herochip" },
+    h("button", {
+      type: "button", class: `well hero ${abilities.length ? "go" : ""} ${mine && ui.source === "hero" ? "sel" : ""}`,
+      "aria-label": `${mine ? "Your" : "Opponent's"} Hero: ${name}`, title: ctx.cards[hero.card]?.text ?? "",
+      onclick: () => on.onInspect(hero.card), onmouseenter: () => on.onInspect(hero.card, true),
+    }, h("span", { class: "tag" }, "Hero"), h("span", { class: "nm" }, name)),
+    abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": `Use ${name}'s ability`, onclick: () => on.onHeroAbility(n) }, "Use ability")));
 }
 
 function promptBar({ prompt, myDecision, ctx }, on) {

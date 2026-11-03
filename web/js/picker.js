@@ -14,14 +14,14 @@ const GENERAL_KINDS = new Set(["keep_hand", "mulligan", "draw", "end_main", "cho
 
 export const isGeneral = (a) => GENERAL_KINDS.has(a.kind);
 
-/** Where an action comes from: "hand:12", "lane:2:creature", "pending", or "" for general actions. */
+/** Where an action comes from: "hand:12", "lane:2:creature", "hero", "pending", or "" for general actions. */
 export function sourceKey(a) {
   switch (a.kind) {
     case "play_card": return `hand:${a.card}`;
     case "play_pending": return "pending";
     case "attack": return `lane:${a.lane ?? 0}:creature`;
     case "floop":
-    case "activate": return `lane:${a.lane ?? 0}:${a.source ?? "creature"}`;
+    case "activate": return a.source === "hero" ? "hero" : `lane:${a.lane ?? 0}:${a.source ?? "creature"}`;
     default: return "";
   }
 }

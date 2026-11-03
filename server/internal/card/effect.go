@@ -36,9 +36,18 @@ type Effect struct {
 	// static with restrict counts_as_landscape: the Landscape type it adds.
 	As Landscape `json:"as,omitempty"`
 
+	// static, on a Hero: every Creature matching Grant.To has Grant.Ability as well (Finn).
+	Grant *Grant `json:"grant,omitempty"`
+
 	// floop, activate, spell, trigger: what is chosen and what happens.
 	Targets []TargetSpec `json:"targets,omitempty"`
 	Do      []Op         `json:"do,omitempty"`
+}
+
+// Grant gives an ability to the Creatures a Selector picks.
+type Grant struct {
+	To      Selector `json:"to"`
+	Ability Effect   `json:"ability"`
 }
 
 // Watch says which Creatures entering play under the watcher's control fire
@@ -87,6 +96,13 @@ const (
 	// OnDiscarded fires on a Creature that has just gone from play into a
 	// discard pile (not back to a hand): Impossible Possum.
 	OnDiscarded = "discarded"
+	// OnReplaces fires on a Hero when its controller replaces a Creature on their turn (LSP).
+	OnReplaces = "replaces"
+	// OnBuildingPlayed fires on a Hero when its controller puts a Building into play (Cake).
+	OnBuildingPlayed = "building_played"
+	// OnReturns fires on a Hero when its controller returns a Creature to their hand from play
+	// or from their discard pile on their turn; cond `returned` counts them (Lady Rainicorn).
+	OnReturns = "returns"
 )
 
 // Restrictions (Effect.Restrict).
@@ -155,6 +171,7 @@ type Selector struct {
 	ChangedLanes bool      `json:"changed_lanes,omitempty"`
 	Flooped      *bool     `json:"flooped,omitempty"`       // only Flooped (or only not Flooped) Creatures
 	WithBuilding bool      `json:"with_building,omitempty"` // only Creatures in a Lane where their controller has a Building
+	FaceDown     *bool     `json:"face_down,omitempty"`     // only Creatures on a face-down (or face-up) Landscape
 }
 
 // Range bounds a number; an unset end is open.
@@ -183,6 +200,8 @@ type Cond struct {
 	Flooped                *bool          `json:"flooped,omitempty"`           // the card (a Creature) is Flooped
 	OtherCreatures         *Range         `json:"other_creatures,omitempty"`   // you control this many Creatures besides the card
 	Played                 *PlayedCond    `json:"played,omitempty"`            // cards of a type you played this turn
+	LandscapeTypes         *Range         `json:"landscape_types,omitempty"`   // you control this many face-up Landscape types
+	Returned               *Range         `json:"returned,omitempty"`          // Creatures you returned to your hand this turn
 }
 
 // PlayedCond bounds how many cards of a Landscape type you played this turn.
@@ -278,8 +297,19 @@ var validOps = map[string]struct{ slots int }{
 func (e *Effect) Validate(t Type) error {
 	switch e.Kind {
 	case KindStatic:
-		if len(e.Mods) == 0 && e.Restrict == "" {
-			return fmt.Errorf("static effect has no mods or restrict")
+		if len(e.Mods) == 0 && e.Restrict == "" && e.Grant == nil {
+			return fmt.Errorf("static effect has no mods, restrict or grant")
+		}
+		if e.Grant != nil {
+			if t != Hero {
+				return fmt.Errorf("only a Hero can grant an ability")
+			}
+			if e.Grant.Ability.Kind != KindFloop && e.Grant.Ability.Kind != KindActivate {
+				return fmt.Errorf("a grant gives a floop or activate ability")
+			}
+			if err := e.Grant.Ability.Validate(Creature); err != nil {
+				return fmt.Errorf("grant: %w", err)
+			}
 		}
 		if e.Restrict != "" && !validRestricts[e.Restrict] {
 			return fmt.Errorf("unknown restrict %q", e.Restrict)
@@ -300,18 +330,22 @@ func (e *Effect) Validate(t Type) error {
 				return err
 			}
 		}
-		if t != Creature && t != Building {
-			return fmt.Errorf("static effects belong to creatures and buildings")
+		if t != Creature && t != Building && t != Hero {
+			return fmt.Errorf("static effects belong to creatures, buildings and heroes")
 		}
 	case KindTrigger:
 		switch e.On {
 		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters, OnHeroDamage,
 			OnDealsDamage, OnAttacks, OnDiscarded:
+		case OnReplaces, OnBuildingPlayed, OnReturns:
+			if t != Hero {
+				return fmt.Errorf("%s triggers belong to heroes", e.On)
+			}
 		default:
 			return fmt.Errorf("unknown trigger %q", e.On)
 		}
-		if t != Creature && t != Building {
-			return fmt.Errorf("triggers belong to creatures and buildings")
+		if t != Creature && t != Building && t != Hero {
+			return fmt.Errorf("triggers belong to creatures, buildings and heroes")
 		}
 		if len(e.Targets) > 0 && e.On != OnEnterPlay {
 			return fmt.Errorf("only enter_play triggers can have targets")
@@ -322,7 +356,7 @@ func (e *Effect) Validate(t Type) error {
 		}
 	case KindActivate:
 		free := len(e.Do) > 0 && ((e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce")) || e.Do[0].Do == "discard")
-		if e.Cost < 1 && !free {
+		if e.Cost < 1 && !free && t != Hero {
 			return fmt.Errorf("activate needs a cost of at least 1 Action, or to remove or discard something first")
 		}
 	case KindPlayCondition:

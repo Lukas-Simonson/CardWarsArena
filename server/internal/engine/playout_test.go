@@ -16,8 +16,8 @@ func starterGame(t testing.TB, seed uint64) *Game {
 	if err != nil {
 		t.Fatal(err)
 	}
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("Finn Vs Jake", "Finn's Deck")}
-	jake := DeckSpec{cornfields, cat.Deck("Finn Vs Jake", "Jake's Deck")}
+	finn := DeckSpec{Landscapes: [NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, Cards: cat.Deck("Finn Vs Jake", "Finn's Deck"), Hero: "finn"}
+	jake := DeckSpec{Landscapes: cornfields, Cards: cat.Deck("Finn Vs Jake", "Jake's Deck"), Hero: "jake"}
 	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2), AllowUnimplemented: true}, [2]DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)
@@ -33,8 +33,8 @@ func strictStarterGame(t testing.TB, seed uint64) *Game {
 	if err != nil {
 		t.Fatal(err)
 	}
-	finn := DeckSpec{[NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, cat.Deck("Finn Vs Jake", "Finn's Deck")}
-	jake := DeckSpec{cornfields, cat.Deck("Finn Vs Jake", "Jake's Deck")}
+	finn := DeckSpec{Landscapes: [NumLanes]card.Landscape{card.BluePlains, card.BluePlains, card.BluePlains, card.BluePlains}, Cards: cat.Deck("Finn Vs Jake", "Finn's Deck"), Hero: "finn"}
+	jake := DeckSpec{Landscapes: cornfields, Cards: cat.Deck("Finn Vs Jake", "Jake's Deck"), Hero: "jake"}
 	g, err := NewGame(cat, Config{Seed: seed, First: PlayerID(seed % 2)}, [2]DeckSpec{finn, jake})
 	if err != nil {
 		t.Fatal(err)

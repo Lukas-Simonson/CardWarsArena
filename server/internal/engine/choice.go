@@ -1,5 +1,7 @@
 package engine
 
+import "cardwars/internal/card"
+
 // ask opens a Choice, or queues it behind the one that is open.
 func (g *Game) ask(c Choice) {
 	if g.State.Choice == nil {
@@ -122,6 +124,9 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 		if in, ok := g.takeFromDiscard(p, ch.SourceUID); ok {
 			g.State.Players[p].Hand = append(g.State.Players[p].Hand, in)
 			ev = append(ev, Event{Kind: EvReturn, Player: p, Card: in.UID})
+			if g.Card(in).Type == card.Creature {
+				ev = append(ev, g.noteReturn(p)...)
+			}
 		}
 	case ChoiceRedirect:
 		lane := ch.Lane

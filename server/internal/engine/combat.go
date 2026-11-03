@@ -193,6 +193,10 @@ func (g *Game) endTurn(p PlayerID) []Event {
 	}
 	g.State.SpellsThisTurn = 0
 	g.State.Played, g.State.RainbowHand = nil, nil
+	g.State.Returned = [2]int{}
+	for i := range g.State.Players {
+		g.State.Players[i].HeroFired = nil
+	}
 	g.State.Entered = [2][NumLanes]int{}
 	g.State.CreatureDiscount = 0
 	g.State.NoCombatDamage = [2]bool{}

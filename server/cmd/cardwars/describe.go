@@ -188,6 +188,9 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 		}
 		return fmt.Sprintf("Fight in lane %d: %s %s", a.Lane+1, name, target)
 	case engine.ActFloop, engine.ActActivate:
+		if a.Source == "hero" {
+			return withTargets(fmt.Sprintf("Use %s's ability", u.cardName(st.Players[me].Hero.CardID)), "targets", u.targets(me, a.Targets))
+		}
 		l := st.Players[me].Lanes[a.Lane]
 		name := "?"
 		if a.Source == "building" && l.Building != nil {

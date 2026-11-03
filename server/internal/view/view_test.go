@@ -310,3 +310,28 @@ func TestChoiceIsVisibleToBothButOnlyOfferedToTheDecider(t *testing.T) {
 		}
 	}
 }
+
+// Both seats see both Heroes: they are public, unlike a hand.
+func TestHeroesAreVisibleToBothSeats(t *testing.T) {
+	cat, err := card.Load("../../data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, u := card.UselessSwamp, card.SandyLands
+	g, err := engine.NewGame(cat, engine.Config{Seed: 3, First: 0}, [2]engine.DeckSpec{
+		{Landscapes: [4]card.Landscape{s, s, s, s}, Cards: cat.Deck("BMO Vs Lady Rainicorn", "BMO's Deck"), Hero: "bmo"},
+		{Landscapes: [4]card.Landscape{u, u, u, u}, Cards: cat.Deck("BMO Vs Lady Rainicorn", "Lady's Deck"), Hero: "lady-rainicorn"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for seat := engine.PlayerID(0); seat < 2; seat++ {
+		v := Build(g, seat)
+		if h := v.Players[0].Hero; h == nil || h.CardID != "bmo" || h.Owner != 0 {
+			t.Errorf("seat %d sees Hero %+v for player 0", seat, h)
+		}
+		if h := v.Players[1].Hero; h == nil || h.CardID != "lady-rainicorn" || h.Owner != 1 {
+			t.Errorf("seat %d sees Hero %+v for player 1", seat, h)
+		}
+	}
+}

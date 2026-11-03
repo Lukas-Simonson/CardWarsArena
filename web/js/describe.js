@@ -96,6 +96,7 @@ export function describeAction(ctx, a) {
     }
     case "floop":
     case "activate": {
+      if (a.source === "hero") return withTargets(ctx, `Use ${cardName(ctx, me.hero?.card)}'s ability`, "targets", a.targets, a.labels);
       const l = me.lanes[a.lane ?? 0] ?? {};
       const src = a.source === "building" ? l.building : l.creature;
       const name = src ? cardName(ctx, src.card) : "?";
@@ -162,6 +163,7 @@ export function actionMatches(a, sel) {
   if (!sel) return true;
   if (sel.type === "hand") return a.kind === "play_card" && a.card === sel.uid;
   const src = a.source ?? "creature";
+  if (a.source === "hero") return sel.source === "hero";
   if (a.kind === "attack") return sel.source === "creature" && (a.lane ?? 0) === sel.lane;
   if (a.kind === "floop" || a.kind === "activate") return src === sel.source && (a.lane ?? 0) === sel.lane;
   return false;

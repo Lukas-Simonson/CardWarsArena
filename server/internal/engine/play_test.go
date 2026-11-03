@@ -37,7 +37,7 @@ func TestCostIsLandscapeRequirement(t *testing.T) {
 	cat := testCatalog()
 	oneSandy := [NumLanes]card.Landscape{card.SandyLands, card.Cornfield, card.Cornfield, card.Cornfield}
 	deck := func(ls [NumLanes]card.Landscape) DeckSpec {
-		return DeckSpec{ls, append([]string{"Shark", "Pig"}, repeat("Grunt", 10)...)}
+		return DeckSpec{Landscapes: ls, Cards: append([]string{"Shark", "Pig"}, repeat("Grunt", 10)...)}
 	}
 	build := func(ls [NumLanes]card.Landscape) *Game {
 		g, err := NewGame(cat, Config{Seed: 3, SkipDeckRules: true}, [2]DeckSpec{deck(ls), deck(ls)})
@@ -68,7 +68,7 @@ func TestTwoOneCostCardsNeedOnlyOneLandscape(t *testing.T) {
 	// same turn, even if you only have 1 Cornfield in play."
 	cat := testCatalog()
 	one := [NumLanes]card.Landscape{card.Cornfield, card.BluePlains, card.BluePlains, card.BluePlains}
-	d := DeckSpec{one, append([]string{"Grunt", "Wall"}, repeat("Filler 0", 2)...)}
+	d := DeckSpec{Landscapes: one, Cards: append([]string{"Grunt", "Wall"}, repeat("Filler 0", 2)...)}
 	g, err := NewGame(cat, Config{Seed: 1, SkipDeckRules: true}, [2]DeckSpec{d, d})
 	if err != nil {
 		t.Fatal(err)

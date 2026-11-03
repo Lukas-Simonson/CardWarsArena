@@ -16,7 +16,7 @@ func pbGame(t *testing.T) *Game {
 	realGame(t) // loads the catalog
 	mix := [NumLanes]card.Landscape{card.NiceLands, card.NiceLands, card.BluePlains, card.BluePlains}
 	g, err := NewGame(realCat, Config{Seed: 1, First: 0}, [2]DeckSpec{
-		{mix, realCat.Deck(pbSet, "PB's Deck")}, {mix, realCat.Deck(pbSet, "LSP's Deck")},
+		{Landscapes: mix, Cards: realCat.Deck(pbSet, "PB's Deck"), Hero: "princess-bubblegum"}, {Landscapes: mix, Cards: realCat.Deck(pbSet, "LSP's Deck"), Hero: "lumpy-space-princess"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -233,8 +233,8 @@ func TestReplacingACreatureTriggersTheReplacers(t *testing.T) {
 	}
 	before = hand()
 	g.enter(t, 1, "blueberry-djinni", 2) // replaces the first
-	if hand() != before+2 {
-		t.Errorf("Blueberry Djinni draws 2 when replacing: %d -> %d", before, hand())
+	if hand() != before+3 {              // 2 from the Djinni, 1 from LSP, who draws for the first replace each turn
+		t.Errorf("Blueberry Djinni and LSP draw 3 when replacing: %d -> %d", before, hand())
 	}
 
 	g.put(1, 0, "cow")

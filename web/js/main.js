@@ -115,6 +115,7 @@ const on = {
   onLane(lane, source, cardId) { if (cardId) ui.inspect = cardId; toggle(`lane:${lane}:${source}`); },
   onFloop(lane, source) { select(`lane:${lane}:${source}`, "floop"); },
   onAbility(lane, source, index) { select(`lane:${lane}:${source}`, `activate:${index}`); },
+  onHeroAbility(index) { select("hero", `activate:${index}`); },
   onPending() { select("pending"); },
   onToken(token) { if (!staging && ui.picker?.pick(token)) settle(); },
   onKind(kind) { select(ui.source, kind); },

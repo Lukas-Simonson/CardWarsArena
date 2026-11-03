@@ -187,6 +187,26 @@ stuck.
 - Vampire Lord heals in combat only: damage from its own ability would need its own ruling.
 - Learning Center has the rules of the Buildings beside it, once for each, so two Oil Refineries beside it
   give twice the bonus.
-- Cake and Fionna's Hero rules are not played by the engine (like every Hero).
+- A Hero's rules are played by the engine; see "Heroes" below.
 
 All eight preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's and Fionna's) are fully modelled.
+
+## Heroes
+
+Each deck comes with a Hero, dealt into `Player.Hero` and in play for the whole game. A Hero is written
+like any other card (`data/effects/heroes.json`) and may use `static`, `trigger` and `activate`
+effects. It is not in a Lane, so it cannot use `floop`, and anything that reads "this card's Lane" does
+not apply to it. Its source position is Lane -1.
+
+- **Activated abilities** are offered as `activate` actions with `source: "hero"`. A Hero's `activate`
+  may cost 0 Actions, and `limit` caps the uses each turn (Princess Bubblegum).
+- **Triggers** on a Hero: `building_played` (its controller put a Building into play, by any means),
+  `replaces` (its controller replaced a Creature on their turn) and `returns` (one of their Creatures went
+  back to their hand from play or from their discard pile, on their turn). Unlike a Creature's trigger,
+  a Hero's trigger honours `if` (it fires only while the condition holds) and `once_per_turn`.
+- **Cond** `returned` is a `{min?, max?}` range for how many Creatures you returned this turn, and
+  `landscape_types` one for how many face-up Landscape types you control. **Selector** `face_down` picks
+  Creatures on a face-down (or, set to false, face-up) Landscape.
+- **`grant`** (a static effect, Heroes only) `{to, ability}` gives a `floop` or `activate` ability to the
+  Creatures its Selector picks, while it picks them (Finn). A Creature that already has a Floop ability of
+  its own keeps using that one, and a Silenced Creature loses the granted ability too.

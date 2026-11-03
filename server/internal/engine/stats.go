@@ -11,21 +11,25 @@ type pos struct {
 // source is a card in play whose effects may apply to other cards.
 type source struct {
 	pos
-	creature *Creature // nil for Buildings
+	creature *Creature // nil for Buildings and Heroes
+	hero     bool      // the source is a Hero (its pos has Lane -1)
 	effects  []card.Effect
 }
 
 // forEachSource visits every Creature and Building in play.
 func (g *Game) forEachSource(fn func(source)) {
 	for p := range g.State.Players {
+		if g.State.Players[p].Hero.CardID != "" {
+			fn(source{pos: pos{PlayerID(p), heroLane}, hero: true, effects: g.heroEffects(PlayerID(p))})
+		}
 		for i := range g.State.Players[p].Lanes {
 			l := &g.State.Players[p].Lanes[i]
 			at := pos{PlayerID(p), i}
 			if l.Creature != nil {
-				fn(source{at, l.Creature, g.effectsOf(l.Creature)})
+				fn(source{pos: at, creature: l.Creature, effects: g.effectsOf(l.Creature)})
 			}
 			for _, b := range l.buildings() {
-				fn(source{at, nil, g.buildingEffects(at, b)})
+				fn(source{pos: at, effects: g.buildingEffects(at, b)})
 			}
 		}
 	}
@@ -36,6 +40,9 @@ func (g *Game) forEachSource(fn func(source)) {
 // was lent. Every read of a Creature's abilities goes through here.
 func (g *Game) effectsOf(c *Creature) []card.Effect {
 	if !c.Silenced {
+		if granted := g.grantedTo(c); len(granted) > 0 {
+			return append(append([]card.Effect(nil), g.Card(c.Instance).Effects...), granted...)
+		}
 		return g.Card(c.Instance).Effects
 	}
 	var out []card.Effect
@@ -144,6 +151,9 @@ func (g *Game) selects(sel card.Selector, s source, target pos, t *Creature) boo
 		return false
 	}
 	if sel.WithBuilding && g.State.Players[target.P].Lanes[target.Lane].Building == nil {
+		return false
+	}
+	if sel.FaceDown != nil && g.State.Players[target.P].Lanes[target.Lane].FaceDown != *sel.FaceDown {
 		return false
 	}
 	if sel.ChangedLanes && !t.ChangedLanes {
@@ -318,6 +328,12 @@ func (g *Game) cond(c card.Cond, s source) bool {
 		if l := st.Players[s.P].Lanes[s.Lane]; l.FaceDown || l.Landscape != c.OnLandscape {
 			return false
 		}
+	}
+	if c.LandscapeTypes != nil && !c.LandscapeTypes.Has(g.count(card.Count{Of: "landscape_types"}, s)) {
+		return false
+	}
+	if c.Returned != nil && !c.Returned.Has(st.Returned[s.P]) {
+		return false
 	}
 	if c.EnteredMax != nil {
 		n := 0

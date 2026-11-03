@@ -84,7 +84,7 @@ function confirmLabel(a, name) {
   }
 }
 
-/** The card name behind a source key ("hand:12", "lane:2:creature", "pending"). */
+/** The card name behind a source key ("hand:12", "lane:2:creature", "hero", "pending"). */
 export function sourceName(ctx, source) {
   const v = ctx.view;
   const me = v.players[v.you];
@@ -95,6 +95,8 @@ export function sourceName(ctx, source) {
   } else if (p[0] === "lane") {
     const occ = me.lanes[Number(p[1])]?.[p[2]];
     if (occ) return cardName(ctx, occ.card);
+  } else if (p[0] === "hero" && me.hero) {
+    return cardName(ctx, me.hero.card);
   } else if (p[0] === "pending" && v.pending) {
     return cardName(ctx, v.pending.card);
   }

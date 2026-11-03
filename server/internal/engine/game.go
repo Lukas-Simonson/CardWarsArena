@@ -16,6 +16,7 @@ const (
 type DeckSpec struct {
 	Landscapes [NumLanes]card.Landscape
 	Cards      []string // card ids, one entry per copy
+	Hero       string   // the Hero's card id; empty for none (tests)
 }
 
 // Config describes a new game.
@@ -55,6 +56,9 @@ func NewGame(cat card.Catalog, cfg Config, decks [2]DeckSpec) (*Game, error) {
 	for p := range decks {
 		pl := &g.State.Players[p]
 		pl.HP = StartingHP
+		if id := decks[p].Hero; id != "" {
+			pl.Hero = g.newInstance(id, PlayerID(p))
+		}
 		for i, ls := range decks[p].Landscapes {
 			pl.Lanes[i].Landscape = ls
 		}
@@ -68,6 +72,17 @@ func NewGame(cat card.Catalog, cfg Config, decks [2]DeckSpec) (*Game, error) {
 }
 
 func (g *Game) checkDeck(d DeckSpec) error {
+	if d.Hero != "" {
+		h, ok := g.cat[d.Hero]
+		switch {
+		case !ok:
+			return fmt.Errorf("unknown Hero %q", d.Hero)
+		case h.Type != card.Hero:
+			return fmt.Errorf("%s is not a Hero", h.Name)
+		case !g.cfg.AllowUnimplemented && !h.Implemented():
+			return fmt.Errorf("%s has rules text the engine does not implement yet", h.Name)
+		}
+	}
 	for _, ls := range d.Landscapes {
 		if ls == "" || ls == card.Rainbow {
 			return fmt.Errorf("invalid Landscape %q", ls)
@@ -102,6 +117,7 @@ func (g *Game) Clone() *Game {
 	for p := range c.State.Players {
 		src := &g.State.Players[p]
 		dst := &c.State.Players[p]
+		dst.HeroFired = append([]int(nil), src.HeroFired...)
 		dst.Deck = append([]Instance(nil), src.Deck...)
 		dst.Hand = append([]Instance(nil), src.Hand...)
 		dst.Discard = append([]Instance(nil), src.Discard...)

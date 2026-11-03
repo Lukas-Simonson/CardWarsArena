@@ -28,7 +28,7 @@ type Info struct {
 
 // Spec turns the deck into what the engine needs to start a game.
 func (d Info) Spec() engine.DeckSpec {
-	return engine.DeckSpec{Landscapes: d.Landscapes, Cards: d.Cards}
+	return engine.DeckSpec{Landscapes: d.Landscapes, Cards: d.Cards, Hero: d.Hero}
 }
 
 // Key is the "SET Name" identifier used to look a deck up.
@@ -109,6 +109,12 @@ func Find(cat card.Catalog) []Info {
 				if cat[id].Implemented() {
 					d.Modelled++
 				}
+			}
+		}
+		if h := cat[d.Hero]; h != nil { // a Hero whose rules are missing makes the deck unplayable too
+			d.Distinct++
+			if h.Implemented() {
+				d.Modelled++
 			}
 		}
 		d.Size = len(d.Cards)
