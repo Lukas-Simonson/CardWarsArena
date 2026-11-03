@@ -196,7 +196,7 @@ function tile(m, seat, i, on) {
     if (c) on.onInspect(c.card);
   };
   const label = `${mine ? "Your" : "Opponent"} Lane ${i + 1}, ${lane.face_down ? "face-down" : landscapeName(lane.landscape)}${c ? `: ${cardName(ctx, c.card)}` : ", empty"}`;
-  const stats = c && [c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced")].filter(Boolean);
+  const stats = c && [c.types && c.types.map(landscapeName).join(" / "), c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced")].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
     "data-seat": seat, "data-lane": i,
@@ -213,6 +213,7 @@ function buildingStrip(m, seat, i, on) {
   const { ctx, me, srcs, ui, srcCard } = m;
   const mine = seat === me;
   const b = ctx.view.players[seat].lanes[i].building;
+  const extra = ctx.view.players[seat].lanes[i].extra ?? [];
   const key = `lane:${i}:building`;
   const pickToken = [...(mine && srcCard?.type === "building" ? [`dest:${i}`] : []), `building:${seat}:${i}`].find((t) => has(m, t));
   const selectable = mine && srcs[key];
@@ -228,10 +229,11 @@ function buildingStrip(m, seat, i, on) {
   const card = b && ctx.cards[b.card];
   return h("button", {
     type: "button", class: classes.join(" "), onclick: click, "data-seat": seat, "data-lane": i,
-    "aria-label": `${mine ? "Your" : "Opponent"} Building slot, Lane ${i + 1}${b ? `: ${cardName(ctx, b.card)}` : ", empty"}`,
+    title: extra.length ? [b, ...extra].map((x) => cardName(ctx, x.card)).join(", ") : null,
+    "aria-label": `${mine ? "Your" : "Opponent"} Building slot, Lane ${i + 1}${b ? `: ${[b, ...extra].map((x) => cardName(ctx, x.card)).join(", ")}` : ", empty"}`,
     onmouseenter: b ? () => on.onInspect(b.card, true) : null,
   }, b
-    ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, "Flooped"))
+    ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, "Flooped"), extra.length > 0 && h("span", { class: "tag more" }, `+${extra.length}`))
     : (mine ? "Building slot" : "No Building"));
 }
 
@@ -270,6 +272,38 @@ function choiceModal(m, on) {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
+  } else if (ch.kind === "search") {
+    title = by;
+    text = "Choose a Building from your deck to put into play. Your deck is shuffled afterwards.";
+    body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
+      const action = choose.find((a) => a.card === inst.uid);
+      return action && cardButton(inst, action);
+    }));
+  } else if (ch.kind === "rebound") {
+    const keep = choose.find((a) => !a.card);
+    title = `${by}: return it?`;
+    text = `Discard a card from your hand to return ${by} to your hand, or leave it in the discard pile.`;
+    body = h("div", {},
+      h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
+        const action = choose.find((a) => a.card === inst.uid);
+        return action && cardButton(inst, action);
+      })),
+      keep && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(keep) }, "Leave it")));
+  } else if (ch.kind === "redirect") {
+    const stay = choose.find((a) => !a.card);
+    title = `${by}: who fights?`;
+    text = `${by} attacks. You may have one of your Flooped Creatures fight in its place.`;
+    body = h("div", {},
+      h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
+        const action = choose.find((a) => a.card === inst.uid);
+        return action && cardButton(inst, action);
+      })),
+      stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(stay) }, `${by} fights`)));
+  } else if (ch.kind === "move_damage") {
+    title = by;
+    text = `Move how much damage? (up to ${ch.count})`;
+    body = h("div", { class: "modalrow" }, choose.map((a) =>
+      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = `${by}: upkeep`;
@@ -347,7 +381,7 @@ function handSection(m, on) {
     const sel = ui.source === key;
     const off = k - (n - 1) / 2;
     const xf = sel ? "translateY(-30px) rotate(0deg)" : `translateY(${Math.abs(off) * 3}px) rotate(${off * 3}deg)`;
-    const cls = ["hbtn", sel ? "sel" : "", pick ? "pick" : "", playable && !ui.picker ? "go" : "", playable || pick || sel ? "" : "off"].join(" ");
+    const cls = ["hbtn", sel ? "sel" : "", pick ? "pick" : "", p.rainbow_hand?.includes(inst.uid) ? "rainbow" : "", playable && !ui.picker ? "go" : "", playable || pick || sel ? "" : "off"].join(" ");
     return h("button", {
       type: "button", class: cls, style: `transform:${xf}`, "data-uid": inst.uid, "aria-pressed": sel ? "true" : "false",
       "aria-label": `${card?.name ?? inst.card}, cost ${card?.cost ?? "?"}${playable ? "" : ", cannot be played now"}`,

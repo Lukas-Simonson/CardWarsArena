@@ -30,9 +30,11 @@ export function learnCards(known, view) {
     for (const l of p.lanes) {
       add(l.creature);
       add(l.building);
+      (l.extra ?? []).forEach(add);
     }
   }
   add(view.pending);
+  (view.choice?.revealed ?? []).forEach(add);
   return out;
 }
 

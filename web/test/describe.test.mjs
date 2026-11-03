@@ -160,4 +160,19 @@ test("actions that answer a Choice are described", async () => {
   assert.equal(describeAction(upkeep, { kind: "choose", card: 10 }), "Discard Cool Dog");
   const discard = ctxFor(view({ choice: { player: 0, kind: "discard", card: "corn-scepter", count: 1 } }));
   assert.equal(describeAction(discard, { kind: "choose", card: 10 }), "Discard Cool Dog");
+  const search = ctxFor(view({ choice: { player: 0, kind: "search", card: "corn-scepter", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
+  assert.equal(describeAction(search, { kind: "choose", card: 40 }), "Put The Pig into play from your deck");
+  const rebound = ctxFor(view({ choice: { player: 0, kind: "rebound", card: "the-pig" } }));
+  assert.equal(describeAction(rebound, { kind: "choose" }), "Leave The Pig in the discard pile");
+  assert.equal(describeAction(rebound, { kind: "choose", card: 10 }), "Discard Cool Dog to return The Pig to your hand");
+  const redirect = ctxFor(view({ choice: { player: 0, kind: "redirect", card: "the-pig" } }));
+  assert.equal(describeAction(redirect, { kind: "choose" }), "The Pig fights");
+  assert.equal(describeAction(redirect, { kind: "choose", card: 10 }), "Cool Dog fights instead");
+  const move = ctxFor(view({ choice: { player: 0, kind: "move_damage", card: "the-pig", count: 3 } }));
+  assert.equal(describeAction(move, { kind: "choose", card: 2 }), "Move 2 damage");
+  for (const c of [search, rebound, redirect, move]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
+});
+
+test("showing a card in hand reads in the log", () => {
+  assert.match(describeEvent(ctx, { kind: "reveal", player: 0, card: 10 }), /reveals Cool Dog$/);
 });
