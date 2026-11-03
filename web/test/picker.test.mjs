@@ -192,3 +192,14 @@ test("prompt: a labelled choice says what it is for", () => {
   const p = buildPrompt(ctx, true, `lane:${mine}:creature`, picker, false);
   assert.match(p.text, /^Heal 1 damage from: choose a target for /);
 });
+
+test("a Hero's ability is its own source and is prompted by the Hero's name", () => {
+  const ability = { kind: "activate", source: "hero", index: 0, targets: [[{ kind: "hand_card", player: 0, card: 10 }], [creatureRef(1, 0)]] };
+  assert.equal(sourceKey(ability), "hero");
+  assert.deepEqual(Object.keys(sources([{ kind: "draw" }, ability, play(10, 0)])).sort(), ["hand:10", "hero"]);
+  const v = view({ legal: [ability] });
+  v.players[0].hero = { uid: 2, card: "the-pig", owner: 0 };
+  const picker = new ActionPicker([ability], ctxFor(v));
+  const prompt = buildPrompt(ctxFor(v), true, "hero", picker, false);
+  assert.match(prompt.text, /The Pig/);
+});

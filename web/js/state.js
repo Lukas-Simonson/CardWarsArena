@@ -25,6 +25,7 @@ export function learnCards(known, view) {
   const out = { ...known };
   const add = (c) => c && (out[c.uid] = c.card);
   for (const p of view.players) {
+    add(p.hero);
     (p.hand ?? []).forEach(add);
     p.discard.forEach(add);
     for (const l of p.lanes) {
