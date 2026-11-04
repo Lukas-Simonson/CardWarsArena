@@ -27,9 +27,19 @@ GitHub Actions (`.github/workflows/`) runs on every pull request and on `main`: 
 `go test` for the server, `npm test` for the web client, a smoke test that plays whole games through the
 client against a real server, and a Docker build of both images.
 
-When `main` changes, the same images are pushed to GitHub's container registry for `linux/amd64` and
-`linux/arm64`, as `ghcr.io/lukas-simonson/cardwarstcg-server` and `-web`, tagged `latest` and `sha-<commit>`.
-To run them instead of building:
+Images are published only for releases. Tagging a version pushes both images to GitHub's container
+registry for `linux/amd64` and `linux/arm64`, as `ghcr.io/lukas-simonson/cardwarstcg-server` and `-web`,
+tagged `1.2.3`, `1.2` and `1` (the last not for 0.x), and `latest` for a stable release. It also creates
+a GitHub Release with generated notes. Merging to `main` publishes nothing.
+
+To cut a release, tag the commit on `main`:
+
+```bash
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+A tag with a suffix, like `v0.2.0-rc.1`, is a pre-release: it gets its own version tag and no `latest`.
+To run the images instead of building them, pin a version in `docker-compose.yml` (or keep `latest`):
 
 ```bash
 docker compose pull && docker compose up -d

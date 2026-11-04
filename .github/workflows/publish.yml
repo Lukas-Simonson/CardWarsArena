@@ -1,11 +1,14 @@
 name: Publish images
 
 # Builds the game server and the web client and pushes them to GitHub's container
-# registry whenever main changes, so they can be pulled instead of built:
+# registry when a release is tagged (git tag v1.2.3 && git push origin v1.2.3), so
+# they can be pulled instead of built:
 #   docker compose pull && docker compose up -d
+# Merges to main publish nothing; CI still builds the images to prove they build.
+# Run it by hand from a tag to publish that release again.
 on:
   push:
-    branches: [main]
+    tags: ["v[0-9]+.[0-9]+.[0-9]+*"]
   workflow_dispatch:
 
 concurrency:
@@ -36,11 +39,13 @@ jobs:
       - id: meta
         uses: docker/metadata-action@v5
         with:
-          # ghcr.io/<owner>/<repo>-server and -web, lowercased
+          # ghcr.io/<owner>/<repo>-server and -web, lowercased. v1.2.3 becomes 1.2.3,
+          # 1.2 and 1 (1 is skipped for 0.x), plus latest unless it is a pre-release.
           images: ghcr.io/${{ github.repository }}-${{ matrix.image }}
           tags: |
-            type=raw,value=latest
-            type=sha
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
       - uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.image }}
@@ -50,3 +55,19 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,scope=${{ matrix.image }},mode=max
+
+  release:
+    name: GitHub release
+    needs: publish
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          flags=""
+          case "$GITHUB_REF_NAME" in *-*) flags="--prerelease" ;; esac
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes $flags
