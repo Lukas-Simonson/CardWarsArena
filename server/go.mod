@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	github.com/coder/websocket v1.8.15
+	golang.org/x/oauth2 v0.37.0
 	modernc.org/sqlite v1.61.1
 )
 
