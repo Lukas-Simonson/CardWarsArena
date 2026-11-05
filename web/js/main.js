@@ -9,6 +9,8 @@ import { ActionPicker, sources } from "./picker.js";
 import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
 import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
+import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./account.js";
+import { h } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -25,6 +27,7 @@ let state = initialState();
 let cards = {};
 let decks = [];
 let catalogError = "";
+let account = accountView(null, null);
 // What the player is in the middle of: the card they clicked (source), the
 // picker that tracks their choices for it, and what the card on show is.
 const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
@@ -153,9 +156,53 @@ $("join").onclick = joinRoom;
 $("code").addEventListener("keydown", (e) => { if (e.key === "Enter") joinRoom(); });
 $("applyServer").onclick = () => applyServer($("server").value);
 $("server").addEventListener("keydown", (e) => { if (e.key === "Enter") applyServer($("server").value); });
-$("name").onchange = () => store("cw.name", $("name").value);
+$("name").onchange = () => { if (!account.user) store("cw.name", $("name").value); };
 $("deck").onchange = () => store("cw.deck", $("deck").value);
 $("bot").onchange = () => store("cw.bot", $("bot").value);
+
+// ---------- account
+
+/** Ask the server what sign-in it offers and who this player is. A server without it just shows nothing. */
+async function loadAccount() {
+  let config = null, me = null;
+  try {
+    const opts = { credentials: "include" };
+    const c = await fetch(`${server}/api/auth/config`, opts);
+    if (c.ok) {
+      config = await c.json();
+      const m = await fetch(`${server}/api/auth/me`, opts);
+      if (m.ok) me = await m.json();
+    }
+  } catch {}
+  account = accountView(config, me);
+  renderAccount();
+}
+
+function renderAccount() {
+  const box = $("account"), name = $("name");
+  box.hidden = !account.show;
+  const here = location.origin + location.pathname;
+  if (account.user) {
+    box.replaceChildren(h("span", {}, "Signed in as ", h("b", {}, account.user.name)), h("button", { type: "button", class: "btn-steel", onclick: signOut }, "Sign out"));
+    name.value = account.user.name; // the server plays you under this name whatever is sent
+    name.disabled = true;
+  } else {
+    box.replaceChildren(
+      h("span", {}, "Sign in to keep your decks (or just play as a guest):"),
+      h("span", { class: "providers" }, account.providers.map((p) => h("a", { class: "btn-purple", href: loginUrl(server, p.name, here) }, p.label))));
+    name.disabled = false;
+    name.value = load("cw.name") || "Player";
+  }
+}
+
+async function signOut() {
+  try { await fetch(`${server}/api/auth/logout`, { method: "POST", credentials: "include" }); } catch {}
+  sstore("cw.session", null);
+  state = leave(state);
+  await loadAccount();
+  connect(); // who a connection is is settled when it opens
+  render();
+}
 
 // ---------- rendering
 
@@ -273,6 +320,7 @@ async function applyServer(text) {
   state = initialState();
   resetUi();
   await loadCatalog();
+  await loadAccount();
   connect();
   render();
 }
@@ -282,5 +330,11 @@ $("name").value = load("cw.name") || "Player";
 store("cw.server", server);
 render();
 await loadCatalog();
+await loadAccount();
 connect();
+const loginError = loginErrorText(location.search);
+if (loginError) {
+  dispatch({ type: "error", code: "login_error", message: loginError });
+  history.replaceState(null, "", withoutLoginError(location.href));
+}
 render();

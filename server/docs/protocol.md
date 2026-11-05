@@ -27,7 +27,7 @@ Plain HTTP endpoints:
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
 | `GET /api/auth/config` | `{"mode":"none"\|"oauth","providers":[{"name":"github","label":"GitHub"}]}`: what the client may offer |
 | `GET /api/auth/me` | `{"user":{"id","name"}}`, or `{"user":null}` when not signed in |
-| `GET /api/auth/login/{provider}` | start signing in: redirects to the provider (`-auth oauth` only) |
+| `GET /api/auth/login/{provider}` | start signing in: redirects to the provider (`-auth oauth` only). `?return=<page>` is where to come back to: this site, or a host allowed by `-origins` |
 | `GET /api/auth/callback/{provider}` | where the provider sends people back; sets the session cookie and redirects to `/` (or to `/?login_error=denied\|state\|failed`) |
 | `POST /api/auth/logout` | ends the session and clears the cookie |
 | `GET /healthz` | `ok` |
