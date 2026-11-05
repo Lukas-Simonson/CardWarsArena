@@ -268,17 +268,24 @@ func (a *OAuth) returnTarget(raw string) string {
 	if raw == "" || err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || u.User != nil {
 		return "/"
 	}
-	ok := strings.EqualFold(u.Host, a.base.Host)
-	for _, p := range a.opts.ReturnHosts {
-		if m, _ := path.Match(strings.ToLower(p), strings.ToLower(u.Host)); m {
-			ok = true
-		}
-	}
-	if !ok {
+	if !a.ownHost(u.Host) {
 		return "/"
 	}
 	u.RawQuery, u.Fragment = "", "" // the page, not whatever it was carrying
 	return u.String()
+}
+
+// ownHost reports whether a host is this site's own or one of the web clients allowed to use it.
+func (a *OAuth) ownHost(host string) bool {
+	if strings.EqualFold(host, a.base.Host) {
+		return true
+	}
+	for _, p := range a.opts.ReturnHosts {
+		if m, _ := path.Match(strings.ToLower(p), strings.ToLower(host)); m {
+			return true
+		}
+	}
+	return false
 }
 
 // fail sends the person back to the web client with a reason it can show.
@@ -424,7 +431,7 @@ func cleanName(n, fallback string) string {
 func (a *OAuth) handleLogout(w http.ResponseWriter, r *http.Request) {
 	// A cookie with SameSite=Lax is not sent on a cross-site POST, but check the origin as well.
 	if o := r.Header.Get("Origin"); o != "" {
-		if u, err := url.Parse(o); err != nil || (!strings.EqualFold(u.Host, a.base.Host) && !strings.EqualFold(u.Host, r.Host)) {
+		if u, err := url.Parse(o); err != nil || (!a.ownHost(u.Host) && !strings.EqualFold(u.Host, r.Host)) {
 			http.Error(w, "wrong origin", http.StatusForbidden)
 			return
 		}

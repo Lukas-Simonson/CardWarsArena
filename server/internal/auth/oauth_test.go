@@ -270,7 +270,16 @@ func TestLoggingOutEndsTheSession(t *testing.T) {
 	if _, ok := e.identify(c); !ok {
 		t.Fatal("a refused logout ended the session")
 	}
-	w := e.do("POST", "/api/auth/logout", []*http.Cookie{c}, map[string]string{"Origin": "http://localhost:8080"})
+	e.a.opts.ReturnHosts = []string{"localhost:*"}
+	w := e.do("POST", "/api/auth/logout", []*http.Cookie{c}, map[string]string{"Origin": "http://localhost:5173"}) // an allowed web client
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("logout from an allowed web client: %d", w.Code)
+	}
+	if _, ok := e.identify(c); ok {
+		t.Fatal("the session survived")
+	}
+	c = e.signIn()
+	w = e.do("POST", "/api/auth/logout", []*http.Cookie{c}, map[string]string{"Origin": "http://localhost:8080"})
 	if w.Code != http.StatusNoContent {
 		t.Fatalf("logout: %d", w.Code)
 	}
