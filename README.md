@@ -52,6 +52,15 @@ docker compose pull && docker compose up -d
 The first push creates private packages. Make them public under the repository's Packages settings, or
 `docker login ghcr.io` with a personal access token that has `read:packages` on the machine that pulls.
 
+## Signing in
+
+By default the server is anonymous. To let people sign in with Discord and/or GitHub (the first step
+toward saved decks), register an app with the provider, with the callback
+`<public url>/api/auth/callback/discord` (or `/github`), then copy `.env.example` to `.env`, fill it in and
+`docker compose up -d`. Only the provider's id for the person and a display name are stored: no email,
+no password. Signed-in players play under their account name; guests can still play. The details are in
+[`server/docs/protocol.md`](server/docs/protocol.md).
+
 ## Tests
 
 ```bash
