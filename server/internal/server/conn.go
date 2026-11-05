@@ -169,7 +169,7 @@ func (c *client) dispatch(m ClientMsg) {
 			c.fail(fail(ErrAlreadyInRoom, "leave your current room first"))
 			return
 		}
-		room, token, err := s.create(c, m)
+		room, token, err := s.create(c, c.user, m)
 		if err != nil {
 			c.fail(err)
 			return
@@ -185,7 +185,7 @@ func (c *client) dispatch(m ClientMsg) {
 			c.fail(fail(ErrRoomNotFound, "no such room"))
 			return
 		}
-		deck, err := s.deckFor(m.Deck)
+		deck, err := s.resolveDeck(c.user, m.Deck)
 		if err != nil {
 			c.fail(err)
 			return

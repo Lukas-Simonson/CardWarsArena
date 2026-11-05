@@ -76,6 +76,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	if db != nil { // a nil *SQLite inside the interface would not be nil
+		cfg.Store = db
+	}
 	srv, err := server.New(cfg)
 	if err != nil {
 		log.Error("start", "err", err)
