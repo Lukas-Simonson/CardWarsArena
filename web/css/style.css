@@ -61,8 +61,10 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .lsection { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
 .lsection > h2, .deckhead h2 { margin: 0; font-size: 38px; }
 .lhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
-.who { display: flex; align-items: center; gap: 12px; padding: 8px 28px 8px 10px; min-width: 0; }
-.avatar { flex: 0 0 auto; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: #c98a1f; font-family: var(--big-font); font-size: 26px; padding-top: 4px; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+.who { display: flex; align-items: center; gap: 12px; padding: 10px 28px 10px 21px; min-width: 0; } /* clear of the rivets in the corners */
+.avatar { position: relative; overflow: hidden; flex: 0 0 auto; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: #c98a1f; font-family: var(--big-font); font-size: 26px; padding-top: 4px; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+.avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.avatar.pic { color: transparent; -webkit-text-stroke: 0; } /* the picture covers the letter, even where it is see-through */
 .whotext { display: flex; flex-direction: column; min-width: 0; }
 .whoname { font: inherit; font-size: 24px; line-height: 1.1; color: #fff; text-shadow: 0 3px 0 var(--ink); background: transparent; border: 0; border-bottom: 2px dashed transparent; padding: 0; min-width: 0; width: 12em; max-width: 100%; }
 .whoname:hover:not(:disabled), .whoname:focus { border-bottom-color: rgba(255,255,255,.55); }

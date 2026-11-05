@@ -12,6 +12,20 @@ test("joining records the session and names", () => {
   assert.deepEqual(s.names, ["Finn", "Bot"]);
 });
 
+test("avatars come with the names, and are kept when an update has none", () => {
+  const pics = ["https://img.example/finn.png", ""];
+  let s = reduce(initialState(), joined({ avatars: pics }), cards);
+  assert.deepEqual(s.avatars, pics);
+  s = reduce(s, update(1), cards); // an update without avatars (an older server) keeps what we had
+  assert.deepEqual(s.avatars, pics);
+  s = reduce(s, { ...update(2), avatars: ["", "https://img.example/bot.png"] }, cards);
+  assert.deepEqual(s.avatars, ["", "https://img.example/bot.png"]);
+});
+
+test("a server that sends no avatars leaves them empty", () => {
+  assert.deepEqual(reduce(initialState(), joined(), cards).avatars, []);
+});
+
 test("updates replace the view and log what happened, naming cards from the view", () => {
   let s = reduce(initialState(), joined(), cards);
   s = reduce(s, update(1, view(), [{ kind: "play", player: 0, card: 20 }, { kind: "turn_start", player: 1 }]), cards);

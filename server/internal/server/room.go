@@ -18,11 +18,12 @@ type Sink interface {
 }
 
 type seat struct {
-	name  string
-	token string
-	deck  decks.Info
-	isBot bool
-	sink  Sink // nil while disconnected
+	name   string
+	avatar string // the address of the player's picture, "" for a guest or the bot
+	token  string
+	deck   decks.Info
+	isBot  bool
+	sink   Sink // nil while disconnected
 }
 
 // roomError is a failure reported to one client.
@@ -61,6 +62,17 @@ func (r *Room) names() []string {
 	return out
 }
 
+// avatars are the seats' pictures, in seat order, "" where there is none.
+func (r *Room) avatars() []string {
+	out := make([]string, 2)
+	for i, s := range r.seats {
+		if s != nil {
+			out[i] = s.avatar
+		}
+	}
+	return out
+}
+
 func (r *Room) seatOf(token string) (int, bool) {
 	for i, s := range r.seats {
 		if s != nil && !s.isBot && token != "" && s.token == token {
@@ -92,13 +104,13 @@ func (r *Room) broadcastLocked(events []engine.Event) {
 		}
 		p := engine.PlayerID(i)
 		v := view.Build(r.g, p)
-		s.sink.Send(ServerMsg{Type: MsgUpdate, Seq: r.seq, View: &v, Events: view.FilterEvents(r.g, p, events), Names: r.names()})
+		s.sink.Send(ServerMsg{Type: MsgUpdate, Seq: r.seq, View: &v, Events: view.FilterEvents(r.g, p, events), Names: r.names(), Avatars: r.avatars()})
 	}
 }
 
 func (r *Room) joinedMsg(i int) ServerMsg {
 	seatNo := i
-	return ServerMsg{Type: MsgJoined, Room: r.id, Seat: &seatNo, Token: r.seats[i].token, VsBot: r.vsBot, Names: r.names()}
+	return ServerMsg{Type: MsgJoined, Room: r.id, Seat: &seatNo, Token: r.seats[i].token, VsBot: r.vsBot, Names: r.names(), Avatars: r.avatars()}
 }
 
 func (r *Room) notifyOpponentLocked(i int, connected bool) {
@@ -110,7 +122,7 @@ func (r *Room) notifyOpponentLocked(i int, connected bool) {
 }
 
 // join seats a second human. It returns the seat's token.
-func (r *Room) join(sink Sink, name string, deck decks.Info) (string, error) {
+func (r *Room) join(sink Sink, name, avatar string, deck decks.Info) (string, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.closed {
@@ -119,7 +131,7 @@ func (r *Room) join(sink Sink, name string, deck decks.Info) (string, error) {
 	if r.seats[1] != nil {
 		return "", fail(ErrRoomFull, "room is full")
 	}
-	r.seats[1] = &seat{name: name, token: newToken(), deck: deck, sink: sink}
+	r.seats[1] = &seat{name: name, avatar: avatar, token: newToken(), deck: deck, sink: sink}
 	r.touched = time.Now()
 	if err := r.startLocked(); err != nil {
 		r.seats[1] = nil
@@ -153,7 +165,7 @@ func (r *Room) rejoin(token string, sink Sink) error {
 	} else {
 		p := engine.PlayerID(i)
 		v := view.Build(r.g, p)
-		sink.Send(ServerMsg{Type: MsgUpdate, Seq: r.seq, View: &v, Names: r.names()})
+		sink.Send(ServerMsg{Type: MsgUpdate, Seq: r.seq, View: &v, Names: r.names(), Avatars: r.avatars()})
 	}
 	r.notifyOpponentLocked(i, true)
 	if o := r.seats[1-i]; o != nil && !o.isBot && o.sink != nil {

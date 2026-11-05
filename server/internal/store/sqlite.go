@@ -97,7 +97,7 @@ func (s *SQLite) migrate() error {
 	return nil
 }
 
-func (s *SQLite) CreateUser(ctx context.Context, provider, subject, displayName string) (User, error) {
+func (s *SQLite) CreateUser(ctx context.Context, provider, subject, displayName, avatarURL string) (User, error) {
 	id, err := newID()
 	if err != nil {
 		return User{}, err
@@ -114,21 +114,21 @@ func (s *SQLite) CreateUser(ctx context.Context, provider, subject, displayName 
 		}
 		return User{}, err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO profiles (user_id, display_name) VALUES (?, ?)`, id, displayName); err != nil {
+	if _, err := tx.ExecContext(ctx, `INSERT INTO profiles (user_id, display_name, avatar_url) VALUES (?, ?, ?)`, id, displayName, avatarURL); err != nil {
 		return User{}, err
 	}
 	if err := tx.Commit(); err != nil {
 		return User{}, err
 	}
-	return User{ID: id, Provider: provider, Subject: subject, DisplayName: displayName, Created: now}, nil
+	return User{ID: id, Provider: provider, Subject: subject, DisplayName: displayName, AvatarURL: avatarURL, Created: now}, nil
 }
 
-const userSelect = `SELECT u.id, u.provider, u.subject, p.display_name, u.created FROM users u JOIN profiles p ON p.user_id = u.id`
+const userSelect = `SELECT u.id, u.provider, u.subject, p.display_name, p.avatar_url, u.created FROM users u JOIN profiles p ON p.user_id = u.id`
 
 func scanUser(row *sql.Row) (User, error) {
 	var u User
 	var created int64
-	err := row.Scan(&u.ID, &u.Provider, &u.Subject, &u.DisplayName, &created)
+	err := row.Scan(&u.ID, &u.Provider, &u.Subject, &u.DisplayName, &u.AvatarURL, &created)
 	if errors.Is(err, sql.ErrNoRows) {
 		return User{}, ErrNotFound
 	}
@@ -146,6 +146,11 @@ func (s *SQLite) User(ctx context.Context, id string) (User, error) {
 
 func (s *SQLite) SetDisplayName(ctx context.Context, id, name string) error {
 	res, err := s.db.ExecContext(ctx, `UPDATE profiles SET display_name = ? WHERE user_id = ?`, name, id)
+	return affected(res, err)
+}
+
+func (s *SQLite) SetAvatar(ctx context.Context, id, avatarURL string) error {
+	res, err := s.db.ExecContext(ctx, `UPDATE profiles SET avatar_url = ? WHERE user_id = ?`, avatarURL, id)
 	return affected(res, err)
 }
 

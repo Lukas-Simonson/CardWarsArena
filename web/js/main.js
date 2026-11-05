@@ -13,6 +13,7 @@ import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./acco
 import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour } from "./decklist.js";
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
+import { fillAvatar } from "./avatar.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -225,7 +226,7 @@ function renderAccount() {
 
 /** The player chip: the first letter of the name, and whether they are signed in. */
 function showWho() {
-  $("avatar").textContent = ($("name").value.trim()[0] ?? "?").toUpperCase();
+  fillAvatar($("avatar"), $("name").value, account.user?.avatar);
   $("whosub").textContent = account.user ? "Signed in" : account.show ? "Guest: sign in to keep decks" : "Your name at the table";
 }
 

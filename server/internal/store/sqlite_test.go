@@ -25,7 +25,7 @@ func open(t *testing.T) (*SQLite, string) {
 
 func user(t *testing.T, s Store, subject string) User {
 	t.Helper()
-	u, err := s.CreateUser(ctx, "github", subject, "Player "+subject)
+	u, err := s.CreateUser(ctx, "github", subject, "Player "+subject, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,8 +46,8 @@ func TestMigrationsRunOnceAndKeepData(t *testing.T) {
 		t.Fatalf("after reopening: %+v, %v", got, err)
 	}
 	var n int
-	if err := again.db.QueryRow(`SELECT COUNT(*) FROM schema_migrations`).Scan(&n); err != nil || n != 1 {
-		t.Errorf("%d migrations recorded (%v), want 1", n, err)
+	if err := again.db.QueryRow(`SELECT COUNT(*) FROM schema_migrations`).Scan(&n); err != nil || n != 2 {
+		t.Errorf("%d migrations recorded (%v), want 2", n, err)
 	}
 }
 
@@ -57,10 +57,10 @@ func TestUsers(t *testing.T) {
 	if !regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`).MatchString(u.ID) {
 		t.Errorf("id %q is not a version 4 UUID", u.ID)
 	}
-	if _, err := s.CreateUser(ctx, "github", "42", "Again"); !errors.Is(err, ErrExists) {
+	if _, err := s.CreateUser(ctx, "github", "42", "Again", ""); !errors.Is(err, ErrExists) {
 		t.Errorf("same identity twice: %v, want ErrExists", err)
 	}
-	if other, err := s.CreateUser(ctx, "discord", "42", "Other"); err != nil || other.ID == u.ID {
+	if other, err := s.CreateUser(ctx, "discord", "42", "Other", ""); err != nil || other.ID == u.ID {
 		t.Errorf("the same subject at another provider is another account: %+v, %v", other, err)
 	}
 	byID, err := s.User(ctx, u.ID)
@@ -163,5 +163,57 @@ func TestADeckNeedsARealOwner(t *testing.T) {
 	s, _ := open(t)
 	if _, err := s.SaveDeck(ctx, Deck{Owner: "nobody", Name: "x", Hero: "finn"}); err == nil {
 		t.Error("a deck was saved for an unknown owner")
+	}
+}
+
+func TestAnAvatarIsKeptAndCanBeRefreshed(t *testing.T) {
+	s, _ := open(t)
+	u, err := s.CreateUser(ctx, "github", "7", "Ada", "https://avatars.githubusercontent.com/u/7?v=4")
+	if err != nil || u.AvatarURL != "https://avatars.githubusercontent.com/u/7?v=4" {
+		t.Fatalf("CreateUser = %+v, %v", u, err)
+	}
+	if got, _ := s.UserByIdentity(ctx, "github", "7"); got.AvatarURL != u.AvatarURL {
+		t.Errorf("read back %q", got.AvatarURL)
+	}
+	if err := s.SetAvatar(ctx, u.ID, "https://avatars.githubusercontent.com/u/7?v=5"); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := s.User(ctx, u.ID); got.AvatarURL != "https://avatars.githubusercontent.com/u/7?v=5" {
+		t.Errorf("after refresh %q", got.AvatarURL)
+	}
+	if err := s.SetAvatar(ctx, u.ID, ""); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := s.User(ctx, u.ID); got.AvatarURL != "" {
+		t.Errorf("a person who removed their avatar still has %q", got.AvatarURL)
+	}
+	if err := s.SetAvatar(ctx, "missing", "x"); !errors.Is(err, ErrNotFound) {
+		t.Errorf("setting the avatar of nobody: %v", err)
+	}
+}
+
+func TestMigrationTwoKeepsExistingAccounts(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "old.db")
+	s, err := OpenSQLite(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	u := user(t, s, "1")
+	// Go back to a database as version 1 left it: no avatar column, and the second migration not recorded.
+	if _, err := s.db.Exec(`ALTER TABLE profiles DROP COLUMN avatar_url`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.db.Exec(`DELETE FROM schema_migrations WHERE version = 2`); err != nil {
+		t.Fatal(err)
+	}
+	s.Close()
+	again, err := OpenSQLite(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer again.Close()
+	got, err := again.User(ctx, u.ID)
+	if err != nil || got.DisplayName != u.DisplayName || got.AvatarURL != "" {
+		t.Errorf("after migrating: %+v, %v", got, err)
 	}
 }

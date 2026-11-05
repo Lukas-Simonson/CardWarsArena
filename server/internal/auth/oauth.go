@@ -214,7 +214,7 @@ func (a *OAuth) handleMe(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]any{"user": nil})
 		return
 	}
-	writeJSON(w, map[string]any{"user": map[string]string{"id": u.ID, "name": u.DisplayName}})
+	writeJSON(w, map[string]any{"user": map[string]string{"id": u.ID, "name": u.DisplayName, "avatar": u.AvatarURL}})
 }
 
 // ---- signing in
@@ -341,12 +341,12 @@ func (a *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
-	subject, name, err := a.whoIs(ctx, p, tok)
+	who, err := a.whoIs(ctx, p, tok)
 	if err != nil {
 		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
-	user, err := a.findOrCreate(ctx, p.name, subject, name)
+	user, err := a.findOrCreate(ctx, p.name, who)
 	if err != nil {
 		a.fail(w, r, pend.returnTo, "failed", err)
 		return
@@ -367,42 +367,53 @@ func (a *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 // whoIs asks the provider who the token belongs to.
-func (a *OAuth) whoIs(ctx context.Context, p *provider, tok *oauth2.Token) (subject, name string, err error) {
+func (a *OAuth) whoIs(ctx context.Context, p *provider, tok *oauth2.Token) (profile, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.userURL, nil)
 	if err != nil {
-		return "", "", err
+		return profile{}, err
 	}
 	req.Header.Set("Authorization", "Bearer "+tok.AccessToken)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "cardwars")
 	res, err := a.opts.HTTPClient.Do(req)
 	if err != nil {
-		return "", "", err
+		return profile{}, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		return "", "", fmt.Errorf("%s answered %s", p.name, res.Status)
+		return profile{}, fmt.Errorf("%s answered %s", p.name, res.Status)
 	}
 	body, err := io.ReadAll(io.LimitReader(res.Body, maxUserReply))
 	if err != nil {
-		return "", "", err
+		return profile{}, err
 	}
-	subject, name, err = p.parse(body)
-	if err == nil && subject == "" {
+	who, err := p.parse(body)
+	if err == nil && who.subject == "" {
 		err = fmt.Errorf("%s gave no id for the user", p.name) // never make an account for "nobody"
 	}
-	return subject, name, err
+	return who, err
 }
 
-// findOrCreate returns the account for a provider's subject, making one on the first sign-in.
-func (a *OAuth) findOrCreate(ctx context.Context, provider, subject, name string) (store.User, error) {
-	u, err := a.opts.Store.UserByIdentity(ctx, provider, subject)
+// findOrCreate returns the account for a provider's subject, making one on the first sign-in. The name is
+// kept from then on (it may be changed here later), but the picture follows the provider: people change it.
+func (a *OAuth) findOrCreate(ctx context.Context, provider string, who profile) (store.User, error) {
+	u, err := a.opts.Store.UserByIdentity(ctx, provider, who.subject)
+	if err == nil {
+		if u.AvatarURL != who.avatar {
+			if err := a.opts.Store.SetAvatar(ctx, u.ID, who.avatar); err != nil {
+				a.opts.Logger.Warn("refreshing avatar", "err", err) // the sign-in itself is fine
+			} else {
+				u.AvatarURL = who.avatar
+			}
+		}
+		return u, nil
+	}
 	if !errors.Is(err, store.ErrNotFound) {
 		return u, err
 	}
-	u, err = a.opts.Store.CreateUser(ctx, provider, subject, cleanName(name, provider+" player"))
+	u, err = a.opts.Store.CreateUser(ctx, provider, who.subject, cleanName(who.name, provider+" player"), who.avatar)
 	if errors.Is(err, store.ErrExists) { // two first sign-ins at once
-		return a.opts.Store.UserByIdentity(ctx, provider, subject)
+		return a.opts.Store.UserByIdentity(ctx, provider, who.subject)
 	}
 	return u, err
 }

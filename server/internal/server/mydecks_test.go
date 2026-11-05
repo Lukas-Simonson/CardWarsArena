@@ -24,7 +24,7 @@ func (a storeAuth) Identify(r *http.Request) (store.User, bool) {
 	}
 	u, err := a.db.UserByIdentity(context.Background(), "test", name)
 	if err != nil {
-		if u, err = a.db.CreateUser(context.Background(), "test", name, name); err != nil {
+		if u, err = a.db.CreateUser(context.Background(), "test", name, name, ""); err != nil {
 			return store.User{}, false
 		}
 	}
