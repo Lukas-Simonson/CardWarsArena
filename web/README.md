@@ -58,6 +58,7 @@ js/main.js       wiring: home screen, connection, rejoin, click handlers
 js/decklist.js   pure: what the home screen's deck shelf offers
 js/deckmodel.js  pure: a deck being built and the rules it is judged by
 js/builder.js    the deck builder screen
+js/avatar.js     a player's picture, or the first letter of their name
 test/            node --test unit tests, fixtures, and a smoke test
 serve.mjs        tiny static server for development
 ```

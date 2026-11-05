@@ -3,6 +3,7 @@
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
 import { h, svg } from "./dom.js";
+import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
 import { cardName, landscapeName, seatName } from "./describe.js";
 import { isMyDecision } from "./state.js";
@@ -31,7 +32,7 @@ export function renderGame(root, model, on) {
         state.waiting && h("p", { class: "roomcode", "aria-label": "Room code" }, state.session?.room ?? ""))));
     return;
   }
-  const ctx = { view: v, cards, names: state.names, known: state.known };
+  const ctx = { view: v, cards, names: state.names, avatars: state.avatars, known: state.known };
   const me = v.you, opp = 1 - me;
   const legal = v.legal ?? [];
   const myDecision = isMyDecision(state);
@@ -97,7 +98,7 @@ function playerBar(m, seat, on) {
   return h("section", { class: "steel pbar", "aria-label": mine ? "You" : "Opponent" },
     h("div", { class: "shield", "data-seat": seat, role: "img", "aria-label": `${mine ? "You have" : seatName(ctx, seat) + " has"} ${p.hp} of ${MAX_HP} Hit Points` },
       svg(SHIELD, { viewBox: "0 0 48 54" }), h("span", {}, p.hp)),
-    h("div", { class: "well avatar", "aria-hidden": "true", style: `background:${mine ? "#c98a1f" : "#2e5f9c"}` }, seatName(ctx, seat)[0]?.toUpperCase() ?? "?"),
+    avatarEl(seatName(ctx, seat), ctx.avatars?.[seat], { style: `background:${mine ? "#c98a1f" : "#2e5f9c"}` }),
     h("div", { class: "pname" },
       h("div", { class: "h" }, mine ? `${seatName(ctx, seat)} (you)` : seatName(ctx, seat)),
       h("div", { class: "sub" }, mine ? `${p.hand?.length ?? 0} in hand` : `${p.hand_count} in hand`)),

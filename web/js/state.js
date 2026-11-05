@@ -10,6 +10,7 @@ export function initialState() {
     session: null,         // { room, token, seat, vsBot } once seated
     waiting: false,        // room created, no opponent yet
     names: [],             // seat display names
+    avatars: [],           // seat picture addresses, "" for a guest or the bot
     opponent: { connected: null, name: "" },
     view: null,            // latest view from the server
     seq: 0,                // seq of that view
@@ -60,6 +61,7 @@ export function reduce(state, msg, cards = {}) {
         ...(sameRoom ? state : leave(state)),
         session: { room: msg.room, token: msg.token, seat: msg.seat, vsBot: !!msg.vs_bot },
         names: msg.names ?? state.names,
+        avatars: msg.avatars ?? state.avatars,
         error: "",
         closedReason: "",
       };
@@ -76,7 +78,8 @@ export function reduce(state, msg, cards = {}) {
       const ctx = { view: msg.view, cards, names, known };
       const lines = (msg.events ?? []).map((e) => describeEvent(ctx, e));
       const log = lines.length ? [...state.log, ...lines].slice(-LOG_LIMIT) : state.log;
-      return { ...state, view: msg.view, seq: msg.seq, names, known, log, waiting: false, error: "" };
+      const avatars = msg.avatars?.length ? msg.avatars : state.avatars;
+      return { ...state, view: msg.view, seq: msg.seq, names, avatars, known, log, waiting: false, error: "" };
     }
     case "room_closed":
       return { ...leave(state), closedReason: msg.message ?? "room closed" };
