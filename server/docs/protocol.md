@@ -23,7 +23,7 @@ Plain HTTP endpoints:
 | path | |
 |---|---|
 | `GET /api/bots` | `{"default":"heuristic","bots":["heuristic","random"]}`: the bots `create` may ask for |
-| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `landscapes`, `hero` (card id), `playable` |
+| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `cards` (ids, one per copy), `landscapes`, `hero` (card id), `playable` |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
 | `GET /api/auth/config` | `{"mode":"none"\|"oauth","providers":[{"name":"github","label":"GitHub"}]}`: what the client may offer |
 | `GET /api/auth/me` | `{"user":{"id","name"}}`, or `{"user":null}` when not signed in |

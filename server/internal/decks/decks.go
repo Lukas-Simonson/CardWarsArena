@@ -16,7 +16,7 @@ type Info struct {
 	Set        string                          `json:"set"`
 	Name       string                          `json:"name"`
 	Owner      string                          `json:"owner"`          // "Finn" from "Finn's Blue Plains Deck"
-	Cards      []string                        `json:"-"`              // the playable cards; the Hero is kept apart
+	Cards      []string                        `json:"cards"`          // the playable cards, one id per copy; the Hero is kept apart
 	Hero       string                          `json:"hero,omitempty"` // card id of the deck's Hero
 	Size       int                             `json:"size"`
 	Landscapes [engine.NumLanes]card.Landscape `json:"landscapes"`

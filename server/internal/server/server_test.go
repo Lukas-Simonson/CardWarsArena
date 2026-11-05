@@ -253,6 +253,8 @@ func TestDecksEndpointMarksPlayability(t *testing.T) {
 	var list []struct {
 		Set, Name string
 		Playable  bool
+		Hero      string
+		Cards     []string
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
 		t.Fatal(err)
@@ -260,6 +262,9 @@ func TestDecksEndpointMarksPlayability(t *testing.T) {
 	ready := map[string]bool{}
 	for _, d := range list {
 		ready[d.Name] = d.Playable
+		if d.Hero == "" || len(d.Cards) < 40 {
+			t.Errorf("%s: the deck's Hero and cards should be listed (%q, %d cards)", d.Name, d.Hero, len(d.Cards))
+		}
 	}
 	if !ready["Finn's Deck"] || !ready["Jake's Deck"] || !ready["Lady's Deck"] || ready["BMO's Deck"] {
 		t.Errorf("playable = %v", ready)
