@@ -1,12 +1,12 @@
-# Serves the web client and sends the game server's paths to it, so the browser
-# sees one origin. Caddy keeps the Host header, which the WebSocket origin check
+# Serves the web client and sends the game server's paths to it (at $CARDWARS_UPSTREAM,
+# "server:8080" by default), so the browser sees one origin. Caddy keeps the Host header, which the WebSocket origin check
 # relies on.
 :80 {
 	root * /srv
 	encode gzip
 
 	@game path /ws /api/* /healthz
-	reverse_proxy @game server:8080
+	reverse_proxy @game {$CARDWARS_UPSTREAM:server:8080}
 
 	file_server
 }
