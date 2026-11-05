@@ -24,7 +24,7 @@ func main() {
 		data    = flag.String("data", "data", "directory with cards/ and effects/")
 		delay   = flag.Duration("bot-delay", 700*time.Millisecond, "pause between the bot's moves")
 		origins = flag.String("origins", "", "comma-separated extra browser origins allowed to open a WebSocket (e.g. localhost:*)")
-		dbPath  = flag.String("db", "", "SQLite file for accounts and decks; empty keeps nothing")
+		dbPath  = flag.String("db", os.Getenv("CARDWARS_DB"), "SQLite file for accounts and decks; empty keeps nothing [$CARDWARS_DB]")
 		authOpt = flag.String("auth", envOr("CARDWARS_AUTH", "none"), "who may sign in: none, or oauth (Discord and GitHub; needs -db and -public-url) [$CARDWARS_AUTH]")
 		public  = flag.String("public-url", os.Getenv("CARDWARS_PUBLIC_URL"), "where browsers reach this server, e.g. https://cards.example.com (for -auth oauth) [$CARDWARS_PUBLIC_URL]")
 		dev     = flag.Bool("dev", false, "development mode: clients may choose seeds and play unmodelled cards")
