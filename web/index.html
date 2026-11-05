@@ -15,28 +15,83 @@
 <span id="status" class="conn" role="status">connecting…</span>
 
 <main id="lobby" class="lobby">
-  <h1 class="h">Card Wars</h1>
-  <p class="sub">Pick a deck, then take on the bot or a friend.</p>
-  <section class="steel">
-    <div id="account" class="account" hidden></div>
-    <label>Your name <input id="name" value="Player" maxlength="24" autocomplete="off"></label>
-    <label>Your deck <select id="deck"></select></label>
-    <label>Bot's deck <select id="botdeck"><option value="">(the other starter deck)</option></select></label>
-    <button id="vsbot" class="btn-green go" type="button">Play the bot!</button>
-    <div class="or"><span>or play a friend</span></div>
-    <button id="create" class="btn-purple" type="button">Create a room</button>
-    <div class="joinrow">
-      <input id="code" placeholder="Room code" maxlength="8" spellcheck="false" autocomplete="off" aria-label="Room code">
-      <button id="join" class="btn-steel" type="button">Join</button>
+  <header class="lhead">
+    <div class="steel who">
+      <div id="avatar" class="well avatar" aria-hidden="true">P</div>
+      <div class="whotext">
+        <label for="name" class="sr">Your name</label>
+        <input id="name" class="whoname" value="Player" maxlength="24" autocomplete="off" placeholder="Your name">
+        <span id="whosub" class="ink"></span>
+      </div>
     </div>
-    <p class="hint muted" id="lobbyhint"></p>
-    <details>
-      <summary>Server</summary>
-      <label>Server address <input id="server" spellcheck="false" autocomplete="off"></label>
-      <label>Bot <select id="bot"><option value="">Random</option></select></label>
-      <button id="applyServer" class="btn-steel" type="button" style="min-height:40px;margin-top:8px">Connect</button>
-    </details>
+    <div id="account" class="laccount" hidden></div>
+  </header>
+
+  <section class="felt hero" aria-labelledby="hero-title">
+    <h1 id="hero-title">Card Wars</h1>
+    <section id="decks" aria-labelledby="deck-title" class="lsection herodecks">
+      <div class="deckhead">
+        <h2 id="deck-title" class="h">Pick your deck</h2>
+        <button id="build" type="button" class="btn-steel" hidden>Build a new deck</button>
+      </div>
+      <div class="shelf"><div id="shelf" class="shelfgrid"></div></div>
+      <p class="hint" id="lobbyhint"></p>
+    </section>
   </section>
+
+  <section id="play" aria-labelledby="modes-title" class="lsection">
+    <h2 id="modes-title" class="h">How do you wanna play?</h2>
+    <div class="modes">
+      <article class="steel mode">
+        <div class="modeicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="8" r="3.2" fill="#ffd34d" stroke="#16212b" stroke-width="2"/><circle cx="16" cy="9" r="2.7" fill="#dbe6ee" stroke="#16212b" stroke-width="2"/><path d="M3 20 C 3 14 14 14 14 20 Z" fill="#ffd34d" stroke="#16212b" stroke-width="2" stroke-linejoin="round"/><path d="M14.5 14.5 C 18 13.5 21.5 15 21.5 19.5 H 15.5" fill="#dbe6ee" stroke="#16212b" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <h3 class="h">Play a Friend</h3>
+        <label for="code" class="ink">Got a room code?</label>
+        <div class="joinrow">
+          <input id="code" class="well" placeholder="PIG-42" maxlength="8" spellcheck="false" autocomplete="off">
+          <button id="join" type="button" class="btn-steel">Join</button>
+        </div>
+        <button id="create" type="button" class="btn-steel">Make a new room</button>
+      </article>
+
+      <article class="steel mode">
+        <div class="modeicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#f4e6bf" stroke="#16212b" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="#d2352b" stroke="#16212b" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="#16212b"/></svg></div>
+        <h3 class="h">Practice</h3>
+        <p class="ink">Play the computer. Try decks out, learn the Floop timing, nobody's judging.</p>
+        <details class="options">
+          <summary>Options</summary>
+          <label for="bot" class="ink">Bot <select id="bot" class="well"><option value="">Random</option></select></label>
+          <label for="botdeck" class="ink">Bot's deck <select id="botdeck" class="well"><option value="">(the other starter deck)</option></select></label>
+        </details>
+        <button id="vsbot" type="button" class="btn-green big">Practice</button>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="rules" aria-labelledby="rules-title" class="parch rules">
+    <div class="ruleshead">
+      <h2 id="rules-title">Your turn, in seven steps</h2>
+      <span>Win by taking your opponent from 25 HP to 0.</span>
+    </div>
+    <ol class="steps">
+      <li><span class="stepno" aria-hidden="true">1</span><span>Ready all your cards</span></li>
+      <li><span class="stepno" aria-hidden="true">2</span><span>Draw a card</span></li>
+      <li><span class="stepno" aria-hidden="true">3</span><span>Get 2 Actions</span></li>
+      <li><span class="stepno" aria-hidden="true">4</span><span>Floop (optional)</span></li>
+      <li><span class="stepno" aria-hidden="true">5</span><span>Spend 1 Action to draw</span></li>
+      <li><span class="stepno" aria-hidden="true">6</span><span>Fight!</span></li>
+      <li><span class="stepno" aria-hidden="true">7</span><span>End of turn</span></li>
+    </ol>
+  </section>
+
+  <footer class="well disclaimer">
+    A fan-made table for the Adventure Time Card Wars TCG. Not affiliated with Cartoon Network or Cryptozoic Entertainment.
+    <details class="serverbox">
+      <summary>Server</summary>
+      <label for="server" class="ink">Server address <input id="server" class="well" spellcheck="false" autocomplete="off"></label>
+      <button id="applyServer" type="button" class="btn-steel">Connect</button>
+    </details>
+  </footer>
 </main>
 
 <div id="builder" class="builder" hidden></div>

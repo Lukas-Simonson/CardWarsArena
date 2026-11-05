@@ -10,7 +10,7 @@ import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, 
 import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
 import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./account.js";
-import { deckOptions, pickDeck } from "./decklist.js";
+import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour } from "./decklist.js";
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 
@@ -31,6 +31,7 @@ let decks = [];
 let catalogError = "";
 let account = accountView(null, null);
 let myDecks = []; // the signed-in player's saved decks
+let selectedDeck = ""; // the deck on the shelf that will be played
 // What the player is in the middle of: the card they clicked (source), the
 // picker that tracks their choices for it, and what the card on show is.
 const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
@@ -150,7 +151,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && (ui.picker || ui.discard != null)) { ui.discard = null; resetSelection(); render(); }
 });
 
-const form = () => ({ name: $("name").value, deck: $("deck").value });
+const form = () => ({ name: $("name").value, deck: selectedDeck });
 
 $("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_deck: $("botdeck").value || undefined, bot: $("bot").value || undefined });
 $("create").onclick = () => send({ type: "create", ...form(), vs_bot: false });
@@ -159,8 +160,9 @@ $("join").onclick = joinRoom;
 $("code").addEventListener("keydown", (e) => { if (e.key === "Enter") joinRoom(); });
 $("applyServer").onclick = () => applyServer($("server").value);
 $("server").addEventListener("keydown", (e) => { if (e.key === "Enter") applyServer($("server").value); });
-$("name").onchange = () => { if (!account.user) store("cw.name", $("name").value); };
-$("deck").onchange = () => store("cw.deck", $("deck").value);
+$("name").onchange = () => { if (!account.user) store("cw.name", $("name").value); showWho(); };
+$("name").oninput = showWho;
+$("build").onclick = openBuilder;
 $("bot").onchange = () => store("cw.bot", $("bot").value);
 
 // ---------- deck builder
@@ -171,8 +173,10 @@ const builder = createBuilder({
   cards: () => cards,
   starters: () => decks,
   onClose: () => render(),
-  onSaved: (list) => { myDecks = list; renderDeckMenu(); },
+  onSaved: (list) => { myDecks = list; renderShelf(); },
 });
+
+function openBuilder() { builder.open().then(render); render(); }
 
 // ---------- account
 
@@ -197,28 +201,32 @@ async function loadAccount() {
     } catch {}
   }
   renderAccount();
-  renderDeckMenu();
+  renderShelf();
 }
 
 function renderAccount() {
-  const box = $("account"), name = $("name");
+  const box = $("account"), name = $("name"), here = location.origin + location.pathname;
   box.hidden = !account.show;
-  const here = location.origin + location.pathname;
   if (account.user) {
-    box.replaceChildren(
-      h("span", {}, "Signed in as ", h("b", {}, account.user.name)),
-      h("span", { class: "providers" },
-        h("button", { type: "button", class: "btn-purple", onclick: () => { builder.open().then(render); render(); } }, "Deck builder"),
-        h("button", { type: "button", class: "btn-steel", onclick: signOut }, "Sign out")));
+    box.replaceChildren(h("button", { type: "button", class: "btn-steel", onclick: signOut }, "Sign out"));
     name.value = account.user.name; // the server plays you under this name whatever is sent
     name.disabled = true;
   } else {
-    box.replaceChildren(
-      h("span", {}, "Sign in to keep your decks (or just play as a guest):"),
-      h("span", { class: "providers" }, account.providers.map((p) => h("a", { class: "btn-purple", href: loginUrl(server, p.name, here) }, p.label))));
+    box.replaceChildren(...account.providers.map((p) => h("a", { class: "btn-purple", href: loginUrl(server, p.name, here), title: `Sign in with ${p.label} to build and keep decks` }, `Sign in with ${p.label}`)));
     name.disabled = false;
     name.value = load("cw.name") || "Player";
   }
+  const build = $("build");
+  build.hidden = !account.show; // a server with no accounts has no decks to build
+  build.disabled = !account.user;
+  build.title = account.user ? "" : "Sign in to build and keep your own decks";
+  showWho();
+}
+
+/** The player chip: the first letter of the name, and whether they are signed in. */
+function showWho() {
+  $("avatar").textContent = ($("name").value.trim()[0] ?? "?").toUpperCase();
+  $("whosub").textContent = account.user ? "Signed in" : account.show ? "Guest: sign in to keep decks" : "Your name at the table";
 }
 
 async function signOut() {
@@ -283,27 +291,29 @@ function render() {
 // ---------- connecting
 
 function fillDecks(list) {
-  decks = list.filter((d) => d.playable);
+  decks = inBoxOrder(list.filter((d) => d.playable));
   const bots = $("botdeck");
   bots.replaceChildren(new Option("(the other starter deck)", ""));
   for (const d of decks) bots.append(new Option(`${d.owner || d.name} — ${d.name}`, `${d.set} ${d.name}`));
-  renderDeckMenu();
+  renderShelf();
 }
 
-/** "Your deck": the starters, and the player's own decks under their own heading when signed in. */
-function renderDeckMenu() {
-  const menu = $("deck"), o = deckOptions(decks, myDecks);
-  const option = (x) => Object.assign(new Option(x.label, x.value), { disabled: !!x.disabled, title: x.title ?? "" });
-  menu.replaceChildren(...(o.mine.length
-    ? [Object.assign(document.createElement("optgroup"), { label: "Starter decks" }), Object.assign(document.createElement("optgroup"), { label: "My decks" })]
-    : []));
-  if (o.mine.length) {
-    menu.children[0].append(...o.starters.map(option));
-    menu.children[1].append(...o.mine.map(option));
-  } else {
-    menu.append(...o.starters.map(option));
-  }
-  menu.value = pickDeck(o, load("cw.deck"));
+/** "Pick your deck": a box for each starter deck, then the player's own when signed in. The chosen one is lifted. */
+function renderShelf() {
+  const boxes = shelf(decks, myDecks, cards);
+  selectedDeck = pickDeck(boxes, selectedDeck || load("cw.deck"));
+  const box = (b) => h("button", {
+    type: "button", class: "deckbox", disabled: b.disabled, title: b.title || null,
+    "aria-pressed": b.value === selectedDeck ? "true" : "false", style: `background:${boxColour(b.lands[0])}`,
+    onclick: () => { selectedDeck = b.value; store("cw.deck", b.value); renderShelf(); },
+  },
+    h("div", { class: "lid", "aria-hidden": "true" }),
+    h("div", { class: "dbody" },
+      h("div", { class: "lands", "aria-hidden": "true" }, b.lands.map((l) => h("i", { style: `background:${diamondColour(l)}` }))),
+      h("div", { class: "parch plate" }, h("b", {}, b.name), h("span", {}, b.sub)),
+      h("div", { class: "dfoot" }, h("span", {}, `${b.size} cards`), b.value === selectedDeck && h("span", { class: "picked" }, "Selected"))));
+  $("shelf").replaceChildren(...[...boxes.starters, ...boxes.mine].map(box));
+  $("lobbyhint").textContent = !decks.length ? "The server reports no playable decks." : account.show && !account.user ? "Sign in to build and keep your own decks." : "";
 }
 
 /** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
@@ -322,7 +332,6 @@ async function loadCatalog() {
     if (b?.ok) fillBots(await b.json());
     cards = Object.fromEntries((await c.json()).map((x) => [x.id, x]));
     fillDecks(await d.json());
-    $("lobbyhint").textContent = decks.length ? "" : "The server reports no playable decks.";
   } catch (err) {
     catalogError = `Cannot load cards from ${server} (${err.message}). Is the server running, and was it started with -origins ${location.host}?`;
   }
@@ -366,6 +375,7 @@ async function applyServer(text) {
 
 $("server").value = server;
 $("name").value = load("cw.name") || "Player";
+showWho();
 store("cw.server", server);
 render();
 await loadCatalog();

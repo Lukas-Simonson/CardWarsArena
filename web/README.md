@@ -18,9 +18,9 @@ go run ./cmd/cardwarsd -origins 'localhost:*'
 npm start            # or: node serve.mjs 5173
 ```
 
-Open http://localhost:5173/. Pick a deck and choose **Play the bot!**, or **Create a room** and send the code to a friend, who types it under **Join**. (To try it alone, use two browser tabs: each keeps its own seat.) The
+Open http://localhost:5173/. Pick a deck from the shelf and choose **Practice**, or **Make a new room** and send the code to a friend, who types it under **Join**. (To try it alone, use two browser tabs: each keeps its own seat.) The
 server address (default `http://localhost:8080`, or `?server=http://host:port`)
-is under "Server" on the lobby. Reloading the page puts you back in your seat.
+is under "Server" at the foot of the home screen. Reloading the page puts you back in your seat.
 
 ## How to play
 
@@ -43,7 +43,7 @@ You act on the cards themselves; there is no list of actions.
 ## Layout
 
 ```
-index.html       lobby markup and the #game mount point
+index.html       home screen markup and the #builder and #game mount points
 css/style.css    materials (wood, felt, steel, parchment), buttons, card frames
 js/net.js        reconnecting WebSocket, server address helpers
 js/state.js      pure reducer: server messages -> client state
@@ -54,7 +54,10 @@ js/dom.js        tiny element builder
 js/card.js       one card: the scan, or a frame built from its data
 js/render.js     draws the battle scene (DOM)
 js/anim.js       pure plan() of what to animate between two views, plus the Web Animations that play it
-js/main.js       wiring: lobby, connection, rejoin, click handlers
+js/main.js       wiring: home screen, connection, rejoin, click handlers
+js/decklist.js   pure: what the home screen's deck shelf offers
+js/deckmodel.js  pure: a deck being built and the rules it is judged by
+js/builder.js    the deck builder screen
 test/            node --test unit tests, fixtures, and a smoke test
 serve.mjs        tiny static server for development
 ```
