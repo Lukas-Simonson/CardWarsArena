@@ -16,8 +16,8 @@ export function landscapeTitle(lands) {
   return [...new Set(lands.filter(Boolean))].map(landscapeName).join(" + ");
 }
 
-/** "Starter · Hero: Finn": what kind of deck it is and who leads it. */
-const subtitle = (kind, hero) => (hero ? `${kind} · Hero: ${hero.name}` : kind);
+/** "Hero: Finn", with the kind of deck in front when it is not a starter ("Custom · Hero: Jake"). */
+const subtitle = (kind, hero) => [kind, hero && `Hero: ${hero.name}`].filter(Boolean).join(" · ");
 
 /**
  * @param {{set:string,name:string,owner?:string,size:number,landscapes:string[]}[]} presets  playable starter decks from GET /api/decks
@@ -30,7 +30,7 @@ export function shelf(presets, saved, cards) {
     starters: presets.map((d) => ({
       value: `${d.set} ${d.name}`,
       name: d.name,
-      sub: subtitle("Starter", cards[d.hero]),
+      sub: subtitle("", cards[d.hero]),
       lands: d.landscapes,
       size: d.size,
       disabled: false,

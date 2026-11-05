@@ -20,7 +20,7 @@ const saved = [
 
 test("starters are asked for by words, titled with the deck's own name and led by their Hero", () => {
   const [finn] = shelf(presets, [], cards).starters;
-  assert.deepEqual(finn, { value: "Finn Vs Jake Finn's Deck", name: "Finn's Deck", sub: "Starter · Hero: Finn", lands: blue, size: 40, disabled: false, title: "Blue Plains" });
+  assert.deepEqual(finn, { value: "Finn Vs Jake Finn's Deck", name: "Finn's Deck", sub: "Hero: Finn", lands: blue, size: 40, disabled: false, title: "Blue Plains" });
 });
 
 test("a saved deck is asked for as my:<id>, with its Landscapes worked out from its cards", () => {
@@ -36,9 +36,9 @@ test("an unfinished deck is on the shelf but cannot be taken, and says why", () 
   assert.equal(wip.title, "choose a Hero; 1 cards: a deck needs at least 40");
 });
 
-test("a deck without a Hero says only what kind it is", () => {
-  const [noHero] = shelf([{ ...presets[0], hero: "" }], [], cards).starters;
-  assert.equal(noHero.sub, "Starter");
+test("a starter deck says only who leads it, and has no subtitle without a Hero", () => {
+  assert.equal(shelf(presets, [], cards).starters[1].sub, "Hero: Jake");
+  assert.equal(shelf([{ ...presets[0], hero: "" }], [], cards).starters[0].sub, "");
 });
 
 test("a guest has only the starters", () => {
