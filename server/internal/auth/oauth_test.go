@@ -25,6 +25,7 @@ type fakeProvider struct {
 	challenge string // the last code_challenge it was sent
 	subject   string
 	name      string
+	avatar    string
 	userFails bool
 	tokenSeen int
 }
@@ -48,7 +49,7 @@ func newFakeProvider(t *testing.T) *fakeProvider {
 			http.Error(w, "no", http.StatusInternalServerError)
 			return
 		}
-		json.NewEncoder(w).Encode(map[string]string{"id": f.subject, "name": f.name})
+		json.NewEncoder(w).Encode(map[string]string{"id": f.subject, "name": f.name, "avatar": f.avatar})
 	})
 	f.Server = httptest.NewServer(mux)
 	t.Cleanup(f.Close)
@@ -60,10 +61,10 @@ func (f *fakeProvider) provider() provider {
 		name: "fake", label: "Fake",
 		endpoint: oauth2.Endpoint{AuthURL: f.URL + "/authorize", TokenURL: f.URL + "/token"},
 		userURL:  f.URL + "/user",
-		parse: func(b []byte) (string, string, error) {
-			var u struct{ ID, Name string }
+		parse: func(b []byte) (profile, error) {
+			var u struct{ ID, Name, Avatar string }
 			err := json.Unmarshal(b, &u)
-			return u.ID, u.Name, err
+			return profile{subject: u.ID, name: u.Name, avatar: safeAvatar(u.Avatar, "img.example.test")}, err
 		},
 	}
 }
@@ -380,26 +381,104 @@ func TestNewOAuthChecksItsSettings(t *testing.T) {
 }
 
 func TestProvidersReadTheirUsers(t *testing.T) {
+	const cdn = "https://cdn.discordapp.com"
 	for _, tc := range []struct {
-		p                 provider
-		body, subject, nm string
+		name string
+		p    provider
+		body string
+		want profile
 	}{
-		{discord(), `{"id":"80351110224678912","username":"nelly","global_name":"Nelly"}`, "80351110224678912", "Nelly"},
-		{discord(), `{"id":"80351110224678912","username":"nelly","global_name":null}`, "80351110224678912", "nelly"},
-		{github(), `{"id":583231,"login":"octocat","name":"The Octocat"}`, "583231", "The Octocat"},
-		{github(), `{"id":583231,"login":"octocat","name":null}`, "583231", "octocat"},
+		{"discord with an avatar", discord(), `{"id":"80351110224678912","username":"nelly","global_name":"Nelly","avatar":"8342729096ea3675442027381ff50dfe","discriminator":"0"}`,
+			profile{"80351110224678912", "Nelly", cdn + "/avatars/80351110224678912/8342729096ea3675442027381ff50dfe.png?size=128"}},
+		{"discord animated", discord(), `{"id":"1","username":"u","avatar":"a_abc"}`, profile{"1", "u", cdn + "/avatars/1/a_abc.png?size=128"}},
+		{"discord without one, new username", discord(), `{"id":"80351110224678912","username":"nelly","global_name":null,"avatar":null,"discriminator":"0"}`,
+			profile{"80351110224678912", "nelly", cdn + "/embed/avatars/5.png"}}, // (80351110224678912 >> 22) % 6
+		{"discord without one, old name#1234", discord(), `{"id":"80351110224678912","username":"nelly","avatar":null,"discriminator":"1234"}`,
+			profile{"80351110224678912", "nelly", cdn + "/embed/avatars/4.png"}}, // 1234 % 5
+		{"github", github(), `{"id":583231,"login":"octocat","name":"The Octocat","avatar_url":"https://avatars.githubusercontent.com/u/583231?v=4"}`,
+			profile{"583231", "The Octocat", "https://avatars.githubusercontent.com/u/583231?s=128&v=4"}},
+		{"github falls back to the login", github(), `{"id":583231,"login":"octocat","name":null,"avatar_url":"https://avatars.githubusercontent.com/u/583231?v=4"}`,
+			profile{"583231", "octocat", "https://avatars.githubusercontent.com/u/583231?s=128&v=4"}},
+		{"github with a picture from somewhere else", github(), `{"id":1,"login":"x","avatar_url":"https://evil.example/a.png"}`, profile{"1", "x", ""}},
+		{"github with no picture", github(), `{"id":1,"login":"x"}`, profile{"1", "x", ""}},
 	} {
-		subject, name, err := tc.p.parse([]byte(tc.body))
-		if err != nil || subject != tc.subject || name != tc.nm {
-			t.Errorf("%s %s: %q %q %v", tc.p.name, tc.body, subject, name, err)
+		got, err := tc.p.parse([]byte(tc.body))
+		if err != nil || got != tc.want {
+			t.Errorf("%s: %+v, %v; want %+v", tc.name, got, err, tc.want)
 		}
 	}
 	for _, p := range []provider{discord(), github()} {
-		if _, _, err := p.parse([]byte(`{"login":"x"}`)); err == nil {
+		if _, err := p.parse([]byte(`{"login":"x"}`)); err == nil {
 			t.Errorf("%s: a reply with no id was accepted", p.name)
 		}
-		if _, _, err := p.parse([]byte(`not json`)); err == nil {
+		if _, err := p.parse([]byte(`not json`)); err == nil {
 			t.Errorf("%s: garbage was accepted", p.name)
+		}
+	}
+}
+
+func TestOnlyPicturesFromTheProvidersOwnHostsAreKept(t *testing.T) {
+	const ok = "https://cdn.discordapp.com/avatars/1/a.png"
+	for _, tc := range []struct{ raw, want string }{
+		{ok, ok},
+		{"http://cdn.discordapp.com/avatars/1/a.png", ""},          // not https
+		{"https://cdn.discordapp.com.evil.example/a.png", ""},      // another host that starts alike
+		{"https://evil.example/cdn.discordapp.com/a.png", ""},      // the right name in the path only
+		{"https://user:pw@cdn.discordapp.com/avatars/1/a.png", ""}, // credentials in the address
+		{"javascript:alert(1)", ""},
+		{"//cdn.discordapp.com/a.png", ""},
+		{"", ""},
+	} {
+		if got := safeAvatar(tc.raw, "cdn.discordapp.com"); got != tc.want {
+			t.Errorf("safeAvatar(%q) = %q, want %q", tc.raw, got, tc.want)
+		}
+	}
+}
+
+func TestAnAvatarIsStoredAtFirstSignInAndFollowsTheProvider(t *testing.T) {
+	e := newEnv(t, "http://localhost:8080")
+	e.fake.avatar = "https://img.example.test/a.png"
+	c := e.signIn()
+	u, _ := e.identify(c)
+	if u.AvatarURL != "https://img.example.test/a.png" {
+		t.Fatalf("first sign-in stored %q", u.AvatarURL)
+	}
+	w := e.do("GET", "/api/auth/me", []*http.Cookie{c}, nil)
+	var me struct {
+		User struct{ ID, Name, Avatar string }
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &me); err != nil || me.User.Avatar != "https://img.example.test/a.png" {
+		t.Errorf("me = %s (%v)", w.Body, err)
+	}
+
+	e.fake.avatar = "https://img.example.test/b.png" // they changed it
+	e.fake.name = "Renamed upstream"
+	c2 := e.signIn()
+	u2, _ := e.identify(c2)
+	if u2.ID != u.ID || u2.AvatarURL != "https://img.example.test/b.png" || u2.DisplayName != "Fay" {
+		t.Errorf("second sign-in: %+v (want the same account, the new picture, and the old name)", u2)
+	}
+	if got, _ := e.db.User(context.Background(), u.ID); got.AvatarURL != "https://img.example.test/b.png" {
+		t.Errorf("the database still has %q", got.AvatarURL)
+	}
+
+	e.fake.avatar = "https://elsewhere.example/c.png" // not a host we accept: no picture, but still signed in
+	u3, _ := e.identify(e.signIn())
+	if u3.AvatarURL != "" {
+		t.Errorf("a picture from another host was kept: %q", u3.AvatarURL)
+	}
+}
+
+func TestDiscordsStockPictureIsChosenLikeDiscordDoes(t *testing.T) {
+	for _, tc := range []struct {
+		id, disc string
+		want     int
+	}{
+		{"80351110224678912", "0", 5}, {"80351110224678912", "", 5}, {"80351110224678912", "1234", 4},
+		{"80351110224678912", "0001", 1}, {"not a number", "0", 0},
+	} {
+		if got := defaultAvatar(tc.id, tc.disc); got != tc.want {
+			t.Errorf("defaultAvatar(%q, %q) = %d, want %d", tc.id, tc.disc, got, tc.want)
 		}
 	}
 }
