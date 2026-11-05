@@ -163,7 +163,6 @@ $("server").addEventListener("keydown", (e) => { if (e.key === "Enter") applySer
 $("name").onchange = () => { if (!account.user) store("cw.name", $("name").value); showWho(); };
 $("name").oninput = showWho;
 $("build").onclick = openBuilder;
-$("navdecks").onclick = (e) => { if (account.user) { e.preventDefault(); openBuilder(); } };
 $("bot").onchange = () => store("cw.bot", $("bot").value);
 
 // ---------- deck builder
