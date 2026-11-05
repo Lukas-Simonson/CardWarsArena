@@ -8,12 +8,12 @@ const placeholder = (card) => h("div", { class: "noart" }, card.name ?? card.id)
  * @param {object} card  catalog entry (id, name, type, landscape, cost, attack, defense, text, image_url)
  * @param {{atk?:number, def?:number, damage?:number}} [live]  current values for a Creature in play
  */
-export function cardEl(card, live = null) {
+export function cardEl(card, live = null, { lazy = false } = {}) {
   const c = card ?? { id: "?", name: "?" };
   const el = h("div", { class: "card", "data-land": c.landscape ?? "rainbow" });
   if (c.image_url) {
     const img = h("img", {
-      src: c.image_url, alt: c.name, draggable: "false",
+      src: c.image_url, alt: c.name, draggable: "false", loading: lazy ? "lazy" : null, decoding: lazy ? "async" : null,
       onerror: () => { img.remove(); el.prepend(placeholder(c)); },
     });
     el.append(img);

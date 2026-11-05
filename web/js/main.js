@@ -11,6 +11,7 @@ import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
 import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./account.js";
 import { deckOptions, pickDeck } from "./decklist.js";
+import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
@@ -162,6 +163,17 @@ $("name").onchange = () => { if (!account.user) store("cw.name", $("name").value
 $("deck").onchange = () => store("cw.deck", $("deck").value);
 $("bot").onchange = () => store("cw.bot", $("bot").value);
 
+// ---------- deck builder
+
+const builder = createBuilder({
+  root: $("builder"),
+  server: () => server,
+  cards: () => cards,
+  starters: () => decks,
+  onClose: () => render(),
+  onSaved: (list) => { myDecks = list; renderDeckMenu(); },
+});
+
 // ---------- account
 
 /** Ask the server what sign-in it offers and who this player is. A server without it just shows nothing. */
@@ -193,7 +205,11 @@ function renderAccount() {
   box.hidden = !account.show;
   const here = location.origin + location.pathname;
   if (account.user) {
-    box.replaceChildren(h("span", {}, "Signed in as ", h("b", {}, account.user.name)), h("button", { type: "button", class: "btn-steel", onclick: signOut }, "Sign out"));
+    box.replaceChildren(
+      h("span", {}, "Signed in as ", h("b", {}, account.user.name)),
+      h("span", { class: "providers" },
+        h("button", { type: "button", class: "btn-purple", onclick: () => { builder.open().then(render); render(); } }, "Deck builder"),
+        h("button", { type: "button", class: "btn-steel", onclick: signOut }, "Sign out")));
     name.value = account.user.name; // the server plays you under this name whatever is sent
     name.disabled = true;
   } else {
@@ -206,6 +222,7 @@ function renderAccount() {
 }
 
 async function signOut() {
+  builder.close();
   try { await fetch(`${server}/api/auth/logout`, { method: "POST", credentials: "include" }); } catch {}
   sstore("cw.session", null);
   state = leave(state);
@@ -218,7 +235,8 @@ async function signOut() {
 
 function render() {
   const inRoom = !!state.session;
-  $("lobby").hidden = inRoom;
+  if (inRoom && builder.isOpen()) builder.close(); // a game has started: the builder has nothing to say
+  $("lobby").hidden = inRoom || builder.isOpen();
   $("game").hidden = !inRoom;
   const s = $("status");
   s.textContent = { open: "connected", connecting: "connecting…", reconnecting: "reconnecting…", closed: "disconnected" }[state.status] ?? state.status;
