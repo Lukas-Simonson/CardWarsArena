@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"cardwars/internal/server"
+	"cardwars/internal/store"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 		data    = flag.String("data", "data", "directory with cards/ and effects/")
 		delay   = flag.Duration("bot-delay", 700*time.Millisecond, "pause between the bot's moves")
 		origins = flag.String("origins", "", "comma-separated extra browser origins allowed to open a WebSocket (e.g. localhost:*)")
+		dbPath  = flag.String("db", "", "SQLite file for accounts and decks; empty keeps nothing")
 		dev     = flag.Bool("dev", false, "development mode: clients may choose seeds and play unmodelled cards")
 	)
 	flag.Parse()
@@ -30,6 +32,15 @@ func main() {
 	cfg := server.Config{DataDir: *data, BotDelay: *delay, AllowSeed: *dev, AllowUnmodelled: *dev, Logger: log}
 	if *origins != "" {
 		cfg.OriginPatterns = strings.Split(*origins, ",")
+	}
+	if *dbPath != "" {
+		db, err := store.OpenSQLite(*dbPath)
+		if err != nil {
+			log.Error("open database", "err", err)
+			os.Exit(1)
+		}
+		defer db.Close()
+		log.Info("database ready", "path", *dbPath)
 	}
 	srv, err := server.New(cfg)
 	if err != nil {

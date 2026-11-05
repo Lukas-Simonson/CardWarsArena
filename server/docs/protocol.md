@@ -208,7 +208,8 @@ go run ./cmd/cardwarsd -dev                 # also: client-chosen seeds, unmodel
 ```
 
 Flags: `-data`, `-bot-delay` (pause between bot moves, default 700 ms),
-`-origins`. Idle rooms are removed after 30 minutes; a room survives a dropped
+`-origins`, `-db` (a SQLite file for accounts and decks; the schema is created and brought up to date
+at start, and nothing is kept without it). Idle rooms are removed after 30 minutes; a room survives a dropped
 connection until then.
 
 Not yet built: accounts, matchmaking, spectators, turn timers, resign (use

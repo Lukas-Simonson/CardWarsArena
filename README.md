@@ -21,6 +21,10 @@ That starts the game server and the web client behind one port. To develop inste
 server (`go run ./cmd/cardwarsd -origins 'localhost:*'` in `server/`) and the client
 (`npm start` in `web/`), then open http://localhost:5173/. Each directory's README has the details.
 
+The server can keep accounts and decks in a SQLite file (`-db path`, e.g. `-db cardwars.db`). Nothing
+uses it yet; it is the foundation for saved decks. With Docker Compose the file lives in the
+`cardwars-data` volume, so it survives `docker compose pull && docker compose up -d`.
+
 ## CI and images
 
 GitHub Actions (`.github/workflows/`) runs on every pull request and on `main`: `gofmt`, `go vet` and
