@@ -10,6 +10,7 @@ import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, 
 import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
 import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./account.js";
+import { deckOptions, pickDeck } from "./decklist.js";
 import { h } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
@@ -28,6 +29,7 @@ let cards = {};
 let decks = [];
 let catalogError = "";
 let account = accountView(null, null);
+let myDecks = []; // the signed-in player's saved decks
 // What the player is in the middle of: the card they clicked (source), the
 // picker that tracks their choices for it, and what the card on show is.
 const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
@@ -175,7 +177,15 @@ async function loadAccount() {
     }
   } catch {}
   account = accountView(config, me);
+  myDecks = [];
+  if (account.user) {
+    try {
+      const r = await fetch(`${server}/api/my/decks`, { credentials: "include" });
+      if (r.ok) myDecks = await r.json();
+    } catch {}
+  }
   renderAccount();
+  renderDeckMenu();
 }
 
 function renderAccount() {
@@ -256,15 +266,26 @@ function render() {
 
 function fillDecks(list) {
   decks = list.filter((d) => d.playable);
-  const mine = $("deck"), bots = $("botdeck");
-  mine.replaceChildren();
+  const bots = $("botdeck");
   bots.replaceChildren(new Option("(the other starter deck)", ""));
-  for (const d of decks) {
-    const label = `${d.owner || d.name} — ${d.name}`;
-    mine.append(new Option(label, `${d.set} ${d.name}`));
-    bots.append(new Option(label, `${d.set} ${d.name}`));
+  for (const d of decks) bots.append(new Option(`${d.owner || d.name} — ${d.name}`, `${d.set} ${d.name}`));
+  renderDeckMenu();
+}
+
+/** "Your deck": the starters, and the player's own decks under their own heading when signed in. */
+function renderDeckMenu() {
+  const menu = $("deck"), o = deckOptions(decks, myDecks);
+  const option = (x) => Object.assign(new Option(x.label, x.value), { disabled: !!x.disabled, title: x.title ?? "" });
+  menu.replaceChildren(...(o.mine.length
+    ? [Object.assign(document.createElement("optgroup"), { label: "Starter decks" }), Object.assign(document.createElement("optgroup"), { label: "My decks" })]
+    : []));
+  if (o.mine.length) {
+    menu.children[0].append(...o.starters.map(option));
+    menu.children[1].append(...o.mine.map(option));
+  } else {
+    menu.append(...o.starters.map(option));
   }
-  mine.value = load("cw.deck") && [...mine.options].some((o) => o.value === load("cw.deck")) ? load("cw.deck") : mine.options[0]?.value ?? "";
+  menu.value = pickDeck(o, load("cw.deck"));
 }
 
 /** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
