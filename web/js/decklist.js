@@ -16,6 +16,16 @@ export function landscapeTitle(lands) {
   return [...new Set(lands.filter(Boolean))].map(landscapeName).join(" + ");
 }
 
+// The starter decks come in pairs, one set to a box: Finn and Jake, BMO and Lady, PB and LSP, Fionna and Cake.
+// This is how they are laid out, by their Hero. Any deck not named here follows, in the order it came.
+const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake"];
+
+/** The starter decks from GET /api/decks, in the order of the game's boxes. */
+export function inBoxOrder(presets) {
+  const rank = (d) => { const i = STARTER_ORDER.indexOf(d.hero); return i < 0 ? STARTER_ORDER.length : i; };
+  return presets.map((d, i) => [d, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([d]) => d);
+}
+
 /** "Hero: Finn", with the kind of deck in front when it is not a starter ("Custom · Hero: Jake"). */
 const subtitle = (kind, hero) => [kind, hero && `Hero: ${hero.name}`].filter(Boolean).join(" · ");
 

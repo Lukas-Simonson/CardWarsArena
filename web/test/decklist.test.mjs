@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { shelf, pickDeck, landscapeTitle, boxColour, diamondColour } from "../js/decklist.js";
+import { shelf, pickDeck, inBoxOrder, landscapeTitle, boxColour, diamondColour } from "../js/decklist.js";
 
 const cards = {
   pup: { id: "pup", name: "Corn Pup", landscape: "cornfield" },
@@ -67,4 +67,17 @@ test("every Landscape has a colour, and an unknown one still gets one", () => {
   }
   assert.match(boxColour("nope"), /^#[0-9a-f]{6}$/);
   assert.match(diamondColour(undefined), /^#[0-9a-f]{6}$/);
+});
+
+test("the starter decks are laid out as the game pairs them", () => {
+  const heroes = ["cake", "bmo", "finn", "fionna", "lumpy-space-princess", "jake", "lady-rainicorn", "princess-bubblegum"];
+  assert.deepEqual(inBoxOrder(heroes.map((hero) => ({ hero }))).map((d) => d.hero),
+    ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake"]);
+});
+
+test("a deck the order does not name follows the rest, in the order it came, and nothing is lost", () => {
+  const list = [{ hero: "new-b" }, { hero: "cake" }, { hero: "new-a" }, { hero: "finn" }];
+  assert.deepEqual(inBoxOrder(list).map((d) => d.hero), ["finn", "cake", "new-b", "new-a"]);
+  assert.deepEqual(inBoxOrder([]), []);
+  assert.equal(list[0].hero, "new-b"); // the list it was given is left alone
 });

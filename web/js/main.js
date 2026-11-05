@@ -10,7 +10,7 @@ import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, 
 import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
 import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./account.js";
-import { shelf, pickDeck, boxColour, diamondColour } from "./decklist.js";
+import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour } from "./decklist.js";
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 
@@ -291,7 +291,7 @@ function render() {
 // ---------- connecting
 
 function fillDecks(list) {
-  decks = list.filter((d) => d.playable);
+  decks = inBoxOrder(list.filter((d) => d.playable));
   const bots = $("botdeck");
   bots.replaceChildren(new Option("(the other starter deck)", ""));
   for (const d of decks) bots.append(new Option(`${d.owner || d.name} — ${d.name}`, `${d.set} ${d.name}`));
