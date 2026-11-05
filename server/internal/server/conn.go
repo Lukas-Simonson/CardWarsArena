@@ -190,7 +190,7 @@ func (c *client) dispatch(m ClientMsg) {
 			c.fail(err)
 			return
 		}
-		token, err := room.join(c, cleanName(m.Name, "Player"), deck)
+		token, err := room.join(c, cleanName(m.Name, "Player"), avatarOf(c.user), deck)
 		if err != nil {
 			c.fail(err)
 			return

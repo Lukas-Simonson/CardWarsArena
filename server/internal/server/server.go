@@ -183,6 +183,14 @@ func (s *Server) botDeckFor(query string, player decks.Info) (decks.Info, error)
 	return decks.Info{}, fail(ErrUnknownDeck, "no deck available for the bot")
 }
 
+// avatarOf is a signed-in player's picture, or "" for a guest.
+func avatarOf(u *store.User) string {
+	if u == nil {
+		return ""
+	}
+	return u.AvatarURL
+}
+
 func cleanName(n, fallback string) string {
 	n = strings.TrimSpace(n)
 	var b strings.Builder
@@ -232,7 +240,7 @@ func (s *Server) create(sink Sink, user *store.User, m ClientMsg) (*Room, string
 		id = newRoomCode()
 	}
 	r := &Room{id: id, srv: s, vsBot: m.VsBot, bot: opponent, seed: seed, touched: time.Now(), onClose: s.removeRoom}
-	host := &seat{name: cleanName(m.Name, "Player"), token: newToken(), deck: deck, sink: sink}
+	host := &seat{name: cleanName(m.Name, "Player"), avatar: avatarOf(user), token: newToken(), deck: deck, sink: sink}
 	r.seats[0] = host
 	if m.VsBot {
 		r.seats[1] = &seat{name: "Bot", isBot: true, deck: botDeck}

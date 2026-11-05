@@ -112,7 +112,7 @@ func TestNothingHiddenIsEverSentToEitherSeat(t *testing.T) {
 		}
 		a.room, b.room = room, room
 		deck, _ := srv.deckFor("jake")
-		tokenB, err := room.join(b, "B", deck)
+		tokenB, err := room.join(b, "B", "", deck)
 		if err != nil {
 			t.Fatal(err)
 		}

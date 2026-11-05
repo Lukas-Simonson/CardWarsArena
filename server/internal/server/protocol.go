@@ -76,6 +76,8 @@ type ServerMsg struct {
 	Token string   `json:"token,omitempty"` // joined: keep it to rejoin
 	VsBot bool     `json:"vs_bot,omitempty"`
 	Names []string `json:"names,omitempty"` // joined/update: seat display names
+	// Avatars are the seats' pictures (addresses), in the same order as Names; "" for a guest or the bot.
+	Avatars []string `json:"avatars,omitempty"`
 
 	Seq    int          `json:"seq,omitempty"`    // update: increases by one per change
 	View   *view.View   `json:"view,omitempty"`   // update

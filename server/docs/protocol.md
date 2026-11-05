@@ -26,7 +26,7 @@ Plain HTTP endpoints:
 | `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `cards` (ids, one per copy), `landscapes`, `hero` (card id), `playable` |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
 | `GET /api/auth/config` | `{"mode":"none"\|"oauth","providers":[{"name":"github","label":"GitHub"}]}`: what the client may offer |
-| `GET /api/auth/me` | `{"user":{"id","name"}}`, or `{"user":null}` when not signed in |
+| `GET /api/auth/me` | `{"user":{"id","name","avatar"}}`, or `{"user":null}` when not signed in |
 | `GET /api/auth/login/{provider}` | start signing in: redirects to the provider (`-auth oauth` only). `?return=<page>` is where to come back to: this site, or a host allowed by `-origins` |
 | `GET /api/auth/callback/{provider}` | where the provider sends people back; sets the session cookie and redirects to `/` (or to `/?login_error=denied\|state\|failed`) |
 | `POST /api/auth/logout` | ends the session and clears the cookie |
@@ -87,13 +87,18 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
 | `type` | fields |
 |---|---|
 | `hello` | `protocol` |
-| `joined` | `room`, `seat` (0/1), `token`, `vs_bot`, `names` |
+| `joined` | `room`, `seat` (0/1), `token`, `vs_bot`, `names`, `avatars` |
 | `waiting` | `room`: share this code |
-| `update` | `seq`, `view`, `events`, `names` |
+| `update` | `seq`, `view`, `events`, `names`, `avatars` |
 | `opponent` | `connected`, `name` |
 | `room_closed` | `message` (reason) |
 | `error` | `code`, `message` |
 | `pong` | |
+
+`avatars` is in the same order as `names` (seat 0, seat 1): the address of each player's picture at their sign-in
+provider (Discord or GitHub), or `""` for a guest or the bot. A client shows the picture, and falls back to the
+name's first letter when it is empty or does not load. The addresses are on the providers' own image hosts, so the
+viewer's browser loads them from there.
 
 `update.seq` increases by exactly 1 for every change to the game. `events` is
 what just happened, as *this seat* may see it (animate these); `view` is the full

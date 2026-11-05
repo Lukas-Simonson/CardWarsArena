@@ -713,7 +713,7 @@ type testAuth struct{}
 
 func (testAuth) Identify(r *http.Request) (store.User, bool) {
 	if n := r.Header.Get("X-Test-User"); n != "" {
-		return store.User{ID: "u-" + n, DisplayName: n}, true
+		return store.User{ID: "u-" + n, DisplayName: n, AvatarURL: "https://img.example.test/" + n + ".png"}, true
 	}
 	return store.User{}, false
 }
@@ -784,5 +784,31 @@ func TestAuthRoutesAreServedAndCORSAllowsCookies(t *testing.T) {
 	}
 	if resp.Header.Get("Access-Control-Allow-Credentials") != "true" {
 		t.Error("an allowed origin must be able to send cookies")
+	}
+}
+
+func TestPlayersSeeEachOthersAvatars(t *testing.T) {
+	h := newHarness(t, func(c *Config) { c.Auth = testAuth{} })
+	host := h.dialAs("Ada")
+	host.send(ClientMsg{Type: MsgCreate, Deck: "finn"})
+	joined := host.expect(MsgJoined)
+	if len(joined.Avatars) != 2 || joined.Avatars[0] != "https://img.example.test/Ada.png" || joined.Avatars[1] != "" {
+		t.Errorf("host's joined avatars = %q", joined.Avatars)
+	}
+	guest := h.dial() // a guest has no avatar
+	guest.send(ClientMsg{Type: MsgJoin, Room: joined.Room, Name: "Guest", Deck: "jake"})
+	if av := guest.expect(MsgJoined).Avatars; av[0] != "https://img.example.test/Ada.png" || av[1] != "" {
+		t.Errorf("guest's joined avatars = %q", av)
+	}
+	for who, c := range map[string]*tc{"host": host, "guest": guest} {
+		up := c.expect(MsgUpdate)
+		if len(up.Avatars) != 2 || up.Avatars[0] != "https://img.example.test/Ada.png" || up.Avatars[1] != "" {
+			t.Errorf("%s's update avatars = %q", who, up.Avatars)
+		}
+	}
+	grace := h.dialAs("Grace") // a second signed-in player, in a room of their own against the bot
+	grace.send(ClientMsg{Type: MsgCreate, Deck: "finn", VsBot: true})
+	if av := grace.expect(MsgJoined).Avatars; av[0] != "https://img.example.test/Grace.png" || av[1] != "" {
+		t.Errorf("against the bot: %q", av)
 	}
 }
