@@ -12,6 +12,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 	"sync"
 	"time"
@@ -42,6 +43,9 @@ type OAuthOptions struct {
 	PublicURL string
 	// Credentials by provider name ("discord", "github"); a provider without any is not offered.
 	Credentials map[string]Credentials
+	// ReturnHosts are host patterns ("localhost:*") besides the public URL's own host that a
+	// sign-in may send people back to, for a web client served from another origin.
+	ReturnHosts []string
 	SessionTTL  time.Duration // default 30 days
 	HTTPClient  *http.Client  // for calls to providers; default http.DefaultClient
 	Now         func() time.Time
@@ -65,6 +69,7 @@ type OAuth struct {
 type pending struct {
 	provider string
 	verifier string
+	returnTo string // where to send the person afterwards
 	expires  time.Time
 }
 
@@ -247,7 +252,7 @@ func (a *OAuth) handleLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "too many sign-ins in progress; try again shortly", http.StatusServiceUnavailable)
 		return
 	}
-	a.pending[state] = pending{provider: p.name, verifier: verifier, expires: now.Add(loginTimeout)}
+	a.pending[state] = pending{provider: p.name, verifier: verifier, returnTo: a.returnTarget(r.URL.Query().Get("return")), expires: now.Add(loginTimeout)}
 	a.mu.Unlock()
 
 	// The cookie ties the sign-in to this browser: the state in the URL alone could be someone else's.
@@ -255,13 +260,45 @@ func (a *OAuth) handleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, a.oauth[p.name].AuthCodeURL(state, oauth2.S256ChallengeOption(verifier)), http.StatusFound)
 }
 
+// returnTarget is where to send people after signing in: the page they asked to come back to if it is
+// on this site (or an allowed one), and otherwise the front page. Anything else would let a crafted
+// link send people anywhere once they have signed in.
+func (a *OAuth) returnTarget(raw string) string {
+	u, err := url.Parse(raw)
+	if raw == "" || err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || u.User != nil {
+		return "/"
+	}
+	ok := strings.EqualFold(u.Host, a.base.Host)
+	for _, p := range a.opts.ReturnHosts {
+		if m, _ := path.Match(strings.ToLower(p), strings.ToLower(u.Host)); m {
+			ok = true
+		}
+	}
+	if !ok {
+		return "/"
+	}
+	u.RawQuery, u.Fragment = "", "" // the page, not whatever it was carrying
+	return u.String()
+}
+
 // fail sends the person back to the web client with a reason it can show.
-func (a *OAuth) fail(w http.ResponseWriter, r *http.Request, reason string, err error) {
+func (a *OAuth) fail(w http.ResponseWriter, r *http.Request, to, reason string, err error) {
 	if err != nil {
 		a.opts.Logger.Warn("sign-in failed", "reason", reason, "err", err)
 	}
 	http.SetCookie(w, a.cookie(a.stateCookie(), "", -1))
-	http.Redirect(w, r, "/?login_error="+reason, http.StatusFound)
+	http.Redirect(w, r, withQuery(to, "login_error", reason), http.StatusFound)
+}
+
+func withQuery(target, key, value string) string {
+	u, err := url.Parse(target)
+	if err != nil {
+		return "/"
+	}
+	q := u.Query()
+	q.Set(key, value)
+	u.RawQuery = q.Encode()
+	return u.String()
 }
 
 func (a *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
@@ -274,7 +311,7 @@ func (a *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 	state := q.Get("state")
 	c, err := r.Cookie(a.stateCookie())
 	if err != nil || state == "" || subtle.ConstantTimeCompare([]byte(c.Value), []byte(state)) != 1 {
-		a.fail(w, r, "state", nil)
+		a.fail(w, r, "/", "state", nil)
 		return
 	}
 	a.mu.Lock()
@@ -282,11 +319,11 @@ func (a *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 	delete(a.pending, state) // a state works once
 	a.mu.Unlock()
 	if !ok || pend.provider != p.name || a.opts.Now().After(pend.expires) {
-		a.fail(w, r, "state", nil)
+		a.fail(w, r, "/", "state", nil)
 		return
 	}
 	if q.Get("error") != "" || q.Get("code") == "" {
-		a.fail(w, r, "denied", nil) // they said no, or the provider did
+		a.fail(w, r, pend.returnTo, "denied", nil) // they said no, or the provider did
 		return
 	}
 
@@ -294,32 +331,32 @@ func (a *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	tok, err := a.oauth[p.name].Exchange(ctx, q.Get("code"), oauth2.VerifierOption(pend.verifier))
 	if err != nil {
-		a.fail(w, r, "failed", err)
+		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
 	subject, name, err := a.whoIs(ctx, p, tok)
 	if err != nil {
-		a.fail(w, r, "failed", err)
+		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
 	user, err := a.findOrCreate(ctx, p.name, subject, name)
 	if err != nil {
-		a.fail(w, r, "failed", err)
+		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
 	token, err := randomToken()
 	if err != nil {
-		a.fail(w, r, "failed", err)
+		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
 	expires := a.opts.Now().Add(a.opts.SessionTTL)
 	if err := a.opts.Store.CreateSession(ctx, user.ID, hashToken(token), expires); err != nil {
-		a.fail(w, r, "failed", err)
+		a.fail(w, r, pend.returnTo, "failed", err)
 		return
 	}
 	http.SetCookie(w, a.cookie(a.stateCookie(), "", -1))
 	http.SetCookie(w, a.cookie(a.sessionCookie(), token, int(a.opts.SessionTTL.Seconds())))
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, pend.returnTo, http.StatusFound)
 }
 
 // whoIs asks the provider who the token belongs to.

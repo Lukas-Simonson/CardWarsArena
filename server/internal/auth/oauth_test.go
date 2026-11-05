@@ -419,3 +419,37 @@ func TestNoneNeverSignsAnyoneIn(t *testing.T) {
 		t.Errorf("config = %s", got)
 	}
 }
+
+func TestSignInReturnsToAnAllowedPageOnly(t *testing.T) {
+	e := newEnv(t, "https://cards.example.com")
+	e.a.opts.ReturnHosts = []string{"localhost:*"}
+	for _, tc := range []struct{ asked, want string }{
+		{"", "/"},
+		{"https://cards.example.com/play?x=1#top", "https://cards.example.com/play"},
+		{"http://localhost:5173/", "http://localhost:5173/"},
+		{"https://evil.example/", "/"},
+		{"https://cards.example.com.evil.example/", "/"},
+		{"https://user:pw@cards.example.com/", "/"},
+		{"javascript:alert(1)", "/"},
+		{"//evil.example/", "/"},
+		{"/just/a/path", "/"},
+	} {
+		if got := e.a.returnTarget(tc.asked); got != tc.want {
+			t.Errorf("return=%q goes to %q, want %q", tc.asked, got, tc.want)
+		}
+	}
+	// End to end: the page asked for is where they land, with or without success.
+	w := e.do("GET", "/api/auth/login/fake?return="+url.QueryEscape("http://localhost:5173/"), nil, nil)
+	loc, _ := url.Parse(w.Header().Get("Location"))
+	e.fake.challenge = loc.Query().Get("code_challenge")
+	state, sc := loc.Query().Get("state"), cookieNamed(w, e.a.stateCookie())
+	if w := e.callback("code=good-code&state="+state, sc); w.Header().Get("Location") != "http://localhost:5173/" {
+		t.Errorf("signed in, went to %q", w.Header().Get("Location"))
+	}
+	w = e.do("GET", "/api/auth/login/fake?return="+url.QueryEscape("http://localhost:5173/"), nil, nil)
+	loc, _ = url.Parse(w.Header().Get("Location"))
+	state, sc = loc.Query().Get("state"), cookieNamed(w, e.a.stateCookie())
+	if w := e.callback("error=access_denied&state="+state, sc); w.Header().Get("Location") != "http://localhost:5173/?login_error=denied" {
+		t.Errorf("turned down, went to %q", w.Header().Get("Location"))
+	}
+}

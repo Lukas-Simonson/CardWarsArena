@@ -58,7 +58,7 @@ func main() {
 		}
 		// Secrets come from the environment, not flags, so they stay out of process listings.
 		oa, err := auth.NewOAuth(auth.OAuthOptions{
-			Store: db, PublicURL: *public, Logger: log,
+			Store: db, PublicURL: *public, Logger: log, ReturnHosts: cfg.OriginPatterns,
 			Credentials: map[string]auth.Credentials{
 				"discord": {ClientID: os.Getenv("CARDWARS_DISCORD_CLIENT_ID"), ClientSecret: os.Getenv("CARDWARS_DISCORD_CLIENT_SECRET")},
 				"github":  {ClientID: os.Getenv("CARDWARS_GITHUB_CLIENT_ID"), ClientSecret: os.Getenv("CARDWARS_GITHUB_CLIENT_SECRET")},
