@@ -25,6 +25,11 @@ Plain HTTP endpoints:
 | `GET /api/bots` | `{"default":"heuristic","bots":["heuristic","random"]}`: the bots `create` may ask for |
 | `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `landscapes`, `hero` (card id), `playable` |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
+| `GET /api/auth/config` | `{"mode":"none"\|"oauth","providers":[{"name":"github","label":"GitHub"}]}`: what the client may offer |
+| `GET /api/auth/me` | `{"user":{"id","name"}}`, or `{"user":null}` when not signed in |
+| `GET /api/auth/login/{provider}` | start signing in: redirects to the provider (`-auth oauth` only). `?return=<page>` is where to come back to: this site, or a host allowed by `-origins` |
+| `GET /api/auth/callback/{provider}` | where the provider sends people back; sets the session cookie and redirects to `/` (or to `/?login_error=denied\|state\|failed`) |
+| `POST /api/auth/logout` | ends the session and clears the cookie |
 | `GET /healthz` | `ok` |
 | `GET /` | the debug client |
 
@@ -61,6 +66,9 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
 - `deck` is words matched against `"SET Deck name"` (`"finn"`, or `"Finn Vs Jake Finn"`); words that name one deck on its own win over the set's name. The match must
   be unique and playable. `bot_deck` defaults to the next playable deck. `bot` (with `vs_bot`) names the bot
   from `/api/bots`; the default is `heuristic`, and an unknown name is a `bad_request`.
+- **Signed-in players** (`-auth oauth`; the session cookie is sent with the WebSocket upgrade) play under
+  their account name: `name` is ignored. Guests choose their own. Who a connection is is fixed when it opens,
+  so reconnect after signing in or out.
 - `seed` (create only) is honoured only when the server runs with `-dev`.
 - **Always send `seq`** with an action: the `seq` of the update you chose it from.
   If anything has happened since (the bot moved, the opponent acted) the server
@@ -208,7 +216,17 @@ go run ./cmd/cardwarsd -dev                 # also: client-chosen seeds, unmodel
 ```
 
 Flags: `-data`, `-bot-delay` (pause between bot moves, default 700 ms),
-`-origins`. Idle rooms are removed after 30 minutes; a room survives a dropped
+`-origins`, `-db` (a SQLite file for accounts and decks; the schema is created and brought up to date
+at start, and nothing is kept without it), `-auth none|oauth` and `-public-url` (see "Signing in").
+
+### Signing in
+
+`-auth oauth` needs `-db`, `-public-url` (where browsers reach the server, e.g. `https://cards.example.com`)
+and credentials for at least one provider in the environment: `CARDWARS_DISCORD_CLIENT_ID` and
+`CARDWARS_DISCORD_CLIENT_SECRET`, `CARDWARS_GITHUB_CLIENT_ID` and `CARDWARS_GITHUB_CLIENT_SECRET`. Register
+the app with the provider and give it the callback `<public-url>/api/auth/callback/discord` (or `/github`).
+Only the provider's id for the person and a display name are kept: no email, no password. Sessions last 30
+days; the cookie is `HttpOnly` and `SameSite=Lax`, and over https `Secure` with a `__Host-` name. Idle rooms are removed after 30 minutes; a room survives a dropped
 connection until then.
 
 Not yet built: accounts, matchmaking, spectators, turn timers, resign (use

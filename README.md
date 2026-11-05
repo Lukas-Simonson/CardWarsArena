@@ -21,6 +21,10 @@ That starts the game server and the web client behind one port. To develop inste
 server (`go run ./cmd/cardwarsd -origins 'localhost:*'` in `server/`) and the client
 (`npm start` in `web/`), then open http://localhost:5173/. Each directory's README has the details.
 
+The server can keep accounts and decks in a SQLite file (`-db path`, e.g. `-db cardwars.db`). Nothing
+uses it yet; it is the foundation for saved decks. With Docker Compose the file lives in the
+`cardwars-data` volume, so it survives `docker compose pull && docker compose up -d`.
+
 ## CI and images
 
 GitHub Actions (`.github/workflows/`) runs on every pull request and on `main`: `gofmt`, `go vet` and
@@ -47,6 +51,15 @@ docker compose pull && docker compose up -d
 
 The first push creates private packages. Make them public under the repository's Packages settings, or
 `docker login ghcr.io` with a personal access token that has `read:packages` on the machine that pulls.
+
+## Signing in
+
+By default the server is anonymous. To let people sign in with Discord and/or GitHub (the first step
+toward saved decks), register an app with the provider, with the callback
+`<public url>/api/auth/callback/discord` (or `/github`), then copy `.env.example` to `.env`, fill it in and
+`docker compose up -d`. Only the provider's id for the person and a display name are stored: no email,
+no password. Signed-in players play under their account name; guests can still play. The details are in
+[`server/docs/protocol.md`](server/docs/protocol.md).
 
 ## Tests
 

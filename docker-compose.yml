@@ -7,8 +7,19 @@ services:
   server:
     image: ghcr.io/lukas-simonson/cardwarstcg-server:latest
     build: ./server
+    command: ["-db", "/var/lib/cardwars/cardwars.db"]
+    # Sign-in is off unless these are set (see .env.example).
+    environment:
+      CARDWARS_AUTH: ${CARDWARS_AUTH:-none}
+      CARDWARS_PUBLIC_URL: ${CARDWARS_PUBLIC_URL:-}
+      CARDWARS_DISCORD_CLIENT_ID: ${CARDWARS_DISCORD_CLIENT_ID:-}
+      CARDWARS_DISCORD_CLIENT_SECRET: ${CARDWARS_DISCORD_CLIENT_SECRET:-}
+      CARDWARS_GITHUB_CLIENT_ID: ${CARDWARS_GITHUB_CLIENT_ID:-}
+      CARDWARS_GITHUB_CLIENT_SECRET: ${CARDWARS_GITHUB_CLIENT_SECRET:-}
     restart: unless-stopped
     read_only: true
+    volumes:
+      - cardwars-data:/var/lib/cardwars
   web:
     image: ghcr.io/lukas-simonson/cardwarstcg-web:latest
     build: ./web
@@ -19,3 +30,6 @@ services:
       interval: 30s
     ports:
       - "8088:80"
+
+volumes:
+  cardwars-data:

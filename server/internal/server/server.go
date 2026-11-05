@@ -15,6 +15,7 @@ import (
 	"time"
 	"unicode"
 
+	"cardwars/internal/auth"
 	"cardwars/internal/bot"
 	"cardwars/internal/card"
 	"cardwars/internal/decks"
@@ -43,7 +44,9 @@ type Config struct {
 	// and to read the JSON API (host patterns such as "localhost:*").
 	// Same-origin and non-browser clients are always allowed.
 	OriginPatterns []string
-	Logger         *slog.Logger
+	// Auth says who is signed in; nil means nobody ever is (auth.None).
+	Auth   auth.Authenticator
+	Logger *slog.Logger
 }
 
 // Server is the HTTP handler and room registry.
@@ -77,6 +80,9 @@ func New(cfg Config) (*Server, error) {
 	}
 	if cfg.RoomTTL == 0 {
 		cfg.RoomTTL = 30 * time.Minute
+	}
+	if cfg.Auth == nil {
+		cfg.Auth = auth.None()
 	}
 	if cfg.Logger == nil {
 		cfg.Logger = slog.New(slog.NewTextHandler(discard{}, nil))
@@ -254,6 +260,7 @@ func (s *Server) Handler() http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"default": bot.Default, "bots": bot.Names()})
 	})
+	s.cfg.Auth.Routes(mux)
 	mux.HandleFunc("GET /ws", s.handleWS)
 	mux.HandleFunc("GET /{$}", s.handleDebugPage)
 	return s.withCORS(mux)
@@ -278,12 +285,14 @@ func (s *Server) originAllowed(origin, host string) bool {
 }
 
 // withCORS lets pages served from an allowed origin (a separate web client)
-// read the JSON API. WebSocket origins are checked by the upgrade itself.
+// read the JSON API, with its cookies, so a signed-in player is recognised.
+// WebSocket origins are checked by the upgrade itself.
 func (s *Server) withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Vary", "Origin")
 		if o := r.Header.Get("Origin"); o != "" && s.originAllowed(o, r.Host) {
 			w.Header().Set("Access-Control-Allow-Origin", o)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
 		next.ServeHTTP(w, r)
 	})
