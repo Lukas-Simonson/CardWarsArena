@@ -58,9 +58,9 @@ By default the server is anonymous. To let people sign in with Discord and/or Gi
 toward saved decks), register an app with the provider, with the callback
 `<public url>/api/auth/callback/discord` (or `/github`), then copy `.env.example` to `.env`, fill it in and
 `docker compose up -d`. Only the provider's id for the person and a display name are stored: no email,
-no password. Signed-in players play under their account name and can build and keep decks: the lobby's "Deck builder" searches every card the game
-can play, starts from a starter deck if you like, and says what a deck still needs. Saved decks that are
-complete appear in the deck menu. Guests can still play. The details are in
+no password. Signed-in players play under their account name and can build and keep decks: the home screen's "Build a new deck" opens a builder that searches every card the
+game can play, starts from a starter deck if you like, and says what a deck still needs. Saved decks that are
+complete appear on the deck shelf. Guests can still play. The details are in
 [`server/docs/protocol.md`](server/docs/protocol.md).
 
 ## Tests
