@@ -400,7 +400,7 @@ func (a *OAuth) findOrCreate(ctx context.Context, provider, subject, name string
 	if !errors.Is(err, store.ErrNotFound) {
 		return u, err
 	}
-	u, err = a.opts.Store.CreateUser(ctx, provider, subject, cleanName(name, provider+" player"))
+	u, err = a.opts.Store.CreateUser(ctx, provider, subject, cleanName(name, provider+" player"), "")
 	if errors.Is(err, store.ErrExists) { // two first sign-ins at once
 		return a.opts.Store.UserByIdentity(ctx, provider, subject)
 	}

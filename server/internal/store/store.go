@@ -26,6 +26,7 @@ type User struct {
 	Provider    string
 	Subject     string
 	DisplayName string
+	AvatarURL   string // the person's picture at their provider; empty when they have none
 	Created     time.Time
 }
 
@@ -44,11 +45,12 @@ type Deck struct {
 // Store is the server's persistent state.
 type Store interface {
 	// CreateUser makes an account and its profile; ErrExists if the identity is taken.
-	CreateUser(ctx context.Context, provider, subject, displayName string) (User, error)
+	CreateUser(ctx context.Context, provider, subject, displayName, avatarURL string) (User, error)
 	// UserByIdentity finds the account a provider's subject signs in to.
 	UserByIdentity(ctx context.Context, provider, subject string) (User, error)
 	User(ctx context.Context, id string) (User, error)
 	SetDisplayName(ctx context.Context, id, name string) error
+	SetAvatar(ctx context.Context, id, avatarURL string) error
 
 	// CreateSession records a session by the hash of its token. Session returns
 	// the user it belongs to, unless it is unknown or expired at now.
