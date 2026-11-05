@@ -99,26 +99,7 @@ func Find(cat card.Catalog) []Info {
 	}
 	var out []Info
 	for key := range seen {
-		d := Info{Set: key.set, Name: key.name, Owner: OwnerFromName(key.name), Cards: cat.Deck(key.set, key.name), Hero: cat.Hero(key.set, key.name)}
-		d.Landscapes, d.LandOK = LandscapesOf(cat, d.Cards)
-		distinct := map[string]bool{}
-		for _, id := range d.Cards {
-			if !distinct[id] {
-				distinct[id] = true
-				d.Distinct++
-				if cat[id].Implemented() {
-					d.Modelled++
-				}
-			}
-		}
-		if h := cat[d.Hero]; h != nil { // a Hero whose rules are missing makes the deck unplayable too
-			d.Distinct++
-			if h.Implemented() {
-				d.Modelled++
-			}
-		}
-		d.Size = len(d.Cards)
-		d.Ready = d.Playable()
+		d := newInfo(cat, key.set, key.name, OwnerFromName(key.name), cat.Hero(key.set, key.name), cat.Deck(key.set, key.name))
 		out = append(out, d)
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Key() < out[j].Key() })
@@ -191,4 +172,30 @@ func Table(decks []Info) string {
 		fmt.Fprintf(&b, "%-24s %-22s %5d  %s\n", d.Set, d.Name, len(d.Cards), status)
 	}
 	return b.String()
+}
+
+// newInfo describes a deck made of the given cards: the Landscapes it is played with, how many of
+// its distinct cards (and its Hero) have their rules modelled, and whether it is playable.
+func newInfo(cat card.Catalog, set, name, owner, hero string, cards []string) Info {
+	d := Info{Set: set, Name: name, Owner: owner, Cards: cards, Hero: hero}
+	d.Landscapes, d.LandOK = LandscapesOf(cat, d.Cards)
+	distinct := map[string]bool{}
+	for _, id := range d.Cards {
+		if !distinct[id] {
+			distinct[id] = true
+			d.Distinct++
+			if cat[id].Implemented() {
+				d.Modelled++
+			}
+		}
+	}
+	if h := cat[d.Hero]; h != nil { // a Hero whose rules are missing makes the deck unplayable too
+		d.Distinct++
+		if h.Implemented() {
+			d.Modelled++
+		}
+	}
+	d.Size = len(d.Cards)
+	d.Ready = d.Playable()
+	return d
 }
