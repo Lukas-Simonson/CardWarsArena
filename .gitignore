@@ -9,3 +9,6 @@ node_modules/
 
 # Local settings, including sign-in secrets (see .env.example).
 .env
+
+# Notes on deploying to Railway: personal, not part of the repository.
+/RAILWAY.md
