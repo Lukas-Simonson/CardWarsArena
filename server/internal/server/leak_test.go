@@ -106,7 +106,7 @@ func TestNothingHiddenIsEverSentToEitherSeat(t *testing.T) {
 		}
 		a := &checkSink{t: t, seat: 0}
 		b := &checkSink{t: t, seat: 1}
-		room, tokenA, err := srv.create(a, ClientMsg{Deck: "finn", Seed: &seed})
+		room, tokenA, err := srv.create(a, nil, ClientMsg{Deck: "finn", Seed: &seed})
 		if err != nil {
 			t.Fatal(err)
 		}

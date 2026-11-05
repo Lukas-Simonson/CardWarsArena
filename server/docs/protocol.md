@@ -23,13 +23,17 @@ Plain HTTP endpoints:
 | path | |
 |---|---|
 | `GET /api/bots` | `{"default":"heuristic","bots":["heuristic","random"]}`: the bots `create` may ask for |
-| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `landscapes`, `hero` (card id), `playable` |
+| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `cards` (ids, one per copy), `landscapes`, `hero` (card id), `playable` |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
 | `GET /api/auth/config` | `{"mode":"none"\|"oauth","providers":[{"name":"github","label":"GitHub"}]}`: what the client may offer |
 | `GET /api/auth/me` | `{"user":{"id","name"}}`, or `{"user":null}` when not signed in |
 | `GET /api/auth/login/{provider}` | start signing in: redirects to the provider (`-auth oauth` only). `?return=<page>` is where to come back to: this site, or a host allowed by `-origins` |
 | `GET /api/auth/callback/{provider}` | where the provider sends people back; sets the session cookie and redirects to `/` (or to `/?login_error=denied\|state\|failed`) |
 | `POST /api/auth/logout` | ends the session and clears the cookie |
+| `GET /api/my/decks` | the signed-in player's saved decks (needs `-db`; 401 when not signed in) |
+| `POST /api/my/decks` | save a deck: `{"name","hero","cards":[ids, one per copy]}` as `application/json`; 201 with the deck |
+| `PUT /api/my/decks/{id}` | replace one of your decks; 404 if it is not yours |
+| `DELETE /api/my/decks/{id}` | delete one of your decks; 204 |
 | `GET /healthz` | `ok` |
 | `GET /` | the debug client |
 
@@ -66,6 +70,9 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
 - `deck` is words matched against `"SET Deck name"` (`"finn"`, or `"Finn Vs Jake Finn"`); words that name one deck on its own win over the set's name. The match must
   be unique and playable. `bot_deck` defaults to the next playable deck. `bot` (with `vs_bot`) names the bot
   from `/api/bots`; the default is `heuristic`, and an unknown name is a `bad_request`.
+- A signed-in player may ask for one of their saved decks as `"my:<id>"` (from `GET /api/my/decks`) in `deck`;
+  it must be playable (`unknown_deck` if it is not theirs or the player is a guest, `deck_not_playable` with the
+  reasons if it is unfinished). `bot_deck` still names a starter deck.
 - **Signed-in players** (`-auth oauth`; the session cookie is sent with the WebSocket upgrade) play under
   their account name: `name` is ignored. Guests choose their own. Who a connection is is fixed when it opens,
   so reconnect after signing in or out.
@@ -218,6 +225,16 @@ go run ./cmd/cardwarsd -dev                 # also: client-chosen seeds, unmodel
 Flags: `-data`, `-bot-delay` (pause between bot moves, default 700 ms),
 `-origins`, `-db` (a SQLite file for accounts and decks; the schema is created and brought up to date
 at start, and nothing is kept without it), `-auth none|oauth` and `-public-url` (see "Signing in").
+
+### Saved decks
+
+A saved deck is `{id, name, hero, cards, created, updated, playable, problems}`. `cards` has one id per copy,
+the way the game takes a deck. Saving accepts work in progress: only a deck that makes no sense is refused
+(`422`: an unknown card, a Hero among the cards, a Hero that is not one, more than 3 copies of a card, more than
+120 cards), so a half-built deck can be kept. `playable` says whether it can be played, and `problems` says in
+words what stops it (no Hero, fewer than 40 cards, more than 2 Landscape types, rules not implemented yet). A name
+is trimmed to 40 characters; a player may keep 50 decks (`409` past that). A request that changes something
+must carry `application/json` and, if it has an `Origin`, be from this site or an allowed web client.
 
 ### Signing in
 

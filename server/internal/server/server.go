@@ -20,6 +20,7 @@ import (
 	"cardwars/internal/card"
 	"cardwars/internal/decks"
 	"cardwars/internal/engine"
+	"cardwars/internal/store"
 )
 
 // Config holds server settings. The zero value is usable once DataDir or
@@ -45,7 +46,9 @@ type Config struct {
 	// Same-origin and non-browser clients are always allowed.
 	OriginPatterns []string
 	// Auth says who is signed in; nil means nobody ever is (auth.None).
-	Auth   auth.Authenticator
+	Auth auth.Authenticator
+	// Store keeps accounts and decks; nil means nothing is kept and the saved-deck API is off.
+	Store  store.Store
 	Logger *slog.Logger
 }
 
@@ -174,6 +177,9 @@ func (s *Server) botDeckFor(query string, player decks.Info) (decks.Info, error)
 			return playable[(i+1)%len(playable)], nil
 		}
 	}
+	if len(playable) > 0 { // the player has a deck of their own: any starter will do
+		return playable[0], nil
+	}
 	return decks.Info{}, fail(ErrUnknownDeck, "no deck available for the bot")
 }
 
@@ -196,8 +202,8 @@ func cleanName(n, fallback string) string {
 }
 
 // create makes a room with the client in seat 0.
-func (s *Server) create(sink Sink, m ClientMsg) (*Room, string, error) {
-	deck, err := s.deckFor(m.Deck)
+func (s *Server) create(sink Sink, user *store.User, m ClientMsg) (*Room, string, error) {
+	deck, err := s.resolveDeck(user, m.Deck)
 	if err != nil {
 		return nil, "", err
 	}
@@ -261,6 +267,7 @@ func (s *Server) Handler() http.Handler {
 		json.NewEncoder(w).Encode(map[string]any{"default": bot.Default, "bots": bot.Names()})
 	})
 	s.cfg.Auth.Routes(mux)
+	s.mountMyDecks(mux)
 	mux.HandleFunc("GET /ws", s.handleWS)
 	mux.HandleFunc("GET /{$}", s.handleDebugPage)
 	return s.withCORS(mux)
@@ -293,6 +300,13 @@ func (s *Server) withCORS(next http.Handler) http.Handler {
 		if o := r.Header.Get("Origin"); o != "" && s.originAllowed(o, r.Host) {
 			w.Header().Set("Access-Control-Allow-Origin", o)
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			if r.Method == http.MethodOptions { // a browser asking before it sends JSON or a PUT/DELETE
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+				w.Header().Set("Access-Control-Max-Age", "600")
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
 		}
 		next.ServeHTTP(w, r)
 	})
