@@ -16,6 +16,9 @@ export function landscapeTitle(lands) {
   return [...new Set(lands.filter(Boolean))].map(landscapeName).join(" + ");
 }
 
+/** "Starter · Hero: Finn": what kind of deck it is and who leads it. */
+const subtitle = (kind, hero) => (hero ? `${kind} · Hero: ${hero.name}` : kind);
+
 /**
  * @param {{set:string,name:string,owner?:string,size:number,landscapes:string[]}[]} presets  playable starter decks from GET /api/decks
  * @param {{id:string,name:string,hero:string,cards:string[],playable:boolean,problems?:string[]}[]} saved  from GET /api/my/decks
@@ -26,25 +29,24 @@ export function shelf(presets, saved, cards) {
   return {
     starters: presets.map((d) => ({
       value: `${d.set} ${d.name}`,
-      name: landscapeTitle(d.landscapes) || d.name,
-      sub: `${d.owner || d.name}'s starter deck`,
+      name: d.name,
+      sub: subtitle("Starter", cards[d.hero]),
       lands: d.landscapes,
       size: d.size,
       disabled: false,
-      title: "",
+      title: landscapeTitle(d.landscapes),
     })),
     // A deck still being built is on the shelf, so it can be found, but cannot be taken.
     mine: saved.map((d) => {
       const lands = landscapeRow(fromCards(d.cards), cards);
-      const hero = cards[d.hero]?.name;
       return {
         value: `my:${d.id}`,
         name: d.name || "Untitled deck",
-        sub: d.playable ? `Custom${hero ? ` · Hero: ${hero}` : ""}` : "Unfinished",
+        sub: d.playable ? subtitle("Custom", cards[d.hero]) : "Unfinished",
         lands,
         size: d.cards.length,
         disabled: !d.playable,
-        title: d.playable ? "" : (d.problems ?? []).join("; "),
+        title: d.playable ? landscapeTitle(lands) : (d.problems ?? []).join("; "),
       };
     }),
   };
