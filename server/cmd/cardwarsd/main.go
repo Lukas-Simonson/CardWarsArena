@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"cardwars/internal/auth"
 	"cardwars/internal/server"
 	"cardwars/internal/store"
 )
@@ -24,6 +25,8 @@ func main() {
 		delay   = flag.Duration("bot-delay", 700*time.Millisecond, "pause between the bot's moves")
 		origins = flag.String("origins", "", "comma-separated extra browser origins allowed to open a WebSocket (e.g. localhost:*)")
 		dbPath  = flag.String("db", "", "SQLite file for accounts and decks; empty keeps nothing")
+		authOpt = flag.String("auth", "none", "who may sign in: none, or oauth (Discord and GitHub; needs -db and -public-url)")
+		public  = flag.String("public-url", "", "where browsers reach this server, e.g. https://cards.example.com (for -auth oauth)")
 		dev     = flag.Bool("dev", false, "development mode: clients may choose seeds and play unmodelled cards")
 	)
 	flag.Parse()
@@ -33,23 +36,51 @@ func main() {
 	if *origins != "" {
 		cfg.OriginPatterns = strings.Split(*origins, ",")
 	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	var db *store.SQLite
 	if *dbPath != "" {
-		db, err := store.OpenSQLite(*dbPath)
-		if err != nil {
+		var err error
+		if db, err = store.OpenSQLite(*dbPath); err != nil {
 			log.Error("open database", "err", err)
 			os.Exit(1)
 		}
 		defer db.Close()
 		log.Info("database ready", "path", *dbPath)
 	}
+	switch *authOpt {
+	case "none":
+	case "oauth":
+		if db == nil {
+			log.Error("-auth oauth needs -db")
+			os.Exit(1)
+		}
+		// Secrets come from the environment, not flags, so they stay out of process listings.
+		oa, err := auth.NewOAuth(auth.OAuthOptions{
+			Store: db, PublicURL: *public, Logger: log,
+			Credentials: map[string]auth.Credentials{
+				"discord": {ClientID: os.Getenv("CARDWARS_DISCORD_CLIENT_ID"), ClientSecret: os.Getenv("CARDWARS_DISCORD_CLIENT_SECRET")},
+				"github":  {ClientID: os.Getenv("CARDWARS_GITHUB_CLIENT_ID"), ClientSecret: os.Getenv("CARDWARS_GITHUB_CLIENT_SECRET")},
+			},
+		})
+		if err != nil {
+			log.Error("sign-in", "err", err)
+			os.Exit(1)
+		}
+		cfg.Auth = oa
+		go oa.Run(ctx)
+		log.Info("sign-in on", "public_url", *public)
+	default:
+		log.Error("-auth must be none or oauth", "got", *authOpt)
+		os.Exit(1)
+	}
+
 	srv, err := server.New(cfg)
 	if err != nil {
 		log.Error("start", "err", err)
 		os.Exit(1)
 	}
-
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 	go srv.Run(ctx)
 
 	hs := &http.Server{Addr: *addr, Handler: srv.Handler(), ReadHeaderTimeout: 10 * time.Second}

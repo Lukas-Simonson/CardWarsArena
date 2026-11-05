@@ -15,6 +15,7 @@ import (
 
 	"cardwars/internal/card"
 	"cardwars/internal/engine"
+	"cardwars/internal/store"
 )
 
 var (
@@ -700,4 +701,83 @@ func TestCreateChoosesTheBot(t *testing.T) {
 	b := h.dial()
 	b.send(ClientMsg{Type: MsgCreate, Name: "Tester", Deck: "finn", VsBot: true, Bot: "nope"})
 	b.expectError(ErrBadRequest)
+}
+
+// testAuth signs in whoever sends the X-Test-User header.
+type testAuth struct{}
+
+func (testAuth) Identify(r *http.Request) (store.User, bool) {
+	if n := r.Header.Get("X-Test-User"); n != "" {
+		return store.User{ID: "u-" + n, DisplayName: n}, true
+	}
+	return store.User{}, false
+}
+
+func (testAuth) Routes(*http.ServeMux) {}
+
+func (h *harness) dialAs(user string) *tc {
+	h.t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	conn, _, err := websocket.Dial(ctx, "ws"+strings.TrimPrefix(h.ts.URL, "http")+"/ws", &websocket.DialOptions{HTTPHeader: http.Header{"X-Test-User": {user}}})
+	if err != nil {
+		h.t.Fatal(err)
+	}
+	c := &tc{t: h.t, conn: conn, in: make(chan ServerMsg, 4096), raw: make(chan []byte, 4096), done: make(chan struct{})}
+	go func() {
+		defer close(c.done)
+		for {
+			_, data, err := conn.Read(context.Background())
+			if err != nil {
+				return
+			}
+			var m ServerMsg
+			if json.Unmarshal(data, &m) == nil {
+				c.raw <- data
+				c.in <- m
+			}
+		}
+	}()
+	h.t.Cleanup(func() { conn.CloseNow() })
+	c.expect(MsgHello)
+	return c
+}
+
+func TestSignedInPlayersPlayUnderTheirAccountName(t *testing.T) {
+	h := newHarness(t, func(c *Config) { c.Auth = testAuth{} })
+	host := h.dialAs("Ada")
+	host.send(ClientMsg{Type: MsgCreate, Name: "Pretending to be Grace", Deck: "finn"})
+	joined := host.expect(MsgJoined)
+	if joined.Names[0] != "Ada" {
+		t.Errorf("host plays as %q, want their account name", joined.Names[0])
+	}
+	guest := h.dialAs("Grace")
+	guest.send(ClientMsg{Type: MsgJoin, Room: joined.Room, Name: "Ada", Deck: "jake"})
+	if names := guest.expect(MsgJoined).Names; names[0] != "Ada" || names[1] != "Grace" {
+		t.Errorf("names = %v", names)
+	}
+	// Guests still choose their own name.
+	anon := h.dial()
+	anon.send(ClientMsg{Type: MsgCreate, Name: "Guest", Deck: "finn", VsBot: true})
+	if names := anon.expect(MsgJoined).Names; names[0] != "Guest" {
+		t.Errorf("guest plays as %q", names[0])
+	}
+}
+
+func TestAuthRoutesAreServedAndCORSAllowsCookies(t *testing.T) {
+	h := newHarness(t, func(c *Config) { c.OriginPatterns = []string{"localhost:*"} })
+	req, _ := http.NewRequest("GET", h.ts.URL+"/api/auth/config", nil)
+	req.Header.Set("Origin", "http://localhost:5173")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var cfg struct{ Mode string }
+	if err := json.NewDecoder(resp.Body).Decode(&cfg); err != nil || cfg.Mode != "none" {
+		t.Errorf("config = %+v (%v)", cfg, err)
+	}
+	if resp.Header.Get("Access-Control-Allow-Credentials") != "true" {
+		t.Error("an allowed origin must be able to send cookies")
+	}
 }

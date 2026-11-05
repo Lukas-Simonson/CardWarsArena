@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
+
+	"cardwars/internal/store"
 )
 
 const (
@@ -25,6 +27,8 @@ type client struct {
 	conn *websocket.Conn
 	send chan ServerMsg
 	stop context.CancelFunc
+	// user is who the connection signed in as when it opened, if anyone.
+	user *store.User
 
 	mu    sync.Mutex
 	room  *Room
@@ -108,7 +112,11 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 	}
 	conn.SetReadLimit(maxMessageBytes)
 	ctx, cancel := context.WithCancel(context.Background())
-	c := &client{srv: s, conn: conn, send: make(chan ServerMsg, sendBuffer), stop: cancel, bucket: newTokenBucket(s.cfg.Burst, s.cfg.MessagesPerSecond)}
+	var user *store.User
+	if u, ok := s.cfg.Auth.Identify(r); ok {
+		user = &u
+	}
+	c := &client{srv: s, conn: conn, user: user, send: make(chan ServerMsg, sendBuffer), stop: cancel, bucket: newTokenBucket(s.cfg.Burst, s.cfg.MessagesPerSecond)}
 	defer func() {
 		cancel()
 		if room, token := c.membership(); room != nil {
@@ -150,6 +158,9 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 
 func (c *client) dispatch(m ClientMsg) {
 	s := c.srv
+	if c.user != nil {
+		m.Name = c.user.DisplayName // a signed-in player cannot play under someone else's name
+	}
 	switch m.Type {
 	case MsgPing:
 		c.Send(ServerMsg{Type: MsgPong})
