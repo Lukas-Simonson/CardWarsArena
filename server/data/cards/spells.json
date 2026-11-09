@@ -72,11 +72,6 @@
     "text": "Deal 1 damage to each opposing Creature.",
     "printings": [
       {
-        "deck": "BMO's Deck",
-        "set": "BMO Vs Lady Rainicorn",
-        "copies": 1
-      },
-      {
         "deck": "Lady's Deck",
         "set": "BMO Vs Lady Rainicorn",
         "copies": 2

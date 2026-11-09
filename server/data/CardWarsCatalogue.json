@@ -476,9 +476,8 @@
     "image" : "Cerebral Bloodstorm.png",
     "name" : "Cerebral Bloodstorm",
     "notes" : "",
-    "quantity" : 5,
+    "quantity" : 4,
     "sets" : {
-      "BMO Vs Lady Rainicorn (BMO)" : 1,
       "BMO Vs Lady Rainicorn (Lady)" : 2,
       "Finn Vs Jake (Finn)" : 2
     },

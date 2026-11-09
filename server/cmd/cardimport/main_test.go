@@ -38,7 +38,7 @@ func TestCatalogueConvertsCleanly(t *testing.T) {
 	}
 }
 
-// Each deck is 40 non-Hero cards (BMO's has one more) and has its own Hero.
+// Each deck is 40 non-Hero cards and has its own Hero.
 func TestDecksAreWholeAndHaveTheirHero(t *testing.T) {
 	cards, _ := loadConverted(t)
 	size := map[string]int{}
@@ -52,7 +52,7 @@ func TestDecksAreWholeAndHaveTheirHero(t *testing.T) {
 			}
 		}
 	}
-	for deck, want := range map[string]int{"Finn's Deck": 40, "Jake's Deck": 40, "BMO's Deck": 41, "Lady's Deck": 40, "PB's Deck": 40, "LSP's Deck": 40, "Cake's Deck": 40, "Fionna's Deck": 40} {
+	for deck, want := range map[string]int{"Finn's Deck": 40, "Jake's Deck": 40, "BMO's Deck": 40, "Lady's Deck": 40, "PB's Deck": 40, "LSP's Deck": 40, "Cake's Deck": 40, "Fionna's Deck": 40} {
 		if size[deck] != want {
 			t.Errorf("%s: %d cards, want %d", deck, size[deck], want)
 		}
