@@ -128,4 +128,4 @@ please [open an issue](https://github.com/Lukas-Simonson/CardWarsTCG/issues) and
 
 ## License
 
-See the [LICENSE](LICENSE) file. It applies to the source code only, as described above.
+The code is released under the [MIT License](LICENSE). It applies to the source code only, as described above.
