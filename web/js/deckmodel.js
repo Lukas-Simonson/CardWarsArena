@@ -7,7 +7,7 @@
 export const MIN_CARDS = 40;
 export const MAX_COPIES = 3;
 export const MAX_CARDS = 120;
-export const MAX_LANDSCAPE_TYPES = 2;
+export const MAX_LANDSCAPE_TYPES = 4; // one for each Lane
 
 export const emptyDeck = () => ({ id: null, name: "", hero: "", counts: {} });
 
@@ -58,8 +58,9 @@ export function landscapeTypes(deck, cards) {
 
 /**
  * The four Landscapes the deck is played with, as the server works them out: one type fills every Lane,
- * two take two Lanes each (the type with more cards first). Empty when the cards do not say (none or
- * more than two types).
+ * two take two Lanes each, three take one each with the most common also taking a fourth, and four take
+ * one each. Types with more cards come first, then by name. Empty when the cards do not say (none or
+ * more than four types).
  */
 export function landscapeRow(deck, cards) {
   const count = {};
@@ -70,6 +71,8 @@ export function landscapeRow(deck, cards) {
   const kinds = Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b));
   if (kinds.length === 1) return [kinds[0], kinds[0], kinds[0], kinds[0]];
   if (kinds.length === 2) return [kinds[0], kinds[0], kinds[1], kinds[1]];
+  if (kinds.length === 3) return [kinds[0], kinds[0], kinds[1], kinds[2]];
+  if (kinds.length === 4) return kinds;
   return [];
 }
 

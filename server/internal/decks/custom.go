@@ -86,5 +86,5 @@ func landscapeProblem(cat card.Catalog, ids []string) string {
 	if len(kinds) == 0 {
 		return "needs at least one Landscape type (some card that is not Rainbow)"
 	}
-	return fmt.Sprintf("uses %d Landscape types: a deck can use at most 2", len(kinds))
+	return fmt.Sprintf("uses %d Landscape types: a deck can use at most %d", len(kinds), engine.NumLanes)
 }

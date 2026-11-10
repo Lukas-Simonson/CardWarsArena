@@ -237,7 +237,7 @@ A saved deck is `{id, name, hero, cards, created, updated, playable, problems}`.
 the way the game takes a deck. Saving accepts work in progress: only a deck that makes no sense is refused
 (`422`: an unknown card, a Hero among the cards, a Hero that is not one, more than 3 copies of a card, more than
 120 cards), so a half-built deck can be kept. `playable` says whether it can be played, and `problems` says in
-words what stops it (no Hero, fewer than 40 cards, more than 2 Landscape types, rules not implemented yet). A name
+words what stops it (no Hero, fewer than 40 cards, more than 4 Landscape types, rules not implemented yet). A name
 is trimmed to 40 characters; a player may keep 50 decks (`409` past that). A request that changes something
 must carry `application/json` and, if it has an `Origin`, be from this site or an allowed web client.
 

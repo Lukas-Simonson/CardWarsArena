@@ -41,8 +41,10 @@ func (d Info) Playable() bool {
 
 // LandscapesOf works out the four Landscapes a deck is played with from its
 // cards: the Landscape types they need (Rainbow cards fit any). One type fills
-// all four lanes, two take two lanes each (the more common one first). The
-// data does not store them separately.
+// all four lanes, two take two lanes each, three take one lane each with a
+// fourth lane going to the most common, and four take one lane each. Types are
+// ordered by how many cards need them, then by name. More than four types
+// cannot be told. The data does not store them separately.
 func LandscapesOf(cat card.Catalog, ids []string) ([engine.NumLanes]card.Landscape, bool) {
 	var out [engine.NumLanes]card.Landscape
 	count := map[card.Landscape]int{}
@@ -70,6 +72,10 @@ func LandscapesOf(cat card.Catalog, ids []string) ([engine.NumLanes]card.Landsca
 		for i := range out {
 			out[i] = kinds[i/2]
 		}
+	case 3:
+		out = [engine.NumLanes]card.Landscape{kinds[0], kinds[0], kinds[1], kinds[2]}
+	case 4:
+		copy(out[:], kinds)
 	default:
 		return out, false
 	}

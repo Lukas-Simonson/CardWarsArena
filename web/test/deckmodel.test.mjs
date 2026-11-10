@@ -61,10 +61,17 @@ test("Landscape types come from the cards, and Rainbow adds none", () => {
   assert.deepEqual(landscapeTypes(fromCards(["nope"]), cards), []);
 });
 
+// Two more Landscapes, for the decks that spread across four or five of them.
+const wide = { ...cards,
+  san: { id: "san", name: "Sandcastle", type: "creature", landscape: "sandy_lands", modeled: true },
+  nice: { id: "nice", name: "Nice Guy", type: "creature", landscape: "nice_lands", modeled: true } };
+
 test("problems use the server's words", () => {
   assert.deepEqual(problems(emptyDeck(), cards), ["choose a Hero", "0 cards: a deck needs at least 40"]);
-  const three = fromCards(["pup", "ice", "sea"], { hero: "finn" });
-  assert.ok(problems(three, cards).includes("uses 3 Landscape types: a deck can use at most 2"));
+  const five = fromCards(["pup", "ice", "sea", "san", "nice"], { hero: "finn" });
+  assert.ok(problems(five, wide).includes("uses 5 Landscape types: a deck can use at most 4"));
+  const four = fromCards(["pup", "ice", "sea", "san"], { hero: "finn" });
+  assert.ok(!problems(four, wide).some((p) => /Landscape/.test(p)));
   assert.ok(problems(fromCards(["rain"], { hero: "finn" }), cards).includes("needs at least one Landscape type (some card that is not Rainbow)"));
   const counts = {};
   for (let i = 0; i < 14; i++) counts[`x${i}`] = 3; // 42 cards of nothing in particular
@@ -102,12 +109,15 @@ test("a deck counts as changed only when something saved differs", () => {
   assert.equal(changed(add(emptyDeck(), "pup"), null), true);
 });
 
-test("the four Landscapes: one type fills them all, two take two each, the larger first", () => {
+test("the four Landscapes: one type fills them all, two take two each, three and four spread out, the larger first", () => {
   assert.deepEqual(landscapeRow(fromCards(["pup", "rain"]), cards), ["cornfield", "cornfield", "cornfield", "cornfield"]);
   assert.deepEqual(landscapeRow(fromCards(["ice", "pup", "pup"]), cards), ["cornfield", "cornfield", "icy_lands", "icy_lands"]);
   assert.deepEqual(landscapeRow(fromCards(["ice", "ice", "pup"]), cards), ["icy_lands", "icy_lands", "cornfield", "cornfield"]);
   assert.deepEqual(landscapeRow(fromCards(["ice", "ice", "pup", "pup"]), cards), ["cornfield", "cornfield", "icy_lands", "icy_lands"]); // a tie goes alphabetically
-  assert.deepEqual(landscapeRow(fromCards(["pup", "ice", "sea"]), cards), []); // three types: cannot be told
+  assert.deepEqual(landscapeRow(fromCards(["pup", "ice", "sea"]), cards), ["blue_plains", "blue_plains", "cornfield", "icy_lands"]); // three: the first takes two lanes
+  assert.deepEqual(landscapeRow(fromCards(["pup", "pup", "ice", "sea"]), cards), ["cornfield", "cornfield", "blue_plains", "icy_lands"]);
+  assert.deepEqual(landscapeRow(fromCards(["pup", "pup", "ice", "sea", "san"]), wide), ["cornfield", "blue_plains", "icy_lands", "sandy_lands"]); // four: one each
+  assert.deepEqual(landscapeRow(fromCards(["pup", "ice", "sea", "san", "nice"]), wide), []); // five: cannot be told
   assert.deepEqual(landscapeRow(emptyDeck(), cards), []);
 });
 
