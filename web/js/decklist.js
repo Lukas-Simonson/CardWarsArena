@@ -69,3 +69,18 @@ export function pickDeck(boxes, remembered) {
   const all = [...boxes.starters, ...boxes.mine].filter((b) => !b.disabled);
   return all.find((b) => b.value === remembered)?.value ?? all[0]?.value ?? "";
 }
+
+/** The value meaning "pick a deck for me" in the Practice modal. */
+export const RANDOM = "random";
+
+/**
+ * The starter deck the bot plays: `choice` as is when it names one, else (Random, or a deck that is no longer
+ * offered) one picked with `rand` (0 up to 1), leaving out the player's own deck when another is left.
+ * Returns the deck's value ("Set Name"), or undefined when there are no decks.
+ */
+export function botDeckFor(choice, starters, own, rand = Math.random) {
+  if (starters.some((b) => b.value === choice)) return choice;
+  const others = starters.filter((b) => b.value !== own);
+  const pool = others.length ? others : starters;
+  return pool.length ? pool[Math.min(pool.length - 1, Math.floor(rand() * pool.length))].value : undefined;
+}
