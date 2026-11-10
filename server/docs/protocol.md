@@ -136,7 +136,7 @@ A player:
   "hand": [{"uid":3,"card":"the-pig","owner":0}],   // ONLY your own seat
   "discard": [ … ],                                  // public, both seats
   "kept": true, "mulliganed": false,
-  "lanes": [ { "landscape":"blue_plains", "face_down":false,
+  "lanes": [ { "landscape":"blue_plains", "face_down":false, "frozen":false,
                "creature": { "uid":7,"card":"cool-dog","owner":0,
                              "damage":2,"status":"ready",   // ready | flooped | fought
                              "attack":2,"defense":7,         // current values, modifiers included
@@ -177,6 +177,7 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `end_main` | main | go to the Fight phase (ends the turn on the first turn or with no one able to Fight) |
 | `attack` | fight | `lane` |
 | `play_pending` | after Silo of Truth | `lane`, `targets` |
+| `thaw` | main | `lane` (one of your frozen Landscapes), `card` (the hand uid to discard): removes its frozen token for no Actions |
 | `choose` | while a `choice` is open | see "Choices" |
 
 `targets` is a list of target slots (an empty optional slot is `[]`, never `null`), each a list of references
@@ -199,6 +200,7 @@ every other action is refused (`illegal_action`) until they answer.
 | `rebound` | discard a card from your hand to return the card that asks from your discard pile to your hand (Impossible Possum) | `choose` with `card` = a hand uid, or `choose` with no `card` to leave it |
 | `redirect` | the Creature that attacked may be replaced by one of your Flooped Creatures, `revealed` (Pied Piper); the Fight waits for the answer | `choose` with `card` = the Flooped Creature's uid, or `choose` with no `card` to fight with the attacker |
 | `move_damage` | move damage between two of your Creatures; `count` is the most you may move (Friendship Bracelet) | `choose` with `card` = how much, 1 to `count` |
+| `move` | the Creature in your Lane `lane` must move at the start of your turn to an empty Landscape on seat `move_side`'s side, one of `lanes` (Drained Cleric, Tired Wombat, Woadic Ring Leader) | `choose` with `lane` = one of `lanes` |
 
 As always, send one of the objects in `view.legal`.
 
@@ -217,7 +219,7 @@ same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown). Events are for
+`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token). Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Running

@@ -131,6 +131,8 @@ func weight(g *engine.Game, p engine.PlayerID, a engine.Action, busy bool) float
 		return 3
 	case engine.ActActivate:
 		return 1.5
+	case engine.ActThaw:
+		return 0.15 // it costs a card, so only now and then
 	case engine.ActAttack, engine.ActPlayPending:
 		return 2
 	case engine.ActDraw:

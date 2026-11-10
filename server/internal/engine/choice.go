@@ -1,6 +1,10 @@
 package engine
 
-import "cardwars/internal/card"
+import (
+	"slices"
+
+	"cardwars/internal/card"
+)
 
 // ask opens a Choice, or queues it behind the one that is open.
 func (g *Game) ask(c Choice) {
@@ -79,6 +83,10 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 		if a.Card < 1 || a.Card > ch.Count {
 			return ErrBadTarget
 		}
+	case ChoiceMove:
+		if !slices.Contains(ch.Lanes, a.Lane) {
+			return ErrBadLane
+		}
 	}
 	return nil
 }
@@ -138,6 +146,10 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 		ev = g.fight(p, ch.Lane, lane)
 	case ChoiceMoveDamage:
 		ev = g.moveDamage(p, ch.Lane, ch.Other, a.Card)
+	case ChoiceMove:
+		if cr := g.creatureAt(pos{p, ch.Lane}); cr != nil && cr.UID == ch.SourceUID {
+			ev = g.moveCreature(pos{p, ch.Lane}, pos{ch.MoveSide, a.Lane})
+		}
 	case ChoiceReveal:
 		pl := &g.State.Players[p]
 		for _, in := range ch.Revealed {
@@ -187,6 +199,10 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 	case ChoiceMoveDamage:
 		for n := 1; n <= ch.Count; n++ {
 			out = append(out, Action{Kind: ActChoose, Card: n})
+		}
+	case ChoiceMove:
+		for _, lane := range ch.Lanes {
+			out = append(out, Action{Kind: ActChoose, Lane: lane})
 		}
 	}
 	return out

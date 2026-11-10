@@ -33,10 +33,11 @@ func (g *Game) doEndMain(p PlayerID) []Event {
 		return g.endTurn(p)
 	}
 	g.State.Phase = PhaseFight
+	ev := g.fireStart(p, card.OnFightStart)
 	if !g.hasAttacker(p) {
-		return g.endTurn(p)
+		ev = append(ev, g.endTurn(p)...)
 	}
-	return nil
+	return ev
 }
 
 func (g *Game) validateAttack(p PlayerID, a Action) error {

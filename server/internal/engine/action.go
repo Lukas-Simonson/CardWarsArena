@@ -18,7 +18,8 @@ const (
 	ActPlayPending ActionKind = "play_pending" // play the card taken by Silo of Truth for free (Lane, Targets)
 	ActFloop       ActionKind = "floop"        // main phase: Floop the card in Lane (Source: creature or building)
 	ActActivate    ActionKind = "activate"     // main phase: pay Actions for an ability of the card in Lane (Index picks which)
-	ActChoose      ActionKind = "choose"       // answer a pending Choice: Card (a hand or revealed card)
+	ActChoose      ActionKind = "choose"       // answer a pending Choice: Card (a hand or revealed card), or Lane
+	ActThaw        ActionKind = "thaw"         // main phase: discard the hand card Card to remove the frozen token on your Landscape in Lane
 )
 
 // Action is a single player decision. It is the unit sent over the wire.
@@ -61,7 +62,9 @@ func (a Action) String() string {
 	case ActPlayPending:
 		return fmt.Sprintf("play_pending(lane=%d)", a.Lane)
 	case ActChoose:
-		return fmt.Sprintf("choose(card=%d)", a.Card)
+		return fmt.Sprintf("choose(card=%d, lane=%d)", a.Card, a.Lane)
+	case ActThaw:
+		return fmt.Sprintf("thaw(lane=%d, card=%d)", a.Lane, a.Card)
 	case ActFloop, ActActivate:
 		return fmt.Sprintf("%s(%s lane=%d idx=%d)", a.Kind, a.Source, a.Lane, a.Index)
 	}
@@ -99,6 +102,8 @@ const (
 	EvSteal     EventKind = "steal"     // a card was taken from the opponent's hand
 	EvAbilities EventKind = "abilities" // a Creature's abilities changed (Lane, Card)
 	EvReveal    EventKind = "reveal"    // a card in hand was shown (Card)
+	EvFreeze    EventKind = "freeze"    // a Landscape got a frozen token (Player, Lane)
+	EvThaw      EventKind = "thaw"      // a Landscape lost its frozen token (Player, Lane)
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.
@@ -139,4 +144,6 @@ var (
 	ErrNoChoice       = errors.New("there is no decision to make")
 	ErrLimit          = errors.New("that ability has been used as often as it can be this turn")
 	ErrNoFloop        = errors.New("Creatures in this Lane cannot use Floop abilities")
+	ErrFrozen         = errors.New("a Creature cannot be played onto a frozen Landscape, or replace one there")
+	ErrNotFrozen      = errors.New("that Landscape has no frozen token")
 )

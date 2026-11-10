@@ -1,0 +1,515 @@
+{
+ "fancy-spa": [
+  {
+   "kind": "trigger",
+   "on": "fight_start",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "lane_ally_exhausted": true
+     }
+    }
+   ]
+  }
+ ],
+ "floating-ice-palace": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "lane_ally"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "frozen_landscapes",
+       "scope": "any"
+      }
+     },
+     "if": {
+      "your_turn": true
+     }
+    }
+   ]
+  }
+ ],
+ "snow-training-camp": [
+  {
+   "kind": "floop",
+   "if": {
+    "frozen_landscapes": {
+     "max": 0
+    }
+   },
+   "do": [
+    {
+     "do": "freeze",
+     "self": true,
+     "both": true
+    }
+   ]
+  }
+ ],
+ "weary-trading-post": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "exhausted": true,
+     "label": "Move"
+    },
+    {
+     "what": "lane",
+     "side": "you",
+     "in_lane": true,
+     "without": "creature",
+     "label": "To"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "slot": 0,
+     "slot2": 1
+    }
+   ]
+  }
+ ],
+ "gunter": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "your",
+      "frozen": true
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "drained-cleric": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "move_self",
+     "to": "empty_own",
+     "else": [
+      {
+       "do": "discard_choice",
+       "who": "you",
+       "amount": {
+        "n": 1
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fatigued-librarian": [
+  {
+   "kind": "static",
+   "restrict": "no_ready"
+  },
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "exhaust",
+     "self": true
+    }
+   ]
+  },
+  {
+   "kind": "trigger",
+   "on": "change_lanes",
+   "do": [
+    {
+     "do": "ready_creature",
+     "self": true
+    }
+   ]
+  }
+ ],
+ "weakened-warrior": [
+  {
+   "kind": "static",
+   "restrict": "no_ready"
+  },
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "exhaust",
+     "self": true
+    }
+   ]
+  },
+  {
+   "kind": "trigger",
+   "on": "change_lanes",
+   "do": [
+    {
+     "do": "ready_creature",
+     "self": true
+    }
+   ]
+  }
+ ],
+ "frosted-deanimator": [
+  {
+   "kind": "static",
+   "restrict": "play_on_frozen"
+  }
+ ],
+ "frosted-snowwoman": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "freeze",
+     "self": true,
+     "both": true
+    }
+   ]
+  }
+ ],
+ "glacier-racer": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 4
+     },
+     "if": {
+      "lane_frozen": "both"
+     }
+    }
+   ]
+  }
+ ],
+ "icy-commando": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "frozen_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "icy-infiltrator": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "do": [
+    {
+     "do": "freeze",
+     "self": true
+    }
+   ]
+  }
+ ],
+ "icy-intruder": [
+  {
+   "kind": "floop",
+   "cost": 1,
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze"
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "industrial-assassin": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "label": "Destroy"
+    }
+   ],
+   "do": [
+    {
+     "do": "destroy_creature",
+     "slot": 0
+    },
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "snow-baller": [
+  {
+   "kind": "activate",
+   "if": {
+    "lane_frozen": "own"
+   },
+   "targets": [
+    {
+     "what": "creature",
+     "label": "Damage"
+    }
+   ],
+   "do": [
+    {
+     "do": "thaw",
+     "self": true
+    },
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 3
+     }
+    }
+   ]
+  }
+ ],
+ "the-cooler": [
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "freeze",
+     "self": true
+    }
+   ]
+  }
+ ],
+ "tired-wombat": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "move_self",
+     "to": "empty_own",
+     "else_to": "empty_opponent"
+    }
+   ]
+  }
+ ],
+ "woadic-ring-leader": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "move_self",
+     "to": "empty_own",
+     "else": [
+      {
+       "do": "destroy_creature",
+       "self": true
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "cute-overload": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "optional": true,
+     "count": {
+      "n": 4
+     },
+     "label": "Destroy"
+    }
+   ],
+   "do": [
+    {
+     "do": "destroy_creature",
+     "slot": 0
+    },
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "destroyed"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "magenapping": [
+  {
+   "kind": "play_condition",
+   "if": {
+    "other_creatures": {
+     "max": 1
+    },
+    "hp": {
+     "max": 15
+    }
+   }
+  },
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "label": "Move"
+    },
+    {
+     "what": "lane",
+     "side": "you",
+     "without": "creature",
+     "label": "To"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "slot": 0,
+     "slot2": 1
+    }
+   ]
+  }
+ ],
+ "snowblower": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "lane",
+     "side": "you",
+     "label": "Freeze both Landscapes"
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0,
+     "both": true
+    }
+   ]
+  }
+ ],
+ "snowvalanche": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing",
+      "frozen": true
+     },
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "spazzy-cola": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "any"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "tapped-out": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "label": "+ATK"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "exhausted_creatures"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "wake-up-call": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "ready_creature",
+     "all": {
+      "rel": "your"
+     }
+    }
+   ]
+  }
+ ]
+}

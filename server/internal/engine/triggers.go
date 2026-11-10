@@ -28,7 +28,10 @@ func (g *Game) fire(on string, ctx effCtx, effects []card.Effect, given [][]Targ
 }
 
 // fireTurnStart runs the turn_start triggers of everything p controls.
-func (g *Game) fireTurnStart(p PlayerID) []Event {
+func (g *Game) fireTurnStart(p PlayerID) []Event { return g.fireStart(p, card.OnTurnStart) }
+
+// fireStart runs the triggers for the start of a turn or phase (turn_start, fight_start) of everything p controls.
+func (g *Game) fireStart(p PlayerID, on string) []Event {
 	type item struct {
 		effects []card.Effect
 		ctx     effCtx
@@ -45,7 +48,7 @@ func (g *Game) fireTurnStart(p PlayerID) []Event {
 	}
 	var ev []Event
 	for _, it := range items {
-		ev = append(ev, g.fire(card.OnTurnStart, it.ctx, it.effects, nil)...)
+		ev = append(ev, g.fire(on, it.ctx, it.effects, nil)...)
 	}
 	return ev
 }
