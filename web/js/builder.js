@@ -8,8 +8,8 @@ import { h, svg } from "./dom.js";
 import { cardEl } from "./card.js";
 import { landscapeName } from "./describe.js";
 import {
-  emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapeRow, costCurve, heroes, pool, changed,
-  MIN_CARDS, MAX_COPIES,
+  emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapesOf, chooseLandscape, autoLandscapes,
+  unplayable, whyUnplayable, costCurve, heroes, pool, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 
@@ -78,8 +78,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     paintAll();
   }
 
-  const fromSaved = (d) => fromCards(d.cards, { id: d.id, name: d.name, hero: d.hero });
-  const clone = (d) => ({ ...d, counts: { ...d.counts } });
+  const fromSaved = (d) => fromCards(d.cards, { id: d.id, name: d.name, hero: d.hero, landscapes: d.landscapes_chosen ? d.landscapes : null });
+  const clone = (d) => ({ ...d, counts: { ...d.counts }, landscapes: d.landscapes && [...d.landscapes] });
 
   function choose(value) {
     if (!leaveOk()) { ui.pick.value = deck.id ?? ""; return; }
@@ -99,7 +99,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     if (busy) return;
     busy = true;
     paintDeck();
-    const body = { name: deck.name, hero: deck.hero, cards: toCards(deck) };
+    const body = { name: deck.name, hero: deck.hero, cards: toCards(deck), landscapes: deck.landscapes ?? [] };
     const r = deck.id ? await api("PUT", `/${encodeURIComponent(deck.id)}`, body) : await api("POST", "", body);
     busy = false;
     if (!r.ok) {
@@ -227,7 +227,15 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.pick = h("select", { id: "bpick", class: "well", onchange: () => choose(ui.pick.value) });
     ui.name = h("input", { id: "bname", class: "well big", maxlength: "40", placeholder: "Untitled deck", autocomplete: "off", oninput: () => { deck = { ...deck, name: ui.name.value }; paintDeck(); } });
     ui.hero = h("select", { id: "bhero", class: "well", onchange: () => { deck = { ...deck, hero: ui.hero.value }; paintDeck(); } });
-    ui.tiles = h("div", { class: "landtiles" });
+    ui.landSel = Array.from({ length: LANES }, (_, i) => {
+      const sel = h("select", { class: "landsel", "aria-label": `Landscape for Lane ${i + 1}`, onchange: () => change(chooseLandscape(deck, cards(), i, sel.value)) },
+        h("option", { value: "", disabled: true }, "?"),
+        ...LANDSCAPES.map((l) => h("option", { value: l }, landscapeName(l))));
+      return sel;
+    });
+    ui.tiles = h("div", { class: "landtiles" }, ui.landSel.map((sel) => h("div", { class: "landtile" }, sel)));
+    ui.landNote = h("span", { class: "ink small" });
+    ui.landAuto = h("button", { type: "button", class: "btn-steel small", onclick: () => change(autoLandscapes(deck)) }, "Let the cards decide");
     ui.count = h("span", { class: "total" });
     ui.countNote = h("span", {});
     ui.bar = h("div", { class: "barfill" });
@@ -262,8 +270,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
             field("bname", "Deck name", ui.name),
             field("bhero", "Hero", ui.hero),
             h("div", { class: "field" },
-              h("div", { class: "rowsplit" }, h("span", { class: "ink lead" }, "Landscapes"), h("span", { class: "ink small" }, "Set by the cards you pick")),
-              ui.tiles),
+              h("div", { class: "rowsplit" }, h("span", { class: "ink lead" }, "Landscapes"), ui.landNote),
+              ui.tiles, ui.landAuto),
             h("div", { class: "well meter" },
               h("div", { class: "rowsplit" }, h("span", { class: "totalwrap" }, ui.count, h("span", { class: "of" }, ` / ${MIN_CARDS}`)), ui.countNote),
               h("div", { class: "bar" }, ui.bar)),
@@ -332,11 +340,16 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   function paintDeck() {
     const cs = cards(), n = total(deck), list = problems(deck, cs), legal = list.length === 0;
 
-    ui.tiles.replaceChildren(...[0, 1, 2, 3].map((i) => {
-      const ls = landscapeRow(deck, cs)[i];
-      return h("div", { class: "landtile", style: ls ? `background:${TILE[ls] ?? "#ddd"}` : "", role: "img", "aria-label": `Landscape ${i + 1}: ${ls ? landscapeName(ls) : "not decided yet"}` },
-        h("span", {}, ls ? landscapeName(ls) : "?"));
-    }));
+    // One Landscape for each Lane: the player's choice, or what the cards suggest.
+    const row = landscapesOf(deck, cs);
+    ui.landSel.forEach((sel, i) => {
+      sel.value = row[i] ?? "";
+      sel.parentElement.style.background = row[i] ? TILE[row[i]] ?? "#ddd" : "";
+    });
+    ui.landNote.textContent = deck.landscapes ? "Chosen by you" : row.length ? "Set by the cards you pick" : "Choose them, or pick some cards";
+    ui.landAuto.hidden = !deck.landscapes;
+    const maybe = unplayable(deck, cs);
+    const maybeIds = new Map(maybe.map((u) => [u.id, u]));
 
     ui.count.textContent = n;
     ui.countNote.textContent = n >= MIN_CARDS ? "Minimum reached" : `${MIN_CARDS - n} to go`;
@@ -347,6 +360,9 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.checks.replaceChildren(
       ...list.map((p) => check("!", "warn", p[0].toUpperCase() + p.slice(1) + ".")),
       ...(legal ? [check("✓", "good", "Deck is legal. Ready to play!")] : []),
+      ...(maybe.length ? [h("li", { class: "check maybe" }, h("span", { class: "mark", "aria-hidden": "true" }, "!"),
+        h("span", {}, `${maybe.length} card${maybe.length === 1 ? "" : "s"} may be hard to play with these Landscapes:`,
+          h("ul", { class: "maybelist" }, maybeLines(maybe))))] : []),
       check("i", "info", `Rainbow cards work with any Landscape. Max ${MAX_COPIES} copies of each card.`));
 
     const edited = dirty();
@@ -368,14 +384,25 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     const ids = Object.keys(deck.counts).sort((a, b) => (cs[a]?.cost ?? 0) - (cs[b]?.cost ?? 0) || (cs[a]?.name ?? a).localeCompare(cs[b]?.name ?? b));
     ui.list.replaceChildren(...(ids.length ? ids.map((id) => {
       const c = cs[id] ?? { name: id, type: "creature" };
-      return h("li", {},
+      const u = maybeIds.get(id);
+      return h("li", { class: u ? "maybe" : "", title: u ? `May be hard to play: ${whyUnplayable(u)}` : "" },
         h("span", { class: "costorb", "aria-hidden": "true" }, c.cost ?? "–"),
         diamond(DOT[c.landscape] ?? "#bbb", 12),
-        h("span", { class: "lname" }, c.name, h("span", { class: "lkind" }, ` · ${[c.landscape && landscapeName(c.landscape), kind(c)].filter(Boolean).join(" ")}`)),
+        h("span", { class: "lname" }, u ? h("span", { class: "warnmark", "aria-label": "may be hard to play" }, "! ") : null, c.name, h("span", { class: "lkind" }, ` · ${[c.landscape && landscapeName(c.landscape), kind(c)].filter(Boolean).join(" ")}`)),
         h("span", { class: "lcount" }, `×${deck.counts[id]}`));
     }) : [h("li", { class: "empty" }, "No cards yet: add some, or start from a starter deck.")]));
 
     paintCells();
+  }
+
+  /** The cards that may be hard to play, one line for each Landscape with none, then one for each that has too few. */
+  function maybeLines(list) {
+    const none = new Map();
+    for (const u of list) if (u.never) none.set(u.type, [...(none.get(u.type) ?? []), u.name]);
+    return [
+      ...[...none].map(([type, names]) => h("li", {}, h("b", {}, `No ${landscapeName(type)} Landscape:`), ` ${names.join(", ")}`)),
+      ...list.filter((u) => !u.never).map((u) => h("li", {}, h("b", {}, u.name), ` ${whyUnplayable(u)}`)),
+    ];
   }
 
   function change(next) {

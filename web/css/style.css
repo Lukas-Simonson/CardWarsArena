@@ -388,6 +388,9 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .landtiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .landtile { min-height: 70px; display: flex; align-items: flex-end; justify-content: center; padding: 4px 2px 6px; background: #8aa0b2; border: 3px solid var(--ink); border-radius: 6px; box-shadow: inset 0 3px 0 rgba(255,255,255,.35), inset 0 -4px 0 rgba(0,0,0,.2); font-size: 14px; color: var(--parch-ink); line-height: 1.1; text-align: center; }
 .landtile span { background: var(--parch); border: 2px solid #3a2a14; border-radius: 999px; padding: 0 6px; }
+.landsel { width: 100%; max-width: 100%; min-width: 0; font: inherit; font-size: 14px; line-height: 1.2; color: var(--parch-ink); background: var(--parch); border: 2px solid #3a2a14; border-radius: 999px; padding: 1px 4px; text-align: center; text-align-last: center; cursor: pointer; }
+.landsel:focus-visible { outline: 3px solid var(--gold); outline-offset: 1px; }
+.btn-steel.small { min-height: 34px; padding: 0 12px; font-size: 15px; margin-top: 8px; }
 .meter { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
 .meter .total { font-family: var(--big-font); font-size: 32px; line-height: 1; padding-top: 4px; }
 .meter .of { font-family: var(--big-font); font-size: 18px; }
@@ -396,6 +399,8 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .barfill.full { background: linear-gradient(180deg, #7dd24c 0 45%, #4fa62c 45% 100%); }
 .checks { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .check { display: flex; gap: 8px; align-items: flex-start; color: var(--parch-ink); border: 2.5px solid var(--ink); border-radius: 10px; padding: 6px 10px; font-size: 16px; line-height: 1.25; }
+.check.maybe { background: #ffe9a8; }
+.maybelist { margin: 4px 0 0; padding: 0 0 0 16px; font-size: 15px; display: flex; flex-direction: column; gap: 2px; }
 .check.warn { background: #ffc7a8; } .check.good { background: #c4ee9f; } .check.info { background: var(--parch); }
 .check .mark { flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--big-font); font-size: 13px; padding-top: 2px; }
 .bactions { display: flex; gap: 14px; flex-wrap: wrap; padding-top: 6px; }
@@ -417,6 +422,8 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .curvebar { width: 100%; min-height: 4px; box-sizing: border-box; background: linear-gradient(90deg, #9b6ad6, #6a3aa6); border: 2.5px solid #1f1033; border-radius: 8px 8px 3px 3px; box-shadow: inset 0 3px 0 rgba(255,255,255,.3); }
 .cardlist { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .cardlist li { display: flex; align-items: center; gap: 10px; border-bottom: 2px dashed #cbb37a; padding-bottom: 6px; }
+.cardlist li.maybe { background: rgba(255, 211, 77, .28); border-radius: 6px; }
+.warnmark { display: inline-block; width: 18px; height: 18px; margin-right: 4px; border-radius: 50%; background: #c46a00; color: #fff; font-family: var(--big-font); font-size: 12px; line-height: 20px; text-align: center; }
 .cardlist li.empty { display: block; border: 0; color: #6b5a3a; }
 .costorb { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c39cf0 0 16%, #7d48bd 46%, #48207c 100%); border: 2.5px solid #1f1033; color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--big-font); font-size: 14px; padding-top: 2px; }
 .lname { flex: 1 1 auto; min-width: 0; }
