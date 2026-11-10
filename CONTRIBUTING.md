@@ -106,6 +106,12 @@ The `publish` workflow then builds `ghcr.io/lukas-simonson/cardwarstcg-server` a
 `linux/arm64`, tags them `1.2.3`, `1.2` and `1` (the last not for 0.x) and `latest` for a stable release, and creates a GitHub Release with
 generated notes. A tag with a suffix, like `v0.5.0-rc.1`, is a pre-release: it gets its own version tag and no `latest`.
 
+## AI assistance
+
+Using an AI coding assistant is fine. Say so in the pull request description, and read and understand what it
+wrote before asking for a review: you are responsible for the change, its tests and the rules it implements. The
+README's [AI Disclosure](README.md#ai-disclosure) says how the project itself was built.
+
 ## License
 
 By contributing you agree that your contribution is covered by the project's [license](LICENSE), which applies to the
