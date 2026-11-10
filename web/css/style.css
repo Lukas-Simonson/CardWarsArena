@@ -28,10 +28,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .parch .muted { color: #6b5a3a; }
 
 /* ---------- buttons */
-.btn-red, .btn-green, .btn-purple, .btn-steel { font-family: var(--big-font); color: #fff; padding: 4px 18px 0; letter-spacing: .5px; }
+.btn-red, .btn-green, .btn-purple, .btn-ice, .btn-steel { font-family: var(--big-font); color: #fff; padding: 4px 18px 0; letter-spacing: .5px; }
 .btn-red { -webkit-text-stroke: 3px #3b0d0a; paint-order: stroke fill; text-shadow: 0 3px 0 #3b0d0a; background: linear-gradient(180deg, #f2584a 0 48%, #d2352b 48% 100%); border: 3px solid #3b0d0a; border-radius: 14px; box-shadow: 0 0 0 5px #7d9bb3, 0 0 0 8px var(--ink), inset 0 3px 0 rgba(255,255,255,.35), 0 10px 0 4px var(--ink); }
 .btn-green { -webkit-text-stroke: 3px #173a0c; paint-order: stroke fill; text-shadow: 0 3px 0 #173a0c; background: linear-gradient(180deg, #7dd24c 0 48%, #4fa62c 48% 100%); border: 3px solid #173a0c; border-radius: 14px; box-shadow: 0 0 0 5px #7d9bb3, 0 0 0 8px var(--ink), inset 0 3px 0 rgba(255,255,255,.35), 0 10px 0 4px var(--ink); }
 .btn-purple { -webkit-text-stroke: 2.5px #1f1033; paint-order: stroke fill; background: linear-gradient(180deg, #9b6ad6 0 48%, #7442b0 48% 100%); border: 3px solid #1f1033; border-radius: 12px; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 4px 0 #1f1033; }
+.btn-ice { -webkit-text-stroke: 2.5px #0b2635; paint-order: stroke fill; background: linear-gradient(180deg, #5cc3e6 0 48%, #2c8db3 48% 100%); border: 3px solid #0b2635; border-radius: 12px; box-shadow: inset 0 2px 0 rgba(255,255,255,.45), 0 4px 0 #0b2635; }
 .btn-steel { font-family: var(--hand-font); padding: 0 16px; text-shadow: 0 2px 0 var(--ink); background: linear-gradient(180deg, #5a8bb5, #3a6386); border: 3px solid var(--ink); border-radius: 12px; box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 4px 0 var(--ink); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 button:disabled.btn-steel, button:disabled.btn-red, button:disabled.btn-green { filter: grayscale(.75); opacity: .6; }
 button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { transform: translateY(3px); }
@@ -192,6 +193,10 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 }
 .tile .stat { position: absolute; right: 8px; background: #48207c; border: 2px solid #1f1033; color: #fff; border-radius: 999px; padding: 0 10px; font-size: 14px; z-index: 2; }
 .tile .stat { bottom: 8px; }
+.tile.frozen { border-color: #1d4f66; box-shadow: inset 0 0 0 3px #bfe8f2, inset 0 0 22px 6px rgba(190, 235, 250, .55); }
+.tile .ice { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(160deg, rgba(220, 245, 255, .5), rgba(140, 205, 235, .22) 55%, rgba(220, 245, 255, .45)); }
+.tile .ice span { position: absolute; z-index: 3; bottom: 4px; left: 6px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: #1d4f66; color: #e8f9ff; border: 2px solid #bfe8f2; font-size: 17px; line-height: 1; }
+.frozentag { color: #1d6f96; font-weight: 700; }
 .tile.go { outline: 4px solid #7dd24c; outline-offset: 3px; }
 .tile.go, .strip.go { animation: act-outline 220ms ease-out both; animation-delay: var(--act-delay, 0ms); }
 .tilewrap .tileacts { animation: act-button 220ms ease-out both; animation-delay: var(--act-delay, 0ms); }
@@ -205,7 +210,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .lane .info { display: flex; justify-content: center; }
 .lane .info small { font-size: 14px; color: #e3f0dc; }
 .tilewrap { position: relative; }
-.tilewrap .tileacts { position: absolute; z-index: 3; left: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.tilewrap .tileacts { position: absolute; z-index: 3; left: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .tilewrap .floop { min-height: 34px; padding: 3px 10px 0; font-size: 15px; }
 
 [data-land="cornfield"]     { --tile: #9cc43a; }

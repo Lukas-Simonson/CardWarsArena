@@ -96,6 +96,8 @@ const (
 	// OnDiscarded fires on a Creature that has just gone from play into a
 	// discard pile (not back to a hand): Impossible Possum.
 	OnDiscarded = "discarded"
+	// OnFightStart fires on everything its controller has in play when their Fight Phase begins (Fancy Spa).
+	OnFightStart = "fight_start"
 	// OnReplaces fires on a Hero when its controller replaces a Creature on their turn (LSP).
 	OnReplaces = "replaces"
 	// OnBuildingPlayed fires on a Hero when its controller puts a Building into play (Cake).
@@ -124,12 +126,17 @@ const (
 	RestrictCountsAsLandscape = "counts_as_landscape"
 	// The Building has the rules of the Buildings you control in adjacent Lanes (Learning Center).
 	RestrictCopyAdjacentBuildings = "copy_adjacent_buildings"
+	// The Creature does not Ready at the start of its controller's turn (Fatigued Librarian).
+	RestrictNoReady = "no_ready"
+	// The Creature may be played onto a frozen Landscape (Frosted Deanimator).
+	RestrictPlayOnFrozen = "play_on_frozen"
 )
 
 var validRestricts = map[string]bool{
 	RestrictAdjacentAlliesNotAttackable: true, RestrictOpposingNoEnterLeave: true, RestrictLaneRainbow: true,
 	RestrictAlsoRainbow: true, RestrictLaneNoFloop: true, RestrictExtraBuildings: true,
 	RestrictSilenceOpposingBuildings: true, RestrictCountsAsLandscape: true, RestrictCopyAdjacentBuildings: true,
+	RestrictNoReady: true, RestrictPlayOnFrozen: true,
 }
 
 // Mod adjusts the ATK or DEF of every creature matching To. The stat
@@ -172,6 +179,7 @@ type Selector struct {
 	Flooped      *bool     `json:"flooped,omitempty"`       // only Flooped (or only not Flooped) Creatures
 	WithBuilding bool      `json:"with_building,omitempty"` // only Creatures in a Lane where their controller has a Building
 	FaceDown     *bool     `json:"face_down,omitempty"`     // only Creatures on a face-down (or face-up) Landscape
+	Frozen       *bool     `json:"frozen,omitempty"`        // only Creatures on a frozen (or unfrozen) Landscape
 }
 
 // Range bounds a number; an unset end is open.
@@ -202,6 +210,13 @@ type Cond struct {
 	Played                 *PlayedCond    `json:"played,omitempty"`            // cards of a type you played this turn
 	LandscapeTypes         *Range         `json:"landscape_types,omitempty"`   // you control this many face-up Landscape types
 	Returned               *Range         `json:"returned,omitempty"`          // Creatures you returned to your hand this turn
+	// LaneFrozen: "own" means the card's Landscape has a frozen token, "both" that both Landscapes in its Lane do.
+	LaneFrozen string `json:"lane_frozen,omitempty"`
+	// FrozenLandscapes bounds how many frozen Landscapes there are, on both sides.
+	FrozenLandscapes  *Range `json:"frozen_landscapes,omitempty"`
+	YourTurn          *bool  `json:"your_turn,omitempty"`           // it is (or is not) its controller's turn
+	HP                *Range `json:"hp,omitempty"`                  // its controller's Hit Points
+	LaneAllyExhausted *bool  `json:"lane_ally_exhausted,omitempty"` // its controller's Creature in the card's Lane is exhausted
 }
 
 // PlayedCond bounds how many cards of a Landscape type you played this turn.
@@ -230,6 +245,7 @@ type TargetSpec struct {
 	Cost         *int      `json:"cost,omitempty"`      // discard_card
 	Flooped      *bool     `json:"flooped,omitempty"`   // creatures
 	Ready        bool      `json:"ready,omitempty"`     // creatures: only Ready ones (not Flooped or Fought)
+	Exhausted    bool      `json:"exhausted,omitempty"` // creatures: only exhausted ones (Flooped or Fought)
 	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
 	Optional     bool      `json:"optional,omitempty"`
 	Count        *Value    `json:"count,omitempty"` // up to this many distinct targets
@@ -264,6 +280,13 @@ type Op struct {
 	Entering bool `json:"entering,omitempty"`
 	// Permanent makes mod_creature last as long as the Creature is in play.
 	Permanent bool `json:"permanent,omitempty"`
+	// Both, on freeze, freezes both Landscapes in the Lane (the card's own, or the chosen one).
+	Both bool `json:"both,omitempty"`
+	// move_self moves the Creature to an empty Landscape: To is "empty_own" (one you control), and ElseTo, if set,
+	// is where it goes when there is none ("empty_opponent"). When there is still nowhere, Else runs.
+	To     string `json:"to,omitempty"`
+	ElseTo string `json:"else_to,omitempty"`
+	Else   []Op   `json:"else,omitempty"`
 	// RainbowActions, on discard_choice: Actions gained if a Rainbow card is
 	// among those discarded (Fiddling Ferret).
 	RainbowActions int `json:"rainbow_actions,omitempty"`
@@ -291,6 +314,7 @@ var validOps = map[string]struct{ slots int }{
 	"no_combat_damage": {0}, "discount_replace": {0}, "upkeep": {0},
 	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
 	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
+	"freeze": {0}, "thaw": {0}, "move_self": {0},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -336,7 +360,7 @@ func (e *Effect) Validate(t Type) error {
 	case KindTrigger:
 		switch e.On {
 		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters, OnHeroDamage,
-			OnDealsDamage, OnAttacks, OnDiscarded:
+			OnDealsDamage, OnAttacks, OnDiscarded, OnFightStart:
 		case OnReplaces, OnBuildingPlayed, OnReturns:
 			if t != Hero {
 				return fmt.Errorf("%s triggers belong to heroes", e.On)
@@ -355,7 +379,7 @@ func (e *Effect) Validate(t Type) error {
 			return fmt.Errorf("floop belongs to creatures and buildings")
 		}
 	case KindActivate:
-		free := len(e.Do) > 0 && ((e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce")) || e.Do[0].Do == "discard")
+		free := len(e.Do) > 0 && ((e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce" || e.Do[0].Do == "thaw")) || e.Do[0].Do == "discard")
 		if e.Cost < 1 && !free && t != Hero {
 			return fmt.Errorf("activate needs a cost of at least 1 Action, or to remove or discard something first")
 		}
@@ -429,7 +453,7 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 				return fmt.Errorf("op %d (%s): slot %d out of range", i, op.Do, *s)
 			}
 		}
-		if info.slots >= 1 && op.Slot == nil && !op.Self {
+		if info.slots >= 1 && op.Slot == nil && !op.Self && op.All == nil {
 			return fmt.Errorf("op %d (%s): needs slot", i, op.Do)
 		}
 		if info.slots == 2 && op.Slot2 == nil {
@@ -437,6 +461,17 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 		}
 		if op.Amount != nil {
 			if err := op.Amount.validate(); err != nil {
+				return fmt.Errorf("op %d: %w", i, err)
+			}
+		}
+		if (op.To != "" || op.ElseTo != "" || len(op.Else) > 0) && op.Do != "move_self" {
+			return fmt.Errorf("op %d (%s): to and else belong to move_self", i, op.Do)
+		}
+		if op.Do == "move_self" {
+			if op.To != "empty_own" || (op.ElseTo != "" && op.ElseTo != "empty_opponent") {
+				return fmt.Errorf("op %d (move_self): to must be empty_own, else_to empty_opponent", i)
+			}
+			if err := validateOps(op.Else, nil); err != nil {
 				return fmt.Errorf("op %d: %w", i, err)
 			}
 		}
@@ -461,7 +496,8 @@ func (v Value) validate() error {
 	switch v.Per.Of {
 	case "landscapes", "landscape_types", "creatures", "flooped_creatures", "spells_played", "opponent_hand",
 		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost",
-		"milled_spells", "damage", "damage_dealt", "buildings", "played_titled", "drawn_this_turn":
+		"milled_spells", "damage", "damage_dealt", "buildings", "played_titled", "drawn_this_turn",
+		"frozen_landscapes", "exhausted_creatures", "destroyed":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

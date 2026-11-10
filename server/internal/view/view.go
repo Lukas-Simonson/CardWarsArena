@@ -38,6 +38,7 @@ type Building struct {
 type Lane struct {
 	Landscape card.Landscape `json:"landscape"`
 	FaceDown  bool           `json:"face_down"`
+	Frozen    bool           `json:"frozen,omitempty"` // has a frozen token
 	Creature  *Creature      `json:"creature,omitempty"`
 	Building  *Building      `json:"building,omitempty"`
 	// Extra are the Buildings here besides Building (Burly Lumberjack).
@@ -69,6 +70,10 @@ type Choice struct {
 	Card     string            `json:"card"`   // the card that asks
 	Count    int               `json:"count,omitempty"`
 	Revealed []engine.Instance `json:"revealed,omitempty"`
+	// move: the Creature in Lane (on the deciding player's side) may go to any of Lanes on seat MoveSide.
+	Lane     int   `json:"lane,omitempty"`
+	Lanes    []int `json:"lanes,omitempty"`
+	MoveSide int   `json:"move_side,omitempty"`
 }
 
 // View is a complete picture of the game for one viewer.
@@ -128,7 +133,8 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 		v.Pending = &in
 	}
 	if ch := st.Choice; ch != nil {
-		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...)}
+		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...),
+			Lane: ch.Lane, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide)}
 		if ch.Kind == engine.ChoiceSearch && ch.Player != viewer {
 			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
 		}
@@ -156,7 +162,7 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 			}
 		}
 		for i, l := range src.Lanes {
-			lv := Lane{Landscape: l.Landscape, FaceDown: l.FaceDown}
+			lv := Lane{Landscape: l.Landscape, FaceDown: l.FaceDown, Frozen: l.Frozen}
 			if c := l.Creature; c != nil {
 				lv.Creature = &Creature{
 					Instance:     c.Instance,

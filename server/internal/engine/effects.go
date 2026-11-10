@@ -90,7 +90,7 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 				if cr := l.Creature; cr != nil && !(cr.Shielded && p != c.p) {
 					ok = (spec.Landscape == "" || g.isType(pos{p, lane}, spec.Landscape)) &&
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
-						(!spec.Ready || cr.Status == Ready) && (!spec.Damaged || cr.Damage > 0)
+						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0)
 				}
 			case "building":
 				ok = l.Building != nil
@@ -428,9 +428,23 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				}
 			}
 		case "destroy_creature":
+			g.destroyed = 0
 			for _, at := range g.creaturesFor(op, c, given) {
+				if g.creatureAt(at) != nil {
+					g.destroyed++
+				}
 				ev = append(ev, g.destroyAt(at)...)
 			}
+		case "freeze":
+			for _, at := range g.freezeTargets(op, c, given) {
+				ev = append(ev, g.freeze(at.P, at.Lane)...)
+			}
+		case "thaw":
+			if op.Self && c.hasSrc {
+				ev = append(ev, g.thaw(c.at.P, c.at.Lane)...)
+			}
+		case "move_self":
+			ev = append(ev, g.moveSelf(op, c)...)
 		case "mill":
 			g.milledCost, g.milledSpells = 0, 0
 			for _, p := range g.whoList(op.Who, c.p) {

@@ -92,8 +92,11 @@ type Building struct {
 type Lane struct {
 	Landscape card.Landscape `json:"landscape"`
 	FaceDown  bool           `json:"face_down"`
-	Creature  *Creature      `json:"creature,omitempty"`
-	Building  *Building      `json:"building,omitempty"`
+	// Frozen means the Landscape has a frozen token (at most one). It keeps its type, and stays when the
+	// Landscape is turned over. No Creature may be played onto it, and a Creature on it cannot be replaced.
+	Frozen   bool      `json:"frozen,omitempty"`
+	Creature *Creature `json:"creature,omitempty"`
+	Building *Building `json:"building,omitempty"`
 	// Extra holds the Buildings played here besides Building while a Creature
 	// allowed it (Burly Lumberjack). They stay if that Creature leaves.
 	Extra []*Building `json:"extra,omitempty"`
@@ -177,6 +180,8 @@ const (
 	ChoiceRedirect = "redirect"
 	// move_damage: pick how much damage to move from one of your Creatures to another (Friendship Bracelet)
 	ChoiceMoveDamage = "move_damage"
+	// move: pick the empty Landscape a Creature moves to at the start of the turn (Drained Cleric)
+	ChoiceMove = "move"
 )
 
 // PlayedCard is a card played this turn, as it was when it was played.
@@ -203,6 +208,9 @@ type Choice struct {
 	Other int `json:"other,omitempty"`
 	// Bonus, on a discard Choice, is the Actions gained if a Rainbow card is discarded.
 	Bonus int `json:"bonus,omitempty"`
+	// move: the Lanes (all on MoveSide) the Creature in Lane may move to.
+	Lanes    []int    `json:"lanes,omitempty"`
+	MoveSide PlayerID `json:"move_side,omitempty"`
 	// reveal: the cards shown, out of the deck until the choice is made. The
 	// chosen one goes to the bottom of the deck and the rest are discarded.
 	Revealed []Instance `json:"revealed,omitempty"`

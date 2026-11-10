@@ -59,10 +59,14 @@ func (u *ui) buildingCell(p engine.PlayerID, lane int) string {
 
 func (u *ui) landscapeCell(p engine.PlayerID, lane int) string {
 	l := u.g.State.Players[p].Lanes[lane]
+	name := landscapeName(l.Landscape)
 	if l.FaceDown {
-		return "▼ face down"
+		name = "▼ face down"
 	}
-	return landscapeName(l.Landscape)
+	if l.Frozen {
+		name += " ❄"
+	}
+	return name
 }
 
 // row prints one labelled row across the four lanes.

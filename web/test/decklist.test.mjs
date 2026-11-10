@@ -70,9 +70,16 @@ test("every Landscape has a colour, and an unknown one still gets one", () => {
 });
 
 test("the starter decks are laid out as the game pairs them", () => {
-  const heroes = ["cake", "bmo", "finn", "fionna", "lumpy-space-princess", "jake", "lady-rainicorn", "princess-bubblegum"];
+  const heroes = ["gunter", "cake", "bmo", "finn", "fionna", "lumpy-space-princess", "jake", "lady-rainicorn", "princess-bubblegum"];
   assert.deepEqual(inBoxOrder(heroes.map((hero) => ({ hero }))).map((d) => d.hero),
-    ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake"]);
+    ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake", "gunter"]);
+});
+
+test("a saved deck is shown with the Landscapes the server says it is played with, chosen or not", () => {
+  const chosen = [{ id: "c", name: "Chosen", hero: "finn", cards: ["pup", "pup"], playable: true, landscapes: ["icy_lands", "icy_lands", "blue_plains", "blue_plains"], landscapes_chosen: true }];
+  const [box] = shelf(presets, chosen, cards).mine;
+  assert.deepEqual(box.lands, ["icy_lands", "icy_lands", "blue_plains", "blue_plains"]);
+  assert.equal(box.title, "Icy Lands + Blue Plains");
 });
 
 test("a deck the order does not name follows the rest, in the order it came, and nothing is lost", () => {

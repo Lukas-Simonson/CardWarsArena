@@ -12,7 +12,7 @@ created with `AllowUnimplemented`.
 | kind        | meaning |
 |-------------|---------|
 | `static`    | Always on while the card is in play: stat `mods` and/or a `restrict`ion |
-| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters`, `deals_hero_damage`, `deals_damage` (a Fight dealt it damage to a Creature or player), `attacks` (just activated to Fight, before damage) and `discarded` (went from play to a discard pile, not to a hand) |
+| `trigger`   | Fires `on` an event: `enter_play`, `leave_play`, `turn_start`, `change_lanes`, `creature_enters`, `deals_hero_damage`, `deals_damage` (a Fight dealt it damage to a Creature or player), `attacks` (just activated to Fight, before damage) and `discarded` (went from play to a discard pile, not to a hand) and `fight_start` (its controller's Fight Phase begins) |
 | `floop`     | `FLOOP >>>` ability: exhaust (Ready only), then run `do`. `cost` adds Actions to pay |
 | `activate`  | `Pay N Action(s) >>>` ability, usable any number of times. `cost` 0 is allowed when the first op removes the card itself (`destroy_creature`/`bounce` with `self`) or `discard`s a `hand_card` target ("Discard a card >>>"). `limit` caps the uses each turn |
 | `play_condition` | The card may only be played while `if` holds (Hot Eyebat, Bone Wand) |
@@ -68,11 +68,37 @@ created with `AllowUnimplemented`.
   Flooped), `play_building` (a Building from a discard pile into a Lane), `search_building`
   (Deforestation), `move_damage` (Friendship Bracelet), `make_rainbow` (until end of turn),
   `rainbow_hand` (a card in hand is Rainbow until end of turn), `rebound` (Impossible Possum) and
-  `redirect_attack` (Pied Piper). `discard_choice` may carry `rainbow_actions`: Actions gained if a
+  `redirect_attack` (Pied Piper), `freeze` (put a frozen token on the Landscapes named by `slot`, or the card's own
+  with `self`; `both` also freezes the one opposite), `thaw` (take the token off the card's own Landscape) and
+  `move_self` (see "Frozen tokens"). `discard_choice` may carry `rainbow_actions`: Actions gained if a
   Rainbow card is among those discarded. Ops reference
   target slots by index and may carry an `if` condition. `self` and `entering` act on the
   card itself or on the Creature that fired a `creature_enters` trigger instead of a slot;
   `permanent` makes `mod_creature` last while the Creature is in play.
+
+## Frozen tokens
+
+A Landscape may hold one frozen token (`Lane.Frozen`). It keeps its type and the token stays when it is flipped.
+
+- No Creature may be played onto a frozen Landscape, and a Creature on one cannot be replaced (`ErrFrozen`). A card
+  with the `play_on_frozen` restriction (Frosted Deanimator) may go onto an *empty* frozen Landscape, but not over a
+  Creature. Buildings and Spells are not affected, and Creatures can be moved onto or off a frozen Landscape.
+- Freezing a frozen Landscape does nothing. Both `freeze` and `thaw` work on one Landscape at a time.
+- A player removes a token on their own side with the `thaw` action: discard one card from their hand, in the main
+  phase, no Actions. Snow Baller's own ability removes the token on its Landscape instead (`thaw` with `self` as the
+  first op, so it costs no Actions), and only while it is frozen (`lane_frozen: "own"`).
+- Counts: `frozen_landscapes` (with `scope: "any"` for both sides), `exhausted_creatures` (Flooped or Fought) and
+  `destroyed` (what the last `destroy_creature` destroyed). **Selector** `frozen` picks Creatures on a frozen (or,
+  set to false, unfrozen) Landscape; **Cond** `lane_frozen` is `own` (its Landscape) or `both` (both in its Lane),
+  `frozen_landscapes` a range for all the tokens in play, `your_turn`, `hp` (its controller's) and
+  `lane_ally_exhausted` (their Creature in its Lane is exhausted).
+- **Target** `exhausted` picks exhausted Creatures. **Restrict** `no_ready`: does not Ready at the start of its
+  controller's turn (Fatigued Librarian, Weakened Warrior; they enter play Flooped with `exhaust` on `self`, and
+  `ready_creature` on `self` when they change Lanes).
+- `move_self` (`to: "empty_own"`, optionally `else_to: "empty_opponent"`, and `else` ops for when there is nowhere)
+  moves the Creature to an empty Landscape at the start of the turn: with one place to go it goes, with several its
+  controller chooses (a `move` Choice), and with none the `else` ops run (Drained Cleric discards, Woadic Ring Leader is
+  destroyed, Tired Wombat tries the opponent's side).
 
 ## Landscape types, Rainbow and Buildings
 
@@ -189,7 +215,12 @@ stuck.
   give twice the bonus.
 - A Hero's rules are played by the engine; see "Heroes" below.
 
-All eight preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's and Fionna's) are fully modelled.
+All nine preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's and Gunter's) are fully modelled.
+
+- Spazzy Cola gives +1 ATK to the Creatures in play when it is played, not to ones that enter later this turn.
+- A "frozen Landscape" count (Icy Commando, Floating Ice Palace) counts the tokens on both sides of the board.
+- Fatigued Librarian and Weakened Warrior are Flooped while they are exhausted, so they cannot be replaced until
+  they Ready.
 
 ## Heroes
 

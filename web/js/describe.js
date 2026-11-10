@@ -86,8 +86,10 @@ export function describeAction(ctx, a) {
       if (ch?.kind === "rebound") return a.card ? `Discard ${instName(ctx, a.card)} to return ${cardName(ctx, ch.card)} to your hand` : `Leave ${cardName(ctx, ch.card)} in the discard pile`;
       if (ch?.kind === "redirect") return a.card ? `${instName(ctx, a.card)} fights instead` : `${cardName(ctx, ch.card)} fights`;
       if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
+      if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${ch.move_side !== v.you ? " on the opponent's side" : ""}`;
       return "Choose";
     }
+    case "thaw": return `Discard ${instName(ctx, a.card)} to remove the frozen token from your lane ${laneNo(a.lane)} Landscape`;
     case "attack": {
       const mine = me.lanes[a.lane ?? 0]?.creature;
       const foe = v.players[1 - v.you].lanes[a.lane ?? 0]?.creature;
@@ -131,6 +133,8 @@ export function describeEvent(ctx, e) {
     case "game_over": return `*** ${who} wins! ***`;
     case "move": return `${n()} moves to lane ${laneNo(e.lane)}`;
     case "flip": return `${who}'s lane ${laneNo(e.lane)} Landscape is flipped`;
+    case "freeze": return `${who}'s lane ${laneNo(e.lane)} Landscape is frozen`;
+    case "thaw": return `${who}'s lane ${laneNo(e.lane)} Landscape thaws`;
     case "ready": return `${n()} is readied`;
     case "bounce": return `${n()} returns to ${who}'s hand`;
     case "destroy": return `${n()} is destroyed`;

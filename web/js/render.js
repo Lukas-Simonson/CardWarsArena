@@ -157,6 +157,7 @@ function laneColumn(m, i, on) {
   const mine = ui.picker ? [] : srcs[`lane:${i}:creature`] ?? [];
   const canFloop = mine.some((a) => a.kind === "floop");
   const abilities = [...new Set(mine.filter((a) => a.kind === "activate").map((a) => a.index ?? 0))].sort();
+  const canThaw = !ui.picker && !!srcs[`thaw:${i}`]; // a frozen Landscape I can clear by discarding a card
   return h("div", { class: "lane" },
     buildingStrip(m, opp, i, on),
     landName(ctx, opp, i),
@@ -164,9 +165,10 @@ function laneColumn(m, i, on) {
     laneInfo(m, i, mc, oc),
     h("div", { class: "tilewrap" },
       tile(m, me, i, on),
-      (canFloop || abilities.length > 0) && h("div", { class: "tileacts" },
+      (canFloop || abilities.length > 0 || canThaw) && h("div", { class: "tileacts" },
         abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": `Use ${cardName(ctx, mc?.card)}'s ability`, onclick: () => on.onAbility(i, "creature", n) }, "Use ability")),
-        canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>"))),
+        canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>"),
+        canThaw && h("button", { type: "button", class: "btn-ice floop thaw", "aria-label": `Discard a card to remove the frozen token on your lane ${i + 1} Landscape`, onclick: () => on.onThaw(i) }, "❄ Thaw"))),
     landName(ctx, me, i),
     buildingStrip(m, me, i, on));
 }
@@ -174,7 +176,7 @@ function laneColumn(m, i, on) {
 /** The Landscape's name, shown beside the tile so it never covers a card. */
 function landName(ctx, seat, i) {
   const lane = ctx.view.players[seat].lanes[i];
-  return h("div", { class: "landname" }, lane.face_down ? "Face-down" : landscapeName(lane.landscape));
+  return h("div", { class: "landname" }, lane.face_down ? "Face-down" : landscapeName(lane.landscape), lane.frozen && h("span", { class: "frozentag" }, " · Frozen"));
 }
 
 function laneInfo(m, i, mc, oc) {
@@ -207,6 +209,7 @@ function tile(m, seat, i, on) {
   ].find((t) => has(m, t));
   const selectable = mine && srcs[key];
   const classes = ["tile", mine ? "mine" : "theirs", lane.face_down ? "down" : "up"];
+  if (lane.frozen) classes.push("frozen");
   if (pickToken) classes.push("pick", mine ? "" : "foe");
   else if (selectable && !ui.picker) classes.push("go");
   if (selectable && ui.source === key) classes.push("sel");
@@ -216,7 +219,7 @@ function tile(m, seat, i, on) {
     if (selectable) return on.onLane(i, "creature", c?.card);
     if (c) on.onInspect(c.card);
   };
-  const label = `${mine ? "Your" : "Opponent"} Lane ${i + 1}, ${lane.face_down ? "face-down" : landscapeName(lane.landscape)}${c ? `: ${cardName(ctx, c.card)}` : ", empty"}`;
+  const label = `${mine ? "Your" : "Opponent"} Lane ${i + 1}, ${lane.face_down ? "face-down" : landscapeName(lane.landscape)}${lane.frozen ? ", frozen" : ""}${c ? `: ${cardName(ctx, c.card)}` : ", empty"}`;
   const stats = c && [c.types && c.types.map(landscapeName).join(" / "), c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced")].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
@@ -224,6 +227,7 @@ function tile(m, seat, i, on) {
     onclick: click, onmouseenter: c ? () => on.onInspect(c.card, true) : null,
   },
     h("div", { class: "hex" }),
+    lane.frozen && h("div", { class: "ice", "aria-hidden": "true" }, h("span", {}, "❄")),
     c && h("div", { class: `at ${c.status === "ready" ? "" : c.status}` }, cardEl(ctx.cards[c.card])),
     c && tileStats(ctx.cards[c.card], c),
     c && c.status !== "ready" && h("span", { class: "stat" }, c.status === "fought" ? "Fought" : "Flooped"),
@@ -332,6 +336,12 @@ function choiceModal(m, on) {
     text = `Move how much damage? (up to ${ch.count})`;
     body = h("div", { class: "modalrow" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
+  } else if (ch.kind === "move") {
+    const theirs = ch.move_side !== v.you;
+    title = `${by}: where to?`;
+    text = theirs ? `${by} has nowhere to go on your side: choose an empty Landscape on your opponent's side.` : `Choose an empty Landscape of yours to move ${by} to.`;
+    body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
+      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, `Lane ${(a.lane ?? 0) + 1}`)));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = `${by}: upkeep`;

@@ -41,6 +41,7 @@ type Game struct {
 	milledCost   int // the cost of the card last milled, for Green Merman
 	milledSpells int // how many Spells the last mill discarded (Skeletal Hand)
 	heroDamage   int // damage a Creature just dealt to a player (Snakemint)
+	destroyed    int // how many Creatures the last destroy_creature op destroyed (Cute Overload)
 }
 
 // NewGame validates the decks, shuffles, deals opening hands and returns a
@@ -142,11 +143,13 @@ func (g *Game) Clone() *Game {
 	if g.State.Choice != nil {
 		ch := *g.State.Choice
 		ch.Revealed = append([]Instance(nil), ch.Revealed...)
+		ch.Lanes = append([]int(nil), ch.Lanes...)
 		c.State.Choice = &ch
 	}
 	c.State.Queue = append([]Choice(nil), g.State.Queue...)
 	for i := range c.State.Queue {
 		c.State.Queue[i].Revealed = append([]Instance(nil), c.State.Queue[i].Revealed...)
+		c.State.Queue[i].Lanes = append([]int(nil), c.State.Queue[i].Lanes...)
 	}
 	c.State.Played = append([]PlayedCard(nil), g.State.Played...)
 	c.State.RainbowHand = append([]int(nil), g.State.RainbowHand...)
@@ -209,6 +212,8 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 		ev = append(ev, g.doPending(p, a)...)
 	case ActChoose:
 		ev = append(ev, g.doChoice(p, a)...)
+	case ActThaw:
+		ev = append(ev, g.doThaw(p, a)...)
 	}
 	// State-based rules hold after every action, not just after combat.
 	ev = append(ev, g.settle()...)
@@ -264,6 +269,8 @@ func (g *Game) Validate(p PlayerID, a Action) error {
 		return g.validateAbility(p, a)
 	case ActPlayPending:
 		return g.validatePending(p, a)
+	case ActThaw:
+		return g.validateThaw(p, a)
 	}
 	return ErrUnknownAction
 }
@@ -293,7 +300,9 @@ func (g *Game) startTurn(p PlayerID) []Event {
 	pl := &st.Players[p]
 	for i := range pl.Lanes {
 		if c := pl.Lanes[i].Creature; c != nil {
-			c.Status = Ready
+			if !hasRestrict(g.effectsOf(c), card.RestrictNoReady) {
+				c.Status = Ready // Fatigued Librarian stays exhausted until it changes Lanes
+			}
 			c.Shielded = false // "until the start of your next turn"
 		}
 		if b := pl.Lanes[i].Building; b != nil {

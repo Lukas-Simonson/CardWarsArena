@@ -159,6 +159,9 @@ func (g *Game) selects(sel card.Selector, s source, target pos, t *Creature) boo
 	if sel.ChangedLanes && !t.ChangedLanes {
 		return false
 	}
+	if sel.Frozen != nil && g.State.Players[target.P].Lanes[target.Lane].Frozen != *sel.Frozen {
+		return false
+	}
 	return true
 }
 
@@ -254,6 +257,20 @@ func (g *Game) count(c card.Count, s source) int {
 		return len(st.Players[s.P.Opp()].Hand)
 	case "discard":
 		return len(st.Players[s.P].Discard)
+	case "frozen_landscapes":
+		return g.frozenCount(players)
+	case "exhausted_creatures":
+		n := 0
+		for _, p := range players {
+			for _, l := range st.Players[p].Lanes {
+				if cr := l.Creature; cr != nil && cr.Status != Ready && !(c.Other && cr == s.creature) {
+					n++
+				}
+			}
+		}
+		return n
+	case "destroyed":
+		return g.destroyed
 	case "empty_lanes":
 		n := 0
 		for _, l := range st.Players[s.P].Lanes {
@@ -361,6 +378,34 @@ func (g *Game) cond(c card.Cond, s source) bool {
 			}
 		}
 		if !c.OtherCreatures.Has(n) {
+			return false
+		}
+	}
+	switch c.LaneFrozen {
+	case "":
+	case "own":
+		if s.Lane < 0 || !st.Players[s.P].Lanes[s.Lane].Frozen {
+			return false
+		}
+	case "both":
+		if s.Lane < 0 || !st.Players[s.P].Lanes[s.Lane].Frozen || !st.Players[s.P.Opp()].Lanes[s.Lane].Frozen {
+			return false
+		}
+	default:
+		return false
+	}
+	if c.FrozenLandscapes != nil && !c.FrozenLandscapes.Has(g.frozenCount([]PlayerID{0, 1})) {
+		return false
+	}
+	if c.YourTurn != nil && (st.Active == s.P) != *c.YourTurn {
+		return false
+	}
+	if c.HP != nil && !c.HP.Has(st.Players[s.P].HP) {
+		return false
+	}
+	if c.LaneAllyExhausted != nil && s.Lane >= 0 {
+		cr := st.Players[s.P].Lanes[s.Lane].Creature
+		if (cr != nil && cr.Status != Ready) != *c.LaneAllyExhausted {
 			return false
 		}
 	}

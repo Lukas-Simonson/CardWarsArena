@@ -28,6 +28,7 @@ func (g *Game) LegalActions(p PlayerID) []Action {
 	case PhaseMain:
 		cands = append(cands, Action{Kind: ActDraw}, Action{Kind: ActEndMain})
 		cands = append(cands, g.abilityActions(p)...)
+		cands = append(cands, g.thawActions(p)...)
 		for _, in := range g.State.Players[p].Hand {
 			if c := g.Card(in); c.Type == card.Spell {
 				cands = append(cands, g.spellActions(p, in, c)...)

@@ -559,6 +559,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragon%20Foot.webp"
   },
   {
+    "id": "drained-cleric",
+    "name": "Drained Cleric",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 5,
+    "text": "At the start of your turn, move Drained Cleric to an empty Landscape you control. If you cannot, discard a card.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Drained%20Cleric.webp"
+  },
+  {
     "id": "drooling-dude",
     "name": "Drooling Dude",
     "type": "creature",
@@ -704,6 +722,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fatapillar.webp"
   },
   {
+    "id": "fatigued-librarian",
+    "name": "Fatigued Librarian",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4,
+    "text": "Fatigued Librarian enters play exhausted and does not ready at the start of your turn. Whenever Fatigued Librarian changes Lanes, ready it.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fatigued%20Librarian.webp"
+  },
+  {
     "id": "fiddling-ferret",
     "name": "Fiddling Ferret",
     "type": "creature",
@@ -758,6 +794,42 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20Stalker.webp"
   },
   {
+    "id": "frosted-deanimator",
+    "name": "Frosted Deanimator",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "Frosted Deanimator may be played onto a frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frosted%20Deanimator.webp"
+  },
+  {
+    "id": "frosted-snowwoman",
+    "name": "Frosted Snowwoman",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 5,
+    "text": "When Frosted Snowwoman enters play, freeze both Landscapes in its Lane.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frosted%20Snowwoman.webp"
+  },
+  {
     "id": "fummy",
     "name": "Fummy",
     "type": "creature",
@@ -792,6 +864,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Future%20Scholar.webp"
+  },
+  {
+    "id": "glacier-racer",
+    "name": "Glacier Racer",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "+4 ATK if both Landscapes in this Lane are frozen.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Glacier%20Racer.webp"
   },
   {
     "id": "goat",
@@ -1081,6 +1171,60 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Worm.webp"
   },
   {
+    "id": "icy-commando",
+    "name": "Icy Commando",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "+1 ATK for each frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Icy%20Commando.webp"
+  },
+  {
+    "id": "icy-infiltrator",
+    "name": "Icy Infiltrator",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5,
+    "text": "When Icy Infiltrator enters play, freeze its Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Icy%20Infiltrator.webp"
+  },
+  {
+    "id": "icy-intruder",
+    "name": "Icy Intruder",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "FLOOP and pay 1 action \u003e\u003e\u003e Freeze Target Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Icy%20Intruder.webp"
+  },
+  {
     "id": "immortal-maize-walker",
     "name": "Immortal Maize Walker",
     "type": "creature",
@@ -1115,6 +1259,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Impossible%20Possum.webp"
+  },
+  {
+    "id": "industrial-assassin",
+    "name": "Industrial Assassin",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "FLOOP and destroy one of your Creatures \u003e\u003e\u003e Draw a card.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Industrial%20Assassin.webp"
   },
   {
     "id": "infant-scholar",
@@ -1765,6 +1927,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snakemint.webp"
   },
   {
+    "id": "snow-baller",
+    "name": "Snow Baller",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "Remove a frozen token from Snow Baller's Landscape \u003e\u003e\u003e Deal 3 damage to target Creature.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Baller.webp"
+  },
+  {
     "id": "squatting-bald-man",
     "name": "Squatting Bald Man",
     "type": "creature",
@@ -1835,6 +2015,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Teeth%20Leaf.webp"
+  },
+  {
+    "id": "the-cooler",
+    "name": "The Cooler",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 7,
+    "text": "When The Cooler leaves play, freeze its Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/The%20Cooler.webp"
   },
   {
     "id": "the-dog",
@@ -1908,6 +2106,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tiny%20Elephant.webp"
+  },
+  {
+    "id": "tired-wombat",
+    "name": "Tired Wombat",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 4,
+    "defense": 5,
+    "text": "At the start of your turn, move Tired Wombat to an empty Landscape you control. If you cannot, move it to an opponent's empty Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tired%20Wombat.webp"
   },
   {
     "id": "tornado-wall-of-fire",
@@ -2108,6 +2324,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wandering%20Bald%20Man.webp"
   },
   {
+    "id": "weakened-warrior",
+    "name": "Weakened Warrior",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "attack": 5,
+    "defense": 6,
+    "text": "Weakened Warrior enters play exhausted and does not ready at the start of your turn. Whenever Weakened Warrior changes Lanes, ready it.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Weakened%20Warrior.webp"
+  },
+  {
     "id": "woadic-chief",
     "name": "Woadic Chief",
     "type": "creature",
@@ -2178,6 +2412,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Matriarch.webp"
+  },
+  {
+    "id": "woadic-ring-leader",
+    "name": "Woadic Ring Leader",
+    "type": "creature",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4,
+    "text": "At the start of your turn, move Woadic Ring Leader to an empty Landscape you control. If you cannot, destroy it.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Woadic%20Ring%20Leader.webp"
   },
   {
     "id": "woadic-weirdo",

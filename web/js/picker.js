@@ -19,6 +19,7 @@ export function sourceKey(a) {
   switch (a.kind) {
     case "play_card": return `hand:${a.card}`;
     case "play_pending": return "pending";
+    case "thaw": return `thaw:${a.lane ?? 0}`; // a frozen Landscape of mine
     case "attack": return `lane:${a.lane ?? 0}:creature`;
     case "floop":
     case "activate": return a.source === "hero" ? "hero" : `lane:${a.lane ?? 0}:${a.source ?? "creature"}`;
@@ -33,6 +34,7 @@ export function kindLabel(key) {
   if (key === "attack") return "Fight";
   if (key === "floop") return "Floop";
   if (key.startsWith("activate")) return "Use ability";
+  if (key === "thaw") return "Remove frozen token";
   return "Play";
 }
 
@@ -80,6 +82,7 @@ export function needsLane(a, ctx) {
 
 /** What each of an action's choices is for, in the order of slotsOf ("" where the server said nothing). */
 export function slotLabels(a, ctx) {
+  if (a.kind === "thaw") return [""];
   const out = [];
   if (needsLane(a, ctx)) out.push("");
   for (const _ of a.cost_targets ?? []) out.push("");
@@ -89,6 +92,7 @@ export function slotLabels(a, ctx) {
 
 /** The choices an action needs, in order: each slot is a sorted list of tokens. */
 export function slotsOf(a, ctx) {
+  if (a.kind === "thaw") return [[`hand_card:${a.card}`]]; // the card to discard
   const out = [];
   if (needsLane(a, ctx)) out.push([`dest:${a.lane ?? 0}`]);
   for (const group of [a.cost_targets, a.targets]) {

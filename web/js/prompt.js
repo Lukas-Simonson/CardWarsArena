@@ -45,6 +45,10 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
     }
     return out;
   }
+  if (source.startsWith("thaw:")) {
+    out.text = "Choose a card from your hand to discard: it removes the frozen token";
+    return out;
+  }
   const label = picker.label();
   out.text = label ? `${label}: ${instruction(opts.tokens).toLowerCase()} for ${name}` : `${instruction(opts.tokens)} for ${name}`;
   if (opts.can_skip) out.skip = opts.skip_label;
@@ -80,6 +84,7 @@ function confirmLabel(a, name) {
     case "floop": return `Floop ${name}`;
     case "activate": return "Use ability";
     case "play_pending": return `Play ${name}`;
+    case "thaw": return "Remove the token";
     default: return "Confirm";
   }
 }
@@ -95,6 +100,8 @@ export function sourceName(ctx, source) {
   } else if (p[0] === "lane") {
     const occ = me.lanes[Number(p[1])]?.[p[2]];
     if (occ) return cardName(ctx, occ.card);
+  } else if (p[0] === "thaw") {
+    return `the frozen Landscape in lane ${Number(p[1]) + 1}`;
   } else if (p[0] === "hero" && me.hero) {
     return cardName(ctx, me.hero.card);
   } else if (p[0] === "pending" && v.pending) {
