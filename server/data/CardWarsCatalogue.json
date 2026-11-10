@@ -1,18 +1,5 @@
 [
   {
-    "ability" : "",
-    "extras" : {
-
-    },
-    "name" : "",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-
-    },
-    "type" : "Creature"
-  },
-  {
     "ability" : "Target opponent discards a card from their hand for every 5 cards in your discard pile.",
     "cost" : 2,
     "extras" : {
@@ -725,22 +712,6 @@
     "type" : "Spell"
   },
   {
-    "ability" : "Destroy any number of your Creatures. Draw a card for each Creature destroyed this way.",
-    "cost" : 0,
-    "extras" : {
-
-    },
-    "faction" : "Rainbow",
-    "image" : "Cute Overload.png",
-    "name" : "Cute Overload",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Spell"
-  },
-  {
     "ability" : "FLOOP >>> You heal 1 hit point. (Can't go over 25)",
     "attack" : 0,
     "cost" : 1,
@@ -861,24 +832,6 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "At the start of your turn, move Drained Cleric to an empty Landscape you control. If you cannot, discard a card.",
-    "attack" : 3,
-    "cost" : 1,
-    "defense" : 5,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Drained Cleric.png",
-    "name" : "Drained Cleric",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
     },
     "type" : "Creature"
   },
@@ -1025,22 +978,6 @@
     "type" : "Spell"
   },
   {
-    "ability" : "At the start of your Fight Phase, if you control an exhausted Creature in this Lane, draw a card.",
-    "cost" : 1,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Fancy Spa.png",
-    "name" : "Fancy Spa",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Building"
-  },
-  {
     "ability" : "Farmhouse counts as an additional Cornfield Landscape you control.",
     "cost" : 2,
     "extras" : {
@@ -1071,24 +1008,6 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "Fatigued Librarian enters play exhausted and does not ready at the start of your turn. Whenever Fatigued Librarian changes Lanes, ready it.",
-    "attack" : 3,
-    "cost" : 1,
-    "defense" : 4,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Fatigued Librarian.png",
-    "name" : "Fatigued Librarian",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
     },
     "type" : "Creature"
   },
@@ -1191,22 +1110,6 @@
     "type" : "Hero"
   },
   {
-    "ability" : "Your Creature in this Lane has +1 ATK during your turn for each frozen Landscape.",
-    "cost" : 2,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Floating Ice Palace.png",
-    "name" : "Floating Ice Palace",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Building"
-  },
-  {
     "ability" : "Swap any amount of damage between two of your Creatures.",
     "cost" : 0,
     "extras" : {
@@ -1221,42 +1124,6 @@
       "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Spell"
-  },
-  {
-    "ability" : "Frosted Deanimator may be played onto a frozen Landscape.",
-    "attack" : 2,
-    "cost" : 1,
-    "defense" : 6,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Frosted Deanimator.png",
-    "name" : "Frosted Deanimator",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "When Frosted Snowwoman enters play, freeze both Landscapes in its Lane.",
-    "attack" : 3,
-    "cost" : 2,
-    "defense" : 5,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Frosted Snowwoman.png",
-    "name" : "Frosted Snowwoman",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Gain 1 action this turn.",
@@ -1307,24 +1174,6 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "+4 ATK if both Landscapes in this Lane are frozen.",
-    "attack" : 2,
-    "cost" : 1,
-    "defense" : 6,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Glacier Racer.png",
-    "name" : "Glacier Racer",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
     },
     "type" : "Creature"
   },
@@ -1483,20 +1332,6 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Creature"
-  },
-  {
-    "ability" : "Creatures you control on Landscappes with frozen tokens have +1 ATK.",
-    "extras" : {
-
-    },
-    "image" : "Gunter.png",
-    "name" : "Gunter",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Hero"
   },
   {
     "ability" : "Put a Building from your discard pile into play.",
@@ -1695,60 +1530,6 @@
     "type" : "Creature"
   },
   {
-    "ability" : "+1 ATK for each frozen Landscape.",
-    "attack" : 1,
-    "cost" : 1,
-    "defense" : 7,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Icy Commando.png",
-    "name" : "Icy Commando",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "When Icy Infiltrator enters play, freeze its Landscape.",
-    "attack" : 1,
-    "cost" : 0,
-    "defense" : 5,
-    "extras" : {
-
-    },
-    "faction" : "Rainbow",
-    "image" : "Icy Infiltrator.png",
-    "name" : "Icy Infiltrator",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "FLOOP and pay 1 action >>> Freeze Target Landscape.",
-    "attack" : 1,
-    "cost" : 1,
-    "defense" : 8,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Icy Intruder.png",
-    "name" : "Icy Intruder",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
     "ability" : "While Immortal Maize Walker is on a Cornfield Landscape, its ATK value is tripled.",
     "attack" : 2,
     "cost" : 2,
@@ -1781,24 +1562,6 @@
     "quantity" : 2,
     "sets" : {
       "Fionna Vs Cake (Fionna)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "FLOOP and destroy one of your Creatures >>> Draw a card.",
-    "attack" : 2,
-    "cost" : 1,
-    "defense" : 6,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Industrial Assassin.png",
-    "name" : "Industrial Assassin",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
     },
     "type" : "Creature"
   },
@@ -2019,22 +1782,6 @@
       "BMO Vs Lady Rainicorn (BMO)" : 2
     },
     "type" : "Creature"
-  },
-  {
-    "ability" : "Move target Creature to target empty Landscape you control. You cannot play this if you control more than 1 Creature or have more than 15 hit points.",
-    "cost" : 2,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Magenapping.png",
-    "name" : "Magenapping",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Spell"
   },
   {
     "ability" : "Each of your Creatures has +1 ATK this turn for every 5 cards in your discard pile.",
@@ -2843,88 +2590,6 @@
     "type" : "Creature"
   },
   {
-    "ability" : "Remove a frozen token from Snow Baller's Landscape >>> Deal 3 damage to target Creature.",
-    "attack" : 2,
-    "cost" : 1,
-    "defense" : 7,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Snow Baller.png",
-    "name" : "Snow Baller",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "FLOOP >>> Freeze both Landscapes in this Lane. May only be used if no frozen tokens are in play.",
-    "cost" : 0,
-    "extras" : {
-
-    },
-    "faction" : "Rainbow",
-    "image" : "Snow Training Camp.png",
-    "name" : "Snow Training Camp",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Building"
-  },
-  {
-    "ability" : "Choose a Lane and freeze both of its Landscapes.",
-    "cost" : 1,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "Snowblower.png",
-    "name" : "Snowblower",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Spell"
-  },
-  {
-    "ability" : "Deal 2 damage to each opposing Creature on a frozen Landscape.",
-    "cost" : 0,
-    "extras" : {
-
-    },
-    "faction" : "Rainbow",
-    "image" : "Snowvalanche.png",
-    "name" : "Snowvalanche",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Spell"
-  },
-  {
-    "ability" : "All Creatures have +1 ATK this turn (including your opponent's Creatures).",
-    "cost" : 0,
-    "extras" : {
-
-    },
-    "faction" : "Rainbow",
-    "image" : "Spazzy Cola.png",
-    "name" : "Spazzy Cola",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Spell"
-  },
-  {
     "ability" : "FLOOP and pay 1 action >>> If you control no Creatures in this Lane, move target Creature in this Lane to your side and ready it. At end of turn, return it to its owner's side.",
     "cost" : 2,
     "extras" : {
@@ -3043,22 +2708,6 @@
     "type" : "Spell"
   },
   {
-    "ability" : "This turn, target Creature you control has +2 ATK for each of your exhausted Creatures (at the time you play this).",
-    "cost" : 1,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Tapped Out.png",
-    "name" : "Tapped Out",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Spell"
-  },
-  {
     "ability" : "If you have 10 or more cards in your discard pile, pay 2 fewer actions to play Teeth Leaf.",
     "attack" : 3,
     "cost" : 2,
@@ -3093,24 +2742,6 @@
       "Finn Vs Jake (Jake)" : 2
     },
     "type" : "Spell"
-  },
-  {
-    "ability" : "When The Cooler leaves play, freeze its Landscape.",
-    "attack" : 4,
-    "cost" : 2,
-    "defense" : 7,
-    "extras" : {
-
-    },
-    "faction" : "IcyLands",
-    "image" : "The Cooler.png",
-    "name" : "The Cooler",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Opposing Buildings in this Lane lose all abilities while The Dog is Flooped. ",
@@ -3181,24 +2812,6 @@
     "quantity" : 2,
     "sets" : {
       "Fionna Vs Cake (Fionna)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "At the start of your turn, move Tired Wombat to an empty Landscape you control. If you cannot, move it to an opponent's empty Landscape.",
-    "attack" : 4,
-    "cost" : 2,
-    "defense" : 5,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Tired Wombat.png",
-    "name" : "Tired Wombat",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
     },
     "type" : "Creature"
   },
@@ -3409,22 +3022,6 @@
     "type" : "Spell"
   },
   {
-    "ability" : "Ready all of your Creatures.",
-    "cost" : 1,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Wake Up Call.png",
-    "name" : "Wake Up Call",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Spell"
-  },
-  {
     "ability" : "While Wall of Chocolate has no damage on it, it has +3 ATK.",
     "attack" : 1,
     "cost" : 2,
@@ -3495,40 +3092,6 @@
       "BMO Vs Lady Rainicorn (BMO)" : 2
     },
     "type" : "Creature"
-  },
-  {
-    "ability" : "Weakened Warrior enters play exhausted and does not ready at the start of your turn. Whenever Weakened Warrior changes Lanes, ready it.",
-    "attack" : 5,
-    "cost" : 2,
-    "defense" : 6,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Weakened Warrior.png",
-    "name" : "Weakened Warrior",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "FLOOP >>> Move an exhausted Creature you control to the Landscape in this Lane (if empty).",
-    "cost" : 0,
-    "extras" : {
-
-    },
-    "faction" : "Rainbow",
-    "image" : "Weary Trading Post.png",
-    "name" : "Weary Trading Post",
-    "notes" : "",
-    "quantity" : 1,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 1
-    },
-    "type" : "Building"
   },
   {
     "ability" : "While your Creature in this Lane has no damage on it, it has +2 ATK.",
@@ -3663,24 +3226,6 @@
     "quantity" : 1,
     "sets" : {
       "Fionna Vs Cake (Fionna)" : 1
-    },
-    "type" : "Creature"
-  },
-  {
-    "ability" : "At the start of your turn, move Woadic Ring Leader to an empty Landscape you control. If you cannot, destroy it.",
-    "attack" : 3,
-    "cost" : 1,
-    "defense" : 4,
-    "extras" : {
-
-    },
-    "faction" : "Blue Plains",
-    "image" : "Woadic Ring Leader.png",
-    "name" : "Woadic Ring Leader",
-    "notes" : "",
-    "quantity" : 2,
-    "sets" : {
-      "Lemongrab Vs Gunter (Gunter)" : 2
     },
     "type" : "Creature"
   },
