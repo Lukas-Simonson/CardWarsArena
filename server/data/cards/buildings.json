@@ -157,6 +157,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Charming%20City.webp"
   },
   {
+    "id": "fancy-spa",
+    "name": "Fancy Spa",
+    "type": "building",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "At the start of your Fight Phase, if you control an exhausted Creature in this Lane, draw a card.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fancy%20Spa.webp"
+  },
+  {
     "id": "farmhouse",
     "name": "Farmhouse",
     "type": "building",
@@ -171,6 +187,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Farmhouse.webp"
+  },
+  {
+    "id": "floating-ice-palace",
+    "name": "Floating Ice Palace",
+    "type": "building",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "text": "Your Creature in this Lane has +1 ATK during your turn for each frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Floating%20Ice%20Palace.webp"
   },
   {
     "id": "learning-center",
@@ -318,6 +350,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Silo%20of%20Truth.webp"
   },
   {
+    "id": "snow-training-camp",
+    "name": "Snow Training Camp",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "FLOOP \u003e\u003e\u003e Freeze both Landscapes in this Lane. May only be used if no frozen tokens are in play.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Training%20Camp.webp"
+  },
+  {
     "id": "spirit-tower",
     "name": "Spirit Tower",
     "type": "building",
@@ -332,6 +380,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spirit%20Tower.webp"
+  },
+  {
+    "id": "weary-trading-post",
+    "name": "Weary Trading Post",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "FLOOP \u003e\u003e\u003e Move an exhausted Creature you control to the Landscape in this Lane (if empty).",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Weary%20Trading%20Post.webp"
   },
   {
     "id": "windmill-of-health",

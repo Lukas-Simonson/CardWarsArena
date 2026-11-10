@@ -117,6 +117,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cross%20Pollination.webp"
   },
   {
+    "id": "cute-overload",
+    "name": "Cute Overload",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Destroy any number of your Creatures. Draw a card for each Creature destroyed this way.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cute%20Overload.webp"
+  },
+  {
     "id": "deforestation",
     "name": "Deforestation",
     "type": "spell",
@@ -275,6 +291,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Log%20Rhythm.webp"
+  },
+  {
+    "id": "magenapping",
+    "name": "Magenapping",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 2,
+    "text": "Move target Creature to target empty Landscape you control. You cannot play this if you control more than 1 Creature or have more than 15 hit points.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Magenapping.webp"
   },
   {
     "id": "magic-ring-ding",
@@ -437,6 +469,54 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snake%20Eye%20Ring.webp"
   },
   {
+    "id": "snowblower",
+    "name": "Snowblower",
+    "type": "spell",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "text": "Choose a Lane and freeze both of its Landscapes.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snowblower.webp"
+  },
+  {
+    "id": "snowvalanche",
+    "name": "Snowvalanche",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Deal 2 damage to each opposing Creature on a frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snowvalanche.webp"
+  },
+  {
+    "id": "spazzy-cola",
+    "name": "Spazzy Cola",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "All Creatures have +1 ATK this turn (including your opponent's Creatures).",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spazzy%20Cola.webp"
+  },
+  {
     "id": "strength-crystal",
     "name": "Strength Crystal",
     "type": "spell",
@@ -483,6 +563,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sword%20Bouquet.webp"
+  },
+  {
+    "id": "tapped-out",
+    "name": "Tapped Out",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "This turn, target Creature you control has +2 ATK for each of your exhausted Creatures (at the time you play this).",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tapped%20Out.webp"
   },
   {
     "id": "teleport",
@@ -589,6 +685,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Volcano.webp"
+  },
+  {
+    "id": "wake-up-call",
+    "name": "Wake Up Call",
+    "type": "spell",
+    "landscape": "blue_plains",
+    "cost": 1,
+    "text": "Ready all of your Creatures.",
+    "printings": [
+      {
+        "deck": "Gunter's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Wake%20Up%20Call.webp"
   },
   {
     "id": "woad-blood",
