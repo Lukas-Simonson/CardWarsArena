@@ -10,6 +10,7 @@ import (
 	"time"
 	"unicode"
 
+	"cardwars/internal/card"
 	"cardwars/internal/decks"
 	"cardwars/internal/store"
 )
@@ -24,20 +25,25 @@ const (
 
 // savedDeck is a player's deck as the API shows it: what they saved, and whether it can be played yet.
 type savedDeck struct {
-	ID       string    `json:"id"`
-	Name     string    `json:"name"`
-	Hero     string    `json:"hero"`
-	Cards    []string  `json:"cards"` // one id per copy, as the game takes a deck
-	Created  time.Time `json:"created"`
-	Updated  time.Time `json:"updated"`
-	Playable bool      `json:"playable"`
-	Problems []string  `json:"problems"` // what stops it being played, in words
+	ID    string   `json:"id"`
+	Name  string   `json:"name"`
+	Hero  string   `json:"hero"`
+	Cards []string `json:"cards"` // one id per copy, as the game takes a deck
+	// Landscapes are the four it is played with, in Lane order; empty when the cards do not say. Chosen says
+	// whether the player picked them (otherwise they follow the cards).
+	Landscapes []card.Landscape `json:"landscapes"`
+	Chosen     bool             `json:"landscapes_chosen"`
+	Created    time.Time        `json:"created"`
+	Updated    time.Time        `json:"updated"`
+	Playable   bool             `json:"playable"`
+	Problems   []string         `json:"problems"` // what stops it being played, in words
 }
 
 type deckBody struct {
-	Name  string   `json:"name"`
-	Hero  string   `json:"hero"`
-	Cards []string `json:"cards"`
+	Name       string   `json:"name"`
+	Hero       string   `json:"hero"`
+	Cards      []string `json:"cards"`
+	Landscapes []string `json:"landscapes"` // four, one for each Lane, or none to let the cards decide
 }
 
 func (s *Server) mountMyDecks(mux *http.ServeMux) {
@@ -114,6 +120,10 @@ func (s *Server) readDeck(w http.ResponseWriter, r *http.Request) (deckBody, boo
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 		return deckBody{}, false
 	}
+	if err := decks.CheckLandscapes(b.Landscapes); err != nil {
+		writeError(w, http.StatusUnprocessableEntity, err.Error())
+		return deckBody{}, false
+	}
 	return b, true
 }
 
@@ -123,16 +133,24 @@ func (s *Server) describeSaved(d store.Deck, owner string) (decks.Info, []string
 	if err := decks.Check(s.cat, d.Hero, d.Cards); err != nil {
 		return decks.Info{}, []string{err.Error()}
 	}
-	info := decks.Custom(s.cat, d.Name, owner, d.Hero, d.Cards)
+	if err := decks.CheckLandscapes(d.Landscapes); err != nil {
+		return decks.Info{}, []string{err.Error()}
+	}
+	info := decks.Custom(s.cat, d.Name, owner, d.Hero, d.Cards, d.Landscapes)
 	return info, info.Problems(s.cat, s.cfg.AllowUnmodelled)
 }
 
 func (s *Server) savedView(d store.Deck, owner string) savedDeck {
-	_, problems := s.describeSaved(d, owner)
+	info, problems := s.describeSaved(d, owner)
 	if problems == nil {
 		problems = []string{}
 	}
-	return savedDeck{ID: d.ID, Name: d.Name, Hero: d.Hero, Cards: d.Cards, Created: d.Created, Updated: d.Updated, Playable: len(problems) == 0, Problems: problems}
+	lands := []card.Landscape{}
+	if info.LandOK {
+		lands = info.Landscapes[:]
+	}
+	return savedDeck{ID: d.ID, Name: d.Name, Hero: d.Hero, Cards: d.Cards, Landscapes: lands, Chosen: info.Chosen,
+		Created: d.Created, Updated: d.Updated, Playable: len(problems) == 0, Problems: problems}
 }
 
 func storeCtx(r *http.Request) (context.Context, context.CancelFunc) {
@@ -175,7 +193,7 @@ func (s *Server) createMyDeck(w http.ResponseWriter, r *http.Request, u store.Us
 		writeError(w, http.StatusConflict, "you can keep at most 50 decks: delete one first")
 		return
 	}
-	d, err := s.cfg.Store.SaveDeck(ctx, store.Deck{Owner: u.ID, Name: b.Name, Hero: b.Hero, Cards: b.Cards})
+	d, err := s.cfg.Store.SaveDeck(ctx, store.Deck{Owner: u.ID, Name: b.Name, Hero: b.Hero, Cards: b.Cards, Landscapes: b.Landscapes})
 	if err != nil {
 		s.storeFailed(w, err)
 		return
@@ -191,7 +209,7 @@ func (s *Server) updateMyDeck(w http.ResponseWriter, r *http.Request, u store.Us
 	}
 	ctx, cancel := storeCtx(r)
 	defer cancel()
-	d, err := s.cfg.Store.SaveDeck(ctx, store.Deck{ID: r.PathValue("id"), Owner: u.ID, Name: b.Name, Hero: b.Hero, Cards: b.Cards})
+	d, err := s.cfg.Store.SaveDeck(ctx, store.Deck{ID: r.PathValue("id"), Owner: u.ID, Name: b.Name, Hero: b.Hero, Cards: b.Cards, Landscapes: b.Landscapes})
 	switch {
 	case errors.Is(err, store.ErrNotFound):
 		writeError(w, http.StatusNotFound, "no such deck")

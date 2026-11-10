@@ -188,36 +188,46 @@ func (s *SQLite) SaveDeck(ctx context.Context, d Deck) (Deck, error) {
 	if err != nil {
 		return Deck{}, err
 	}
+	if d.Landscapes == nil {
+		d.Landscapes = []string{}
+	}
+	lands, err := json.Marshal(d.Landscapes)
+	if err != nil {
+		return Deck{}, err
+	}
 	now := time.Now().Truncate(time.Second)
 	if d.ID == "" {
 		if d.ID, err = newID(); err != nil {
 			return Deck{}, err
 		}
 		d.Created, d.Updated = now, now
-		_, err = s.db.ExecContext(ctx, `INSERT INTO decks (id, owner, name, hero, cards, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-			d.ID, d.Owner, d.Name, d.Hero, string(cards), now.Unix(), now.Unix())
+		_, err = s.db.ExecContext(ctx, `INSERT INTO decks (id, owner, name, hero, cards, landscapes, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+			d.ID, d.Owner, d.Name, d.Hero, string(cards), string(lands), now.Unix(), now.Unix())
 		return d, err
 	}
-	res, err := s.db.ExecContext(ctx, `UPDATE decks SET name = ?, hero = ?, cards = ?, updated = ? WHERE id = ? AND owner = ?`,
-		d.Name, d.Hero, string(cards), now.Unix(), d.ID, d.Owner)
+	res, err := s.db.ExecContext(ctx, `UPDATE decks SET name = ?, hero = ?, cards = ?, landscapes = ?, updated = ? WHERE id = ? AND owner = ?`,
+		d.Name, d.Hero, string(cards), string(lands), now.Unix(), d.ID, d.Owner)
 	if err := affected(res, err); err != nil {
 		return Deck{}, err
 	}
 	return s.Deck(ctx, d.Owner, d.ID)
 }
 
-const deckSelect = `SELECT id, owner, name, hero, cards, created, updated FROM decks`
+const deckSelect = `SELECT id, owner, name, hero, cards, landscapes, created, updated FROM decks`
 
 type scanner interface{ Scan(...any) error }
 
 func scanDeck(row scanner) (Deck, error) {
 	var d Deck
-	var cards string
+	var cards, lands string
 	var created, updated int64
-	if err := row.Scan(&d.ID, &d.Owner, &d.Name, &d.Hero, &cards, &created, &updated); err != nil {
+	if err := row.Scan(&d.ID, &d.Owner, &d.Name, &d.Hero, &cards, &lands, &created, &updated); err != nil {
 		return Deck{}, err
 	}
 	if err := json.Unmarshal([]byte(cards), &d.Cards); err != nil {
+		return Deck{}, fmt.Errorf("store: deck %s: %w", d.ID, err)
+	}
+	if err := json.Unmarshal([]byte(lands), &d.Landscapes); err != nil {
 		return Deck{}, fmt.Errorf("store: deck %s: %w", d.ID, err)
 	}
 	d.Created, d.Updated = time.Unix(created, 0), time.Unix(updated, 0)

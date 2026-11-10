@@ -21,6 +21,7 @@ type Info struct {
 	Size       int                             `json:"size"`
 	Landscapes [engine.NumLanes]card.Landscape `json:"landscapes"`
 	LandOK     bool                            `json:"-"`
+	Chosen     bool                            `json:"-"` // the player chose the Landscapes; otherwise the cards decided
 	Modelled   int                             `json:"-"` // distinct cards with their rules modelled
 	Distinct   int                             `json:"-"`
 	Ready      bool                            `json:"playable"`

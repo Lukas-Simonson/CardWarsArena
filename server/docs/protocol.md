@@ -233,11 +233,17 @@ at start, and nothing is kept without it), `-auth none|oauth` and `-public-url` 
 
 ### Saved decks
 
-A saved deck is `{id, name, hero, cards, created, updated, playable, problems}`. `cards` has one id per copy,
-the way the game takes a deck. Saving accepts work in progress: only a deck that makes no sense is refused
+A saved deck is `{id, name, hero, cards, landscapes, landscapes_chosen, created, updated, playable, problems}`.
+`cards` has one id per copy, the way the game takes a deck. `landscapes` are the four Landscapes it is played
+with, one for each Lane in order (`[]` when the cards do not say), and `landscapes_chosen` says whether the
+player picked them. To choose, send `landscapes` with exactly four of `cornfield`, `blue_plains`,
+`useless_swamp`, `nice_lands`, `sandy_lands`, `icy_lands`; leave it out (or send `[]`) to let the cards decide,
+as the starter decks do. A card whose Landscape is not among the four can be hard or impossible to play (it
+needs as many face-up Landscapes of its type as it costs), but that does not stop the deck being played; the
+client warns about it. Saving accepts work in progress: only a deck that makes no sense is refused
 (`422`: an unknown card, a Hero among the cards, a Hero that is not one, more than 3 copies of a card, more than
-120 cards), so a half-built deck can be kept. `playable` says whether it can be played, and `problems` says in
-words what stops it (no Hero, fewer than 40 cards, more than 4 Landscape types, rules not implemented yet). A name
+120 cards, `landscapes` that are not four real ones), so a half-built deck can be kept. `playable` says whether it can be played, and `problems` says in
+words what stops it (no Hero, fewer than 40 cards, Landscapes the cards cannot decide and the player has not chosen, rules not implemented yet). A name
 is trimmed to 40 characters; a player may keep 50 decks (`409` past that). A request that changes something
 must carry `application/json` and, if it has an `Origin`, be from this site or an allowed web client.
 

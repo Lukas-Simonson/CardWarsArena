@@ -179,6 +179,72 @@ func TestSavingListingChangingAndDeletingADeck(t *testing.T) {
 	}
 }
 
+func TestSavedDecksKeepTheirChosenLandscapes(t *testing.T) {
+	h := decksHarness(t)
+	full := finnDeck(t, h)
+
+	// Without a choice the cards decide, and the reply says so.
+	var auto savedDeck
+	h.call("Ada", "POST", "/api/my/decks", full).json(t, &auto)
+	if auto.Chosen || len(auto.Landscapes) != 4 || !auto.Playable {
+		t.Errorf("automatic Landscapes: %+v", auto)
+	}
+
+	// A choice is kept as chosen, in Lane order, and is the one played with.
+	picked := []string{"icy_lands", "icy_lands", "cornfield", "nice_lands"}
+	chosen := full
+	chosen.Landscapes = picked
+	var made savedDeck
+	if r := h.call("Ada", "POST", "/api/my/decks", chosen); r.status != http.StatusCreated {
+		t.Fatalf("create with Landscapes: %d %s", r.status, r.body)
+	} else {
+		r.json(t, &made)
+	}
+	got := make([]string, len(made.Landscapes))
+	for i, l := range made.Landscapes {
+		got[i] = string(l)
+	}
+	if !made.Chosen || !made.Playable || strings.Join(got, ",") != strings.Join(picked, ",") {
+		t.Errorf("chosen Landscapes came back as %+v", made)
+	}
+	var list []savedDeck
+	h.call("Ada", "GET", "/api/my/decks", nil).json(t, &list)
+	for _, d := range list {
+		if d.ID == made.ID && (!d.Chosen || len(d.Landscapes) != 4 || string(d.Landscapes[0]) != "icy_lands") {
+			t.Errorf("the list lost the Landscapes: %+v", d)
+		}
+	}
+	ada := h.dialAs("Ada")
+	ada.send(ClientMsg{Type: MsgCreate, Deck: "my:" + made.ID, VsBot: true})
+	ada.expect(MsgJoined)
+	lanes := ada.expect(MsgUpdate).View.Players[0].Lanes
+	for i, want := range picked {
+		if string(lanes[i].Landscape) != want {
+			t.Errorf("lane %d is %s, want %s", i, lanes[i].Landscape, want)
+		}
+	}
+
+	// Saving again without them goes back to letting the cards decide.
+	var back savedDeck
+	h.call("Ada", "PUT", "/api/my/decks/"+made.ID, full).json(t, &back)
+	if back.Chosen {
+		t.Errorf("Landscapes were kept after being left out: %+v", back)
+	}
+
+	// Landscapes that make no sense are refused, and nothing is saved.
+	for name, bad := range map[string][]string{
+		"too few":     {"cornfield"},
+		"rainbow":     {"cornfield", "cornfield", "cornfield", "rainbow"},
+		"not a thing": {"cornfield", "cornfield", "cornfield", "moon"},
+	} {
+		b := full
+		b.Landscapes = bad
+		if r := h.call("Ada", "POST", "/api/my/decks", b); r.status != http.StatusUnprocessableEntity {
+			t.Errorf("%s: %d", name, r.status)
+		}
+	}
+}
+
 func TestBadDecksAreRefused(t *testing.T) {
 	h := decksHarness(t)
 	full := finnDeck(t, h)
