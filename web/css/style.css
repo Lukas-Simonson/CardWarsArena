@@ -321,6 +321,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 /* the dialogs of the deck builder: copy a list, import one */
 dialog.deckdialog { border: 0; padding: 22px 26px; color: var(--ink); width: min(94vw, 640px); max-height: 92vh; overflow: auto; flex-direction: column; gap: 12px; }
 dialog.deckdialog[open] { display: flex; }
+dialog.deckdialog .ink { text-shadow: none; } /* the shadow is for light text on dark panels, not this parchment */
 dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .decktext { width: 100%; box-sizing: border-box; min-height: 220px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 16px; line-height: 1.35; padding: 10px; }
 .modalrow2 { gap: 14px; flex-wrap: wrap; }
