@@ -168,7 +168,7 @@ function laneColumn(m, i, on) {
       (canFloop || abilities.length > 0 || canThaw) && h("div", { class: "tileacts" },
         abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": `Use ${cardName(ctx, mc?.card)}'s ability`, onclick: () => on.onAbility(i, "creature", n) }, "Use ability")),
         canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>"),
-        canThaw && h("button", { type: "button", class: "btn-steel floop thaw", "aria-label": `Discard a card to remove the frozen token on your lane ${i + 1} Landscape`, onclick: () => on.onThaw(i) }, "Thaw"))),
+        canThaw && h("button", { type: "button", class: "btn-ice floop thaw", "aria-label": `Discard a card to remove the frozen token on your lane ${i + 1} Landscape`, onclick: () => on.onThaw(i) }, "❄ Thaw"))),
     landName(ctx, me, i),
     buildingStrip(m, me, i, on));
 }
