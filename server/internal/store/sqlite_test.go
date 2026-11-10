@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"errors"
+	"io/fs"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -45,9 +46,13 @@ func TestMigrationsRunOnceAndKeepData(t *testing.T) {
 	if err != nil || got.ID != u.ID {
 		t.Fatalf("after reopening: %+v, %v", got, err)
 	}
+	files, err := fs.Glob(migrations, "migrations/*.sql")
+	if err != nil || len(files) == 0 {
+		t.Fatalf("no migrations found: %v", err)
+	}
 	var n int
-	if err := again.db.QueryRow(`SELECT COUNT(*) FROM schema_migrations`).Scan(&n); err != nil || n != 2 {
-		t.Errorf("%d migrations recorded (%v), want 2", n, err)
+	if err := again.db.QueryRow(`SELECT COUNT(*) FROM schema_migrations`).Scan(&n); err != nil || n != len(files) {
+		t.Errorf("%d migrations recorded (%v), want %d, one for each file", n, err, len(files))
 	}
 }
 
@@ -135,6 +140,20 @@ func TestDecksBelongToTheirOwner(t *testing.T) {
 	}
 	if err := s.DeleteDeck(ctx, b.ID, d.ID); !errors.Is(err, ErrNotFound) {
 		t.Errorf("another player deleted the deck: %v", err)
+	}
+
+	if got.Landscapes == nil || len(got.Landscapes) != 0 {
+		t.Errorf("a deck with no chosen Landscapes has %#v, want an empty list", got.Landscapes)
+	}
+	chosen, err := s.SaveDeck(ctx, Deck{Owner: a.ID, Name: "Chosen", Hero: "finn", Cards: cards, Landscapes: []string{"icy_lands", "icy_lands", "cornfield", "cornfield"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if back, err := s.Deck(ctx, a.ID, chosen.ID); err != nil || !reflect.DeepEqual(back.Landscapes, chosen.Landscapes) {
+		t.Errorf("chosen Landscapes came back as %v (%v)", back.Landscapes, err)
+	}
+	if err := s.DeleteDeck(ctx, a.ID, chosen.ID); err != nil {
+		t.Fatal(err)
 	}
 
 	d.Name, d.Cards = "Fewer ponies", []string{"pony"}

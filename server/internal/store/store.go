@@ -31,15 +31,17 @@ type User struct {
 }
 
 // Deck is a saved deck. Cards holds one card id per copy, as the engine takes a
-// deck. The store does not check deck rules: that is for whoever saves it.
+// deck. Landscapes is the four the player chose, in Lane order, or empty when the
+// cards decide. The store does not check deck rules: that is for whoever saves it.
 type Deck struct {
-	ID      string
-	Owner   string
-	Name    string
-	Hero    string
-	Cards   []string
-	Created time.Time
-	Updated time.Time
+	ID         string
+	Owner      string
+	Name       string
+	Hero       string
+	Cards      []string
+	Landscapes []string
+	Created    time.Time
+	Updated    time.Time
 }
 
 // Store is the server's persistent state.

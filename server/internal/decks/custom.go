@@ -2,6 +2,7 @@ package decks
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 
 	"cardwars/internal/card"
@@ -39,9 +40,35 @@ func Check(cat card.Catalog, hero string, cards []string) error {
 	return nil
 }
 
-// Custom describes a deck a player made. The cards must have passed Check.
-func Custom(cat card.Catalog, name, owner, hero string, cards []string) Info {
-	return newInfo(cat, "", name, owner, hero, cards)
+// CheckLandscapes refuses Landscapes that make no sense: none at all (the cards decide) or exactly four, one for
+// each Lane, each a Landscape type a Lane can have. Rainbow is a kind of card, not a Landscape.
+func CheckLandscapes(landscapes []string) error {
+	if len(landscapes) == 0 {
+		return nil
+	}
+	if len(landscapes) != engine.NumLanes {
+		return fmt.Errorf("a deck has %d Landscapes, one for each Lane (or none, to let the cards decide)", engine.NumLanes)
+	}
+	for _, l := range landscapes {
+		if !slices.Contains(card.Landscapes, card.Landscape(l)) {
+			return fmt.Errorf("%q is not a Landscape", l)
+		}
+	}
+	return nil
+}
+
+// Custom describes a deck a player made. The cards and the Landscapes must have passed Check and
+// CheckLandscapes. With four Landscapes the player chose, those are used; with none, the cards decide.
+func Custom(cat card.Catalog, name, owner, hero string, cards []string, landscapes []string) Info {
+	d := newInfo(cat, "", name, owner, hero, cards)
+	if len(landscapes) == engine.NumLanes {
+		for i, l := range landscapes {
+			d.Landscapes[i] = card.Landscape(l)
+		}
+		d.LandOK, d.Chosen = true, true
+		d.Ready = d.Playable()
+	}
+	return d
 }
 
 // Problems says, in words, what stops the deck being played; none means it can be. unmodelled
@@ -84,7 +111,7 @@ func landscapeProblem(cat card.Catalog, ids []string) string {
 		}
 	}
 	if len(kinds) == 0 {
-		return "needs at least one Landscape type (some card that is not Rainbow)"
+		return "choose your Landscapes: no card says which (they are all Rainbow)"
 	}
-	return fmt.Sprintf("uses %d Landscape types: a deck can use at most 2", len(kinds))
+	return fmt.Sprintf("uses %d Landscape types: choose your %d Landscapes", len(kinds), engine.NumLanes)
 }

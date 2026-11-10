@@ -8,9 +8,10 @@ import { h, svg } from "./dom.js";
 import { cardEl } from "./card.js";
 import { landscapeName } from "./describe.js";
 import {
-  emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapeRow, costCurve, heroes, pool, changed,
-  MIN_CARDS, MAX_COPIES,
+  emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapesOf, chooseLandscape, autoLandscapes,
+  unplayable, whyUnplayable, costCurve, heroes, pool, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
+import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 
 // The colours of the Landscapes, as in the design: a tile colour and a darker diamond.
 const TILE = { cornfield: "#9cc43a", blue_plains: "#7aa6d6", useless_swamp: "#9b7bbf", sandy_lands: "#e8b04a", nice_lands: "#f08fbc", icy_lands: "#bfe8f2", rainbow: "#e9ddf6" };
@@ -77,8 +78,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     paintAll();
   }
 
-  const fromSaved = (d) => fromCards(d.cards, { id: d.id, name: d.name, hero: d.hero });
-  const clone = (d) => ({ ...d, counts: { ...d.counts } });
+  const fromSaved = (d) => fromCards(d.cards, { id: d.id, name: d.name, hero: d.hero, landscapes: d.landscapes_chosen ? d.landscapes : null });
+  const clone = (d) => ({ ...d, counts: { ...d.counts }, landscapes: d.landscapes && [...d.landscapes] });
 
   function choose(value) {
     if (!leaveOk()) { ui.pick.value = deck.id ?? ""; return; }
@@ -98,7 +99,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     if (busy) return;
     busy = true;
     paintDeck();
-    const body = { name: deck.name, hero: deck.hero, cards: toCards(deck) };
+    const body = { name: deck.name, hero: deck.hero, cards: toCards(deck), landscapes: deck.landscapes ?? [] };
     const r = deck.id ? await api("PUT", `/${encodeURIComponent(deck.id)}`, body) : await api("POST", "", body);
     busy = false;
     if (!r.ok) {
@@ -128,6 +129,84 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     show(emptyDeck(), null);
   }
 
+  // ---------- deck text: copy, download, import
+
+  const listed = () => formatDeck(deck, cards());
+
+  /** A dialog over the builder; closes on Esc, and is removed when it does. Returns it, already open. */
+  function dialog(title, ...body) {
+    const dlg = h("dialog", { class: "modal parch deckdialog", "aria-label": title },
+      h("h2", {}, title), ...body);
+    dlg.addEventListener("close", () => dlg.remove());
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+    root.append(dlg);
+    dlg.showModal();
+    return dlg;
+  }
+
+  async function copyList() {
+    const text = listed();
+    try {
+      await navigator.clipboard.writeText(text);
+      say("Deck list copied.");
+    } catch {
+      // No clipboard here (or it was refused): show the text, selected, to copy by hand.
+      const box = h("textarea", { class: "well decktext", readonly: true, rows: "14", spellcheck: "false", "aria-label": "Deck list" });
+      box.value = text;
+      const dlg = dialog("Deck list", h("p", {}, "Copy this text."), box,
+        h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: () => dlg.close() }, "Close")));
+      box.select();
+    }
+  }
+
+  function download() {
+    const url = URL.createObjectURL(new Blob([listed()], { type: "text/plain;charset=utf-8" }));
+    const a = h("a", { href: url, download: fileName(deck) });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    say(`Saved ${fileName(deck)}.`);
+  }
+
+  function importList() {
+    const box = h("textarea", { class: "well decktext", rows: "14", spellcheck: "false", "aria-label": "Deck list", placeholder: "Name: My deck\nHero: Finn\n\n3 Corn Dog\n2 Husker Worm" });
+    const fmt = h("select", { id: "bformat", class: "well" }, FORMATS.map(([v, l]) => h("option", { value: v }, l)));
+    const why = h("p", { class: "bad", role: "alert" });
+    const done = () => dlg.close(); // dlg is set by the time a button is pressed
+    const load = () => {
+      if (!box.value.trim()) { why.textContent = "Paste a deck list first."; return; }
+      const r = importDeck(box.value, cards(), fmt.value);
+      if (!r.any) {
+        why.textContent = "No cards or Hero could be read from that text.";
+        why.append(report(r.issues));
+        return;
+      }
+      if (!leaveOk()) return;
+      show(r.deck, null); // an unsaved draft: nothing is saved until the player presses Save
+      const n = total(r.deck);
+      say(`Imported ${n} card${n === 1 ? "" : "s"}${r.issues.length ? ` (${r.issues.length} note${r.issues.length === 1 ? "" : "s"})` : ""}. Not saved yet.`, r.issues.some((i) => i.level === "error"));
+      if (!r.issues.length) { dlg.close(); return; }
+      dlg.replaceChildren(
+        h("h2", {}, "Imported, with notes"),
+        h("p", {}, `Loaded ${n} card${n === 1 ? "" : "s"} as a draft. These lines were changed or left out:`),
+        report(r.issues),
+        h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: done }, "Close")));
+    };
+    const dlg = dialog("Import a deck",
+      h("p", {}, "Paste a deck list: an optional “Name:” and “Hero:” line, then one card per line, like “3 Corn Dog”. Text copied from Card Dweeb works too. It opens as a draft you can change; nothing is saved until you save it."),
+      h("div", { class: "field" }, h("label", { for: "bformat", class: "ink" }, "Format"), fmt),
+      box, why,
+      h("div", { class: "modalrow modalrow2" },
+        h("button", { type: "button", class: "btn-steel modalopt", onclick: done }, "Cancel"),
+        h("button", { type: "button", class: "btn-green modalopt", onclick: load }, "Load deck")));
+    box.focus();
+  }
+
+  /** The lines that could not be used, with their numbers. */
+  const report = (issues) => h("ul", { class: "issues" }, issues.map((i) =>
+    h("li", { class: i.level }, h("span", { class: "ln" }, `Line ${i.line}`), h("code", {}, i.text), h("span", {}, i.reason))));
+
   // ---------- the screen
 
   const diamond = (colour, size = 14) => h("span", { "aria-hidden": "true", class: "diamond", style: `width:${size}px;height:${size}px;background:${colour}` });
@@ -148,7 +227,15 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.pick = h("select", { id: "bpick", class: "well", onchange: () => choose(ui.pick.value) });
     ui.name = h("input", { id: "bname", class: "well big", maxlength: "40", placeholder: "Untitled deck", autocomplete: "off", oninput: () => { deck = { ...deck, name: ui.name.value }; paintDeck(); } });
     ui.hero = h("select", { id: "bhero", class: "well", onchange: () => { deck = { ...deck, hero: ui.hero.value }; paintDeck(); } });
-    ui.tiles = h("div", { class: "landtiles" });
+    ui.landSel = Array.from({ length: LANES }, (_, i) => {
+      const sel = h("select", { class: "landsel", "aria-label": `Landscape for Lane ${i + 1}`, onchange: () => change(chooseLandscape(deck, cards(), i, sel.value)) },
+        h("option", { value: "", disabled: true }, "?"),
+        ...LANDSCAPES.map((l) => h("option", { value: l }, landscapeName(l))));
+      return sel;
+    });
+    ui.tiles = h("div", { class: "landtiles" }, ui.landSel.map((sel) => h("div", { class: "landtile" }, sel)));
+    ui.landNote = h("span", { class: "ink small" });
+    ui.landAuto = h("button", { type: "button", class: "btn-steel small", onclick: () => change(autoLandscapes(deck)) }, "Let the cards decide");
     ui.count = h("span", { class: "total" });
     ui.countNote = h("span", {});
     ui.bar = h("div", { class: "barfill" });
@@ -156,6 +243,9 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.save = h("button", { type: "button", class: "btn-green", onclick: () => save(false) }, "Save deck");
     ui.draft = h("button", { type: "button", class: "btn-steel", onclick: () => save(true) }, "Save as draft");
     ui.del = h("button", { type: "button", class: "btn-steel danger", onclick: destroy }, "Delete deck");
+    ui.copy = h("button", { type: "button", class: "btn-steel", onclick: copyList }, "Copy deck list");
+    ui.download = h("button", { type: "button", class: "btn-steel", onclick: download }, "Download");
+    ui.import = h("button", { type: "button", class: "btn-steel", onclick: importList }, "Import…");
     ui.note = h("p", { class: "note", role: "status" });
     ui.curve = h("div", { class: "curve" });
     ui.curveLabels = h("div", { class: "curvelabels" });
@@ -180,13 +270,14 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
             field("bname", "Deck name", ui.name),
             field("bhero", "Hero", ui.hero),
             h("div", { class: "field" },
-              h("div", { class: "rowsplit" }, h("span", { class: "ink lead" }, "Landscapes"), h("span", { class: "ink small" }, "Set by the cards you pick")),
-              ui.tiles),
+              h("div", { class: "rowsplit" }, h("span", { class: "ink lead" }, "Landscapes"), ui.landNote),
+              ui.tiles, ui.landAuto),
             h("div", { class: "well meter" },
               h("div", { class: "rowsplit" }, h("span", { class: "totalwrap" }, ui.count, h("span", { class: "of" }, ` / ${MIN_CARDS}`)), ui.countNote),
               h("div", { class: "bar" }, ui.bar)),
             ui.checks,
             h("div", { class: "bactions" }, ui.save, ui.draft),
+            h("div", { class: "bshare", role: "group", "aria-label": "Share this deck as text" }, ui.copy, ui.download, ui.import),
             h("div", { class: "bmore" }, ui.del, ui.note)),
           h("section", { class: "parch bcurve", "aria-labelledby": "bcurve-h" }, h("h2", { id: "bcurve-h" }, "Action cost curve"), ui.curve, ui.curveLabels),
           h("section", { class: "parch blist", "aria-labelledby": "blist-h" }, h("h2", { id: "blist-h" }, "Card list"), ui.list)))));
@@ -249,11 +340,16 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   function paintDeck() {
     const cs = cards(), n = total(deck), list = problems(deck, cs), legal = list.length === 0;
 
-    ui.tiles.replaceChildren(...[0, 1, 2, 3].map((i) => {
-      const ls = landscapeRow(deck, cs)[i];
-      return h("div", { class: "landtile", style: ls ? `background:${TILE[ls] ?? "#ddd"}` : "", role: "img", "aria-label": `Landscape ${i + 1}: ${ls ? landscapeName(ls) : "not decided yet"}` },
-        h("span", {}, ls ? landscapeName(ls) : "?"));
-    }));
+    // One Landscape for each Lane: the player's choice, or what the cards suggest.
+    const row = landscapesOf(deck, cs);
+    ui.landSel.forEach((sel, i) => {
+      sel.value = row[i] ?? "";
+      sel.parentElement.style.background = row[i] ? TILE[row[i]] ?? "#ddd" : "";
+    });
+    ui.landNote.textContent = deck.landscapes ? "Chosen by you" : row.length ? "Set by the cards you pick" : "Choose them, or pick some cards";
+    ui.landAuto.hidden = !deck.landscapes;
+    const maybe = unplayable(deck, cs);
+    const maybeIds = new Map(maybe.map((u) => [u.id, u]));
 
     ui.count.textContent = n;
     ui.countNote.textContent = n >= MIN_CARDS ? "Minimum reached" : `${MIN_CARDS - n} to go`;
@@ -264,6 +360,9 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.checks.replaceChildren(
       ...list.map((p) => check("!", "warn", p[0].toUpperCase() + p.slice(1) + ".")),
       ...(legal ? [check("✓", "good", "Deck is legal. Ready to play!")] : []),
+      ...(maybe.length ? [h("li", { class: "check maybe" }, h("span", { class: "mark", "aria-hidden": "true" }, "!"),
+        h("span", {}, `${maybe.length} card${maybe.length === 1 ? "" : "s"} may be hard to play with these Landscapes:`,
+          h("ul", { class: "maybelist" }, maybeLines(maybe))))] : []),
       check("i", "info", `Rainbow cards work with any Landscape. Max ${MAX_COPIES} copies of each card.`));
 
     const edited = dirty();
@@ -271,6 +370,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.save.textContent = busy ? "Saving…" : "Save deck";
     ui.draft.disabled = busy || !edited;
     ui.del.hidden = !deck.id;
+    ui.copy.disabled = ui.download.disabled = total(deck) === 0 && !deck.hero && !deck.name.trim();
     ui.note.textContent = note.text;
     ui.note.className = "note" + (note.error ? " bad" : "");
 
@@ -284,14 +384,25 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     const ids = Object.keys(deck.counts).sort((a, b) => (cs[a]?.cost ?? 0) - (cs[b]?.cost ?? 0) || (cs[a]?.name ?? a).localeCompare(cs[b]?.name ?? b));
     ui.list.replaceChildren(...(ids.length ? ids.map((id) => {
       const c = cs[id] ?? { name: id, type: "creature" };
-      return h("li", {},
+      const u = maybeIds.get(id);
+      return h("li", { class: u ? "maybe" : "", title: u ? `May be hard to play: ${whyUnplayable(u)}` : "" },
         h("span", { class: "costorb", "aria-hidden": "true" }, c.cost ?? "–"),
         diamond(DOT[c.landscape] ?? "#bbb", 12),
-        h("span", { class: "lname" }, c.name, h("span", { class: "lkind" }, ` · ${[c.landscape && landscapeName(c.landscape), kind(c)].filter(Boolean).join(" ")}`)),
+        h("span", { class: "lname" }, u ? h("span", { class: "warnmark", "aria-label": "may be hard to play" }, "! ") : null, c.name, h("span", { class: "lkind" }, ` · ${[c.landscape && landscapeName(c.landscape), kind(c)].filter(Boolean).join(" ")}`)),
         h("span", { class: "lcount" }, `×${deck.counts[id]}`));
     }) : [h("li", { class: "empty" }, "No cards yet: add some, or start from a starter deck.")]));
 
     paintCells();
+  }
+
+  /** The cards that may be hard to play, one line for each Landscape with none, then one for each that has too few. */
+  function maybeLines(list) {
+    const none = new Map();
+    for (const u of list) if (u.never) none.set(u.type, [...(none.get(u.type) ?? []), u.name]);
+    return [
+      ...[...none].map(([type, names]) => h("li", {}, h("b", {}, `No ${landscapeName(type)} Landscape:`), ` ${names.join(", ")}`)),
+      ...list.filter((u) => !u.never).map((u) => h("li", {}, h("b", {}, u.name), ` ${whyUnplayable(u)}`)),
+    ];
   }
 
   function change(next) {

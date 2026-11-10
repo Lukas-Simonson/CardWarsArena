@@ -9,9 +9,10 @@ import (
 )
 
 func TestLandscapesOf(t *testing.T) {
-	c, i, b := card.Cornfield, card.IcyLands, card.BluePlains
+	c, i, b, s := card.Cornfield, card.IcyLands, card.BluePlains, card.SandyLands
 	cat := card.Catalog{
 		"a": {Landscape: c}, "a2": {Landscape: c}, "i": {Landscape: i}, "b": {Landscape: b},
+		"s": {Landscape: card.SandyLands}, "n": {Landscape: card.NiceLands},
 		"r": {Landscape: card.Rainbow}, "h": {},
 	}
 	for name, tc := range map[string]struct {
@@ -19,10 +20,12 @@ func TestLandscapesOf(t *testing.T) {
 		want [4]card.Landscape
 		ok   bool
 	}{
-		"one type fills every lane":       {[]string{"a", "a2", "r", "h"}, [4]card.Landscape{c, c, c, c}, true},
-		"two types, the common one first": {[]string{"i", "a", "a2"}, [4]card.Landscape{c, c, i, i}, true},
-		"three types cannot be told":      {[]string{"a", "i", "b"}, [4]card.Landscape{}, false},
-		"only Rainbow cannot be told":     {[]string{"r"}, [4]card.Landscape{}, false},
+		"one type fills every lane":         {[]string{"a", "a2", "r", "h"}, [4]card.Landscape{c, c, c, c}, true},
+		"two types, the common one first":   {[]string{"i", "a", "a2"}, [4]card.Landscape{c, c, i, i}, true},
+		"three types, the common one twice": {[]string{"a", "a2", "i", "b"}, [4]card.Landscape{c, c, b, i}, true},
+		"four types, one lane each":         {[]string{"a", "a2", "i", "b", "s"}, [4]card.Landscape{c, b, i, s}, true},
+		"five types cannot be told":         {[]string{"a", "i", "b", "s", "n"}, [4]card.Landscape{}, false},
+		"only Rainbow cannot be told":       {[]string{"r"}, [4]card.Landscape{}, false},
 	} {
 		got, ok := LandscapesOf(cat, tc.ids)
 		if ok != tc.ok || (ok && got != tc.want) {
@@ -86,6 +89,9 @@ func customCatalog() card.Catalog {
 		"corn":    {ID: "corn", Name: "Corn Dog", Type: card.Creature, Landscape: card.Cornfield},
 		"icy":     {ID: "icy", Name: "Icicle", Type: card.Creature, Landscape: card.IcyLands},
 		"blue":    {ID: "blue", Name: "Blue Thing", Type: card.Creature, Landscape: card.BluePlains},
+		"sand":    {ID: "sand", Name: "Sandy Thing", Type: card.Creature, Landscape: card.SandyLands},
+		"nice":    {ID: "nice", Name: "Nice Thing", Type: card.Creature, Landscape: card.NiceLands},
+		"swamp":   {ID: "swamp", Name: "Swamp Thing", Type: card.Creature, Landscape: card.UselessSwamp},
 		"rain":    {ID: "rain", Name: "Rainbow Pup", Type: card.Creature, Landscape: card.Rainbow},
 		"vague":   {ID: "vague", Name: "Vague Spell", Type: card.Spell, Landscape: card.Cornfield, Text: "Does something."},
 		"finn":    {ID: "finn", Name: "Finn", Type: card.Hero},
@@ -135,7 +141,7 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 		cat[id] = &card.Card{ID: id, Name: "Rainbow " + id, Type: card.Creature, Landscape: card.Rainbow}
 		ok = append(ok, repeat(id, 3)...)
 	}
-	good := Custom(cat, "Mine", "Ada", "finn", ok)
+	good := Custom(cat, "Mine", "Ada", "finn", ok, nil)
 	if p := good.Problems(cat, false); len(p) != 0 || !good.Ready {
 		t.Fatalf("a legal deck has problems %v (ready %v)", p, good.Ready)
 	}
@@ -143,12 +149,12 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 		d    Info
 		want string
 	}{
-		"no hero":         {Custom(cat, "x", "o", "", ok), "choose a Hero"},
-		"hero not ready":  {Custom(cat, "x", "o", "vagueh", ok), "Vague Hero's rules"},
-		"too few":         {Custom(cat, "x", "o", "finn", ok[:10]), "10 cards: a deck needs at least 40"},
-		"three types":     {Custom(cat, "x", "o", "finn", append([]string{"corn", "icy", "blue"}, ok...)), "3 Landscape types"},
-		"only rainbow":    {Custom(cat, "x", "o", "finn", []string{"rain"}), "at least one Landscape type"},
-		"unmodelled card": {Custom(cat, "x", "o", "finn", append([]string{"vague"}, ok...)), "Vague Spell's rules"},
+		"no hero":         {Custom(cat, "x", "o", "", ok, nil), "choose a Hero"},
+		"hero not ready":  {Custom(cat, "x", "o", "vagueh", ok, nil), "Vague Hero's rules"},
+		"too few":         {Custom(cat, "x", "o", "finn", ok[:10], nil), "10 cards: a deck needs at least 40"},
+		"five types":      {Custom(cat, "x", "o", "finn", append([]string{"corn", "icy", "blue", "sand", "nice"}, ok...), nil), "5 Landscape types: choose your 4 Landscapes"},
+		"only rainbow":    {Custom(cat, "x", "o", "finn", []string{"rain"}, nil), "choose your Landscapes"},
+		"unmodelled card": {Custom(cat, "x", "o", "finn", append([]string{"vague"}, ok...), nil), "Vague Spell's rules"},
 	} {
 		found := false
 		for _, p := range tc.d.Problems(cat, false) {
@@ -158,8 +164,32 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 			t.Errorf("%s: problems %v lack %q", name, tc.d.Problems(cat, false), tc.want)
 		}
 	}
+	// Up to four types are fine: one for each Lane.
+	four := Custom(cat, "x", "o", "finn", append([]string{"corn", "icy", "blue", "sand"}, ok...), nil)
+	for _, p := range four.Problems(cat, false) {
+		if strings.Contains(p, "Landscape") {
+			t.Errorf("a deck of four Landscape types was refused: %q", p)
+		}
+	}
+	// Landscapes the player chose are used whatever the cards say, so a deck of five types, or of Rainbow
+	// cards alone, can be played once its Landscapes are picked.
+	picked := []string{"cornfield", "cornfield", "icy_lands", "blue_plains"}
+	for name, cards := range map[string][]string{"five types": append([]string{"corn", "icy", "blue", "sand", "nice"}, ok...), "only rainbow": append([]string{}, ok[3:]...)} {
+		d := Custom(cat, "x", "o", "finn", cards, picked)
+		if !d.LandOK || !d.Chosen || d.Landscapes != [4]card.Landscape{card.Cornfield, card.Cornfield, card.IcyLands, card.BluePlains} {
+			t.Errorf("%s: chosen Landscapes not used: %v ok=%v chosen=%v", name, d.Landscapes, d.LandOK, d.Chosen)
+		}
+		for _, p := range d.Problems(cat, false) {
+			if strings.Contains(p, "Landscape") {
+				t.Errorf("%s: a deck with chosen Landscapes was refused: %q", name, p)
+			}
+		}
+	}
+	if d := Custom(cat, "x", "o", "finn", ok, nil); d.Chosen {
+		t.Error("a deck with no chosen Landscapes says it chose them")
+	}
 	// A development server plays cards whose rules are not modelled.
-	withVague := Custom(cat, "x", "o", "vagueh", append([]string{"vague"}, ok...))
+	withVague := Custom(cat, "x", "o", "vagueh", append([]string{"vague"}, ok...), nil)
 	for _, p := range withVague.Problems(cat, true) {
 		if strings.Contains(p, "rules") {
 			t.Errorf("unmodelled cards were reported on a server that allows them: %q", p)
@@ -175,6 +205,25 @@ func TestEveryPresetIsWithoutProblems(t *testing.T) {
 	for _, d := range Find(cat) {
 		if p := d.Problems(cat, false); len(p) != 0 {
 			t.Errorf("%s: %v", d.Key(), p)
+		}
+	}
+}
+
+func TestCheckLandscapes(t *testing.T) {
+	for name, tc := range map[string]struct {
+		in []string
+		ok bool
+	}{
+		"none: the cards decide":     {nil, true},
+		"four, repeats allowed":      {[]string{"cornfield", "cornfield", "icy_lands", "nice_lands"}, true},
+		"three":                      {[]string{"cornfield", "cornfield", "icy_lands"}, false},
+		"five":                       {[]string{"cornfield", "cornfield", "cornfield", "cornfield", "cornfield"}, false},
+		"rainbow is not a Landscape": {[]string{"cornfield", "cornfield", "cornfield", "rainbow"}, false},
+		"an unknown one":             {[]string{"cornfield", "cornfield", "cornfield", "moon"}, false},
+		"an empty name":              {[]string{"cornfield", "cornfield", "cornfield", ""}, false},
+	} {
+		if err := CheckLandscapes(tc.in); (err == nil) != tc.ok {
+			t.Errorf("%s: %v", name, err)
 		}
 	}
 }
