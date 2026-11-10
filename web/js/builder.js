@@ -11,6 +11,7 @@ import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapeRow, costCurve, heroes, pool, changed,
   MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
+import { formatDeck, importDeck, fileName } from "./decktext.js";
 
 // The colours of the Landscapes, as in the design: a tile colour and a darker diamond.
 const TILE = { cornfield: "#9cc43a", blue_plains: "#7aa6d6", useless_swamp: "#9b7bbf", sandy_lands: "#e8b04a", nice_lands: "#f08fbc", icy_lands: "#bfe8f2", rainbow: "#e9ddf6" };
@@ -128,6 +129,82 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     show(emptyDeck(), null);
   }
 
+  // ---------- deck text: copy, download, import
+
+  const listed = () => formatDeck(deck, cards());
+
+  /** A dialog over the builder; closes on Esc, and is removed when it does. Returns it, already open. */
+  function dialog(title, ...body) {
+    const dlg = h("dialog", { class: "modal parch deckdialog", "aria-label": title },
+      h("h2", {}, title), ...body);
+    dlg.addEventListener("close", () => dlg.remove());
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+    root.append(dlg);
+    dlg.showModal();
+    return dlg;
+  }
+
+  async function copyList() {
+    const text = listed();
+    try {
+      await navigator.clipboard.writeText(text);
+      say("Deck list copied.");
+    } catch {
+      // No clipboard here (or it was refused): show the text, selected, to copy by hand.
+      const box = h("textarea", { class: "well decktext", readonly: true, rows: "14", spellcheck: "false", "aria-label": "Deck list" });
+      box.value = text;
+      const dlg = dialog("Deck list", h("p", {}, "Copy this text."), box,
+        h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: () => dlg.close() }, "Close")));
+      box.select();
+    }
+  }
+
+  function download() {
+    const url = URL.createObjectURL(new Blob([listed()], { type: "text/plain;charset=utf-8" }));
+    const a = h("a", { href: url, download: fileName(deck) });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    say(`Saved ${fileName(deck)}.`);
+  }
+
+  function importList() {
+    const box = h("textarea", { class: "well decktext", rows: "14", spellcheck: "false", "aria-label": "Deck list", placeholder: "Name: My deck\nHero: Finn\n\n3 Corn Dog\n2 Husker Worm" });
+    const why = h("p", { class: "bad", role: "alert" });
+    const done = () => dlg.close(); // dlg is set by the time a button is pressed
+    const load = () => {
+      if (!box.value.trim()) { why.textContent = "Paste a deck list first."; return; }
+      const r = importDeck(box.value, cards());
+      if (!r.any) {
+        why.textContent = "No cards or Hero could be read from that text.";
+        why.append(report(r.issues));
+        return;
+      }
+      if (!leaveOk()) return;
+      show(r.deck, null); // an unsaved draft: nothing is saved until the player presses Save
+      const n = total(r.deck);
+      say(`Imported ${n} card${n === 1 ? "" : "s"}${r.issues.length ? ` (${r.issues.length} note${r.issues.length === 1 ? "" : "s"})` : ""}. Not saved yet.`, r.issues.some((i) => i.level === "error"));
+      if (!r.issues.length) { dlg.close(); return; }
+      dlg.replaceChildren(
+        h("h2", {}, "Imported, with notes"),
+        h("p", {}, `Loaded ${n} card${n === 1 ? "" : "s"} as a draft. These lines were changed or left out:`),
+        report(r.issues),
+        h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: done }, "Close")));
+    };
+    const dlg = dialog("Import a deck",
+      h("p", {}, "Paste a deck list: an optional “Name:” and “Hero:” line, then one card per line, like “3 Corn Dog”. It opens as a draft you can change; nothing is saved until you save it."),
+      box, why,
+      h("div", { class: "modalrow modalrow2" },
+        h("button", { type: "button", class: "btn-steel modalopt", onclick: done }, "Cancel"),
+        h("button", { type: "button", class: "btn-green modalopt", onclick: load }, "Load deck")));
+    box.focus();
+  }
+
+  /** The lines that could not be used, with their numbers. */
+  const report = (issues) => h("ul", { class: "issues" }, issues.map((i) =>
+    h("li", { class: i.level }, h("span", { class: "ln" }, `Line ${i.line}`), h("code", {}, i.text), h("span", {}, i.reason))));
+
   // ---------- the screen
 
   const diamond = (colour, size = 14) => h("span", { "aria-hidden": "true", class: "diamond", style: `width:${size}px;height:${size}px;background:${colour}` });
@@ -156,6 +233,9 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.save = h("button", { type: "button", class: "btn-green", onclick: () => save(false) }, "Save deck");
     ui.draft = h("button", { type: "button", class: "btn-steel", onclick: () => save(true) }, "Save as draft");
     ui.del = h("button", { type: "button", class: "btn-steel danger", onclick: destroy }, "Delete deck");
+    ui.copy = h("button", { type: "button", class: "btn-steel", onclick: copyList }, "Copy deck list");
+    ui.download = h("button", { type: "button", class: "btn-steel", onclick: download }, "Download");
+    ui.import = h("button", { type: "button", class: "btn-steel", onclick: importList }, "Import…");
     ui.note = h("p", { class: "note", role: "status" });
     ui.curve = h("div", { class: "curve" });
     ui.curveLabels = h("div", { class: "curvelabels" });
@@ -187,6 +267,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
               h("div", { class: "bar" }, ui.bar)),
             ui.checks,
             h("div", { class: "bactions" }, ui.save, ui.draft),
+            h("div", { class: "bshare", role: "group", "aria-label": "Share this deck as text" }, ui.copy, ui.download, ui.import),
             h("div", { class: "bmore" }, ui.del, ui.note)),
           h("section", { class: "parch bcurve", "aria-labelledby": "bcurve-h" }, h("h2", { id: "bcurve-h" }, "Action cost curve"), ui.curve, ui.curveLabels),
           h("section", { class: "parch blist", "aria-labelledby": "blist-h" }, h("h2", { id: "blist-h" }, "Card list"), ui.list)))));
@@ -271,6 +352,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.save.textContent = busy ? "Saving…" : "Save deck";
     ui.draft.disabled = busy || !edited;
     ui.del.hidden = !deck.id;
+    ui.copy.disabled = ui.download.disabled = total(deck) === 0 && !deck.hero && !deck.name.trim();
     ui.note.textContent = note.text;
     ui.note.className = "note" + (note.error ? " bad" : "");
 

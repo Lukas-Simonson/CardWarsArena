@@ -1,7 +1,7 @@
 // A deck as plain text, to copy, save, post in a chat or type by hand. Pure: no DOM, no network.
 //
 //   Name: Corn Farmers
-//   Hero: Finn the Human
+//   Hero: Finn
 //
 //   3 Corn Dog
 //   2 Husker Worm

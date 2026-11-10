@@ -57,6 +57,7 @@ js/anim.js       pure plan() of what to animate between two views, plus the Web 
 js/main.js       wiring: home screen, connection, rejoin, click handlers
 js/decklist.js   pure: what the home screen's deck shelf offers
 js/deckmodel.js  pure: a deck being built and the rules it is judged by
+js/decktext.js   pure: a deck as plain text, to copy, download and import
 js/builder.js    the deck builder screen
 js/avatar.js     a player's picture, or the first letter of their name
 test/            node --test unit tests, fixtures, and a smoke test

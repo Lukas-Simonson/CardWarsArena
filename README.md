@@ -4,7 +4,7 @@ A web port of the Adventure Time Card Wars card game. Play the computer, or a fr
 
 - Play against a bot, or against a friend by sharing a room code
 - Eight ready-to-play starter decks, with Heroes
-- Optional sign-in with Discord or GitHub, to build and keep your own decks in a deck builder
+- Optional sign-in with Discord or GitHub, to build and keep your own decks in a deck builder, and copy decks to and from plain text
 - A Go rules engine that runs the real rules, and a browser client with animations and no build step
 
 > **This is an unofficial fan project.** See [A fan project](#a-fan-project) below.
