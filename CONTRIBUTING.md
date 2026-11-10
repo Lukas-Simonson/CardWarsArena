@@ -1,9 +1,9 @@
 # Contributing
 
-Thanks for helping with Card Wars. This page covers how the repository is worked on. For what the project is
+Thanks for helping with Card Wars Arena. This page covers how the repository is worked on. For what the project is
 and how to run it, see the [README](README.md).
 
-Card Wars is an unofficial fan project; please keep it that way (see the README's [fan project](README.md#a-fan-project)
+Card Wars Arena is an unofficial fan project; please keep it that way (see the README's [fan project](README.md#a-fan-project)
 note). Do not add artwork, card scans or other material you do not have the right to share.
 
 ## Reporting problems and ideas

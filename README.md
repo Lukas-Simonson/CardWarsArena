@@ -1,6 +1,6 @@
-# Card Wars
+# Card Wars Arena
 
-A web port of the Adventure Time Card Wars card game. Play the computer, or a friend with a room code, in your browser.
+Card Wars Arena is a web port of the Adventure Time Card Wars card game. Play the computer, or a friend with a room code, in your browser.
 
 - Play against a bot, or against a friend by sharing a room code
 - Nine ready-to-play starter decks, each with its Hero
@@ -117,7 +117,7 @@ is tracked in the [issues](https://github.com/Lukas-Simonson/CardWarsTCG/issues)
 
 ## A fan project
 
-Card Wars is an unofficial, non-commercial fan project. It is not affiliated with, authorized by or endorsed by
+Card Wars Arena is an unofficial, non-commercial fan project. It is not affiliated with, authorized by or endorsed by
 Cartoon Network, Warner Bros. Discovery, Cryptozoic Entertainment or anyone else who owns rights to Adventure Time or
 Card Wars.
 

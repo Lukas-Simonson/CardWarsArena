@@ -2,6 +2,7 @@
 // update (the scene is small) and reports clicks through `on`. Which cards may
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
+import { APP_NAME } from "./brand.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
@@ -25,7 +26,7 @@ export function renderGame(root, model, on) {
   const v = state.view;
   if (!v) {
     root.replaceChildren(h("div", { class: "table" },
-      h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, "Card Wars"))),
+      h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME))),
       h("div", { class: "steel", style: "padding:24px 28px" },
         h("h2", { class: "h", style: "font-size:30px" }, state.waiting ? "Waiting for an opponent…" : "Joining…"),
         state.waiting && h("p", {}, "Send this room code to your friend; they type it under “Join”."),
@@ -79,7 +80,7 @@ function topbar({ ctx, me }, on) {
   const mine = v.active === me;
   const phase = v.phase === "mulligan" ? "Opening hands" : `${v.phase[0].toUpperCase()}${v.phase.slice(1)} phase`;
   return h("div", { class: "topbar" },
-    h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, "Card Wars")),
+    h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME)),
     h("div", { class: "steel turnbox" },
       v.phase !== "mulligan" && h("span", { class: "ink" }, `Turn ${v.turn}`),
       v.phase !== "mulligan" && h("span", { class: `chip ${mine ? "" : "theirs"}` }, mine ? "Your turn" : `${seatName(ctx, v.active)}'s turn`),
