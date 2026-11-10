@@ -2,23 +2,30 @@
 //
 //   Name: Corn Farmers
 //   Hero: Finn
+//   Landscapes: Cornfield, Cornfield, Icy Lands, Icy Lands
 //
 //   3 Corn Dog
 //   2 Husker Worm
 //
-// A line with a count and a name is a card. `Name:` and `Hero:` lines set the deck's name and Hero. Blank lines
+// A line with a count and a name is a card. `Name:`, `Hero:` and `Landscapes:` lines set the deck's name, Hero and
+// four Landscapes (one for each Lane, in order; leave it out to let the cards decide). Blank lines
 // and lines starting with # or // are ignored. Cards are found by name, ignoring case, spacing and punctuation,
 // so a deck copied from somewhere else still reads. A line that cannot be used is reported, never dropped quietly.
 //
 // The same reading also covers the text Card Dweeb gives for a deck (see parseDweeb).
-import { MAX_COPIES, MAX_CARDS, emptyDeck, total, heroes } from "./deckmodel.js";
+import { MAX_COPIES, MAX_CARDS, LANES, LANDSCAPES, emptyDeck, total, heroes } from "./deckmodel.js";
+import { landscapeName } from "./describe.js";
 
-/** The deck as text: its name and Hero (when it has them), a blank line, then `count name` for each card. */
+/**
+ * The deck as text: its name, Hero and chosen Landscapes (when it has them), a blank line, then `count name`
+ * for each card. Landscapes the cards decide are left out, as they are not part of the deck.
+ */
 export function formatDeck(deck, cards) {
   const head = [];
   if (deck.name?.trim()) head.push(`Name: ${deck.name.trim()}`);
   const hero = deck.hero && cards[deck.hero];
   if (hero) head.push(`Hero: ${hero.name}`);
+  if (deck.landscapes?.length === LANES) head.push(`Landscapes: ${deck.landscapes.map(landscapeName).join(", ")}`);
   const lines = Object.entries(deck.counts)
     .map(([id, n]) => [cards[id]?.name ?? id, n])
     .sort((a, b) => a[0].localeCompare(b[0]))
@@ -67,9 +74,11 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
   const playable = Object.values(cards).filter((c) => c.type !== "hero" && c.modeled);
   const byName = index(playable), byAny = index(Object.values(cards));
   const heroList = heroes(cards), heroByName = index(heroList);
-  const out = { name: "", hero: "", counts: {}, issues: [], any: false };
+  const out = { name: "", hero: "", landscapes: null, counts: {}, issues: [], any: false };
   const issue = (line, raw, reason, level = "error") => out.issues.push({ line, text: raw.trim(), reason, level });
   const named = (list, key) => list.get(key) ?? [];
+  const landNames = LANDSCAPES.map((id) => ({ id, name: landscapeName(id) }));
+  let row = [], rowLine = 0, rowRaw = "";
 
   return {
     out, issue,
@@ -85,6 +94,29 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
         const near = nearest(nameKey(value), heroList);
         issue(line, raw, `no Hero is called “${value}”` + (near ? `. Did you mean ${near.name}?` : ""));
       }
+    },
+
+    /** One Landscape for `count` Lanes; `finishLandscapes` says whether the four add up. */
+    addLandscape(line, raw, count, name) {
+      const key = nameKey(name);
+      const found = landNames.find((l) => nameKey(l.name) === key || nameKey(l.id) === key);
+      if (!found) {
+        const near = nearest(key, landNames);
+        issue(line, raw, key === "rainbow"
+          ? "Rainbow is a kind of card, not a Landscape"
+          : `no Landscape is called “${name}”` + (near ? `. Did you mean ${near.name}?` : ""));
+        return;
+      }
+      if (!row.length) { rowLine = line; rowRaw = raw; }
+      for (let i = 0; i < count; i++) row.push(found.id);
+    },
+
+    finishLandscapes() {
+      if (!row.length) return;
+      if (row.length !== LANES) {
+        issue(rowLine, rowRaw, `a deck has ${LANES} Landscapes, one for each Lane; found ${row.length}, so they were left to the cards`, "warning");
+      } else { out.landscapes = row; out.any = true; }
+      row = [];
     },
 
     addCard(line, raw, count, name) {
@@ -126,11 +158,17 @@ export function parseDeck(text, cards) {
     const line = i + 1, s = raw.trim();
     if (!s || s.startsWith("#") || s.startsWith("//")) return;
 
-    const head = /^(name|deck|hero)\s*:\s*(.*)$/i.exec(s);
+    const head = /^(name|deck|hero|landscapes?)\s*:\s*(.*)$/i.exec(s);
     if (head) {
-      const value = head[2].trim();
-      if (head[1].toLowerCase() !== "hero") r.setName(value);
-      else if (value) r.setHero(line, raw, value);
+      const what = head[1].toLowerCase(), value = head[2].trim();
+      if (what === "hero") { if (value) r.setHero(line, raw, value); }
+      else if (what.startsWith("landscape")) {
+        for (const part of value.split(",").map((x) => x.trim()).filter(Boolean)) {
+          const m = /^(?:(\d+)\s*[x×]?\s+)?(.+)$/i.exec(part);
+          r.addLandscape(line, raw, m[1] ? Number(m[1]) : 1, m[2]);
+        }
+        r.finishLandscapes();
+      } else r.setName(value);
       return;
     }
 
@@ -147,8 +185,9 @@ const HEADING = /^(hero|landscapes?|creatures?|spells?|buildings?)\s*:?\s*(\(\d+
 
 /**
  * Reads the text Card Dweeb gives for a deck: headings (Hero, Landscapes, Creatures, Spells, Buildings), each
- * followed by its lines. The Hero section is one name; the others are `2 - Corn Dog`. The Landscapes section is
- * skipped: a deck's Landscapes come from its cards, so they are not cards to add. Returns what parseDeck does.
+ * followed by its lines. The Hero section is one name; the others are `2 - Corn Dog`. The Landscapes section lists
+ * the four Landscapes (`1 - Cornfield 1`, the number after the name only tells the copies apart), which become the
+ * deck's chosen Landscapes. Returns what parseDeck does.
  */
 export function parseDweeb(text, cards) {
   const r = reader(cards, { heroWord: "Hero" });
@@ -159,8 +198,17 @@ export function parseDweeb(text, cards) {
     if (!s) return;
 
     const heading = HEADING.exec(s);
-    if (heading) { section = heading[1].toLowerCase().replace(/s$/, ""); heroSeen = false; return; }
-    if (section === "landscape") return;
+    if (heading) {
+      if (section === "landscape") r.finishLandscapes();
+      section = heading[1].toLowerCase().replace(/s$/, "");
+      heroSeen = false;
+      return;
+    }
+    if (section === "landscape") {
+      const m = /^(\d+)\s*(?:[-–—:]|[x×](?=\s))?\s*(.+)$/i.exec(s);
+      r.addLandscape(line, raw, m ? Number(m[1]) : 1, (m ? m[2] : s).replace(/\s+\d+$/, "").trim());
+      return;
+    }
     if (section === "hero") {
       if (heroSeen) r.issue(line, raw, "a deck has one Hero; this line was ignored", "warning");
       else { heroSeen = true; r.setHero(line, raw, s); }
@@ -171,6 +219,7 @@ export function parseDweeb(text, cards) {
     const m = /^(\d+)\s*(?:[-–—:]|[x×](?=\s))?\s*(.+)$/i.exec(s);
     r.addCard(line, raw, m ? Number(m[1]) : 1, (m ? m[2] : s).trim());
   });
+  r.finishLandscapes();
   return r.out;
 }
 
@@ -186,7 +235,7 @@ export const FORMATS = [["auto", "Detect it"], ["list", "Deck list"], ["dweeb", 
 export const importDeck = (text, cards, format = "auto") => {
   const dweeb = format === "dweeb" || (format === "auto" && looksLikeDweeb(text));
   const r = dweeb ? parseDweeb(text, cards) : parseDeck(text, cards);
-  return { deck: { ...emptyDeck(), name: r.name, hero: r.hero, counts: r.counts }, issues: r.issues, any: r.any, format: dweeb ? "dweeb" : "list" };
+  return { deck: { ...emptyDeck(), name: r.name, hero: r.hero, counts: r.counts, landscapes: r.landscapes }, issues: r.issues, any: r.any, format: dweeb ? "dweeb" : "list" };
 };
 
 /** A file name for a deck: "Corn Farmers" becomes "corn-farmers.txt". */

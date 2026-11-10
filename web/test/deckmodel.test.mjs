@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, landscapeTypes, landscapeRow, costCurve, problems, mix, heroes, pool, changed,
+  landscapesOf, chooseLandscape, autoLandscapes, unplayable, whyUnplayable,
   MAX_COPIES, MAX_CARDS,
 } from "../js/deckmodel.js";
 
@@ -69,10 +70,10 @@ const wide = { ...cards,
 test("problems use the server's words", () => {
   assert.deepEqual(problems(emptyDeck(), cards), ["choose a Hero", "0 cards: a deck needs at least 40"]);
   const five = fromCards(["pup", "ice", "sea", "san", "nice"], { hero: "finn" });
-  assert.ok(problems(five, wide).includes("uses 5 Landscape types: a deck can use at most 4"));
+  assert.ok(problems(five, wide).includes("uses 5 Landscape types: choose your 4 Landscapes"));
   const four = fromCards(["pup", "ice", "sea", "san"], { hero: "finn" });
   assert.ok(!problems(four, wide).some((p) => /Landscape/.test(p)));
-  assert.ok(problems(fromCards(["rain"], { hero: "finn" }), cards).includes("needs at least one Landscape type (some card that is not Rainbow)"));
+  assert.ok(problems(fromCards(["rain"], { hero: "finn" }), cards).includes("choose your Landscapes: no card says which (they are all Rainbow)"));
   const counts = {};
   for (let i = 0; i < 14; i++) counts[`x${i}`] = 3; // 42 cards of nothing in particular
   cards.x0 = { id: "x0", landscape: "cornfield" };
@@ -125,4 +126,65 @@ test("the cost curve runs from 0 to the dearest card, and at least to 2", () => 
   const c = { a: { cost: 0 }, b: { cost: 1 }, d: { cost: 4 } };
   assert.deepEqual(costCurve(emptyDeck(), c), [{ cost: 0, count: 0 }, { cost: 1, count: 0 }, { cost: 2, count: 0 }]);
   assert.deepEqual(costCurve(fromCards(["a", "b", "b", "d"]), c).map((x) => x.count), [1, 2, 0, 0, 1]);
+});
+
+// Cards with costs, to say which would be hard to play.
+const priced = {
+  ...wide,
+  big: { id: "big", name: "Big Ice", type: "creature", landscape: "icy_lands", cost: 3, modeled: true },
+  mid: { id: "mid", name: "Mid Corn", type: "creature", landscape: "cornfield", cost: 2, modeled: true },
+  cheap: { id: "cheap", name: "Cheap Sand", type: "spell", landscape: "sandy_lands", cost: 1, modeled: true },
+  free: { id: "free", name: "Free Sand", type: "spell", landscape: "sandy_lands", cost: 0, modeled: true },
+  rb: { id: "rb", name: "Rainbow Dude", type: "creature", landscape: "rainbow", cost: 4, modeled: true },
+};
+
+test("the Landscapes are the player's choice, or else what the cards suggest", () => {
+  const d = fromCards(["pup", "pup", "ice"]);
+  assert.deepEqual(landscapesOf(d, cards), ["cornfield", "cornfield", "icy_lands", "icy_lands"]);
+  const picked = chooseLandscape(d, cards, 3, "nice_lands");
+  assert.deepEqual(picked.landscapes, ["cornfield", "cornfield", "icy_lands", "nice_lands"]);
+  assert.deepEqual(landscapesOf(picked, cards), picked.landscapes);
+  assert.equal(autoLandscapes(picked).landscapes, null);
+  assert.deepEqual(landscapesOf(autoLandscapes(picked), cards), ["cornfield", "cornfield", "icy_lands", "icy_lands"]);
+});
+
+test("choosing from a deck the cards cannot decide starts every Lane the same, to adjust", () => {
+  const none = fromCards(["rain"]);
+  assert.deepEqual(landscapesOf(none, cards), []);
+  assert.deepEqual(chooseLandscape(none, cards, 2, "icy_lands").landscapes, ["icy_lands", "icy_lands", "icy_lands", "icy_lands"]);
+});
+
+test("chosen Landscapes mean the cards need not decide, so there is nothing to complain about", () => {
+  const five = fromCards(["pup", "ice", "sea", "san", "nice"], { hero: "finn" });
+  assert.ok(problems(five, wide).some((p) => /Landscape/.test(p)));
+  assert.ok(!problems(chooseLandscape(five, wide, 0, "cornfield"), wide).some((p) => /Landscape/.test(p)));
+  const rainbow = fromCards(["rain"], { hero: "finn" });
+  assert.ok(!problems(chooseLandscape(rainbow, cards, 0, "cornfield"), cards).some((p) => /Landscape/.test(p)));
+});
+
+test("a change of Landscapes is a change to save", () => {
+  const saved = fromCards(["pup"], { id: "a", name: "A", hero: "finn" });
+  assert.equal(changed(saved, saved), false);
+  assert.equal(changed(chooseLandscape(saved, cards, 0, "icy_lands"), saved), true);
+  assert.equal(changed(autoLandscapes(chooseLandscape(saved, cards, 0, "icy_lands")), saved), false);
+});
+
+test("cards that may be unplayable: no Landscape of their type, or fewer than their cost", () => {
+  const d = { ...fromCards(["big", "mid", "cheap", "free", "rb", "pup"]), landscapes: ["cornfield", "cornfield", "icy_lands", "icy_lands"] };
+  const list = unplayable(d, priced);
+  assert.deepEqual(list.map((u) => [u.name, u.never]), [["Cheap Sand", true], ["Big Ice", false]]);
+  assert.equal(whyUnplayable(list[0]), "no Sandy Lands Landscape");
+  assert.equal(whyUnplayable(list[1]), "costs 3 but the deck has 2 Icy Lands Landscapes");
+  // Enough Landscapes of the type, a free card and a Rainbow card are all fine.
+  assert.deepEqual(unplayable({ ...d, landscapes: ["icy_lands", "icy_lands", "icy_lands", "sandy_lands"] }, priced).map((u) => u.name), ["Mid Corn"]);
+});
+
+test("nothing is said about unplayable cards while the Landscapes are unclear", () => {
+  assert.deepEqual(unplayable(fromCards(["rain"]), priced), []);
+  assert.deepEqual(unplayable(fromCards(["pup", "ice", "sea", "san", "nice"]), priced), []);
+});
+
+test("one Landscape of a type for a one-cost card is enough", () => {
+  const d = { ...fromCards(["cheap"]), landscapes: ["sandy_lands", "cornfield", "cornfield", "cornfield"] };
+  assert.deepEqual(unplayable(d, priced), []);
 });

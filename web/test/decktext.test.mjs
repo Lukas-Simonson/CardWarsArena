@@ -109,7 +109,7 @@ test("a deck never holds more than the most cards the server allows", () => {
 
 test("importing gives an unsaved draft: no id, the text's name and Hero", () => {
   const { deck, issues, any } = importDeck("Name: Imported\nHero: Jake the Dog\n3 Corn Dog", cards);
-  assert.deepEqual(deck, { id: null, name: "Imported", hero: "jake", counts: { dog: 3 } });
+  assert.deepEqual(deck, { id: null, name: "Imported", hero: "jake", counts: { dog: 3 }, landscapes: null });
   assert.deepEqual(issues, []);
   assert.equal(any, true);
 });
@@ -179,4 +179,39 @@ test("a name that starts with x is not mistaken for a times sign", () => {
   const x = { ...cards, xt: { id: "xt", name: "Xtreme Dude", type: "creature", landscape: "cornfield", modeled: true } };
   assert.deepEqual(parseDweeb("Creatures\n2 - Xtreme Dude\n1 Xtreme Dude", x).counts, { xt: 3 });
   assert.deepEqual(parseDweeb("Creatures\n2x Corn Dog", x).counts, { dog: 2 });
+});
+
+test("chosen Landscapes are written and read back; ones the cards decide are not written", () => {
+  const d = fromCards(["pup", "dog"], { name: "Farm", hero: "finn" });
+  assert.equal(formatDeck(d, cards), "Name: Farm\nHero: Finn the Human\n\n1 Corn Dog\n1 Corn Pup\n");
+  const chosen = { ...d, landscapes: ["cornfield", "cornfield", "icy_lands", "blue_plains"] };
+  const text = formatDeck(chosen, cards);
+  assert.equal(text, "Name: Farm\nHero: Finn the Human\nLandscapes: Cornfield, Cornfield, Icy Lands, Blue Plains\n\n1 Corn Dog\n1 Corn Pup\n");
+  const back = importDeck(text, cards);
+  assert.deepEqual(back.issues, []);
+  assert.deepEqual(back.deck.landscapes, chosen.landscapes);
+});
+
+test("a Landscapes line: names ignoring case, counts, and exactly four", () => {
+  assert.deepEqual(parseDeck("Landscapes: icy lands, 2 Cornfield, BLUE_PLAINS", cards).landscapes, ["icy_lands", "cornfield", "cornfield", "blue_plains"]);
+  assert.deepEqual(parseDeck("Landscapes: 4x Sandy Lands", cards).landscapes, ["sandy_lands", "sandy_lands", "sandy_lands", "sandy_lands"]);
+  const few = parseDeck("Landscapes: Cornfield, Icy Lands", cards);
+  assert.equal(few.landscapes, null);
+  assert.match(few.issues[0].reason, /a deck has 4 Landscapes.*found 2/);
+  const bad = parseDeck("Landscapes: Cornfield, Cornfield, Cornfield, Rainbow", cards);
+  assert.equal(bad.landscapes, null);
+  assert.match(bad.issues[0].reason, /Rainbow is a kind of card, not a Landscape/);
+  assert.match(parseDeck("Landscapes: Cornfeld, Cornfield, Cornfield, Cornfield", cards).issues[0].reason, /Did you mean Cornfield\?/);
+});
+
+test("Card Dweeb's Landscapes section gives the deck its Landscapes, in order", () => {
+  const r = parseDweeb(dweeb, real);
+  assert.deepEqual(r.landscapes, ["cornfield", "cornfield", "icy_lands", "icy_lands"]);
+  assert.deepEqual(r.issues, []);
+  assert.deepEqual(importDeck(dweeb, real).deck.landscapes, ["cornfield", "cornfield", "icy_lands", "icy_lands"]);
+  const odd = parseDweeb("Landscapes\n1 - Cornfield 1\n1 - Cornfield 2\n\nCreatures\n1 - Corn Dog", real);
+  assert.equal(odd.landscapes, null);
+  assert.equal(odd.issues.length, 1);
+  assert.deepEqual(odd.counts, { dog: 1 });
+  assert.deepEqual(parseDweeb("Landscapes\n4 - Icy Lands", real).landscapes, ["icy_lands", "icy_lands", "icy_lands", "icy_lands"]);
 });
