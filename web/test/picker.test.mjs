@@ -203,3 +203,20 @@ test("a Hero's ability is its own source and is prompted by the Hero's name", ()
   const prompt = buildPrompt(ctxFor(v), true, "hero", picker, false);
   assert.match(prompt.text, /The Pig/);
 });
+
+test("removing a frozen token is a source of its own: a Landscape, and the card to discard", () => {
+  const ctx = ctxFor();
+  const legal = [
+    { kind: "thaw", lane: 2, card: 31 }, { kind: "thaw", lane: 2, card: 32 }, { kind: "thaw", lane: 0, card: 31 }, { kind: "draw" },
+  ];
+  assert.equal(sourceKey(legal[0]), "thaw:2");
+  assert.equal(kindKey(legal[0]), "thaw");
+  assert.deepEqual(Object.keys(sources(legal)).sort(), ["thaw:0", "thaw:2"]);
+  assert.deepEqual(slotsOf(legal[0], ctx), [["hand_card:31"]]);
+
+  const p = new ActionPicker(sources(legal)["thaw:2"], ctx, "thaw");
+  assert.equal(p.result(), null, "nothing is discarded before a click");
+  assert.deepEqual(p.options().tokens, ["hand_card:31", "hand_card:32"]);
+  assert.equal(p.pick("hand_card:32"), true);
+  assert.deepEqual(p.result(), { kind: "thaw", lane: 2, card: 32 });
+});

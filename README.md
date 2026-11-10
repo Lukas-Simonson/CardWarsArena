@@ -3,7 +3,7 @@
 A web port of the Adventure Time Card Wars card game. Play the computer, or a friend with a room code, in your browser.
 
 - Play against a bot, or against a friend by sharing a room code
-- Eight ready-to-play starter decks, with Heroes
+- Nine ready-to-play starter decks, each with its Hero
 - Optional sign-in with Discord or GitHub, to build and keep your own decks in a deck builder, and copy decks to and from plain text (Card Dweeb lists too)
 - A Go rules engine that runs the real rules, and a browser client with animations and no build step
 

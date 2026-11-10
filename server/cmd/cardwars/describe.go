@@ -164,8 +164,12 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return u.instName(a.Card) + " fights instead"
 		case engine.ChoiceMoveDamage:
 			return fmt.Sprintf("Move %d damage", a.Card)
+		case engine.ChoiceMove:
+			return fmt.Sprintf("Move %s to lane %d (%s side)", u.g.Catalog()[ch.Card].Name, a.Lane+1, u.side(me, ch.MoveSide))
 		}
 		return "Choose"
+	case engine.ActThaw:
+		return fmt.Sprintf("Discard %s to remove the frozen token on lane %d", u.instName(a.Card), a.Lane+1)
 	case engine.ActPlayPending:
 		name := "the stolen card"
 		if st.Pending != nil {
@@ -243,6 +247,10 @@ func (u *ui) event(me engine.PlayerID, e engine.Event) string {
 		return fmt.Sprintf("*** %s wins! ***", u.who(e.Player))
 	case engine.EvMove:
 		return fmt.Sprintf("%s moves to lane %d", name(), lane)
+	case engine.EvFreeze:
+		return fmt.Sprintf("%s's lane %d Landscape is frozen", u.who(e.Player), lane)
+	case engine.EvThaw:
+		return fmt.Sprintf("%s's lane %d Landscape thaws", u.who(e.Player), lane)
 	case engine.EvFlip:
 		return fmt.Sprintf("%s's lane %d Landscape is flipped", u.who(e.Player), lane)
 	case engine.EvReady:

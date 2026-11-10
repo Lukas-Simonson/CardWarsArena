@@ -192,6 +192,11 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 }
 .tile .stat { position: absolute; right: 8px; background: #48207c; border: 2px solid #1f1033; color: #fff; border-radius: 999px; padding: 0 10px; font-size: 14px; z-index: 2; }
 .tile .stat { bottom: 8px; }
+.tile.frozen { border-color: #1d4f66; box-shadow: inset 0 0 0 3px #bfe8f2, inset 0 0 22px 6px rgba(190, 235, 250, .55); }
+.tile .ice { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(160deg, rgba(220, 245, 255, .5), rgba(140, 205, 235, .22) 55%, rgba(220, 245, 255, .45)); }
+.tile .ice span { position: absolute; z-index: 3; top: 4px; left: 6px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: #1d4f66; color: #e8f9ff; border: 2px solid #bfe8f2; font-size: 17px; line-height: 1; }
+.frozentag { color: #1d6f96; font-weight: 700; }
+.btn-steel.thaw { min-width: 0; }
 .tile.go { outline: 4px solid #7dd24c; outline-offset: 3px; }
 .tile.go, .strip.go { animation: act-outline 220ms ease-out both; animation-delay: var(--act-delay, 0ms); }
 .tilewrap .tileacts { animation: act-button 220ms ease-out both; animation-delay: var(--act-delay, 0ms); }

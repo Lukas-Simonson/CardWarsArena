@@ -187,3 +187,14 @@ test("a Hero's ability is described by the Hero, and selects as the Hero", () =>
   assert.equal(actionMatches(a, { type: "lane", lane: 0, source: "hero" }), true);
   assert.equal(actionMatches(a, laneSelection(0, "creature")), false);
 });
+
+test("freezing and thawing, and the new actions, read in plain words", () => {
+  const ctx = ctxFor();
+  assert.match(describeEvent(ctx, { kind: "freeze", player: 0, lane: 1 }), /lane 2 Landscape is frozen/);
+  assert.match(describeEvent(ctx, { kind: "thaw", player: 0, lane: 1 }), /lane 2 Landscape thaws/);
+  assert.match(describeAction(ctx, { kind: "thaw", lane: 3, card: 10 }), /remove the frozen token from your lane 4 Landscape/);
+  const move = { ...ctx.view, choice: { player: 0, kind: "move", card: "pup", lane: 0, lanes: [1, 2], move_side: 0 } };
+  assert.match(describeAction({ ...ctx, view: move }, { kind: "choose", lane: 2 }), /to lane 3$/);
+  const theirs = { ...move, choice: { ...move.choice, move_side: 1 } };
+  assert.match(describeAction({ ...ctx, view: theirs }, { kind: "choose", lane: 2 }), /to lane 3 on the opponent's side/);
+});

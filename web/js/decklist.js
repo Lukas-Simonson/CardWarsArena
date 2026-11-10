@@ -17,8 +17,9 @@ export function landscapeTitle(lands) {
 }
 
 // The starter decks come in pairs, one set to a box: Finn and Jake, BMO and Lady, PB and LSP, Fionna and Cake.
+// Gunter's box is Lemongrab's too, but only Gunter's deck is here, so it comes last.
 // This is how they are laid out, by their Hero. Any deck not named here follows, in the order it came.
-const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake"];
+const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake", "gunter"];
 
 /** The starter decks from GET /api/decks, in the order of the game's boxes. */
 export function inBoxOrder(presets) {
@@ -48,7 +49,8 @@ export function shelf(presets, saved, cards) {
     })),
     // A deck still being built is on the shelf, so it can be found, but cannot be taken.
     mine: saved.map((d) => {
-      const lands = landscapeRow(fromCards(d.cards), cards);
+      // The Landscapes the deck is played with: the server says (a player may have chosen them), else the cards do.
+      const lands = d.landscapes?.length === 4 ? d.landscapes : landscapeRow(fromCards(d.cards), cards);
       return {
         value: `my:${d.id}`,
         name: d.name || "Untitled deck",
