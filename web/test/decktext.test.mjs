@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { formatDeck, parseDeck, importDeck, nameKey, fileName } from "../js/decktext.js";
+import { formatDeck, parseDeck, parseDweeb, looksLikeDweeb, importDeck, nameKey, fileName } from "../js/decktext.js";
 import { emptyDeck, fromCards, total } from "../js/deckmodel.js";
 
 const cards = {
@@ -124,4 +124,59 @@ test("a deck's file name comes from its name", () => {
   assert.equal(fileName({ name: "Corn Farmers!" }), "corn-farmers.txt");
   assert.equal(fileName({ name: "  " }), "deck.txt");
   assert.equal(fileName({}), "deck.txt");
+});
+
+// The game's Heroes are named plainly (Finn, Jake), as Card Dweeb names them.
+const real = { ...cards, finn: { ...cards.finn, name: "Finn" }, jake: { ...cards.jake, name: "Jake" } };
+
+const dweeb = `Hero
+Finn
+
+Landscapes
+1 - Cornfield 1
+1 - Cornfield 2
+1 - Icy Lands 3
+1 - Icy Lands 4
+
+Creatures
+2 - Corn Dog
+1 - Corn Pup
+1 - Bug's Life
+
+Spells
+3 - Icicle
+`;
+
+test("Card Dweeb text: a Hero, a Landscapes section that is skipped, then cards by section", () => {
+  assert.equal(looksLikeDweeb(dweeb), true);
+  const r = parseDweeb(dweeb, real);
+  assert.deepEqual(r.issues, []);
+  assert.equal(r.hero, "finn");
+  assert.deepEqual(r.counts, { dog: 2, pup: 1, bug: 1, ice: 3 });
+});
+
+test("Card Dweeb text is found without being asked, and a plain list is not mistaken for it", () => {
+  const auto = importDeck(dweeb, real);
+  assert.equal(auto.format, "dweeb");
+  assert.deepEqual(auto.deck.counts, { dog: 2, pup: 1, bug: 1, ice: 3 });
+  assert.equal(importDeck("3 Corn Dog", real).format, "list");
+  assert.equal(looksLikeDweeb("Name: A\n3 Corn Dog"), false);
+  assert.equal(importDeck("Hero\nJake\n\nCreatures\n1 - Corn Dog", real, "list").format, "list");
+  assert.equal(importDeck("Hero\nJake", real, "dweeb").deck.hero, "jake");
+});
+
+test("Card Dweeb text reports what it cannot use, by line", () => {
+  const r = parseDweeb("Hero\nJake the Dog\nFinn\n\nCreatures\n2 - Corn Dogg\n4 - Corn Pup\nIcicle\n\nSpells\n1 - Finn", real);
+  assert.equal(r.hero, "");
+  assert.deepEqual(r.counts, { pup: 3, ice: 1 });
+  assert.deepEqual(r.issues.map((i) => i.line), [2, 3, 6, 7, 11]);
+  assert.match(r.issues[1].reason, /a deck has one Hero/);
+  assert.match(r.issues[2].reason, /Did you mean Corn Dog\?/);
+  assert.match(r.issues[4].reason, /Finn is a Hero: put it on a “Hero” line/);
+});
+
+test("a name that starts with x is not mistaken for a times sign", () => {
+  const x = { ...cards, xt: { id: "xt", name: "Xtreme Dude", type: "creature", landscape: "cornfield", modeled: true } };
+  assert.deepEqual(parseDweeb("Creatures\n2 - Xtreme Dude\n1 Xtreme Dude", x).counts, { xt: 3 });
+  assert.deepEqual(parseDweeb("Creatures\n2x Corn Dog", x).counts, { dog: 2 });
 });

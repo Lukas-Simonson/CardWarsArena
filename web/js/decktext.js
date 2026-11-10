@@ -9,6 +9,8 @@
 // A line with a count and a name is a card. `Name:` and `Hero:` lines set the deck's name and Hero. Blank lines
 // and lines starting with # or // are ignored. Cards are found by name, ignoring case, spacing and punctuation,
 // so a deck copied from somewhere else still reads. A line that cannot be used is reported, never dropped quietly.
+//
+// The same reading also covers the text Card Dweeb gives for a deck (see parseDweeb).
 import { MAX_COPIES, MAX_CARDS, emptyDeck, total, heroes } from "./deckmodel.js";
 
 /** The deck as text: its name and Hero (when it has them), a blank line, then `count name` for each card. */
@@ -54,28 +56,27 @@ function nearest(key, list) {
   return best;
 }
 
+const lines = (text) => String(text ?? "").replace(/^﻿/, "").split(/\r\n|\r|\n/);
+
 /**
- * Reads deck text against the catalog.
- * Returns { name, hero, counts, issues, any }: `issues` is a list of { line, text, reason, level } for the
- * lines that could not be used ("error") or were changed ("warning"); `any` says whether anything was read.
+ * What a reader needs to turn names into a deck: finds cards and Heroes in the catalog and keeps the result
+ * and its issues. `out` is { name, hero, counts, issues, any }: `issues` lists { line, text, reason, level }
+ * for what could not be used ("error") or was changed ("warning"); `any` says whether anything was read.
  */
-export function parseDeck(text, cards) {
+function reader(cards, { heroWord = "Hero:" } = {}) {
   const playable = Object.values(cards).filter((c) => c.type !== "hero" && c.modeled);
   const byName = index(playable), byAny = index(Object.values(cards));
   const heroList = heroes(cards), heroByName = index(heroList);
   const out = { name: "", hero: "", counts: {}, issues: [], any: false };
   const issue = (line, raw, reason, level = "error") => out.issues.push({ line, text: raw.trim(), reason, level });
-  const named = (list, key) => (list.get(key) ?? []);
+  const named = (list, key) => list.get(key) ?? [];
 
-  String(text ?? "").replace(/^﻿/, "").split(/\r\n|\r|\n/).forEach((raw, i) => {
-    const line = i + 1, s = raw.trim();
-    if (!s || s.startsWith("#") || s.startsWith("//")) return;
+  return {
+    out, issue,
 
-    const head = /^(name|deck|hero)\s*:\s*(.*)$/i.exec(s);
-    if (head) {
-      const what = head[1].toLowerCase(), value = head[2].trim();
-      if (what !== "hero") { out.name = value.slice(0, 40); out.any = true; return; }
-      if (!value) return;
+    setName(value) { out.name = value.slice(0, 40); out.any = true; },
+
+    setHero(line, raw, value) {
       const found = named(heroByName, nameKey(value));
       if (found.length === 1) { out.hero = found[0].id; out.any = true; return; }
       const other = named(byAny, nameKey(value));
@@ -84,46 +85,108 @@ export function parseDeck(text, cards) {
         const near = nearest(nameKey(value), heroList);
         issue(line, raw, `no Hero is called “${value}”` + (near ? `. Did you mean ${near.name}?` : ""));
       }
+    },
+
+    addCard(line, raw, count, name) {
+      const key = nameKey(name);
+      if (!key) { issue(line, raw, "no card name"); return; }
+      if (count === 0) { issue(line, raw, "0 copies, so nothing was added", "warning"); return; }
+
+      const found = named(byName, key);
+      if (found.length > 1) { issue(line, raw, `more than one card is called “${name}”: ${found.map((c) => c.id).join(", ")}`); return; }
+      if (found.length === 0) {
+        const other = named(byAny, key)[0];
+        if (other?.type === "hero") issue(line, raw, `${other.name} is a Hero: put it on a “${heroWord}” line, not in the cards`);
+        else if (other) issue(line, raw, `${other.name}'s rules are not implemented yet`);
+        else {
+          const near = nearest(key, playable);
+          issue(line, raw, `no card is called “${name}”` + (near ? `. Did you mean ${near.name}?` : ""));
+        }
+        return;
+      }
+
+      const c = found[0];
+      out.any = true;
+      const have = out.counts[c.id] ?? 0;
+      let n = Math.min(count + have, MAX_COPIES);
+      if (count + have > MAX_COPIES) issue(line, raw, `${c.name} is limited to ${MAX_COPIES} copies`, "warning");
+      if (total({ counts: out.counts }) - have + n > MAX_CARDS) {
+        n = Math.max(0, MAX_CARDS - (total({ counts: out.counts }) - have));
+        issue(line, raw, `a deck holds at most ${MAX_CARDS} cards`, "warning");
+      }
+      if (n > 0) out.counts[c.id] = n;
+    },
+  };
+}
+
+/** Reads deck text (the format above) against the catalog. Returns { name, hero, counts, issues, any }. */
+export function parseDeck(text, cards) {
+  const r = reader(cards);
+  lines(text).forEach((raw, i) => {
+    const line = i + 1, s = raw.trim();
+    if (!s || s.startsWith("#") || s.startsWith("//")) return;
+
+    const head = /^(name|deck|hero)\s*:\s*(.*)$/i.exec(s);
+    if (head) {
+      const value = head[2].trim();
+      if (head[1].toLowerCase() !== "hero") r.setName(value);
+      else if (value) r.setHero(line, raw, value);
       return;
     }
 
     const m = /^(?:(\d+)\s*[x×]?\s+|(\d+)[x×]\s*)?(.+)$/i.exec(s);
     const count = m[1] !== undefined ? Number(m[1]) : m[2] !== undefined ? Number(m[2]) : 1;
-    const name = m[3].trim(), key = nameKey(name);
-    if (!key) { issue(line, raw, "no card name"); return; }
-    if (count === 0) { issue(line, raw, "0 copies, so nothing was added", "warning"); return; }
+    r.addCard(line, raw, count, m[3].trim());
+  });
+  return r.out;
+}
 
-    const found = named(byName, key);
-    if (found.length > 1) { issue(line, raw, `more than one card is called “${name}”: ${found.map((c) => c.id).join(", ")}`); return; }
-    if (found.length === 0) {
-      const other = named(byAny, key)[0];
-      if (other?.type === "hero") issue(line, raw, `${other.name} is a Hero: put it on a “Hero:” line, not in the cards`);
-      else if (other) issue(line, raw, `${other.name}'s rules are not implemented yet`);
-      else {
-        const near = nearest(key, playable);
-        issue(line, raw, `no card is called “${name}”` + (near ? `. Did you mean ${near.name}?` : ""));
-      }
+// ---------- Card Dweeb
+
+const HEADING = /^(hero|landscapes?|creatures?|spells?|buildings?)\s*:?\s*(\(\d+\))?$/i;
+
+/**
+ * Reads the text Card Dweeb gives for a deck: headings (Hero, Landscapes, Creatures, Spells, Buildings), each
+ * followed by its lines. The Hero section is one name; the others are `2 - Corn Dog`. The Landscapes section is
+ * skipped: a deck's Landscapes come from its cards, so they are not cards to add. Returns what parseDeck does.
+ */
+export function parseDweeb(text, cards) {
+  const r = reader(cards, { heroWord: "Hero" });
+  let section = "";
+  let heroSeen = false;
+  lines(text).forEach((raw, i) => {
+    const line = i + 1, s = raw.trim();
+    if (!s) return;
+
+    const heading = HEADING.exec(s);
+    if (heading) { section = heading[1].toLowerCase().replace(/s$/, ""); heroSeen = false; return; }
+    if (section === "landscape") return;
+    if (section === "hero") {
+      if (heroSeen) r.issue(line, raw, "a deck has one Hero; this line was ignored", "warning");
+      else { heroSeen = true; r.setHero(line, raw, s); }
       return;
     }
 
-    const c = found[0];
-    out.any = true;
-    const have = out.counts[c.id] ?? 0;
-    let n = Math.min(count + have, MAX_COPIES);
-    if (count + have > MAX_COPIES) issue(line, raw, `${c.name} is limited to ${MAX_COPIES} copies`, "warning");
-    if (total({ counts: out.counts }) - have + n > MAX_CARDS) {
-      n = Math.max(0, MAX_CARDS - (total({ counts: out.counts }) - have));
-      issue(line, raw, `a deck holds at most ${MAX_CARDS} cards`, "warning");
-    }
-    if (n > 0) out.counts[c.id] = n;
+    // "2 - Big Foot" and "2 Big Foot" are both a count and a name; with no count it is one copy.
+    const m = /^(\d+)\s*(?:[-–—:]|[x×](?=\s))?\s*(.+)$/i.exec(s);
+    r.addCard(line, raw, m ? Number(m[1]) : 1, (m ? m[2] : s).trim());
   });
-  return out;
+  return r.out;
 }
 
-/** Deck text read into a deck the builder can show: a draft with no id, ready to be saved or changed. */
-export const importDeck = (text, cards) => {
-  const r = parseDeck(text, cards);
-  return { deck: { ...emptyDeck(), name: r.name, hero: r.hero, counts: r.counts }, issues: r.issues, any: r.any };
+/** Does this text look like it came from Card Dweeb? It has headings for the kinds of card. */
+export const looksLikeDweeb = (text) => lines(text).some((l) => /^(landscapes?|creatures?|spells?|buildings?)\s*:?\s*(\(\d+\))?$/i.test(l.trim()));
+
+export const FORMATS = [["auto", "Detect it"], ["list", "Deck list"], ["dweeb", "Card Dweeb"]];
+
+/**
+ * Deck text read into a deck the builder can show: a draft with no id, ready to be saved or changed.
+ * `format` is "list", "dweeb" or "auto" (the default: Card Dweeb when it has its headings, otherwise a list).
+ */
+export const importDeck = (text, cards, format = "auto") => {
+  const dweeb = format === "dweeb" || (format === "auto" && looksLikeDweeb(text));
+  const r = dweeb ? parseDweeb(text, cards) : parseDeck(text, cards);
+  return { deck: { ...emptyDeck(), name: r.name, hero: r.hero, counts: r.counts }, issues: r.issues, any: r.any, format: dweeb ? "dweeb" : "list" };
 };
 
 /** A file name for a deck: "Corn Farmers" becomes "corn-farmers.txt". */

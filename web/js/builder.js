@@ -11,7 +11,7 @@ import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapeRow, costCurve, heroes, pool, changed,
   MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
-import { formatDeck, importDeck, fileName } from "./decktext.js";
+import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 
 // The colours of the Landscapes, as in the design: a tile colour and a darker diamond.
 const TILE = { cornfield: "#9cc43a", blue_plains: "#7aa6d6", useless_swamp: "#9b7bbf", sandy_lands: "#e8b04a", nice_lands: "#f08fbc", icy_lands: "#bfe8f2", rainbow: "#e9ddf6" };
@@ -171,11 +171,12 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
 
   function importList() {
     const box = h("textarea", { class: "well decktext", rows: "14", spellcheck: "false", "aria-label": "Deck list", placeholder: "Name: My deck\nHero: Finn\n\n3 Corn Dog\n2 Husker Worm" });
+    const fmt = h("select", { id: "bformat", class: "well" }, FORMATS.map(([v, l]) => h("option", { value: v }, l)));
     const why = h("p", { class: "bad", role: "alert" });
     const done = () => dlg.close(); // dlg is set by the time a button is pressed
     const load = () => {
       if (!box.value.trim()) { why.textContent = "Paste a deck list first."; return; }
-      const r = importDeck(box.value, cards());
+      const r = importDeck(box.value, cards(), fmt.value);
       if (!r.any) {
         why.textContent = "No cards or Hero could be read from that text.";
         why.append(report(r.issues));
@@ -193,7 +194,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
         h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: done }, "Close")));
     };
     const dlg = dialog("Import a deck",
-      h("p", {}, "Paste a deck list: an optional “Name:” and “Hero:” line, then one card per line, like “3 Corn Dog”. It opens as a draft you can change; nothing is saved until you save it."),
+      h("p", {}, "Paste a deck list: an optional “Name:” and “Hero:” line, then one card per line, like “3 Corn Dog”. Text copied from Card Dweeb works too. It opens as a draft you can change; nothing is saved until you save it."),
+      h("div", { class: "field" }, h("label", { for: "bformat", class: "ink" }, "Format"), fmt),
       box, why,
       h("div", { class: "modalrow modalrow2" },
         h("button", { type: "button", class: "btn-steel modalopt", onclick: done }, "Cancel"),
