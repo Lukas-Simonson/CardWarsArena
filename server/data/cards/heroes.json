@@ -59,7 +59,7 @@
     "id": "gunter",
     "name": "Gunter",
     "type": "hero",
-    "text": "Creatures you control on Landscappes with frozen tokens have +1 ATK.",
+    "text": "Creatures you control on Landscapes with frozen tokens have +1 ATK.",
     "printings": [
       {
         "deck": "Gunter's Deck",
