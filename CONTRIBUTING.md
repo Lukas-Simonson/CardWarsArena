@@ -1,14 +1,14 @@
 # Contributing
 
-Thanks for helping with Card Wars. This page covers how the repository is worked on. For what the project is
+Thanks for helping with Card Wars Arena. This page covers how the repository is worked on. For what the project is
 and how to run it, see the [README](README.md).
 
-Card Wars is an unofficial fan project; please keep it that way (see the README's [fan project](README.md#a-fan-project)
+Card Wars Arena is an unofficial fan project; please keep it that way (see the README's [fan project](README.md#a-fan-project)
 note). Do not add artwork, card scans or other material you do not have the right to share.
 
 ## Reporting problems and ideas
 
-Use the [issue templates](https://github.com/Lukas-Simonson/CardWarsTCG/issues/new/choose):
+Use the [issue templates](https://github.com/Lukas-Simonson/CardWarsArena/issues/new/choose):
 
 - **Bug report**: something is broken or looks wrong.
 - **Card or rules problem**: a card does something different from what it says, or a rule is played wrongly. Say what
@@ -102,7 +102,7 @@ Images are published only for releases, not for every merge to `main`. A maintai
 git tag v1.2.3 && git push origin v1.2.3
 ```
 
-The `publish` workflow then builds `ghcr.io/lukas-simonson/cardwarstcg-server` and `-web` for `linux/amd64` and
+The `publish` workflow then builds `ghcr.io/lukas-simonson/cardwarsarena-server` and `-web` for `linux/amd64` and
 `linux/arm64`, tags them `1.2.3`, `1.2` and `1` (the last not for 0.x) and `latest` for a stable release, and creates a GitHub Release with
 generated notes. A tag with a suffix, like `v0.5.0-rc.1`, is a pre-release: it gets its own version tag and no `latest`.
 

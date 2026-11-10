@@ -1,4 +1,4 @@
-# Card Wars server
+# Card Wars Arena server
 
 Go rules engine, card data and tooling for the Adventure Time Card Wars web port.
 

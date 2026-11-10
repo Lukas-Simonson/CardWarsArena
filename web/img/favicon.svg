@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 247.107 369.894">
+  <defs>
+    <style>
+      .cls-1{fill:#fccb00;stroke:#000000;stroke-width:5;stroke-linejoin:round}
+      .cls-2{fill:#db0000;stroke:#000000;stroke-width:4;stroke-miterlimit:10}
+      .cls-3{fill:#db0000;stroke:#000000;stroke-width:5;stroke-miterlimit:10}
+      .cls-4{fill:#db0000;stroke:#000000;stroke-width:4;stroke-linejoin:round}
+      .cls-5{fill:#a73862;stroke:#000000;stroke-width:4;stroke-linejoin:round}
+      .cls-6{fill:#a20078;stroke:#000000;stroke-width:4;stroke-linejoin:round}
+      .cls-7{fill:#970a0c;stroke:#000000;stroke-width:4;stroke-linejoin:round}
+      .cls-8{fill:#ff050a;stroke:#000000;stroke-width:4;stroke-linejoin:round}
+      .cls-9{fill:#ff6c84;stroke:#000000;stroke-width:4;stroke-linejoin:round}
+    </style>
+  </defs>
+  <title>Ice_Crown.webp</title>
+  <g id="Crown">
+    <path d="M6.923 347.44 L46.151 129.636 L73.734 250.743 L123.592 2.5 L169.946 250.743 L194.978 129.636 L239.176 341.465 C222.758 376.374 36.498 373.665 6.923 347.44 Z" class="cls-1"/>
+  </g>
+  <g id="Gems">
+    <g id="Center_Gem" data-name="Center Gem">
+      <polygon points="121.594,329.867 134.72,316.741 134.72,268.437 121.594,249.9 108.518,268.437 108.518,316.741" class="cls-2"/>
+      <path d="M121.594 249.9" class="cls-3"/>
+      <polygon points="121.619,228.081 121.594,249.9 134.72,268.437 149.033,262.319" class="cls-4"/>
+      <polygon points="149.033,262.319 149.033,316.741 134.72,316.741 134.72,268.437" class="cls-5"/>
+      <polygon points="121.594,329.867 121.594,352.821 149.033,316.741 134.72,316.741" class="cls-6"/>
+      <polygon points="121.594,352.821 92.5,321.851 108.518,316.741 121.594,329.867" class="cls-7"/>
+      <polygon points="92.5,321.851 92.5,262.319 108.518,268.437 108.518,316.741" class="cls-8"/>
+      <polygon points="92.5,262.319 121.619,228.081 121.594,249.9 108.518,268.437" class="cls-9"/>
+    </g>
+    <g id="Left_Gem" data-name="Left Gem">
+      <polygon points="19.091,281.967 26.879,294.22 18.363,305.418 10.564,293.072" class="cls-4"/>
+      <polygon points="19.091,281.967 31.639,254.058 2,293.072 10.564,293.072" class="cls-9"/>
+      <polygon points="2,293.072 22.059,333.679 18.363,305.418 10.564,293.072" class="cls-7"/>
+      <polygon points="22.059,333.679 49.478,298.812 26.879,294.22 18.363,305.418" class="cls-6"/>
+      <polygon points="49.478,298.812 31.639,254.058 19.091,281.967 26.879,294.22" class="cls-4"/>
+    </g>
+    <g id="Right_Gem" data-name="Right Gem">
+      <polygon points="228.054,277.124 220.482,290.212 228.573,301.358 236.328,288.707" class="cls-4"/>
+      <polygon points="228.054,277.124 215.955,250.819 245.107,289.241 236.328,288.707" class="cls-4"/>
+      <polygon points="245.107,289.241 225.053,329.295 228.573,301.358 236.328,288.707" class="cls-6"/>
+      <polygon points="225.053,329.295 196.893,294.767 220.482,290.212 228.573,301.358" class="cls-7"/>
+      <polygon points="196.893,294.767 215.955,250.819 228.054,277.124 220.482,290.212" class="cls-9"/>
+    </g>
+  </g>
+</svg>

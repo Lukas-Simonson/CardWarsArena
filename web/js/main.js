@@ -13,9 +13,12 @@ import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./acco
 import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour } from "./decklist.js";
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
+import { APP_NAME } from "./brand.js";
 import { fillAvatar } from "./avatar.js";
 
 const $ = (id) => document.getElementById(id);
+document.title = APP_NAME;
+$("hero-title").textContent = APP_NAME;
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
 const load = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const sstore = (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} };

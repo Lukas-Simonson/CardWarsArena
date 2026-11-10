@@ -152,7 +152,7 @@ func (s *session) actor() engine.PlayerID {
 }
 
 func (s *session) loop() {
-	s.printf("Card Wars — %s vs %s   (seed %d, first: %s)\n", s.u.who(0), s.u.who(1), s.opts.seed, s.u.who(s.g.State.First))
+	s.printf("Card Wars Arena — %s vs %s   (seed %d, first: %s)\n", s.u.who(0), s.u.who(1), s.opts.seed, s.u.who(s.g.State.First))
 	if s.opts.sandbox {
 		s.printf("Sandbox mode: type /help for the rule-bypassing commands. Deck rules are relaxed.\n")
 	}

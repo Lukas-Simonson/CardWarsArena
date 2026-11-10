@@ -1,4 +1,4 @@
-# Card Wars web client
+# Card Wars Arena web client
 
 A browser client for the Card Wars server (`../server`): no build step, no
 dependencies. The look comes from the "Card Wars Web — Game Design" Claude

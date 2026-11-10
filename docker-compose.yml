@@ -1,11 +1,11 @@
 name: cardwars
-# Card Wars: the game server plus the web client behind one port.
+# Card Wars Arena: the game server plus the web client behind one port.
 #   docker compose pull && docker compose up -d      # the images CI publishes from main
 #   docker compose up -d --build                     # or build them from this checkout
 # then point your reverse proxy (or a browser) at port 8088.
 services:
   server:
-    image: ghcr.io/lukas-simonson/cardwarstcg-server:latest
+    image: ghcr.io/lukas-simonson/cardwarsarena-server:latest
     build: ./server
     command: ["-db", "/var/lib/cardwars/cardwars.db"]
     # Sign-in is off unless these are set (see .env.example).
@@ -21,7 +21,7 @@ services:
     volumes:
       - cardwars-data:/var/lib/cardwars
   web:
-    image: ghcr.io/lukas-simonson/cardwarstcg-web:latest
+    image: ghcr.io/lukas-simonson/cardwarsarena-web:latest
     build: ./web
     restart: unless-stopped
     depends_on: [server]
