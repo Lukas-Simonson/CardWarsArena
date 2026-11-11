@@ -74,12 +74,13 @@ export function pickDeck(boxes, remembered) {
 export const RANDOM = "random";
 
 /**
- * The starter deck the bot plays: `choice` as is when it names one, else (Random, or a deck that is no longer
- * offered) one picked with `rand` (0 up to 1), leaving out the player's own deck when another is left.
- * Returns the deck's value ("Set Name"), or undefined when there are no decks.
+ * The deck the bot plays: `choice` as is when it names a starter deck or one of the player's saved decks (`mine`,
+ * the ones that can be taken), else (Random, or a deck that is no longer offered) a starter picked with `rand`
+ * (0 up to 1), leaving out the player's own deck when another is left. Random never picks a saved deck.
+ * Returns the deck's value ("Set Name" or "my:<id>"), or undefined when there are no decks.
  */
-export function botDeckFor(choice, starters, own, rand = Math.random) {
-  if (starters.some((b) => b.value === choice)) return choice;
+export function botDeckFor(choice, starters, own, rand = Math.random, mine = []) {
+  if (starters.some((b) => b.value === choice) || mine.some((b) => b.value === choice && !b.disabled)) return choice;
   const others = starters.filter((b) => b.value !== own);
   const pool = others.length ? others : starters;
   return pool.length ? pool[Math.min(pool.length - 1, Math.floor(rand() * pool.length))].value : undefined;

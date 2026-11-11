@@ -162,9 +162,9 @@ func (s *Server) deckFor(query string) (decks.Info, error) {
 
 // botDeckFor picks the computer's deck: the one asked for, or the next
 // playable deck after the player's.
-func (s *Server) botDeckFor(query string, player decks.Info) (decks.Info, error) {
+func (s *Server) botDeckFor(user *store.User, query string, player decks.Info) (decks.Info, error) {
 	if query != "" {
-		return s.deckFor(query)
+		return s.resolveDeck(user, query) // a starter deck, or one of the player's own as "my:<id>"
 	}
 	var playable []decks.Info
 	for _, d := range s.decks {
@@ -221,7 +221,7 @@ func (s *Server) create(sink Sink, user *store.User, m ClientMsg) (*Room, string
 		if opponent, err = bot.New(m.Bot); err != nil {
 			return nil, "", fail(ErrBadRequest, err.Error())
 		}
-		if botDeck, err = s.botDeckFor(m.BotDeck, deck); err != nil {
+		if botDeck, err = s.botDeckFor(user, m.BotDeck, deck); err != nil {
 			return nil, "", err
 		}
 	}

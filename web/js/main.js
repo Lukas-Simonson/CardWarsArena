@@ -162,15 +162,17 @@ $("vsbot").onclick = openPractice;
 
 /** "Who do you want to face?": the starter decks and Random. Start (or Enter) plays; Cancel, Esc or a click outside leaves. */
 function openPractice() {
-  const starters = shelf(decks, [], cards).starters;
+  const { starters, mine } = shelf(decks, myDecks, cards);
+  const offered = [...starters, ...mine];
   let choice = load("cw.botdeck");
-  if (choice !== RANDOM && !starters.some((b) => b.value === choice)) choice = RANDOM;
+  if (choice !== RANDOM && !offered.some((b) => b.value === choice && !b.disabled)) choice = RANDOM;
   const own = selectedDeck;
   const dlg = h("dialog", { class: "modal parch practicedialog", "aria-labelledby": "practice-title" });
   const options = h("div", { class: "botdecks", role: "radiogroup", "aria-labelledby": "practice-title" });
+  const radios = () => [...options.querySelectorAll('[role="radio"]:not(:disabled)')];
   const draw = () => {
-    const opt = (value, name, sub, lands) => h("button", {
-      type: "button", role: "radio", class: "botdeck", "aria-checked": String(value === choice),
+    const opt = (value, name, sub, lands, disabled = false, title = null) => h("button", {
+      type: "button", role: "radio", class: "botdeck", "aria-checked": String(value === choice), disabled, title,
       style: lands ? `border-color:${boxColour(lands[0])}` : null,
       onclick: () => { choice = value; draw(); },
       ondblclick: start,
@@ -178,14 +180,15 @@ function openPractice() {
       h("div", { class: "lands", "aria-hidden": "true" }, (lands ?? []).map((l) => h("i", { style: `background:${diamondColour(l)}` }))),
       h("b", {}, name), h("span", {}, sub));
     options.replaceChildren(
-      opt(RANDOM, "Random", "A surprise deck", null),
-      ...starters.map((b) => opt(b.value, b.name, b.sub, b.lands)));
+      opt(RANDOM, "Random", "One of the starter decks", null),
+      ...starters.map((b) => opt(b.value, b.name, b.sub, b.lands)),
+      ...(mine.length ? [h("h3", { class: "botdecks-h" }, "Your decks"), ...mine.map((b) => opt(b.value, b.name, b.sub, b.lands, b.disabled, b.title))] : []));
     options.querySelector('[aria-checked="true"]')?.focus();
   };
   function start() {
     store("cw.botdeck", choice);
     dlg.close();
-    send({ type: "create", ...form(), vs_bot: true, bot_deck: botDeckFor(choice, starters, own), bot: $("bot").value || undefined });
+    send({ type: "create", ...form(), vs_bot: true, bot_deck: botDeckFor(choice, starters, own, Math.random, mine), bot: $("bot").value || undefined });
   }
   dlg.append(
     h("h2", { id: "practice-title" }, "Who do you want to face?"),
@@ -196,12 +199,12 @@ function openPractice() {
   dlg.addEventListener("close", () => dlg.remove());
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   dlg.addEventListener("keydown", (e) => {
-    const radios = [...options.children], i = radios.indexOf(document.activeElement);
+    const all = radios(), i = all.indexOf(document.activeElement);
     const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
     if (step && i >= 0) {
       e.preventDefault();
-      const next = radios[(i + step + radios.length) % radios.length];
-      choice = next === radios[0] ? RANDOM : starters[radios.indexOf(next) - 1].value;
+      const next = (i + step + all.length) % all.length;
+      choice = next === 0 ? RANDOM : offered.filter((b) => !b.disabled)[next - 1].value;
       draw();
     }
   });

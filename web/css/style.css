@@ -336,6 +336,8 @@ dialog.practicedialog::backdrop { background: rgba(10, 18, 28, .78); }
 .botdeck .lands i { display: block; width: 14px; height: 14px; border: 2px solid #1f1a12; border-radius: 3px; transform: rotate(45deg); }
 .botdeck[aria-checked="true"] { background: #ffe58a; box-shadow: 0 0 0 3px #ffb428; }
 dialog.practicedialog h2 { margin: 0; }
+.botdecks-h { grid-column: 1 / -1; margin: 8px 0 0; font-family: var(--big-font); font-weight: 400; font-size: 22px; color: var(--ink); }
+.botdeck:disabled { opacity: .55; }
 
 /* the dialogs of the deck builder: copy a list, import one */
 dialog.deckdialog { border: 0; padding: 22px 26px; color: var(--ink); width: min(94vw, 640px); max-height: 92vh; overflow: auto; flex-direction: column; gap: 12px; }

@@ -72,7 +72,7 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
   from `/api/bots`; the default is `heuristic`, and an unknown name is a `bad_request`.
 - A signed-in player may ask for one of their saved decks as `"my:<id>"` (from `GET /api/my/decks`) in `deck`;
   it must be playable (`unknown_deck` if it is not theirs or the player is a guest, `deck_not_playable` with the
-  reasons if it is unfinished). `bot_deck` still names a starter deck.
+  reasons if it is unfinished). `bot_deck` takes the same: a starter deck, or `"my:<id>"` for one of the player's own (the same errors apply).
 - **Signed-in players** (`-auth oauth`; the session cookie is sent with the WebSocket upgrade) play under
   their account name: `name` is ignored. Guests choose their own. Who a connection is is fixed when it opens,
   so reconnect after signing in or out.

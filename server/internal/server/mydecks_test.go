@@ -344,6 +344,22 @@ func TestPlayingASavedDeck(t *testing.T) {
 	guest.send(ClientMsg{Type: MsgCreate, Deck: "my:" + good.ID, VsBot: true})
 	guest.expectError(ErrUnknownDeck)
 
+	// A saved deck can be the bot's too: hers, and playable, so not Grace's, a draft or a guest's.
+	vs := h.dialAs("Ada")
+	vs.send(ClientMsg{Type: MsgCreate, Deck: "jake", VsBot: true, BotDeck: "my:" + good.ID})
+	vs.expect(MsgJoined)
+	if up := vs.expect(MsgUpdate); up.View.Players[1].Hero == nil || up.View.Players[1].Hero.CardID != finnDeck(t, h).Hero {
+		t.Errorf("the bot did not get the saved deck: %+v", up.View.Players[1].Hero)
+	}
+	for who, q := range map[string]string{"Grace": "my:" + good.ID, "Ada": "my:" + draft.ID} {
+		c := h.dialAs(who)
+		c.send(ClientMsg{Type: MsgCreate, Deck: "jake", VsBot: true, BotDeck: q})
+		c.expect(MsgError)
+	}
+	guest2 := h.dial()
+	guest2.send(ClientMsg{Type: MsgCreate, Deck: "jake", VsBot: true, BotDeck: "my:" + good.ID})
+	guest2.expectError(ErrUnknownDeck)
+
 	// Joining works the same way as creating.
 	host := h.dialAs("Ada")
 	host.send(ClientMsg{Type: MsgCreate, Deck: "jake"})
