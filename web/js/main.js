@@ -14,6 +14,7 @@ import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour, RANDOM, botDeckF
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 import { APP_NAME } from "./brand.js";
+import { feedbackLinks } from "./feedback.js";
 import { fillAvatar } from "./avatar.js";
 
 const $ = (id) => document.getElementById(id);
@@ -38,7 +39,7 @@ let myDecks = []; // the signed-in player's saved decks
 let selectedDeck = ""; // the deck on the shelf that will be played
 // What the player is in the middle of: the card they clicked (source), the
 // picker that tracks their choices for it, and what the card on show is.
-const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
+const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null, feedback: [] };
 let conn = null;
 let staging = false; // a cast spell is on show; what it did is shown when it ends
 let stageTimer = null;
@@ -372,6 +373,14 @@ function renderShelf() {
   $("lobbyhint").textContent = !decks.length ? "The server reports no playable decks." : account.show && !account.user ? "Sign in to build and keep your own decks." : "";
 }
 
+/** The feedback and repository links in the footer, when the server turns them on (it does not by default). */
+function fillFeedback(answer) {
+  const links = feedbackLinks(answer);
+  ui.feedback = links.filter((l) => l.id !== "repo"); // the forms are also offered during a game
+  $("feedback").hidden = !links.length;
+  $("feedback").replaceChildren(...links.map((l) => h("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label)));
+}
+
 /** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
 function fillBots({ default: first, bots }) {
   const sel = $("bot");
@@ -386,6 +395,7 @@ async function loadCatalog() {
     const [c, d, b] = await Promise.all([fetch(`${server}/api/cards`), fetch(`${server}/api/decks`), fetch(`${server}/api/bots`).catch(() => null)]);
     if (!c.ok || !d.ok) throw new Error(`HTTP ${c.status}/${d.status}`);
     if (b?.ok) fillBots(await b.json());
+    fillFeedback(await fetch(`${server}/api/feedback`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
     cards = Object.fromEntries((await c.json()).map((x) => [x.id, x]));
     fillDecks(await d.json());
   } catch (err) {

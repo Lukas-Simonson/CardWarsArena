@@ -20,19 +20,20 @@ import (
 
 func main() {
 	var (
-		addr    = flag.String("addr", ":8080", "listen address")
-		data    = flag.String("data", "data", "directory with cards/ and effects/")
-		delay   = flag.Duration("bot-delay", 700*time.Millisecond, "pause between the bot's moves")
-		origins = flag.String("origins", "", "comma-separated extra browser origins allowed to open a WebSocket (e.g. localhost:*)")
-		dbPath  = flag.String("db", os.Getenv("CARDWARS_DB"), "SQLite file for accounts and decks; empty keeps nothing [$CARDWARS_DB]")
-		authOpt = flag.String("auth", envOr("CARDWARS_AUTH", "none"), "who may sign in: none, or oauth (Discord and GitHub; needs -db and -public-url) [$CARDWARS_AUTH]")
-		public  = flag.String("public-url", os.Getenv("CARDWARS_PUBLIC_URL"), "where browsers reach this server, e.g. https://cards.example.com (for -auth oauth) [$CARDWARS_PUBLIC_URL]")
-		dev     = flag.Bool("dev", false, "development mode: clients may choose seeds and play unmodelled cards")
+		addr     = flag.String("addr", ":8080", "listen address")
+		data     = flag.String("data", "data", "directory with cards/ and effects/")
+		delay    = flag.Duration("bot-delay", 700*time.Millisecond, "pause between the bot's moves")
+		origins  = flag.String("origins", "", "comma-separated extra browser origins allowed to open a WebSocket (e.g. localhost:*)")
+		dbPath   = flag.String("db", os.Getenv("CARDWARS_DB"), "SQLite file for accounts and decks; empty keeps nothing [$CARDWARS_DB]")
+		authOpt  = flag.String("auth", envOr("CARDWARS_AUTH", "none"), "who may sign in: none, or oauth (Discord and GitHub; needs -db and -public-url) [$CARDWARS_AUTH]")
+		public   = flag.String("public-url", os.Getenv("CARDWARS_PUBLIC_URL"), "where browsers reach this server, e.g. https://cards.example.com (for -auth oauth) [$CARDWARS_PUBLIC_URL]")
+		feedback = flag.Bool("feedback", envBool("CARDWARS_FEEDBACK"), "show links to the project's bug, card and feature forms and its repository on the home screen [$CARDWARS_FEEDBACK]")
+		dev      = flag.Bool("dev", false, "development mode: clients may choose seeds and play unmodelled cards")
 	)
 	flag.Parse()
 	log := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
-	cfg := server.Config{DataDir: *data, BotDelay: *delay, AllowSeed: *dev, AllowUnmodelled: *dev, Logger: log}
+	cfg := server.Config{DataDir: *data, BotDelay: *delay, Feedback: *feedback, AllowSeed: *dev, AllowUnmodelled: *dev, Logger: log}
 	if *origins != "" {
 		cfg.OriginPatterns = strings.Split(*origins, ",")
 	}
@@ -105,4 +106,13 @@ func envOr(name, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+// envBool reads a yes/no setting: 1, true, yes or on (any case) mean yes.
+func envBool(name string) bool {
+	switch strings.ToLower(os.Getenv(name)) {
+	case "1", "true", "yes", "on":
+		return true
+	}
+	return false
 }

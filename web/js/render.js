@@ -52,7 +52,7 @@ export function renderGame(root, model, on) {
         promptBar(model2, on),
         handSection(model2, on),
         logPanel(state, ctx, on)),
-      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect))),
+      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), feedbackPanel(ui.feedback))),
     choiceModal(model2, on)));
 }
 
@@ -463,6 +463,14 @@ function detailPanel(ctx, cardId) {
         c.image_url && c.text && h("div", { class: "txt" }, c.text),
         c.modeled === false && h("div", { class: "txt", style: "color:#ffb39e" }, "Rules not modelled by the engine yet")]
       : h("p", {}, "Point at or click a card to read it big.")));
+}
+
+/** Under "Card up close": the bug, card and feature forms, when the server offers them. They open in a new tab, so the game is left as it is. */
+function feedbackPanel(links) {
+  if (!links?.length) return null;
+  return h("section", { class: "steel feedbackpanel", "aria-labelledby": "fb-h" },
+    h("h2", { class: "h", id: "fb-h" }, "Something wrong?"),
+    h("div", { class: "fbrow" }, links.map((l) => h("a", { class: "btn-steel", href: l.url, target: "_blank", rel: "noopener" }, l.label))));
 }
 
 function logPanel(state, ctx, on) {
