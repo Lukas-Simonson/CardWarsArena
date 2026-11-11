@@ -88,3 +88,32 @@ test("a deck the order does not name follows the rest, in the order it came, and
   assert.deepEqual(inBoxOrder([]), []);
   assert.equal(list[0].hero, "new-b"); // the list it was given is left alone
 });
+
+import { botDeckFor, RANDOM } from "../js/decklist.js";
+
+test("a named bot deck is used as is, even the player's own", () => {
+  const starters = [{ value: "A Finn" }, { value: "A Jake" }];
+  assert.equal(botDeckFor("A Jake", starters, "A Jake"), "A Jake");
+});
+
+test("Random never picks the player's own deck while another is left", () => {
+  const starters = [{ value: "A Finn" }, { value: "A Jake" }, { value: "B BMO" }];
+  for (const r of [0, 0.3, 0.5, 0.99]) assert.notEqual(botDeckFor(RANDOM, starters, "A Jake", () => r), "A Jake");
+  assert.equal(botDeckFor(RANDOM, starters, "A Jake", () => 0), "A Finn");
+  assert.equal(botDeckFor(RANDOM, starters, "A Jake", () => 0.99), "B BMO");
+});
+
+test("a saved deck can be named, but Random never picks one", () => {
+  const starters = [{ value: "A Finn" }, { value: "A Jake" }];
+  const mine = [{ value: "my:1" }, { value: "my:2", disabled: true }];
+  assert.equal(botDeckFor("my:1", starters, "A Finn", () => 0, mine), "my:1");
+  assert.equal(botDeckFor("my:2", starters, "A Finn", () => 0, mine), "A Jake"); // unfinished: not offered
+  for (const r of [0, 0.5, 0.99]) assert.ok(starters.some((b) => b.value === botDeckFor(RANDOM, starters, "my:1", () => r, mine)));
+});
+
+test("Random with one deck, an own deck that is not a starter, or no decks", () => {
+  assert.equal(botDeckFor(RANDOM, [{ value: "A Finn" }], "A Finn"), "A Finn");
+  assert.equal(botDeckFor(RANDOM, [{ value: "A Finn" }, { value: "A Jake" }], "my:7", () => 0.6), "A Jake");
+  assert.equal(botDeckFor(RANDOM, [], ""), undefined);
+  assert.equal(botDeckFor("gone", [{ value: "A Finn" }], "", () => 0), "A Finn");
+});

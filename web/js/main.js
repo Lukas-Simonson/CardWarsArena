@@ -10,7 +10,7 @@ import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, 
 import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
 import { loginUrl, accountView, loginErrorText, withoutLoginError } from "./account.js";
-import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour } from "./decklist.js";
+import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour, RANDOM, botDeckFor } from "./decklist.js";
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 import { APP_NAME } from "./brand.js";
@@ -158,7 +158,61 @@ document.addEventListener("keydown", (e) => {
 
 const form = () => ({ name: $("name").value, deck: selectedDeck });
 
-$("vsbot").onclick = () => send({ type: "create", ...form(), vs_bot: true, bot_deck: $("botdeck").value || undefined, bot: $("bot").value || undefined });
+$("vsbot").onclick = openPractice;
+
+/** "Who do you want to face?": the starter decks and Random. Start (or Enter) plays; Cancel, Esc or a click outside leaves. */
+function openPractice() {
+  const { starters, mine } = shelf(decks, myDecks, cards);
+  const offered = [...starters, ...mine];
+  let choice = load("cw.botdeck");
+  if (choice !== RANDOM && !offered.some((b) => b.value === choice && !b.disabled)) choice = RANDOM;
+  const own = selectedDeck;
+  const dlg = h("dialog", { class: "modal parch practicedialog", "aria-labelledby": "practice-title" });
+  const options = h("div", { class: "botdecks", role: "radiogroup", "aria-labelledby": "practice-title" });
+  const radios = () => [...options.querySelectorAll('[role="radio"]:not(:disabled)')];
+  const draw = () => {
+    const opt = (value, name, sub, lands, disabled = false, title = null) => h("button", {
+      type: "button", role: "radio", class: "botdeck", "aria-checked": String(value === choice), disabled, title,
+      style: lands ? `border-color:${boxColour(lands[0])}` : null,
+      onclick: () => { choice = value; draw(); },
+      ondblclick: start,
+    },
+      h("div", { class: "lands", "aria-hidden": "true" }, (lands ?? []).map((l) => h("i", { style: `background:${diamondColour(l)}` }))),
+      h("b", {}, name), h("span", {}, sub));
+    options.replaceChildren(
+      opt(RANDOM, "Random", "One of the starter decks", null),
+      ...starters.map((b) => opt(b.value, b.name, b.sub, b.lands)),
+      ...(mine.length ? [h("h3", { class: "botdecks-h" }, "Your decks"), ...mine.map((b) => opt(b.value, b.name, b.sub, b.lands, b.disabled, b.title))] : []));
+    options.querySelector('[aria-checked="true"]')?.focus();
+  };
+  function start() {
+    store("cw.botdeck", choice);
+    dlg.close();
+    send({ type: "create", ...form(), vs_bot: true, bot_deck: botDeckFor(choice, starters, own, Math.random, mine), bot: $("bot").value || undefined });
+  }
+  dlg.append(
+    h("h2", { id: "practice-title" }, "Who do you want to face?"),
+    options,
+    h("div", { class: "modalrow modalrow2" },
+      h("button", { type: "button", class: "btn-steel", onclick: () => dlg.close() }, "Cancel"),
+      h("button", { type: "button", class: "btn-green", onclick: start }, "Start")));
+  dlg.addEventListener("close", () => dlg.remove());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener("keydown", (e) => {
+    const all = radios(), i = all.indexOf(document.activeElement);
+    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+    if (step && i >= 0) {
+      e.preventDefault();
+      const next = (i + step + all.length) % all.length;
+      choice = next === 0 ? RANDOM : offered.filter((b) => !b.disabled)[next - 1].value;
+      draw();
+    }
+  });
+  document.body.append(dlg);
+  draw();
+  dlg.showModal();
+  options.querySelector('[aria-checked="true"]')?.focus();
+}
 $("create").onclick = () => send({ type: "create", ...form(), vs_bot: false });
 const joinRoom = () => { const room = $("code").value.trim().toUpperCase(); if (room) send({ type: "join", room, ...form() }); };
 $("join").onclick = joinRoom;
@@ -297,9 +351,6 @@ function render() {
 
 function fillDecks(list) {
   decks = inBoxOrder(list.filter((d) => d.playable));
-  const bots = $("botdeck");
-  bots.replaceChildren(new Option("(the other starter deck)", ""));
-  for (const d of decks) bots.append(new Option(`${d.owner || d.name} — ${d.name}`, `${d.set} ${d.name}`));
   renderShelf();
 }
 
