@@ -123,6 +123,10 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .disclaimer .aidisclosure { margin: 8px 0 0; }
 .disclaimer a { color: inherit; text-decoration: underline; }
 .feedback { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 8px; }
+.feedbackpanel { display: flex; flex-direction: column; gap: 10px; }
+.feedbackpanel h2 { margin: 0; font-size: 24px; }
+.feedbackpanel .fbrow { display: flex; flex-direction: column; gap: 8px; }
+.feedbackpanel .btn-steel { min-height: 44px; font-size: 18px; text-align: center; }
 .serverbox { margin-top: 8px; font-size: 15px; text-align: left; }
 .serverbox summary { cursor: pointer; text-align: center; }
 .serverbox label { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }

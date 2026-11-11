@@ -26,7 +26,7 @@ export function renderGame(root, model, on) {
   const v = state.view;
   if (!v) {
     root.replaceChildren(h("div", { class: "table" },
-      h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME), reportLink(ui))),
+      h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME))),
       h("div", { class: "steel", style: "padding:24px 28px" },
         h("h2", { class: "h", style: "font-size:30px" }, state.waiting ? "Waiting for an opponent…" : "Joining…"),
         state.waiting && h("p", {}, "Send this room code to your friend; they type it under “Join”."),
@@ -52,7 +52,7 @@ export function renderGame(root, model, on) {
         promptBar(model2, on),
         handSection(model2, on),
         logPanel(state, ctx, on)),
-      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect))),
+      h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), feedbackPanel(ui.feedback))),
     choiceModal(model2, on)));
 }
 
@@ -61,9 +61,6 @@ export function updateDetail(root, ctx, cardId) {
   const old = root.querySelector('[data-role="detail"]');
   if (old) old.replaceWith(detailPanel(ctx, cardId));
 }
-
-/** "Report a bug", when the server offers the form: opens in a new tab, so the game is left as it is. */
-const reportLink = (ui) => ui?.reportUrl && h("a", { class: "btn-steel reportlink", href: ui.reportUrl, target: "_blank", rel: "noopener" }, "Report a bug");
 
 const leaveButton = (on) => h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: on.onLeave }, "‹ Lobby");
 
@@ -78,12 +75,12 @@ function sourceCard(ctx, source) {
 
 // ---------- top bar and players
 
-function topbar({ ctx, me, ui }, on) {
+function topbar({ ctx, me }, on) {
   const v = ctx.view;
   const mine = v.active === me;
   const phase = v.phase === "mulligan" ? "Opening hands" : `${v.phase[0].toUpperCase()}${v.phase.slice(1)} phase`;
   return h("div", { class: "topbar" },
-    h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME), reportLink(ui)),
+    h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME)),
     h("div", { class: "steel turnbox" },
       v.phase !== "mulligan" && h("span", { class: "ink" }, `Turn ${v.turn}`),
       v.phase !== "mulligan" && h("span", { class: `chip ${mine ? "" : "theirs"}` }, mine ? "Your turn" : `${seatName(ctx, v.active)}'s turn`),
@@ -466,6 +463,14 @@ function detailPanel(ctx, cardId) {
         c.image_url && c.text && h("div", { class: "txt" }, c.text),
         c.modeled === false && h("div", { class: "txt", style: "color:#ffb39e" }, "Rules not modelled by the engine yet")]
       : h("p", {}, "Point at or click a card to read it big.")));
+}
+
+/** Under "Card up close": the bug, card and feature forms, when the server offers them. They open in a new tab, so the game is left as it is. */
+function feedbackPanel(links) {
+  if (!links?.length) return null;
+  return h("section", { class: "steel feedbackpanel", "aria-labelledby": "fb-h" },
+    h("h2", { class: "h", id: "fb-h" }, "Something wrong?"),
+    h("div", { class: "fbrow" }, links.map((l) => h("a", { class: "btn-steel", href: l.url, target: "_blank", rel: "noopener" }, l.label))));
 }
 
 function logPanel(state, ctx, on) {
