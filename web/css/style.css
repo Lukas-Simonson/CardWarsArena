@@ -326,10 +326,11 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .tstat.up { background: #c4ee9f; } .tstat.hurt { background: #ffb39e; }
 
 /* Practice: who to face */
-dialog.practicedialog { border: 0; padding: 22px 26px; color: var(--ink); width: min(94vw, 720px); max-height: 92vh; overflow: auto; flex-direction: column; gap: 14px; }
+dialog.practicedialog { border: 0; padding: 22px 26px; color: var(--ink); width: min(94vw, 720px); max-height: 92vh; overflow: hidden; flex-direction: column; gap: 14px; }
 dialog.practicedialog[open] { display: flex; }
 dialog.practicedialog::backdrop { background: rgba(10, 18, 28, .78); }
-.botdecks { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+.botdecks { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; flex: 1 1 auto; min-height: 0; overflow-y: auto; align-content: start; grid-auto-rows: max-content; padding: 4px; margin: -4px; } /* only the list scrolls; the title and buttons stay put (the padding keeps the selection ring from being clipped) */
+dialog.practicedialog .modalrow { flex: none; margin-top: 0; }
 .botdeck { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; min-height: 64px; padding: 10px 12px; border: 3px solid #1f1a12; border-radius: 10px; background: #fff8e4; color: var(--ink); font-family: var(--hand-font); font-size: 17px; }
 .botdeck span { font-size: 15px; opacity: .8; }
 .botdeck .lands { display: flex; gap: 6px; min-height: 16px; }
