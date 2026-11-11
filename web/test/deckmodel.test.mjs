@@ -100,6 +100,24 @@ test("the pool has no Heroes and no cards the game cannot play, and can be narro
   assert.deepEqual(ids({ text: "zzz" }), []);
 });
 
+test("the pool can be limited to what a deck has, or lacks, and to another deck's cards", () => {
+  const ids = (o) => pool(cards, o).map((c) => c.id);
+  const mine = fromCards(["pup", "pup", "ice"]).counts;
+  assert.deepEqual(ids({ members: "in", counts: mine }), ["pup", "ice"]);
+  assert.deepEqual(ids({ members: "out", counts: mine }), ["hall", "rain", "sea"]);
+  assert.deepEqual(ids({ members: "in", counts: {} }), []); // an empty deck has no cards
+  assert.deepEqual(ids({ members: "", counts: mine }), ["pup", "hall", "ice", "rain", "sea"]);
+  // combined with the other filters
+  assert.deepEqual(ids({ members: "in", counts: mine, landscape: "cornfield" }), ["pup"]);
+  assert.deepEqual(ids({ members: "out", counts: mine, landscape: "cornfield" }), ["hall"]);
+  // another deck's cards, and the same narrowed to those this deck does not run yet
+  const other = fromCards(["pup", "sea", "sea", "ice"]).counts;
+  assert.deepEqual(ids({ from: other }), ["pup", "ice", "sea"]);
+  assert.deepEqual(ids({ from: other, members: "out", counts: mine }), ["sea"]);
+  assert.deepEqual(ids({ from: other, type: "spell" }), ["sea"]);
+  assert.deepEqual(ids({ from: {} }), []); // a deck with no cards shows none
+});
+
 test("a deck counts as changed only when something saved differs", () => {
   const saved = fromCards(["pup", "ice"], { name: "Mine", hero: "finn", id: "d1" });
   assert.equal(changed({ ...saved }, saved), false);

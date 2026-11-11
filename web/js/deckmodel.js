@@ -159,11 +159,16 @@ export const heroes = (cards) => Object.values(cards).filter((c) => c.type === "
 /**
  * The cards that may be put in a deck (not Heroes; only those whose rules the game plays), narrowed by
  * a search of the name and rules text, a type and a Landscape, in alphabetical order.
+ * `members` narrows by a deck's cards: "in" keeps the cards that deck has, "out" those it does not, judged
+ * by `counts` (card id -> copies; the deck being built). `from` is another deck's counts: only its cards stay.
  */
-export function pool(cards, { text = "", type = "", landscape = "" } = {}) {
+export function pool(cards, { text = "", type = "", landscape = "", members = "", counts = {}, from = null } = {}) {
   const q = text.trim().toLowerCase();
   return Object.values(cards)
     .filter((c) => c.type !== "hero" && c.modeled)
+    .filter((c) => members !== "in" || (counts[c.id] ?? 0) > 0)
+    .filter((c) => members !== "out" || !((counts[c.id] ?? 0) > 0))
+    .filter((c) => !from || (from[c.id] ?? 0) > 0)
     .filter((c) => !type || c.type === type)
     .filter((c) => !landscape || c.landscape === landscape)
     .filter((c) => !q || c.name.toLowerCase().includes(q) || (c.text ?? "").toLowerCase().includes(q))
