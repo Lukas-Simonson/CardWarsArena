@@ -76,7 +76,10 @@ export function reduce(state, msg, cards = {}) {
       const known = learnCards(state.known, msg.view);
       for (const e of msg.events ?? []) if (e.card && e.card_id) known[e.card] = e.card_id;
       const ctx = { view: msg.view, cards, names, known };
-      const lines = (msg.events ?? []).map((e) => describeEvent(ctx, e));
+      // The view is the position after all the events, so its turn number is the last turn_start's; count back from it.
+      let turn = msg.view?.turn;
+      const events = [...(msg.events ?? [])].reverse().map((e) => (e.kind === "turn_start" && turn ? { ...e, turn: turn-- } : e)).reverse();
+      const lines = events.map((e) => describeEvent(ctx, e));
       const log = lines.length ? [...state.log, ...lines].slice(-LOG_LIMIT) : state.log;
       const avatars = msg.avatars?.length ? msg.avatars : state.avatars;
       return { ...state, view: msg.view, seq: msg.seq, names, avatars, known, log, waiting: false, error: "" };

@@ -4,7 +4,7 @@ import { gameLogText, logFileName } from "../js/gamelog.js";
 
 const cards = { finn: { id: "finn", name: "Finn" }, jake: { id: "jake", name: "Jake" } };
 const state = {
-  log: ["Lukas draws a card", "── Bot's turn ──", "Bot plays Cool Dog", "*** Lukas wins! ***"],
+  log: ["Lukas draws a card", "── Turn 7: Bot's turn ──", "Bot plays Cool Dog", "*** Lukas wins! ***"],
   names: ["Lukas", "Bot"], session: { room: "B69K" },
   view: { turn: 7, you: 0, players: [{ hero: { card: "finn" } }, { hero: { card: "jake" } }] },
 };
@@ -17,7 +17,7 @@ test("the log is whole, oldest first, with a header and the markers taken off", 
     "",
     "Lukas draws a card",
     "",
-    "── Bot's turn ──",
+    "── Turn 7: Bot's turn ──",
     "Bot plays Cool Dog",
     "",
     "Lukas wins!",

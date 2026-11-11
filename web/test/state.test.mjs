@@ -30,7 +30,10 @@ test("updates replace the view and log what happened, naming cards from the view
   let s = reduce(initialState(), joined(), cards);
   s = reduce(s, update(1, view(), [{ kind: "play", player: 0, card: 20 }, { kind: "turn_start", player: 1 }]), cards);
   assert.equal(s.seq, 1);
-  assert.deepEqual(s.log, ["Finn plays The Pig", "── Bot's turn ──"]);
+  assert.deepEqual(s.log, ["Finn plays The Pig", "── Turn 4: Bot's turn ──"]);
+  // The view's turn is the last turn_start's, so two in one update count back from it.
+  const two = reduce(initialState(), update(1, view({ turn: 6 }), [{ kind: "turn_start", player: 0 }, { kind: "draw", player: 0 }, { kind: "turn_start", player: 1 }]), cards);
+  assert.deepEqual(two.log.filter((l) => l.startsWith("──")), ["── Turn 5: Finn's turn ──", "── Turn 6: Bot's turn ──"]);
   assert.equal(s.waiting, false);
 });
 

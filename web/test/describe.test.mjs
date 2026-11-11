@@ -84,6 +84,7 @@ test("unknown cards fall back to the id or uid instead of crashing", () => {
 test("events", () => {
   const e = (kind, rest = {}) => describeEvent(ctx, { kind, player: 0, ...rest });
   assert.equal(e("turn_start", { player: 1 }), "── Jake's turn ──");
+  assert.equal(e("turn_start", { player: 1, turn: 3 }), "── Turn 3: Jake's turn ──");
   assert.equal(e("draw", { card: 10 }), "Finn draws Cool Dog");
   assert.equal(e("draw", { player: 1 }), "Jake draws a card"); // hidden draw has no card
   assert.equal(e("play", { card: 20 }), "Finn plays The Pig");
