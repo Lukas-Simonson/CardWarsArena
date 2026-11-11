@@ -120,7 +120,7 @@ export function describeEvent(ctx, e) {
   switch (e.kind) {
     case "mulligan": return `${who} takes a mulligan`;
     case "keep_hand": return `${who} keeps their hand`;
-    case "turn_start": return `── ${who}'s turn ──`;
+    case "turn_start": return e.turn ? `── Turn ${e.turn}: ${who}'s turn ──` : `── ${who}'s turn ──`;
     case "draw": return e.card ? `${who} draws ${n()}` : `${who} draws a card`;
     case "play": return `${who} plays ${n()}`;
     case "replace": return `${n()} is replaced`;
