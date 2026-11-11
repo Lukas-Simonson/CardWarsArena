@@ -4,7 +4,7 @@
 import { Connection, wsUrl, normaliseServer } from "./net.js";
 import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
-import { isMyDecision } from "./state.js";
+import { isMyDecision, LOG_LIMIT } from "./state.js";
 import { ActionPicker, sources } from "./picker.js";
 import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
 import { Pacer } from "./pacer.js";
@@ -15,6 +15,7 @@ import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 import { APP_NAME } from "./brand.js";
 import { feedbackLinks } from "./feedback.js";
+import { gameLogText, logFileName } from "./gamelog.js";
 import { fillAvatar } from "./avatar.js";
 
 const $ = (id) => document.getElementById(id);
@@ -122,7 +123,44 @@ function settle() {
 
 const toggle = (key, kind) => (ui.source === key && !kind ? (resetSelection(), render()) : select(key, kind));
 
+const logText = () => gameLogText(state, cards, LOG_LIMIT);
+
+/** Copies the whole game log; with no clipboard (or it refused) shows the text, selected, to copy by hand. */
+async function copyLog(button) {
+  const text = logText();
+  try {
+    await navigator.clipboard.writeText(text);
+    if (button) {
+      const was = button.textContent;
+      button.textContent = "Copied";
+      setTimeout(() => { if (button.isConnected) button.textContent = was; }, 1500);
+    }
+  } catch {
+    const box = h("textarea", { class: "well decktext", readonly: true, rows: "14", spellcheck: "false", "aria-label": "Game log" });
+    box.value = text;
+    const dlg = h("dialog", { class: "modal parch deckdialog", "aria-label": "Game log" },
+      h("h2", {}, "Game log"), h("p", {}, "Copy this text."), box,
+      h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: () => dlg.close() }, "Close")));
+    dlg.addEventListener("close", () => dlg.remove());
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+    document.body.append(dlg);
+    dlg.showModal();
+    box.select();
+  }
+}
+
+function downloadLog() {
+  const url = URL.createObjectURL(new Blob([logText()], { type: "text/plain;charset=utf-8" }));
+  const a = h("a", { href: url, download: logFileName(state.session?.room) });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 const on = {
+  onCopyLog: copyLog,
+  onDownloadLog: downloadLog,
   onHand(uid, cardId) { ui.inspect = cardId; toggle(`hand:${uid}`); },
   onLane(lane, source, cardId) { if (cardId) ui.inspect = cardId; toggle(`lane:${lane}:${source}`); },
   onFloop(lane, source) { select(`lane:${lane}:${source}`, "floop"); },

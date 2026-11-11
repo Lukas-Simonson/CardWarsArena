@@ -286,6 +286,9 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .detail .well p { margin: 0; font-size: 17px; text-align: center; color: #d6e2ec; padding: 22px 6px; }
 .detail .well .txt { font-size: 16px; color: #fff; padding: 0 4px; line-height: 1.25; }
 .detail .well .tl { font-size: 15px; color: #a9c3d8; }
+.loghead { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.logbtns { display: flex; gap: 8px; }
+.logbtns .btn-steel { min-height: 36px; font-size: 16px; padding: 0 12px; }
 .log ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .log li { font-size: 16px; line-height: 1.25; padding-bottom: 6px; border-bottom: 2px dashed #cbb37a; }
 .log li.turn { font-weight: 700; color: #48207c; }

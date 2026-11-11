@@ -477,7 +477,11 @@ function logPanel(state, ctx, on) {
   const lines = state.log.slice(-LOG_SHOWN).reverse();
   const names = nameMatcher(ctx.cards);
   return h("section", { class: "parch log", "aria-labelledby": "log-h" },
-    h("h2", { id: "log-h" }, "What just happened"),
+    h("div", { class: "loghead" },
+      h("h2", { id: "log-h" }, "What just happened"),
+      h("div", { class: "logbtns" },
+        h("button", { type: "button", class: "btn-steel", onclick: (e) => on.onCopyLog(e.currentTarget), title: "Copy the whole game log as text" }, "Copy"),
+        h("button", { type: "button", class: "btn-steel", onclick: () => on.onDownloadLog(), title: "Save the whole game log as a text file" }, "Save"))),
     lines.length === 0 ? h("p", { class: "muted", style: "margin:0" }, "Nothing yet.") :
       h("ul", {}, lines.map((l) => h("li", { class: l.startsWith("──") ? "turn" : l.startsWith("***") ? "big" : "" },
         ...logParts(l.replaceAll("──", "").replaceAll("***", "").trim(), names, on)))));

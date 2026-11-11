@@ -2,7 +2,7 @@
 // returns the next state and never touches the DOM or the network.
 import { describeEvent } from "./describe.js";
 
-export const LOG_LIMIT = 300;
+export const LOG_LIMIT = 2000; // lines kept for the panel and for copying the game out
 
 export function initialState() {
   return {
