@@ -39,7 +39,7 @@ let myDecks = []; // the signed-in player's saved decks
 let selectedDeck = ""; // the deck on the shelf that will be played
 // What the player is in the middle of: the card they clicked (source), the
 // picker that tracks their choices for it, and what the card on show is.
-const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null };
+const ui = { source: "", picker: null, awaitingKind: false, inspect: null, discard: null, reportUrl: "" };
 let conn = null;
 let staging = false; // a cast spell is on show; what it did is shown when it ends
 let stageTimer = null;
@@ -376,6 +376,7 @@ function renderShelf() {
 /** The feedback and repository links in the footer, when the server turns them on (it does not by default). */
 function fillFeedback(answer) {
   const links = feedbackLinks(answer);
+  ui.reportUrl = links.find((l) => l.id === "bug")?.url ?? ""; // the bug form is also offered during a game
   $("feedback").hidden = !links.length;
   $("feedback").replaceChildren(...links.map((l) => h("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label)));
 }

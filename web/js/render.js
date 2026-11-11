@@ -26,7 +26,7 @@ export function renderGame(root, model, on) {
   const v = state.view;
   if (!v) {
     root.replaceChildren(h("div", { class: "table" },
-      h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME))),
+      h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME), reportLink(ui))),
       h("div", { class: "steel", style: "padding:24px 28px" },
         h("h2", { class: "h", style: "font-size:30px" }, state.waiting ? "Waiting for an opponent…" : "Joining…"),
         state.waiting && h("p", {}, "Send this room code to your friend; they type it under “Join”."),
@@ -62,6 +62,9 @@ export function updateDetail(root, ctx, cardId) {
   if (old) old.replaceWith(detailPanel(ctx, cardId));
 }
 
+/** "Report a bug", when the server offers the form: opens in a new tab, so the game is left as it is. */
+const reportLink = (ui) => ui?.reportUrl && h("a", { class: "btn-steel reportlink", href: ui.reportUrl, target: "_blank", rel: "noopener" }, "Report a bug");
+
 const leaveButton = (on) => h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: on.onLeave }, "‹ Lobby");
 
 function sourceCard(ctx, source) {
@@ -75,12 +78,12 @@ function sourceCard(ctx, source) {
 
 // ---------- top bar and players
 
-function topbar({ ctx, me }, on) {
+function topbar({ ctx, me, ui }, on) {
   const v = ctx.view;
   const mine = v.active === me;
   const phase = v.phase === "mulligan" ? "Opening hands" : `${v.phase[0].toUpperCase()}${v.phase.slice(1)} phase`;
   return h("div", { class: "topbar" },
-    h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME)),
+    h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME), reportLink(ui)),
     h("div", { class: "steel turnbox" },
       v.phase !== "mulligan" && h("span", { class: "ink" }, `Turn ${v.turn}`),
       v.phase !== "mulligan" && h("span", { class: `chip ${mine ? "" : "theirs"}` }, mine ? "Your turn" : `${seatName(ctx, v.active)}'s turn`),
