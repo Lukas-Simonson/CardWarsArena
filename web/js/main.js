@@ -14,6 +14,7 @@ import { shelf, pickDeck, inBoxOrder, boxColour, diamondColour, RANDOM, botDeckF
 import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 import { APP_NAME } from "./brand.js";
+import { feedbackLinks } from "./feedback.js";
 import { fillAvatar } from "./avatar.js";
 
 const $ = (id) => document.getElementById(id);
@@ -372,6 +373,13 @@ function renderShelf() {
   $("lobbyhint").textContent = !decks.length ? "The server reports no playable decks." : account.show && !account.user ? "Sign in to build and keep your own decks." : "";
 }
 
+/** The feedback and repository links in the footer, when the server turns them on (it does not by default). */
+function fillFeedback(answer) {
+  const links = feedbackLinks(answer);
+  $("feedback").hidden = !links.length;
+  $("feedback").replaceChildren(...links.map((l) => h("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label)));
+}
+
 /** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
 function fillBots({ default: first, bots }) {
   const sel = $("bot");
@@ -386,6 +394,7 @@ async function loadCatalog() {
     const [c, d, b] = await Promise.all([fetch(`${server}/api/cards`), fetch(`${server}/api/decks`), fetch(`${server}/api/bots`).catch(() => null)]);
     if (!c.ok || !d.ok) throw new Error(`HTTP ${c.status}/${d.status}`);
     if (b?.ok) fillBots(await b.json());
+    fillFeedback(await fetch(`${server}/api/feedback`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
     cards = Object.fromEntries((await c.json()).map((x) => [x.id, x]));
     fillDecks(await d.json());
   } catch (err) {

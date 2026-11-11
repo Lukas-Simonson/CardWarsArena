@@ -59,6 +59,7 @@ Both images are configured through environment variables, so they run on any hos
 | `CARDWARS_PUBLIC_URL` | `-public-url` | Where browsers reach the site, e.g. `https://cards.example.com`: the address only, with no path. Providers send people back to it, and it decides whether cookies are `Secure`. |
 | `CARDWARS_DISCORD_CLIENT_ID`, `CARDWARS_DISCORD_CLIENT_SECRET` | | The app's credentials at Discord. A provider without both is not offered. |
 | `CARDWARS_GITHUB_CLIENT_ID`, `CARDWARS_GITHUB_CLIENT_SECRET` | | The same for GitHub. |
+| `CARDWARS_FEEDBACK` | `-feedback` | `1` shows links to this project's bug, card-problem and feature forms and its GitHub repository under the home screen. Off by default, so a server of your own does not send reports to this project. |
 
 The other flags (`-addr`, `-data`, `-origins`, `-bot-delay`, `-dev`) are described in [`server/docs/protocol.md`](server/docs/protocol.md).
 

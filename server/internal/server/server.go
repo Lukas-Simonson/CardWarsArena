@@ -48,8 +48,10 @@ type Config struct {
 	// Auth says who is signed in; nil means nobody ever is (auth.None).
 	Auth auth.Authenticator
 	// Store keeps accounts and decks; nil means nothing is kept and the saved-deck API is off.
-	Store  store.Store
-	Logger *slog.Logger
+	Store store.Store
+	// Feedback turns on the home screen's links to the project's feedback forms and repository.
+	Feedback bool
+	Logger   *slog.Logger
 }
 
 // Server is the HTTP handler and room registry.
@@ -274,6 +276,7 @@ func (s *Server) Handler() http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]any{"default": bot.Default, "bots": bot.Names()})
 	})
+	mux.HandleFunc("GET /api/feedback", s.handleFeedback)
 	s.cfg.Auth.Routes(mux)
 	s.mountMyDecks(mux)
 	mux.HandleFunc("GET /ws", s.handleWS)

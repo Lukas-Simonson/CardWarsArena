@@ -122,6 +122,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .disclaimer { text-align: center; font-size: 16px; line-height: 1.4; padding: 10px 16px; align-self: center; max-width: 720px; }
 .disclaimer .aidisclosure { margin: 8px 0 0; }
 .disclaimer a { color: inherit; text-decoration: underline; }
+.feedback { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 8px; }
 .serverbox { margin-top: 8px; font-size: 15px; text-align: left; }
 .serverbox summary { cursor: pointer; text-align: center; }
 .serverbox label { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }
