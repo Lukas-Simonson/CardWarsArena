@@ -6,7 +6,7 @@ import { APP_NAME } from "./brand.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
-import { cardName, landscapeName, seatName } from "./describe.js";
+import { cardName, landscapeName, seatName, movesToTheirSide } from "./describe.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -338,7 +338,7 @@ function choiceModal(m, on) {
     body = h("div", { class: "modalrow" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "move") {
-    const theirs = ch.move_side !== v.you;
+    const theirs = movesToTheirSide(ch, v.you);
     title = `${by}: where to?`;
     text = theirs ? `${by} has nowhere to go on your side: choose an empty Landscape on your opponent's side.` : `Choose an empty Landscape of yours to move ${by} to.`;
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>

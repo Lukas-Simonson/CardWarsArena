@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   describeAction, describeEvent, describeRef, isKnownAction, actionMatches, filterActions,
-  handSelection, laneSelection, sameSelection, instName, landscapeName,
+  handSelection, laneSelection, sameSelection, instName, landscapeName, movesToTheirSide,
 } from "../js/describe.js";
 import { ctxFor, view } from "./fixtures.mjs";
 
@@ -169,6 +169,15 @@ test("actions that answer a Choice are described", async () => {
   const redirect = ctxFor(view({ choice: { player: 0, kind: "redirect", card: "the-pig" } }));
   assert.equal(describeAction(redirect, { kind: "choose" }), "The Pig fights");
   assert.equal(describeAction(redirect, { kind: "choose", card: 10 }), "Cool Dog fights instead");
+  // `move_side` is left out for seat 0: a Creature moving on seat 0's own side must not read as the opponent's.
+  assert.equal(movesToTheirSide({ kind: "move" }, 0), false);
+  assert.equal(movesToTheirSide({ kind: "move", move_side: 1 }, 1), false);
+  assert.equal(movesToTheirSide({ kind: "move", move_side: 1 }, 0), true);
+  assert.equal(movesToTheirSide({ kind: "move" }, 1), true);
+  const own = ctxFor(view({ you: 0, choice: { player: 0, kind: "move", card: "the-pig", lane: 0, lanes: [1, 2] } })); // move_side omitted: seat 0
+  assert.equal(describeAction(own, { kind: "choose", lane: 1 }), "Move The Pig to lane 2");
+  const theirs = ctxFor(view({ you: 0, choice: { player: 0, kind: "move", card: "the-pig", lane: 0, lanes: [1, 2], move_side: 1 } }));
+  assert.equal(describeAction(theirs, { kind: "choose", lane: 1 }), "Move The Pig to lane 2 on the opponent's side");
   const move = ctxFor(view({ choice: { player: 0, kind: "move_damage", card: "the-pig", count: 3 } }));
   assert.equal(describeAction(move, { kind: "choose", card: 2 }), "Move 2 damage");
   for (const c of [search, rebound, redirect, move]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
