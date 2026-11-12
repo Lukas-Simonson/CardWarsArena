@@ -258,10 +258,14 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .piles button.well { color: #fff; }
 .piles button.well:not(:disabled):hover { border-color: var(--gold); }
 .piles svg { width: 24px; height: 24px; }
-.hand { flex: 1 1 400px; min-width: 0; display: flex; justify-content: center; align-items: flex-end; padding: 14px 28px 12px; min-height: 172px; }
+/* The hand is its own box: its cards wrap to more rows when they would not fit, and never paint over the piles and buttons beside it. */
+.hand { flex: 1 1 400px; min-width: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; align-content: flex-end; row-gap: 6px; padding: 14px 28px 12px; min-height: 172px; container-type: inline-size; position: relative; z-index: 0; }
+.piles, .acts { position: relative; z-index: 1; }
 .hand .empty { align-self: center; color: #d6e2ec; }
-.hbtn { flex: 0 1 100px; min-width: 56px; margin: 0 -6px; padding: 0; background: none; border: none; border-radius: 10px; color: inherit; transition: transform 160ms ease, opacity 160ms ease; }
+/* One row's cards share its width (overlapping by 12px), between a readable sliver and the full 100px; below that the row wraps. */
+.hbtn { --cw: clamp(56px, calc((100cqw - 12px) / var(--n, 7) + 12px), 100px); flex: 0 0 var(--cw); width: var(--cw); margin: 0 -6px; padding: 0; background: none; border: none; border-radius: 10px; color: inherit; transition: transform 160ms ease, opacity 160ms ease; }
 .hbtn:hover { z-index: 6; transform: translateY(-64px) scale(1.55) !important; }
+.hand.crowded .hbtn:hover { transform: translateY(-22px) scale(1.2) !important; } /* a crowded hand is read in "Card up close", so the zoom stays modest */
 .hbtn.sel .card { box-shadow: 0 0 0 4px var(--gold), 0 0 18px 6px rgba(255,211,77,.55); }
 .hbtn.pick .card { box-shadow: 0 0 0 4px #ff6b5a, 0 0 18px 6px rgba(255,107,90,.55); }
 .hbtn.off { opacity: .62; }

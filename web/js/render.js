@@ -3,6 +3,7 @@
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
 import { APP_NAME } from "./brand.js";
+import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
@@ -411,6 +412,7 @@ function handSection(m, on) {
   const v = ctx.view, p = v.players[me];
   const hand = p.hand ?? [];
   const n = hand.length;
+  const crowded = isCrowded(n); // more than a row's worth: the hand wraps and lies flat
   const cardsEl = hand.map((inst, k) => {
     const card = ctx.cards[inst.card];
     const key = `hand:${inst.uid}`;
@@ -418,8 +420,8 @@ function handSection(m, on) {
     const pick = tokens.has(token);
     const playable = !!srcs[key];
     const sel = ui.source === key;
-    const off = k - (n - 1) / 2;
-    const xf = sel ? "translateY(-30px) rotate(0deg)" : `translateY(${Math.abs(off) * 3}px) rotate(${off * 3}deg)`;
+    const pose = fanPose(k, n);
+    const xf = sel ? "translateY(-30px) rotate(0deg)" : crowded ? "none" : `translateY(${pose.drop}px) rotate(${pose.rotate}deg)`;
     const cls = ["hbtn", sel ? "sel" : "", pick ? "pick" : "", p.rainbow_hand?.includes(inst.uid) ? "rainbow" : "", playable && !ui.picker ? "go" : "", playable || pick || sel ? "" : "off"].join(" ");
     return h("button", {
       type: "button", class: cls, style: `transform:${xf}`, "data-uid": inst.uid, "aria-pressed": sel ? "true" : "false",
@@ -438,7 +440,7 @@ function handSection(m, on) {
     h("div", { class: "piles" },
       h("div", { class: "well" }, h("span", {}, "Deck"), h("b", {}, p.deck_count)),
       h("button", { type: "button", class: "well", onclick: () => on.onDiscard(me), "aria-label": `Your discard pile, ${p.discard.length} cards` }, h("span", {}, "Discard"), h("b", {}, p.discard.length))),
-    h("div", { class: "well hand" }, n === 0 ? h("span", { class: "empty" }, "Your hand is empty") : cardsEl),
+    h("div", { class: `well hand${crowded ? " crowded" : ""}`, style: `--n:${Math.max(n, 1)}` }, n === 0 ? h("span", { class: "empty" }, "Your hand is empty") : cardsEl),
     h("div", { class: "acts" },
       h("div", { class: "actcount" },
         h("div", { class: "orb", role: "img", "aria-label": `${v.actions_left} of 2 Actions left` }, myMain || v.active === me ? v.actions_left : "–"),
