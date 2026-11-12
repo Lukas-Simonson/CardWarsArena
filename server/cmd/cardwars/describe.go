@@ -203,6 +203,9 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			name = u.cardName(l.Creature.CardID)
 		}
 		verb := fmt.Sprintf("Floop %s (lane %d)", name, a.Lane+1)
+		if a.Kind == engine.ActFloop && a.Via == "hero" {
+			verb = fmt.Sprintf("Floop %s (lane %d) with your Hero's Floop", name, a.Lane+1)
+		}
 		if a.Kind == engine.ActActivate {
 			verb = fmt.Sprintf("Use %s's ability (lane %d)", name, a.Lane+1)
 		}
