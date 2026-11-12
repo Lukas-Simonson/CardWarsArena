@@ -27,12 +27,18 @@ export function sourceKey(a) {
   }
 }
 
-/** What a source can do: "attack", "floop", "activate:0", "play_card". */
-export const kindKey = (a) => (a.kind === "activate" ? `activate:${a.index ?? 0}` : a.kind);
+/**
+ * What a source can do: "attack", "floop", "floop:1", "activate:0", "play_card". A card's first Floop is plain
+ * "floop"; a second (one its Hero grants it on top of its own) is "floop:1".
+ */
+export const kindKey = (a) => (a.kind === "activate" ? `activate:${a.index ?? 0}` : a.kind === "floop" && a.index ? `floop:${a.index}` : a.kind);
 
-export function kindLabel(key) {
+/** The Floop kinds a source's actions offer, in order: ["floop"], or ["floop", "floop:1"] when it has two. */
+export const floopKinds = (actions) => [...new Set(actions.filter((a) => a.kind === "floop").map(kindKey))].sort();
+
+export function kindLabel(key, via = "") {
   if (key === "attack") return "Fight";
-  if (key === "floop") return "Floop";
+  if (key === "floop" || key.startsWith("floop:")) return via === "hero" ? "Floop (Hero's)" : "Floop";
   if (key.startsWith("activate")) return "Use ability";
   if (key === "thaw") return "Remove frozen token";
   return "Play";

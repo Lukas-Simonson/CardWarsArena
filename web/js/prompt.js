@@ -1,7 +1,7 @@
 // What the bar above the player's hand says and offers, from the current
 // selection. Pure: it only reads the view, the context and the picker.
 import { describeAction, cardName, seatName } from "./describe.js";
-import { kindLabel, parseToken } from "./picker.js";
+import { kindLabel, kindKey, parseToken } from "./picker.js";
 
 /**
  * @returns {{text:string, cancel:boolean, skip:string, confirm:string, kinds:[string,string][]}}
@@ -33,7 +33,7 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
   if (!picker) return out;
   if (awaitingKind) {
     out.text = `What should ${name} do?`;
-    out.kinds = picker.kinds().map((k) => [k, kindLabel(k)]);
+    out.kinds = picker.kinds().map((k) => [k, kindLabel(k, picker.candidates.find((a) => kindKey(a) === k)?.via)]);
     return out;
   }
   const opts = picker.options();

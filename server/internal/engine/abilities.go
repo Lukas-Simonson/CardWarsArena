@@ -9,6 +9,8 @@ type abilitySource struct {
 	status  *Status
 	// real counts the card's own activated abilities; offers follow them.
 	real int
+	// own counts the card's own effects; a Creature's effects after them were granted to it (Finn's Hero).
+	own int
 	// fired records the uses of limited abilities this turn; nil for Buildings.
 	fired *[]int
 }
@@ -33,7 +35,10 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 		}
 		ctx.creature = l.Creature
 		effects := g.effectsOf(l.Creature)
-		src := abilitySource{ctx: ctx, effects: effects, status: &l.Creature.Status, real: countActivates(effects), fired: &l.Creature.Fired}
+		src := abilitySource{ctx: ctx, effects: effects, status: &l.Creature.Status, real: countActivates(effects), fired: &l.Creature.Fired, own: len(g.Card(l.Creature.Instance).Effects)}
+		if l.Creature.Silenced {
+			src.own = len(effects)
+		}
 		if !l.Creature.Silenced {
 			// Offers are free activated abilities after the card's own.
 			src.effects = append(append([]card.Effect(nil), effects...), offerEffects(l.Creature.Offered)...)
@@ -88,19 +93,23 @@ func (g *Game) clearOffers() {
 	}
 }
 
-// abilityEffect finds the Floop effect, or the Index-th activated ability.
+// abilityEffect finds the Index-th Floop ability or the Index-th activated ability. A card may have several
+// Floop abilities (its own, and one its Hero grants it); using one Floops the card, so only one is used.
 func abilityEffect(effects []card.Effect, a Action) (*card.Effect, int) {
-	n := 0
+	floops, activates := 0, 0
 	for i := range effects {
 		e := &effects[i]
 		switch {
 		case a.Kind == ActFloop && e.Kind == card.KindFloop:
-			return e, i
-		case a.Kind == ActActivate && e.Kind == card.KindActivate:
-			if n == a.Index {
+			if floops == a.Index {
 				return e, i
 			}
-			n++
+			floops++
+		case a.Kind == ActActivate && e.Kind == card.KindActivate:
+			if activates == a.Index {
+				return e, i
+			}
+			activates++
 		}
 	}
 	return nil, 0
@@ -209,12 +218,16 @@ func (g *Game) abilitiesOf(p PlayerID, probe Action, out []Action) []Action {
 	if err != nil {
 		return out
 	}
-	activate := 0
-	for _, e := range src.effects {
+	activate, floop := 0, 0
+	for i, e := range src.effects {
 		a := Action{Lane: probe.Lane, Source: probe.Source}
 		switch e.Kind {
 		case card.KindFloop:
-			a.Kind = ActFloop
+			a.Kind, a.Index = ActFloop, floop
+			floop++
+			if i >= src.own && src.ctx.creature != nil {
+				a.Via = "hero" // granted by the Hero, not printed on the card
+			}
 		case card.KindActivate:
 			a.Kind, a.Index = ActActivate, activate
 			activate++

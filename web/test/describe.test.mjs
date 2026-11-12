@@ -8,6 +8,12 @@ import { ctxFor, view } from "./fixtures.mjs";
 
 const ctx = ctxFor();
 
+test("a Floop the Hero grants is told apart from the card's own", () => {
+  const c = ctxFor(view());
+  assert.equal(describeAction(c, { kind: "floop", lane: 0 }), "Floop The Pig (lane 1)");
+  assert.equal(describeAction(c, { kind: "floop", lane: 0, index: 1, via: "hero" }), "Floop The Pig with your Hero's Floop (lane 1)");
+});
+
 test("simple actions", () => {
   assert.equal(describeAction(ctx, { kind: "keep_hand" }), "Keep your opening hand");
   assert.match(describeAction(ctx, { kind: "mulligan" }), /^Mulligan/);

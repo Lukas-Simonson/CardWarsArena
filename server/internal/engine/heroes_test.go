@@ -140,6 +140,76 @@ func TestFinnGivesUndamagedCreaturesAFloop(t *testing.T) {
 	}
 }
 
+// A Creature with a Floop of its own also has the one Finn grants it: both are offered, either can be used,
+// and using one Floops the Creature so the other cannot follow. (Fummy's own Floop gains an Action.)
+func TestFinnsGrantedFloopStacksWithTheCreaturesOwn(t *testing.T) {
+	setup := func() (*Game, *Creature, *Creature) {
+		g := heroGame(t, "cake", "finn")
+		fummy := g.put(1, 0, "fummy")
+		foe := g.put(0, 0, "pony")
+		g.State.Turn = 4
+		g.State.Active = 1
+		g.State.ActionsLeft = 2
+		return g, fummy, foe
+	}
+	grantedAt := func(foe int) Action {
+		return Action{Kind: ActFloop, Lane: 0, Index: 1, Targets: [][]TargetRef{{crRef(0, foe)}}}
+	}
+	own := Action{Kind: ActFloop, Lane: 0, Index: 0}
+
+	g, fummy, foe := setup()
+	var sawOwn, sawGranted bool
+	for _, a := range g.LegalActions(1) {
+		if a.Kind != ActFloop || a.Lane != 0 {
+			continue
+		}
+		switch {
+		case a.Index == 0 && a.Via == "":
+			sawOwn = true
+		case a.Index == 1 && a.Via == "hero":
+			sawGranted = true
+		default:
+			t.Errorf("unexpected Floop offered: %v via %q", a, a.Via)
+		}
+	}
+	if !sawOwn || !sawGranted {
+		t.Fatalf("want both Floops offered: own %v, granted %v", sawOwn, sawGranted)
+	}
+
+	// The granted one: 1 damage to a Creature. Fummy is Flooped, so its own cannot follow.
+	g.must(t, 1, grantedAt(0))
+	if foe.Damage != 1 || fummy.Status != Flooped || g.State.ActionsLeft != 2 {
+		t.Errorf("granted Floop: target took %d, Fummy is %s, %d Actions", foe.Damage, fummy.Status, g.State.ActionsLeft)
+	}
+	g.mustFail(t, 1, own, ErrNotReady)
+
+	// Fummy's own: an Action, and no damage.
+	g, fummy, foe = setup()
+	g.must(t, 1, own)
+	if foe.Damage != 0 || g.State.ActionsLeft != 3 || fummy.Status != Flooped {
+		t.Errorf("own Floop: target took %d, %d Actions", foe.Damage, g.State.ActionsLeft)
+	}
+	g.mustFail(t, 1, grantedAt(0), ErrNotReady)
+
+	// An action with no index still means the first Floop, as it did before there could be two.
+	g, _, _ = setup()
+	g.must(t, 1, Action{Kind: ActFloop, Lane: 0})
+	if g.State.ActionsLeft != 3 {
+		t.Error("an unindexed Floop did not use the Creature's own")
+	}
+
+	// A damaged Creature loses the granted Floop but keeps its own.
+	g, fummy, _ = setup()
+	fummy.Damage = 1
+	for _, a := range g.LegalActions(1) {
+		if a.Kind == ActFloop && a.Lane == 0 && a.Index == 1 {
+			t.Errorf("a damaged Creature is offered the granted Floop: %v", a)
+		}
+	}
+	g.mustFail(t, 1, grantedAt(0), ErrNoAbility)
+	g.must(t, 1, own)
+}
+
 func TestCakeHealsCreaturesWithBuildingsWhenYouPlayOne(t *testing.T) {
 	g := heroGame(t, "cake", "cake")
 	a := g.put(0, 0, "pony")
