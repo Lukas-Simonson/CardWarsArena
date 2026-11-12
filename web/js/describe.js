@@ -86,7 +86,7 @@ export function describeAction(ctx, a) {
       if (ch?.kind === "rebound") return a.card ? `Discard ${instName(ctx, a.card)} to return ${cardName(ctx, ch.card)} to your hand` : `Leave ${cardName(ctx, ch.card)} in the discard pile`;
       if (ch?.kind === "redirect") return a.card ? `${instName(ctx, a.card)} fights instead` : `${cardName(ctx, ch.card)} fights`;
       if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
-      if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${ch.move_side !== v.you ? " on the opponent's side" : ""}`;
+      if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${movesToTheirSide(ch, v.you) ? " on the opponent's side" : ""}`;
       return "Choose";
     }
     case "thaw": return `Discard ${instName(ctx, a.card)} to remove the frozen token from your lane ${laneNo(a.lane)} Landscape`;
@@ -111,6 +111,12 @@ export function describeAction(ctx, a) {
 
 /** True if describeAction understands the action (used by the smoke test). */
 export const isKnownAction = (ctx, a) => !describeAction(ctx, a).startsWith("(unknown");
+
+/**
+ * Does a "move" choice send the Creature to the opponent's side? The server leaves `move_side` out when it is
+ * seat 0 (it is a zero), so a missing value means seat 0, not "somewhere else".
+ */
+export const movesToTheirSide = (choice, you) => (choice?.move_side ?? 0) !== you;
 
 /** One line for the game log, as seen by this seat. */
 export function describeEvent(ctx, e) {

@@ -201,7 +201,7 @@ every other action is refused (`illegal_action`) until they answer.
 | `rebound` | discard a card from your hand to return the card that asks from your discard pile to your hand (Impossible Possum) | `choose` with `card` = a hand uid, or `choose` with no `card` to leave it |
 | `redirect` | the Creature that attacked may be replaced by one of your Flooped Creatures, `revealed` (Pied Piper); the Fight waits for the answer | `choose` with `card` = the Flooped Creature's uid, or `choose` with no `card` to fight with the attacker |
 | `move_damage` | move damage between two of your Creatures; `count` is the most you may move (Friendship Bracelet) | `choose` with `card` = how much, 1 to `count` |
-| `move` | the Creature in your Lane `lane` must move at the start of your turn to an empty Landscape on seat `move_side`'s side, one of `lanes` (Drained Cleric, Tired Wombat, Woadic Ring Leader) | `choose` with `lane` = one of `lanes` |
+| `move` | the Creature in your Lane `lane` (omitted for Lane 0) must move at the start of your turn to an empty Landscape on seat `move_side`'s side (omitted for seat 0, like any zero), one of `lanes` (Drained Cleric, Tired Wombat, Woadic Ring Leader) | `choose` with `lane` = one of `lanes` |
 
 As always, send one of the objects in `view.legal`.
 
