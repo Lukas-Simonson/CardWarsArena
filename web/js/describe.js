@@ -102,7 +102,7 @@ export function describeAction(ctx, a) {
       const l = me.lanes[a.lane ?? 0] ?? {};
       const src = a.source === "building" ? l.building : l.creature;
       const name = src ? cardName(ctx, src.card) : "?";
-      const verb = a.kind === "floop" ? `Floop ${name}` : `Use ${name}'s ability`;
+      const verb = a.kind === "floop" ? `Floop ${name}${a.via === "hero" ? " with your Hero's Floop" : ""}` : `Use ${name}'s ability`;
       return withTargets(ctx, `${verb} (lane ${laneNo(a.lane)})`, "targets", a.targets, a.labels);
     }
     default: return `(unknown action: ${JSON.stringify(a)})`;

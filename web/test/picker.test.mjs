@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ActionPicker, sources, sourceKey, kindKey, slotsOf, tokenOfRef, parseToken, isGeneral } from "../js/picker.js";
+import { ActionPicker, sources, sourceKey, kindKey, slotsOf, tokenOfRef, parseToken, isGeneral, floopKinds, kindLabel } from "../js/picker.js";
 import { buildPrompt } from "../js/prompt.js";
 import { view, ctxFor } from "./fixtures.mjs";
 
@@ -219,4 +219,15 @@ test("removing a frozen token is a source of its own: a Landscape, and the card 
   assert.deepEqual(p.options().tokens, ["hand_card:31", "hand_card:32"]);
   assert.equal(p.pick("hand_card:32"), true);
   assert.deepEqual(p.result(), { kind: "thaw", lane: 2, card: 32 });
+});
+
+
+test("a card's two Floops are told apart, the first keeping the plain key", () => {
+  const own = { kind: "floop", lane: 0 }, granted = { kind: "floop", lane: 0, index: 1, via: "hero" };
+  assert.equal(kindKey(own), "floop");
+  assert.equal(kindKey(granted), "floop:1");
+  assert.deepEqual(floopKinds([own, granted, { ...granted, targets: [] }, { kind: "attack", lane: 0 }]), ["floop", "floop:1"]);
+  assert.deepEqual(floopKinds([granted]), ["floop:1"]); // only the granted one is usable: no choice to make
+  assert.equal(kindLabel("floop:1", "hero"), "Floop (Hero's)");
+  assert.equal(kindLabel("floop"), "Floop");
 });

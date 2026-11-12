@@ -345,6 +345,9 @@ dialog.practicedialog .modalrow { flex: none; margin-top: 0; }
 .botdeck .lands i { display: block; width: 14px; height: 14px; border: 2px solid #1f1a12; border-radius: 3px; transform: rotate(45deg); }
 .botdeck[aria-checked="true"] { background: #ffe58a; box-shadow: 0 0 0 3px #ffb428; }
 dialog.practicedialog h2 { margin: 0; }
+.floopopts { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.floopopt { align-items: flex-start; }
+.floopopt .floopText { font-size: 14px; opacity: .9; }
 .botdecks-h { grid-column: 1 / -1; margin: 8px 0 0; font-family: var(--big-font); font-weight: 400; font-size: 22px; color: var(--ink); }
 .botdeck:disabled { opacity: .55; }
 

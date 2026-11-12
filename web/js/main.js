@@ -5,7 +5,7 @@ import { Connection, wsUrl, normaliseServer } from "./net.js";
 import { initialState, reduce, setStatus, leave } from "./state.js";
 import { renderGame, updateDetail } from "./render.js";
 import { isMyDecision, LOG_LIMIT } from "./state.js";
-import { ActionPicker, sources } from "./picker.js";
+import { ActionPicker, sources, floopKinds, kindKey } from "./picker.js";
 import { plan, applyEffects, paceFor, reduced, restOf, STAGE_MS, TURN_PAUSE_MS, bareTurnChange } from "./anim.js";
 import { Pacer } from "./pacer.js";
 import { preloadArt } from "./preload.js";
@@ -16,6 +16,7 @@ import { h } from "./dom.js";
 import { APP_NAME } from "./brand.js";
 import { feedbackLinks } from "./feedback.js";
 import { gameLogText, logFileName } from "./gamelog.js";
+import { cardName } from "./describe.js";
 import { fillAvatar } from "./avatar.js";
 
 const $ = (id) => document.getElementById(id);
@@ -121,6 +122,39 @@ function settle() {
   else render();
 }
 
+/**
+ * Floop a card. With one Floop to use, go straight on; with two (its own and one its Hero grants it) ask which,
+ * since using either Floops the card.
+ */
+function floop(key) {
+  const actions = sourcesNow()[key] ?? [];
+  const kinds = floopKinds(actions);
+  if (kinds.length < 2) return select(key, kinds[0] ?? "floop");
+  const v = state.view, ctx = ctxNow();
+  const creature = v.players[v.you].lanes[Number(key.split(":")[1])]?.creature;
+  const name = cardName(ctx, creature?.card);
+  const dlg = h("dialog", { class: "modal parch practicedialog floopdialog", "aria-labelledby": "floop-title" });
+  const options = kinds.map((k) => {
+    const a = actions.find((x) => kindKey(x) === k);
+    const granted = a?.via === "hero";
+    const source = granted ? v.players[v.you].hero?.card : creature?.card;
+    const text = cards[source]?.text;
+    return h("button", { type: "button", class: "botdeck floopopt", onclick: () => { dlg.close(); select(key, k); } },
+      h("b", {}, granted ? `${cardName(ctx, source)}'s Floop` : `${name}'s own Floop`),
+      h("span", {}, granted ? `Your Hero gives ${name} this Floop.` : "Printed on the card."),
+      text && h("span", { class: "floopText" }, text));
+  });
+  dlg.append(
+    h("h2", { id: "floop-title" }, `Which Floop for ${name}?`),
+    h("p", { class: "ink" }, `${name} can only Floop once: choose the ability to use.`),
+    h("div", { class: "botdecks floopopts" }, options),
+    h("div", { class: "modalrow modalrow2" }, h("button", { type: "button", class: "btn-steel", onclick: () => dlg.close() }, "Cancel")));
+  dlg.addEventListener("close", () => dlg.remove());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  document.body.append(dlg);
+  dlg.showModal();
+}
+
 const toggle = (key, kind) => (ui.source === key && !kind ? (resetSelection(), render()) : select(key, kind));
 
 const logText = () => gameLogText(state, cards, LOG_LIMIT);
@@ -163,7 +197,7 @@ const on = {
   onDownloadLog: downloadLog,
   onHand(uid, cardId) { ui.inspect = cardId; toggle(`hand:${uid}`); },
   onLane(lane, source, cardId) { if (cardId) ui.inspect = cardId; toggle(`lane:${lane}:${source}`); },
-  onFloop(lane, source) { select(`lane:${lane}:${source}`, "floop"); },
+  onFloop(lane, source) { floop(`lane:${lane}:${source}`); },
   onAbility(lane, source, index) { select(`lane:${lane}:${source}`, `activate:${index}`); },
   onHeroAbility(index) { select("hero", `activate:${index}`); },
   onThaw(lane) { select(`thaw:${lane}`, "thaw"); },
