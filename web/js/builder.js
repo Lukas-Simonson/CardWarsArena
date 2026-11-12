@@ -36,7 +36,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   let myDecks = [];
   let deck = emptyDeck();
   let saved = null; // the deck as last saved; null for one not saved yet
-  let filters = { text: "", type: "", landscape: "" };
+  let filters = { text: "", type: "", landscape: "", members: "", from: "" }; // members: "", "in" or "out" of this deck; from: another deck's value
   let busy = false;
   let note = { error: false, text: "" };
 
@@ -75,6 +75,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.name.value = deck.name;
     ui.hero.value = deck.hero;
     ui.pick.value = deck.id ?? "";
+    filters = { ...filters, members: "", from: "" }; // another deck, so a fresh view of the pool
+    ui.from.value = "";
     paintAll();
   }
 
@@ -221,6 +223,10 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.search = h("input", { id: "bsearch", type: "search", class: "well", placeholder: "e.g. Floop", autocomplete: "off", oninput: () => { filters = { ...filters, text: ui.search.value }; paintPool(); } });
     ui.landChips = h("div", { role: "group", "aria-label": "Filter by Landscape", class: "chips" });
     ui.typeChips = h("div", { role: "group", "aria-label": "Filter by type", class: "chips" });
+    ui.memberChips = h("div", { role: "group", "aria-label": "Filter by this deck", class: "chips" });
+    ui.from = h("select", { id: "bfrom", class: "well", onchange: () => { filters = { ...filters, from: ui.from.value }; paintPool(); } });
+    ui.fromClear = h("button", { type: "button", class: "btn-steel small", onclick: () => { ui.from.value = ""; filters = { ...filters, from: "" }; paintPool(); } }, "Clear");
+    ui.fromRow = h("div", { class: "field fromrow" }, h("label", { for: "bfrom", class: "ink" }, "Cards from"), h("div", { class: "fromsel" }, ui.from, ui.fromClear));
     ui.grid = h("div", { class: "cardgrid" });
     ui.poolCount = h("p", { class: "ink small", role: "status" });
 
@@ -261,7 +267,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
             h("div", { class: "bfilterhead" },
               h("h2", { id: "bcards-h", class: "h" }, "Your cards"),
               field("bsearch", "Search by name or text", ui.search)),
-            ui.landChips, ui.typeChips, ui.poolCount),
+            ui.landChips, ui.typeChips, ui.memberChips, ui.fromRow, ui.poolCount),
           h("div", { class: "felt bfelt" }, ui.grid)),
         h("aside", { class: "bright", "aria-labelledby": "bdeck-h" },
           h("section", { class: "steel bdeck" },
@@ -287,7 +293,26 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   }
 
   /** "New deck", the player's decks, then the starters to copy. */
+  /** "Any deck", then the player's decks and the starters: what the pool can be narrowed to. */
+  function fillFrom() {
+    const group = (label, opts) => { const g = h("optgroup", { label }); g.append(...opts); return g; };
+    ui.from.replaceChildren(h("option", { value: "" }, "Any deck"));
+    if (myDecks.length) ui.from.append(group("My decks", myDecks.map((d) => h("option", { value: `my:${d.id}` }, d.playable ? d.name : `${d.name} (unfinished)`))));
+    ui.from.append(group("Starter decks", starters().map((d) => h("option", { value: `starter:${d.set} ${d.name}` }, `${d.owner || d.name} — ${d.name}`))));
+    if (![...ui.from.options].some((o) => o.value === filters.from)) filters = { ...filters, from: "" };
+    ui.from.value = filters.from;
+  }
+
+  /** The other deck chosen under "Cards from": its name and card counts, or null for any deck. */
+  function otherDeck() {
+    const v = filters.from;
+    if (!v) return null;
+    const d = v.startsWith("my:") ? myDecks.find((x) => `my:${x.id}` === v) : starters().find((x) => `starter:${x.set} ${x.name}` === v);
+    return d ? { name: d.name, counts: fromCards(d.cards).counts } : null;
+  }
+
   function fillPicker() {
+    fillFrom();
     const group = (label, opts) => { const g = h("optgroup", { label }); g.append(...opts); return g; };
     ui.pick.replaceChildren(h("option", { value: "" }, "New deck"));
     if (myDecks.length) ui.pick.append(group("My decks", myDecks.map((d) => h("option", { value: d.id }, d.playable ? d.name : `${d.name} (unfinished)`))));
@@ -304,6 +329,17 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.typeChips.replaceChildren(...TYPES.map(([v, l]) => chip(l, filters.type === v, pickType(v))));
   }
 
+  /** "All / In deck (n) / Not in deck": n is how many different cards this deck has. */
+  function paintMembers() {
+    const mine = Object.values(deck.counts).filter((n) => n > 0).length;
+    const set = (v) => () => { filters = { ...filters, members: v }; paintMembers(); paintPool(); };
+    const inChip = chip(`In deck (${mine})`, filters.members === "in", set(filters.members === "in" ? "" : "in"));
+    inChip.title = `${mine} different card${mine === 1 ? "" : "s"} in this deck`;
+    ui.memberChips.replaceChildren(
+      chip("Any card", filters.members === "", set("")), inChip,
+      chip("Not in deck", filters.members === "out", set(filters.members === "out" ? "" : "out")));
+  }
+
   function paintAll() {
     paintPool();
     paintDeck();
@@ -313,16 +349,19 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   const cells = new Map();
 
   function paintPool() {
-    const list = pool(cards(), filters);
+    const other = otherDeck();
+    const list = pool(cards(), { ...filters, counts: deck.counts, from: other?.counts ?? null });
     cells.clear();
+    ui.fromClear.hidden = !filters.from;
     ui.poolCount.textContent = `${list.length} card${list.length === 1 ? "" : "s"} shown`;
     ui.grid.replaceChildren(...(list.length ? list.map((c) => {
       const num = h("span", { class: "ncopies" });
       const dec = h("button", { type: "button", class: "btn-steel step", "aria-label": `Remove one ${c.name}`, onclick: () => change(remove(deck, c.id)) }, "−");
       const inc = h("button", { type: "button", class: "btn-green step", onclick: () => change(add(deck, c.id)) }, "+");
+      const there = other && h("span", { class: "ncopies there" }, `${other.counts[c.id]} in ${other.name}`);
       cells.set(c.id, { num, dec, inc, name: c.name });
-      return h("div", { class: "cell" }, cardEl(c, null, { lazy: true }), h("div", { class: "well stepper" }, dec, num, inc));
-    }) : [h("p", { class: "nocards" }, "No cards match. Try a different search or filter.")]));
+      return h("div", { class: "cell" }, cardEl(c, null, { lazy: true }), there, h("div", { class: "well stepper" }, dec, num, inc));
+    }) : [h("p", { class: "nocards" }, filters.members === "in" && !total(deck) && !other ? "No cards in this deck yet." : "No cards match. Try a different search or filter.")]));
     paintCells();
   }
 
@@ -339,6 +378,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
 
   function paintDeck() {
     const cs = cards(), n = total(deck), list = problems(deck, cs), legal = list.length === 0;
+    paintMembers(); // the count on "In deck" follows the deck
 
     // One Landscape for each Lane: the player's choice, or what the cards suggest.
     const row = landscapesOf(deck, cs);
