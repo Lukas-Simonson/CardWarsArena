@@ -89,6 +89,9 @@ func (g *Game) Instances() map[int]string {
 		for _, l := range pl.Lanes {
 			if l.Creature != nil {
 				add(l.Creature.Instance)
+				for _, in := range l.Creature.Under {
+					add(in)
+				}
 			}
 			for _, b := range l.buildings() {
 				add(b.Instance)

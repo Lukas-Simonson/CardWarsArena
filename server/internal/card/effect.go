@@ -130,13 +130,17 @@ const (
 	RestrictNoReady = "no_ready"
 	// The Creature may be played onto a frozen Landscape (Frosted Deanimator).
 	RestrictPlayOnFrozen = "play_on_frozen"
+	// The Creature cannot be replaced by playing another one on it (the Parrotroopers).
+	RestrictCannotBeReplaced = "cannot_be_replaced"
+	// When a Creature its controller owns leaves play, the controller may put it underneath this one (Carmel Camel).
+	RestrictCollectLeaving = "collect_leaving"
 )
 
 var validRestricts = map[string]bool{
 	RestrictAdjacentAlliesNotAttackable: true, RestrictOpposingNoEnterLeave: true, RestrictLaneRainbow: true,
 	RestrictAlsoRainbow: true, RestrictLaneNoFloop: true, RestrictExtraBuildings: true,
 	RestrictSilenceOpposingBuildings: true, RestrictCountsAsLandscape: true, RestrictCopyAdjacentBuildings: true,
-	RestrictNoReady: true, RestrictPlayOnFrozen: true,
+	RestrictNoReady: true, RestrictPlayOnFrozen: true, RestrictCannotBeReplaced: true, RestrictCollectLeaving: true,
 }
 
 // Mod adjusts the ATK or DEF of every creature matching To. The stat
@@ -217,6 +221,10 @@ type Cond struct {
 	YourTurn          *bool  `json:"your_turn,omitempty"`           // it is (or is not) its controller's turn
 	HP                *Range `json:"hp,omitempty"`                  // its controller's Hit Points
 	LaneAllyExhausted *bool  `json:"lane_ally_exhausted,omitempty"` // its controller's Creature in the card's Lane is exhausted
+	// EmptyLanes bounds how many Landscapes of its controller's have no Creature on them.
+	EmptyLanes *Range `json:"empty_lanes,omitempty"`
+	// OwnedAbroad is whether an opponent controls a Creature its controller owns (Ska-pion).
+	OwnedAbroad *bool `json:"owned_abroad,omitempty"`
 }
 
 // PlayedCond bounds how many cards of a Landscape type you played this turn.
@@ -247,6 +255,7 @@ type TargetSpec struct {
 	Ready        bool      `json:"ready,omitempty"`     // creatures: only Ready ones (not Flooped or Fought)
 	Exhausted    bool      `json:"exhausted,omitempty"` // creatures: only exhausted ones (Flooped or Fought)
 	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
+	Owned        bool      `json:"owned,omitempty"`     // creatures: only ones the player owns, wherever they are (Drop Zone)
 	Optional     bool      `json:"optional,omitempty"`
 	Count        *Value    `json:"count,omitempty"` // up to this many distinct targets
 	// Other leaves out the card's own Lane. LaneOf limits the choice to the
@@ -280,6 +289,12 @@ type Op struct {
 	Entering bool `json:"entering,omitempty"`
 	// Permanent makes mod_creature last as long as the Creature is in play.
 	Permanent bool `json:"permanent,omitempty"`
+	// Until, on flip_landscape, makes the flip last until the start of the controller's next turn
+	// ("your_next_turn"). Track makes the Creature that flipped remember it (Mantle Masher), and Tracked
+	// flips back up everything it remembers.
+	Until   string `json:"until,omitempty"`
+	Track   bool   `json:"track,omitempty"`
+	Tracked bool   `json:"tracked,omitempty"`
 	// Both, on freeze, freezes both Landscapes in the Lane (the card's own, or the chosen one).
 	Both bool `json:"both,omitempty"`
 	// move_self moves the Creature to an empty Landscape: To is "empty_own" (one you control), and ElseTo, if set,
@@ -314,7 +329,7 @@ var validOps = map[string]struct{ slots int }{
 	"no_combat_damage": {0}, "discount_replace": {0}, "upkeep": {0},
 	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
 	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
-	"freeze": {0}, "thaw": {0}, "move_self": {0},
+	"freeze": {0}, "thaw": {0}, "move_self": {0}, "retype_landscape": {0},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -453,7 +468,7 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 				return fmt.Errorf("op %d (%s): slot %d out of range", i, op.Do, *s)
 			}
 		}
-		if info.slots >= 1 && op.Slot == nil && !op.Self && op.All == nil {
+		if info.slots >= 1 && op.Slot == nil && !op.Self && op.All == nil && !op.Tracked {
 			return fmt.Errorf("op %d (%s): needs slot", i, op.Do)
 		}
 		if info.slots == 2 && op.Slot2 == nil {
@@ -463,6 +478,12 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 			if err := op.Amount.validate(); err != nil {
 				return fmt.Errorf("op %d: %w", i, err)
 			}
+		}
+		if op.Until != "" && (op.Until != "your_next_turn" || op.Do != "flip_landscape") {
+			return fmt.Errorf("op %d (%s): until is your_next_turn, on flip_landscape", i, op.Do)
+		}
+		if (op.Track || op.Tracked) && op.Do != "flip_landscape" {
+			return fmt.Errorf("op %d (%s): track and tracked belong to flip_landscape", i, op.Do)
 		}
 		if (op.To != "" || op.ElseTo != "" || len(op.Else) > 0) && op.Do != "move_self" {
 			return fmt.Errorf("op %d (%s): to and else belong to move_self", i, op.Do)
@@ -497,7 +518,8 @@ func (v Value) validate() error {
 	case "landscapes", "landscape_types", "creatures", "flooped_creatures", "spells_played", "opponent_hand",
 		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost",
 		"milled_spells", "damage", "damage_dealt", "buildings", "played_titled", "drawn_this_turn",
-		"frozen_landscapes", "exhausted_creatures", "destroyed":
+		"frozen_landscapes", "exhausted_creatures", "destroyed", "face_down_landscapes", "entered_lane",
+		"bounced_cost", "under":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

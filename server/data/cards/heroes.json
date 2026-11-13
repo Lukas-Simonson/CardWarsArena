@@ -98,6 +98,20 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lady%20Rainicorn.webp"
   },
   {
+    "id": "lemongrab",
+    "name": "Lemongrab",
+    "type": "hero",
+    "text": "At the start of your Fight Phase, gain 1 HP if you have 1 or more empty Landscapes. (Can't go over 25.)",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lemongrab.webp"
+  },
+  {
     "id": "lumpy-space-princess",
     "name": "Lumpy Space Princess",
     "type": "hero",

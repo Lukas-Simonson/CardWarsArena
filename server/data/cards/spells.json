@@ -16,6 +16,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Abraca%20Amadeus.webp"
   },
   {
+    "id": "amaizing-avalanche",
+    "name": "Amaizing Avalanche",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Each of your Creatures has +1 ATK this turn for each facedown Landscape in play.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Amaizing%20Avalanche.webp"
+  },
+  {
     "id": "blue-candy",
     "name": "Blue Candy",
     "type": "spell",
@@ -149,6 +165,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Deforestation.webp"
   },
   {
+    "id": "drop-zone",
+    "name": "Drop Zone",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Return target Creature you own to your hand.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Drop%20Zone.webp"
+  },
+  {
     "id": "falling-star",
     "name": "Falling Star",
     "type": "spell",
@@ -179,6 +211,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20of%20Nightmares.webp"
+  },
+  {
+    "id": "free-fall",
+    "name": "Free Fall",
+    "type": "spell",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "text": "Each of your Creatures has +1 ATK for each Creature that entered play this turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Free%20Fall.webp"
   },
   {
     "id": "friendship-bracelet",
@@ -259,6 +307,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Candy.webp"
+  },
+  {
+    "id": "ham-fist",
+    "name": "Ham Fist",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Target Creature you control has -5 ATK this turn. Draw a card.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ham%20Fist.webp"
   },
   {
     "id": "harvest-moon",
@@ -389,6 +453,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Puppy%20Parade.webp"
   },
   {
+    "id": "quick-pick-me-up",
+    "name": "Quick Pick Me Up",
+    "type": "spell",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "text": "Return target Creature you control to its owner's hand. Gain actions equal to its cost.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Quick%20Pick%20Me%20Up.webp"
+  },
+  {
     "id": "reclaim-landscape",
     "name": "Reclaim Landscape",
     "type": "spell",
@@ -435,6 +515,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/River%20of%20Swords.webp"
+  },
+  {
+    "id": "rock-out",
+    "name": "Rock Out!",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Flip target Landscape face down until the start of your next turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rock%20Out%21.webp"
   },
   {
     "id": "singing-sword",

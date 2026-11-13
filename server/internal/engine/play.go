@@ -124,6 +124,9 @@ func (g *Game) checkPlayable(p PlayerID, a Action) (Instance, *card.Card, error)
 		if old := g.State.Players[p].Lanes[a.Lane].Creature; old != nil && old.Status == Flooped {
 			return in, c, ErrFlooped
 		}
+		if old := g.State.Players[p].Lanes[a.Lane].Creature; old != nil && hasRestrict(g.effectsOf(old), card.RestrictCannotBeReplaced) {
+			return in, c, ErrNoReplace
+		}
 		if err := g.checkFrozen(p, a.Lane, c); err != nil {
 			return in, c, err
 		}
@@ -360,6 +363,9 @@ func (g *Game) validatePending(p PlayerID, a Action) error {
 		}
 		if old := g.State.Players[p].Lanes[a.Lane].Creature; c.Type == card.Creature && old != nil && old.Status == Flooped {
 			return ErrFlooped
+		}
+		if old := g.State.Players[p].Lanes[a.Lane].Creature; c.Type == card.Creature && old != nil && hasRestrict(g.effectsOf(old), card.RestrictCannotBeReplaced) {
+			return ErrNoReplace
 		}
 		if err := g.checkFrozen(p, a.Lane, c); err != nil {
 			return err

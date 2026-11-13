@@ -150,3 +150,44 @@ func TestHeuristicPlaysGuntersDeck(t *testing.T) {
 		t.Error("the bots never thawed a Landscape")
 	}
 }
+
+// Whole games with Lemongrab's deck, which flips and retypes Landscapes, moves Creatures into the opponent's
+// side and stacks them under a Camel, finish with the bots answering every decision it asks.
+func TestHeuristicPlaysLemongrabsDeck(t *testing.T) {
+	cat := starterGame(t, 1).Catalog()
+	games := 12
+	if testing.Short() {
+		games = 6
+	}
+	for seed := uint64(1); seed <= uint64(games); seed++ {
+		ls := [4]card.Landscape{card.Cornfield, card.Cornfield, card.SandyLands, card.SandyLands}
+		g, err := engine.NewGame(cat, engine.Config{Seed: seed, First: engine.PlayerID(seed % 2)}, [2]engine.DeckSpec{
+			{Landscapes: ls, Cards: cat.Deck("Lemongrab Vs Gunter", "Lemongrab's Deck"), Hero: "lemongrab"},
+			{Landscapes: ls, Cards: cat.Deck("Lemongrab Vs Gunter", "Lemongrab's Deck"), Hero: "lemongrab"},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		rng := rand.New(rand.NewPCG(seed, 9))
+		for n := 0; g.State.Phase != engine.PhaseOver; n++ {
+			if n > 20000 {
+				t.Fatalf("seed %d: the game did not finish", seed)
+			}
+			acted := false
+			for _, p := range []engine.PlayerID{g.State.Active, g.State.Active.Opp()} {
+				a, ok := Heuristic{}.Choose(g, p, rng)
+				if !ok {
+					continue
+				}
+				if _, err := g.Apply(p, a); err != nil {
+					t.Fatalf("illegal action %s: %v", a, err)
+				}
+				acted = true
+				break
+			}
+			if !acted {
+				t.Fatalf("seed %d: nobody can act", seed)
+			}
+		}
+	}
+}

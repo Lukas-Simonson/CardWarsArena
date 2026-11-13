@@ -24,6 +24,8 @@ type Creature struct {
 	Silenced     bool   `json:"silenced,omitempty"`
 	Lent         string `json:"lent,omitempty"`
 	ChangedLanes bool   `json:"changed_lanes,omitempty"`
+	// Under are the cards underneath it (Carmel Camel).
+	Under []engine.Instance `json:"under,omitempty"`
 	// Types, when set, are the Landscape types it has now instead of its card's own.
 	Types []card.Landscape `json:"types,omitempty"`
 }
@@ -175,6 +177,7 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 					Silenced:     c.Silenced,
 					Lent:         c.Lent,
 					ChangedLanes: c.ChangedLanes,
+					Under:        append([]engine.Instance(nil), c.Under...),
 				}
 				if types := g.CreatureTypes(p, i); len(types) != 1 || types[0] != g.Card(c.Instance).Landscape {
 					lv.Creature.Types = types

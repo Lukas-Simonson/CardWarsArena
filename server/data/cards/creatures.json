@@ -216,6 +216,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blueberry%20Djinni.webp"
   },
   {
+    "id": "bouncing-zebracorn",
+    "name": "Bouncing Zebracorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "+1 ATK for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Bouncing%20Zebracorn.webp"
+  },
+  {
     "id": "brain-gooey",
     "name": "Brain Gooey",
     "type": "creature",
@@ -269,6 +287,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Business%20Dog.webp"
+  },
+  {
+    "id": "carmel-camel",
+    "name": "Carmel Camel",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 4,
+    "text": "When a Creature you own leaves play, you may put it underneath this card instead. +1 ATK and +1 DEF for each card under this. When this card leaves play, discard all cards under it.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Carmel%20Camel.webp"
   },
   {
     "id": "chest-burster",
@@ -559,6 +595,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragon%20Foot.webp"
   },
   {
+    "id": "dragoon-parrotrooper",
+    "name": "Dragoon Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 1,
+    "defense": 8,
+    "text": "When Dragoon Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. Adjacent Creatures have -1 ATK.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dragoon%20Parrotrooper.webp"
+  },
+  {
     "id": "drained-cleric",
     "name": "Drained Cleric",
     "type": "creature",
@@ -611,6 +665,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Druid%20of%20the%20Cob.webp"
+  },
+  {
+    "id": "earth-mover",
+    "name": "Earth Mover",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "+2 ATK for each facedown Landscape in play.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Earth%20Mover.webp"
   },
   {
     "id": "embarrassing-bard",
@@ -702,6 +774,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fairy%20Shepherd.webp"
+  },
+  {
+    "id": "fancy-zebracorn",
+    "name": "Fancy Zebracorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fancy%20Zebracorn.webp"
   },
   {
     "id": "fatapillar",
@@ -900,6 +990,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Goat.webp"
+  },
+  {
+    "id": "grand-mummy",
+    "name": "Grand Mummy",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "text": "At the start of your turn, you may return Grand Mummy to its owner's hand. If you do, draw 2 cards.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Grand%20Mummy.webp"
   },
   {
     "id": "grape-djinni",
@@ -1171,6 +1279,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husker%20Worm.webp"
   },
   {
+    "id": "husky-parrotrooper",
+    "name": "Husky Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 2,
+    "attack": 2,
+    "defense": 4,
+    "text": "When Husky Parrotrooper enters play, move it to any empty Landscape, then flip that Landscape face down. When Husky Parrotrooper leaves play, flip it face up.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husky%20Parrotrooper.webp"
+  },
+  {
     "id": "icy-commando",
     "name": "Icy Commando",
     "type": "creature",
@@ -1315,6 +1441,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Infinite%20Figure.webp"
   },
   {
+    "id": "jinxed-parrotrooper",
+    "name": "Jinxed Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 5,
+    "text": "When Jinxed Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. At the start of your turn, discard a card.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Jinxed%20Parrotrooper.webp"
+  },
+  {
     "id": "kernel-queen",
     "name": "Kernel Queen",
     "type": "creature",
@@ -1423,6 +1567,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mace%20Stump.webp"
   },
   {
+    "id": "mantle-masher",
+    "name": "Mantle Masher",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "When Mantle Masher enters play, flip a Landscape in this Lane face down. When Mantle Masher leaves play, flip it face up.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mantle%20Masher.webp"
+  },
+  {
     "id": "mouthball",
     "name": "Mouthball",
     "type": "creature",
@@ -1529,6 +1691,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Niceasaurus%20Rex.webp"
+  },
+  {
+    "id": "ol-corn-eye",
+    "name": "Ol' Corn Eye",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 4,
+    "defense": 1,
+    "text": "+1 DEF for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ol%27%20Corn%20Eye.webp"
   },
   {
     "id": "patchy-the-pumpkin",
@@ -1729,6 +1909,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Punk%20Cat.webp"
   },
   {
+    "id": "quake-maker",
+    "name": "Quake Maker",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "+2 ATK for each facedown Landscape in play.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Quake%20Maker.webp"
+  },
+  {
     "id": "rainbow-eyebat",
     "name": "Rainbow Eyebat",
     "type": "creature",
@@ -1747,6 +1945,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rainbow%20Eyebat.webp"
   },
   {
+    "id": "rebounding-zebracorn",
+    "name": "Rebounding Zebracorn",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 6,
+    "text": "+1 ATK for each different Landscape type you control.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rebounding%20Zebracorn.webp"
+  },
+  {
     "id": "red-eyeling",
     "name": "Red Eyeling",
     "type": "creature",
@@ -1763,6 +1979,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Red%20Eyeling.webp"
+  },
+  {
+    "id": "rock-n-roller",
+    "name": "Rock 'n Roller",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8,
+    "text": "When Rock'n Roller enters play, flip a Landscape in this Lane face down. When Rock'n Roller leaves play, flip it face up.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rock%20%27n%20Roller.webp"
   },
   {
     "id": "sand-angel",
@@ -1819,6 +2053,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sand%20Knights.webp"
   },
   {
+    "id": "sandasaurus-rex",
+    "name": "Sandasaurus Rex",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "attack": 0,
+    "defense": 9,
+    "text": "+2 ATK for each of your empty Landscapes.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sandasaurus%20Rex.webp"
+  },
+  {
     "id": "sandhorn-devil",
     "name": "Sandhorn Devil",
     "type": "creature",
@@ -1835,6 +2087,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sandhorn%20Devil.webp"
+  },
+  {
+    "id": "sandmagus",
+    "name": "Sandmagus",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "text": "At the start of your turn, you may return Sandmagus to its owner's hand. If you do, each other Creature you control has +1 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sandmagus.webp"
   },
   {
     "id": "sandsnake",
@@ -1889,6 +2159,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Shark.webp"
+  },
+  {
+    "id": "ska-pion",
+    "name": "Ska-pion",
+    "type": "creature",
+    "landscape": "sandy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "text": "Ska-pion costs 1 less to play while an opponent controls a Creature you own.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ska-pion.webp"
   },
   {
     "id": "skeletal-hand",
@@ -1961,6 +2249,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Squatting%20Bald%20Man.webp"
+  },
+  {
+    "id": "static-parrotrooper",
+    "name": "Static Parrotrooper",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 6,
+    "text": "When Static Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. At the start of your turn, lose 1 hit point.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Static%20Parrotrooper.webp"
   },
   {
     "id": "steakchop",
@@ -2124,6 +2430,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Tired%20Wombat.webp"
+  },
+  {
+    "id": "tntimmy",
+    "name": "TNTimmy",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "text": "When TNTimmy leaves play, deal 1 damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/TNTimmy.webp"
   },
   {
     "id": "tornado-wall-of-fire",

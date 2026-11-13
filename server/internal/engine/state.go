@@ -77,9 +77,20 @@ type Creature struct {
 	// Rainbow means the Creature has lost its Landscape type and is a Rainbow
 	// Creature until the end of the turn (Puppy Parade).
 	Rainbow bool `json:"rainbow,omitempty"`
+	// Under holds the cards put underneath it (Carmel Camel); they are discarded when it leaves play.
+	Under []Instance `json:"under,omitempty"`
+	// Flipped are the Landscapes this Creature turned face down, which it turns face up again when it
+	// leaves play (Mantle Masher).
+	Flipped []Spot `json:"flipped,omitempty"`
 	// Fired lists the once-per-turn triggers and the uses of limited
 	// abilities this turn, by the index of the effect.
 	Fired []int `json:"fired,omitempty"`
+}
+
+// Spot is one Landscape: a side of the board and a Lane.
+type Spot struct {
+	Player PlayerID `json:"player"`
+	Lane   int      `json:"lane"`
 }
 
 // Building is a Building in play.
@@ -94,9 +105,14 @@ type Lane struct {
 	FaceDown  bool           `json:"face_down"`
 	// Frozen means the Landscape has a frozen token (at most one). It keeps its type, and stays when the
 	// Landscape is turned over. No Creature may be played onto it, and a Creature on it cannot be replaced.
-	Frozen   bool      `json:"frozen,omitempty"`
-	Creature *Creature `json:"creature,omitempty"`
-	Building *Building `json:"building,omitempty"`
+	Frozen bool `json:"frozen,omitempty"`
+	// FlipBack and TypeBack are who (seat + 1) the Landscape goes back for at the start of their turn: face up
+	// again (Rock Out!, Sinkhole), or to the type it was (WasType) before Silo of Freedom changed it.
+	FlipBack int            `json:"flip_back,omitempty"`
+	TypeBack int            `json:"type_back,omitempty"`
+	WasType  card.Landscape `json:"was_type,omitempty"`
+	Creature *Creature      `json:"creature,omitempty"`
+	Building *Building      `json:"building,omitempty"`
 	// Extra holds the Buildings played here besides Building while a Creature
 	// allowed it (Burly Lumberjack). They stay if that Creature leaves.
 	Extra []*Building `json:"extra,omitempty"`
@@ -182,6 +198,11 @@ const (
 	ChoiceMoveDamage = "move_damage"
 	// move: pick the empty Landscape a Creature moves to at the start of the turn (Drained Cleric)
 	ChoiceMove = "move"
+	// camel: the Creature in Revealed is leaving play; pick the Camel (Card is its UID) to put it under, or 0 to
+	// let it go to its owner's hand (Count 1) or discard pile (Count 0). Lane and MoveSide are where it was.
+	ChoiceCamel = "camel"
+	// landscape: pick the type Silo of Freedom makes the Landscape in Lane: Card is 1 for the first of card.Landscapes.
+	ChoiceLandscape = "landscape"
 )
 
 // PlayedCard is a card played this turn, as it was when it was played.

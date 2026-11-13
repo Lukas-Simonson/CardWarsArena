@@ -271,6 +271,28 @@ func (g *Game) count(c card.Count, s source) int {
 		return n
 	case "destroyed":
 		return g.destroyed
+	case "face_down_landscapes":
+		n := 0
+		for _, p := range players {
+			for _, l := range st.Players[p].Lanes {
+				if l.FaceDown {
+					n++
+				}
+			}
+		}
+		return n
+	case "entered_lane":
+		if s.Lane < 0 {
+			return 0
+		}
+		return st.Entered[s.P][s.Lane]
+	case "bounced_cost":
+		return g.bouncedCost
+	case "under":
+		if s.creature == nil {
+			return 0
+		}
+		return len(s.creature.Under)
 	case "empty_lanes":
 		n := 0
 		for _, l := range st.Players[s.P].Lanes {
@@ -378,6 +400,18 @@ func (g *Game) cond(c card.Cond, s source) bool {
 			}
 		}
 		if !c.OtherCreatures.Has(n) {
+			return false
+		}
+	}
+	if c.EmptyLanes != nil && !c.EmptyLanes.Has(g.count(card.Count{Of: "empty_lanes"}, s)) {
+		return false
+	}
+	if c.OwnedAbroad != nil {
+		abroad := false
+		for _, l := range st.Players[s.P.Opp()].Lanes {
+			abroad = abroad || (l.Creature != nil && l.Creature.Owner == s.P)
+		}
+		if abroad != *c.OwnedAbroad {
 			return false
 		}
 	}
