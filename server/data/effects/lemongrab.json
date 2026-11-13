@@ -1,0 +1,704 @@
+{
+ "amaizing-avalanche": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "your"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "face_down_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "bouncing-zebracorn": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "landscape_types"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "rebounding-zebracorn": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "landscape_types"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "fancy-zebracorn": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "landscape_types"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "ol-corn-eye": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "def",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "landscape_types"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "earth-mover": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "face_down_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "quake-maker": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "face_down_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "carmel-camel": [
+  {
+   "kind": "static",
+   "restrict": "collect_leaving"
+  },
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "under"
+      }
+     }
+    },
+    {
+     "stat": "def",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "under"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "dragoon-parrotrooper": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "lane",
+     "without": "creature",
+     "label": "Move to"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "self": true,
+     "slot2": 0
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "restrict": "cannot_be_replaced"
+  },
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "adjacent_allies"
+     },
+     "amount": {
+      "n": -1
+     }
+    }
+   ]
+  }
+ ],
+ "husky-parrotrooper": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "lane",
+     "without": "creature",
+     "label": "Move to"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "self": true,
+     "slot2": 0
+    },
+    {
+     "do": "flip_landscape",
+     "slot": 0,
+     "face": "down",
+     "track": true
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "restrict": "cannot_be_replaced"
+  },
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "flip_landscape",
+     "tracked": true,
+     "face": "up"
+    }
+   ]
+  }
+ ],
+ "jinxed-parrotrooper": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "lane",
+     "without": "creature",
+     "label": "Move to"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "self": true,
+     "slot2": 0
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "restrict": "cannot_be_replaced"
+  },
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "discard_choice",
+     "who": "you",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "static-parrotrooper": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "lane",
+     "without": "creature",
+     "label": "Move to"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_creature",
+     "self": true,
+     "slot2": 0
+    }
+   ]
+  },
+  {
+   "kind": "static",
+   "restrict": "cannot_be_replaced"
+  },
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "you",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "drop-zone": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "owned": true
+    }
+   ],
+   "do": [
+    {
+     "do": "bounce",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "free-fall": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "your"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "entered_this_turn",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "grand-mummy": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "may",
+     "then": [
+      {
+       "do": "bounce",
+       "self": true
+      },
+      {
+       "do": "draw",
+       "amount": {
+        "n": 2
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "sandmagus": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "may",
+     "then": [
+      {
+       "do": "bounce",
+       "self": true
+      },
+      {
+       "do": "mod_creature",
+       "all": {
+        "rel": "your"
+       },
+       "stat": "atk",
+       "amount": {
+        "n": 1
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "ham-fist": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": -5
+     }
+    },
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "lunchpad": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "entered_lane"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "mantle-masher": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "landscape",
+     "in_lane": true,
+     "face_down": false
+    }
+   ],
+   "do": [
+    {
+     "do": "flip_landscape",
+     "slot": 0,
+     "face": "down",
+     "track": true
+    }
+   ]
+  },
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "flip_landscape",
+     "tracked": true,
+     "face": "up"
+    }
+   ]
+  }
+ ],
+ "rock-n-roller": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "landscape",
+     "in_lane": true,
+     "face_down": false
+    }
+   ],
+   "do": [
+    {
+     "do": "flip_landscape",
+     "slot": 0,
+     "face": "down",
+     "track": true
+    }
+   ]
+  },
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "flip_landscape",
+     "tracked": true,
+     "face": "up"
+    }
+   ]
+  }
+ ],
+ "parrotmilitary-outpost": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "lane_ally"
+     },
+     "amount": {
+      "n": -1
+     }
+    },
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "lane_foe"
+     },
+     "amount": {
+      "n": -1
+     }
+    }
+   ]
+  }
+ ],
+ "quick-pick-me-up": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you"
+    }
+   ],
+   "do": [
+    {
+     "do": "bounce",
+     "slot": 0
+    },
+    {
+     "do": "gain_actions",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "bounced_cost"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "rock-out": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "landscape",
+     "face_down": false
+    }
+   ],
+   "do": [
+    {
+     "do": "flip_landscape",
+     "slot": 0,
+     "face": "down",
+     "until": "your_next_turn"
+    }
+   ]
+  }
+ ],
+ "sandasaurus-rex": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 2,
+      "per": {
+       "of": "empty_lanes"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "silo-of-freedom": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "hand_card"
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "retype_landscape"
+    }
+   ]
+  }
+ ],
+ "sinkhole": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "hand_card"
+    },
+    {
+     "what": "landscape",
+     "in_lane": true,
+     "face_down": false
+    }
+   ],
+   "do": [
+    {
+     "do": "discard",
+     "slot": 0
+    },
+    {
+     "do": "flip_landscape",
+     "slot": 1,
+     "face": "down",
+     "until": "your_next_turn"
+    }
+   ]
+  }
+ ],
+ "ska-pion": [
+  {
+   "kind": "cost_mod",
+   "reduce": {
+    "n": 1
+   },
+   "if": {
+    "owned_abroad": true
+   }
+  }
+ ],
+ "tntimmy": [
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing"
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "lemongrab": [
+  {
+   "kind": "trigger",
+   "on": "fight_start",
+   "do": [
+    {
+     "do": "heal_hero",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "empty_lanes": {
+       "min": 1
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

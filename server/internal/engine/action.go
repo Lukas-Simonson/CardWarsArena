@@ -106,6 +106,8 @@ const (
 	EvReveal    EventKind = "reveal"    // a card in hand was shown (Card)
 	EvFreeze    EventKind = "freeze"    // a Landscape got a frozen token (Player, Lane)
 	EvThaw      EventKind = "thaw"      // a Landscape lost its frozen token (Player, Lane)
+	EvUnder     EventKind = "under"     // a Creature (Card) went underneath the Camel in Lane (Player is its owner)
+	EvRetype    EventKind = "retype"    // a Landscape changed type (Player, Lane; Amount is 1 + its index in card.Landscapes)
 )
 
 // Event describes one state change. Fields are used as relevant to the kind.
@@ -148,4 +150,5 @@ var (
 	ErrNoFloop        = errors.New("Creatures in this Lane cannot use Floop abilities")
 	ErrFrozen         = errors.New("a Creature cannot be played onto a frozen Landscape, or replace one there")
 	ErrNotFrozen      = errors.New("that Landscape has no frozen token")
+	ErrNoReplace      = errors.New("that Creature cannot be replaced")
 )

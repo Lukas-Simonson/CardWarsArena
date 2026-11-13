@@ -42,6 +42,7 @@ type Game struct {
 	milledSpells int // how many Spells the last mill discarded (Skeletal Hand)
 	heroDamage   int // damage a Creature just dealt to a player (Snakemint)
 	destroyed    int // how many Creatures the last destroy_creature op destroyed (Cute Overload)
+	bouncedCost  int // the cost of the Creatures the last bounce op returned (Quick Pick Me Up)
 }
 
 // NewGame validates the decks, shuffles, deals opening hands and returns a
@@ -127,6 +128,8 @@ func (g *Game) Clone() *Game {
 				v := *cr
 				v.Fired = append([]int(nil), cr.Fired...)
 				v.Offered = append([]Offer(nil), cr.Offered...)
+				v.Under = append([]Instance(nil), cr.Under...)
+				v.Flipped = append([]Spot(nil), cr.Flipped...)
 				dst.Lanes[i].Creature = &v
 			}
 			if b := src.Lanes[i].Building; b != nil {
@@ -310,6 +313,7 @@ func (g *Game) startTurn(p PlayerID) []Event {
 		}
 	}
 	ev := []Event{{Kind: EvTurnStart, Player: p}}
+	ev = append(ev, g.restoreLanes(p)...)
 	for _, c := range g.draw(p, 1) {
 		ev = append(ev, Event{Kind: EvDraw, Player: p, Card: c.UID})
 	}

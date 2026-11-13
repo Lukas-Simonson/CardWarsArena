@@ -100,6 +100,41 @@ A Landscape may hold one frozen token (`Lane.Frozen`). It keeps its type and the
   controller chooses (a `move` Choice), and with none the `else` ops run (Drained Cleric discards, Woadic Ring Leader is
   destroyed, Tired Wombat tries the opponent's side).
 
+## Face-down Landscapes, Parrotroopers and the Camel (Lemongrab's deck)
+
+- **Counts** `face_down_landscapes` (use `scope: "any"` for "in play"), `entered_lane` (Creatures that entered
+  play onto your Landscape in the card's Lane this turn: Lunchpad), `bounced_cost` (the cost of what the last
+  `bounce` returned: Quick Pick Me Up) and `under` (the cards underneath the card).
+- **Cond** `empty_lanes` (a `{min?, max?}` range for your Landscapes with no Creature: Lemongrab) and
+  `owned_abroad` (an opponent controls a Creature you own: Ska-pion).
+- **Target** `owned` picks Creatures the player owns wherever they are (Drop Zone), where `side: "you"` means
+  the ones on your side.
+- `flip_landscape` takes `until: "your_next_turn"` (Rock Out!, Sinkhole): the Landscape goes back face up when
+  its controller's next turn starts, if the op really turned it down. `track` makes the Creature remember the
+  Landscape it flipped and `tracked` (with `face: "up"`) turns those face up again (Mantle Masher, Rock 'n Roller and
+  Husky Parrotrooper do it when they leave play). A Landscape that was already face down is not recorded.
+- `move_creature` with `self` moves the Creature to the Landscape in slot 2, any empty one on either side
+  (the Parrotroopers; a target `lane` with `without: "creature"`). The ops after it act on the Creature where it is
+  now. It then belongs to whoever's side it is on, so a Parrotrooper moved to the opponent's side is theirs, and
+  stays exhausted until their next turn.
+- **Restrict** `cannot_be_replaced`: no Creature may be played onto it (`ErrNoReplace`).
+- `retype_landscape` (Silo of Freedom) asks its controller to pick the type of their Landscape in the card's Lane
+  (a `landscape` Choice). The Landscape becomes it until the start of their next turn, and then goes back to the
+  type it had before the first change.
+- **Restrict** `collect_leaving` (Carmel Camel): when a Creature its controller owns leaves play, by dying, being
+  replaced, destroyed or returned, its owner chooses (a `camel` Choice) whether it goes underneath the Camel
+  instead (`Creature.Under`). Under it, a card is out of play: nothing sees it, and its Landscape-type and
+  other rules are ignored. When the Camel leaves play, everything under it goes to its owners' discard piles.
+  Leaving play effects of the Creature that left still happen, and "when it is discarded" ones only if
+  the Camel lets it go.
+- A Hero's `fight_start` and `turn_start` triggers fire along with those of the Creatures and Buildings.
+
+Rulings: "empty Landscape" means one with no Creature on it, whatever Buildings it has. Husky Parrotrooper,
+Mantle Masher and Rock 'n Roller turn face up the Landscape they flipped, not whichever they are on when they leave.
+Free Fall and Amaizing Avalanche count when they resolve, like Spazzy Cola. "Adjacent" Creatures (Dragoon Parrotrooper)
+are the ones in the Lanes beside it on its side of the board. Silo of Freedom cannot be used on a face-down Landscape
+(it has no type to lose), but the card to discard is still paid.
+
 ## Landscape types, Rainbow and Buildings
 
 A Creature's Landscape types are worked out each time they are asked for (`creatureTypes`): its card's
@@ -215,7 +250,7 @@ stuck.
   give twice the bonus.
 - A Hero's rules are played by the engine; see "Heroes" below.
 
-All nine preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's and Gunter's) are fully modelled.
+All ten preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's and Lemongrab's) are fully modelled.
 
 - Spazzy Cola gives +1 ATK to the Creatures in play when it is played, not to ones that enter later this turn.
 - A "frozen Landscape" count (Icy Commando, Floating Ice Palace) counts the tokens on both sides of the board.

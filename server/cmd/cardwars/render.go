@@ -39,6 +39,9 @@ func (u *ui) creatureCell(p engine.PlayerID, lane int) [3]string {
 			tags = append(tags, "silenced")
 		}
 	}
+	if n := len(c.Under); n > 0 {
+		tags = append(tags, fmt.Sprintf("under:%d", n))
+	}
 	if !u.g.CanBeAttacked(p, lane) {
 		tags = append(tags, "protected")
 	}

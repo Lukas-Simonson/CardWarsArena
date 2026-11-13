@@ -164,6 +164,13 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return u.instName(a.Card) + " fights instead"
 		case engine.ChoiceMoveDamage:
 			return fmt.Sprintf("Move %d damage", a.Card)
+		case engine.ChoiceCamel:
+			if a.Card == 0 {
+				return "Let " + u.instName(ch.Revealed[0].UID) + " go"
+			}
+			return "Put " + u.instName(ch.Revealed[0].UID) + " under " + u.instName(a.Card)
+		case engine.ChoiceLandscape:
+			return fmt.Sprintf("Make your lane %d Landscape %s", ch.Lane+1, landscapeName(card.Landscapes[a.Card-1]))
 		case engine.ChoiceMove:
 			return fmt.Sprintf("Move %s to lane %d (%s side)", u.g.Catalog()[ch.Card].Name, a.Lane+1, u.side(me, ch.MoveSide))
 		}
@@ -254,6 +261,10 @@ func (u *ui) event(me engine.PlayerID, e engine.Event) string {
 		return fmt.Sprintf("%s's lane %d Landscape is frozen", u.who(e.Player), lane)
 	case engine.EvThaw:
 		return fmt.Sprintf("%s's lane %d Landscape thaws", u.who(e.Player), lane)
+	case engine.EvUnder:
+		return fmt.Sprintf("%s goes under the Camel in lane %d", name(), lane)
+	case engine.EvRetype:
+		return fmt.Sprintf("%s's lane %d Landscape becomes %s", u.who(e.Player), lane, landscapeName(card.Landscapes[e.Amount-1]))
 	case engine.EvFlip:
 		return fmt.Sprintf("%s's lane %d Landscape is flipped", u.who(e.Player), lane)
 	case engine.EvReady:
