@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, setCopies, room, landscapeTypes, landscapeRow, costCurve, problems, mix, heroes, pool, changed,
+  emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, landscapeTypes, landscapeRow, costCurve, problems, mix, heroes, pool, changed,
   landscapesOf, chooseLandscape, autoLandscapes, unplayable, whyUnplayable,
   MAX_COPIES, MAX_CARDS,
 } from "../js/deckmodel.js";
@@ -53,32 +53,6 @@ test("a deck holds at most 120 cards", () => {
   assert.equal(total(full), MAX_CARDS);
   assert.match(whyNot(full, "pup"), /at most 120/);
   assert.equal(add(full, "pup"), full);
-});
-
-test("setCopies sets a card's count in one step, within the limits", () => {
-  let d = setCopies(emptyDeck(), "pup", 3);
-  assert.equal(copies(d, "pup"), 3);
-  d = setCopies(d, "pup", 1);
-  assert.equal(copies(d, "pup"), 1);
-  assert.equal(setCopies(d, "pup", 1), d);
-  d = setCopies(d, "pup", 0);
-  assert.equal("pup" in d.counts, false);
-  assert.equal(setCopies(d, "pup", 0), d);
-  assert.equal(copies(setCopies(d, "pup", 9), "pup"), MAX_COPIES);
-  assert.equal(copies(setCopies(d, "pup", -2), "pup"), 0);
-});
-
-test("setCopies stops at what a full deck has room for", () => {
-  const counts = {};
-  for (let i = 0; i < MAX_CARDS / MAX_COPIES - 1; i++) counts[`c${i}`] = MAX_COPIES;
-  const nearly = { ...emptyDeck(), counts }; // room for MAX_COPIES more
-  assert.equal(room(nearly, "pup"), MAX_COPIES);
-  const tight = setCopies(nearly, "pup", 2); // 2 in, 1 spot left
-  const full = setCopies(tight, "other", 1);
-  assert.equal(total(full), MAX_CARDS);
-  assert.equal(room(full, "pup"), 2); // it can keep its two, no third
-  assert.equal(room(full, "third"), 0);
-  assert.equal(setCopies(full, "third", 1), full);
 });
 
 test("Landscape types come from the cards, and Rainbow adds none", () => {

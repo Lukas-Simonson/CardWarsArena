@@ -423,11 +423,7 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .cell .card { background: #2b2f3a; } /* what shows while the picture loads */
 .stepper { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px; }
 .stepper .step { width: 44px; height: 44px; padding: 3px 0 0; font-family: var(--big-font); font-size: 24px; flex: 0 0 auto; }
-.picker { display: flex; gap: 4px; padding: 4px; }
-.picker .seg { flex: 1 1 0; min-width: 0; height: 44px; padding: 3px 0 0; border: 2px solid #1f1a12; border-radius: 8px; background: #e9dfc4; color: var(--parch-ink); font-family: var(--big-font); font-size: 22px; cursor: pointer; }
-.picker .seg.on { background: #5cb82e; color: #fff; text-shadow: 0 2px 0 #173a0c; box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 3px 0 #173a0c; }
-.picker .seg:disabled { opacity: .4; cursor: not-allowed; }
-.picker .seg:focus-visible { outline: 3px solid #ffd34d; outline-offset: 2px; }
+.stepper .btn-green.step { box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 3px 0 #173a0c; }
 .ncopies { font-size: 18px; }
 .nocards { grid-column: 1 / -1; margin: 0; padding: 24px; text-align: center; color: #e3f0dc; border: 3px dashed rgba(255,255,255,.45); border-radius: 14px; }
 .bdeck { padding: 18px 24px 24px; display: flex; flex-direction: column; gap: 14px; }

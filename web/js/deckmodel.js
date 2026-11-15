@@ -40,19 +40,6 @@ export function add(deck, id) {
   return whyNot(deck, id) ? deck : { ...deck, counts: { ...deck.counts, [id]: copies(deck, id) + 1 } };
 }
 
-/** The most copies of a card the deck can hold: the copy limit, or what the deck's size leaves room for. */
-export const room = (deck, id) => Math.min(MAX_COPIES, copies(deck, id) + MAX_CARDS - total(deck));
-
-/** Set a card's copies to n, at most what fits (see room); 0 takes the card out. */
-export function setCopies(deck, id, n) {
-  n = Math.max(0, Math.min(Math.trunc(n) || 0, room(deck, id)));
-  if (n === copies(deck, id)) return deck;
-  const counts = { ...deck.counts };
-  if (n === 0) delete counts[id];
-  else counts[id] = n;
-  return { ...deck, counts };
-}
-
 export function remove(deck, id) {
   const n = copies(deck, id);
   if (n === 0) return deck;
