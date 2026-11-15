@@ -13,6 +13,9 @@ export const LANDSCAPE_NAMES = {
   nice_lands: "Nice Lands", sandy_lands: "Sandy Lands", icy_lands: "Icy Lands", rainbow: "Rainbow",
 };
 
+/** The Landscape types in the order the server numbers them (a "landscape" choice's `card` is 1 + the index). */
+export const LANDSCAPE_ORDER = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands"];
+
 export const landscapeName = (l) => LANDSCAPE_NAMES[l] ?? l ?? "";
 
 export function cardName(ctx, id) {
@@ -86,6 +89,8 @@ export function describeAction(ctx, a) {
       if (ch?.kind === "rebound") return a.card ? `Discard ${instName(ctx, a.card)} to return ${cardName(ctx, ch.card)} to your hand` : `Leave ${cardName(ctx, ch.card)} in the discard pile`;
       if (ch?.kind === "redirect") return a.card ? `${instName(ctx, a.card)} fights instead` : `${cardName(ctx, ch.card)} fights`;
       if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
+      if (ch?.kind === "camel") return a.card ? `Put ${instName(ctx, ch.revealed?.[0]?.uid)} under ${cardName(ctx, ch.card)}` : `Let ${instName(ctx, ch.revealed?.[0]?.uid)} go`;
+      if (ch?.kind === "landscape") return `Make your lane ${laneNo(ch.lane)} Landscape ${landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1])}`;
       if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${movesToTheirSide(ch, v.you) ? " on the opponent's side" : ""}`;
       return "Choose";
     }
@@ -138,6 +143,8 @@ export function describeEvent(ctx, e) {
     case "die": return `${n()} is destroyed`;
     case "game_over": return `*** ${who} wins! ***`;
     case "move": return `${n()} moves to lane ${laneNo(e.lane)}`;
+    case "under": return `${n()} goes under the Camel in lane ${laneNo(e.lane)}`;
+    case "retype": return `${who}'s lane ${laneNo(e.lane)} Landscape becomes ${landscapeName(LANDSCAPE_ORDER[(e.amount ?? 1) - 1])}`;
     case "flip": return `${who}'s lane ${laneNo(e.lane)} Landscape is flipped`;
     case "freeze": return `${who}'s lane ${laneNo(e.lane)} Landscape is frozen`;
     case "thaw": return `${who}'s lane ${laneNo(e.lane)} Landscape thaws`;

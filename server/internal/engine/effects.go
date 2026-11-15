@@ -87,7 +87,7 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 			ok := false
 			switch spec.What {
 			case "creature":
-				if cr := l.Creature; cr != nil && !(cr.Shielded && p != c.p) {
+				if cr := l.Creature; cr != nil && !(cr.Shielded && p != c.p) && (!spec.Owned || cr.Owner == c.p) {
 					ok = (spec.Landscape == "" || g.isType(pos{p, lane}, spec.Landscape)) &&
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
 						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0)
@@ -513,12 +513,24 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "ogre_gas":
 			g.ogreGas(c.p, 3, c)
 		case "bounce":
+			g.bouncedCost = 0
 			for _, at := range g.creaturesFor(op, c, given) {
+				g.bouncedCost += baseStat(g.Card(g.creatureAt(at).Instance).Cost)
 				ev = append(ev, g.removeCreature(at, toHand)...)
 			}
 		case "move_creature":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
-			if len(from) == 1 && len(to) == 1 {
+			if op.Self {
+				// The Creature moves itself; what comes after acts on it where it is now (Husky Parrotrooper).
+				if c.creature != nil && c.hasSrc && g.creatureAt(c.at) == c.creature && len(to) == 1 {
+					dest := pos{to[0].Player, to[0].Lane}
+					ev = append(ev, g.moveCreature(c.at, dest)...)
+					if g.creatureAt(dest) == c.creature {
+						c.at, c.p = dest, dest.P
+						s = c.source()
+					}
+				}
+			} else if len(from) == 1 && len(to) == 1 {
 				ev = append(ev, g.moveCreature(pos{from[0].Player, from[0].Lane}, pos{to[0].Player, to[0].Lane})...)
 			}
 		case "discard":
@@ -539,13 +551,18 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				ev = append(ev, g.moveBuilding(pos{from[0].Player, from[0].Lane}, to[0].Lane)...)
 			}
 		case "flip_landscape":
+			if op.Tracked {
+				ev = append(ev, g.unflipTracked(c)...)
+			}
 			for _, r := range slotRefs(op.Slot, given) {
 				if op.Who == "you" {
 					r.Player = c.p // the controller's Landscape in the chosen Lane
 				}
-				l := &g.State.Players[r.Player].Lanes[r.Lane]
-				l.FaceDown = op.Face == "down"
-				ev = append(ev, Event{Kind: EvFlip, Player: r.Player, Lane: r.Lane})
+				ev = append(ev, g.flipLandscape(op, c, r.Player, r.Lane)...)
+			}
+		case "retype_landscape":
+			if c.hasSrc && c.at.Lane >= 0 {
+				g.askLandscape(c.p, c.at.Lane, c)
 			}
 		case "destroy_building":
 			for _, r := range slotRefs(op.Slot, given) {
@@ -854,18 +871,27 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 		return nil
 	}
 	l.Creature = nil
-	owner := &g.State.Players[cr.Owner]
+	// Whatever was put underneath it is discarded.
+	for _, in := range cr.Under {
+		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
+	}
+	// A Camel of its owner's may take it instead; the owner is asked once it has gone.
+	camels := g.camelLanes(cr)
 	var ev []Event
-	switch to {
-	case toHand:
-		owner.Hand = append(owner.Hand, cr.Instance)
-		ev = append(ev, Event{Kind: EvBounce, Player: cr.Owner, Card: cr.UID, Lane: at.Lane})
-		ev = append(ev, g.noteReturn(cr.Owner)...)
-	default:
-		owner.Discard = append(owner.Discard, cr.Instance)
+	if len(camels) == 0 {
+		ev = g.settleLeaver(cr, at.Lane, to)
 	}
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
 	ev = append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
+	if len(camels) > 0 {
+		hand := 0
+		if to == toHand {
+			hand = 1
+		}
+		g.ask(Choice{Player: cr.Owner, Kind: ChoiceCamel, Card: g.effectsCamel(camels, cr.Owner), Count: hand, Lane: at.Lane,
+			MoveSide: at.P, Lanes: camels, Revealed: []Instance{cr.Instance}})
+		return ev
+	}
 	if to == toDiscard {
 		ev = append(ev, g.fire(card.OnDiscarded, ctx, g.effectsOf(cr), nil)...)
 	}

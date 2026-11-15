@@ -46,7 +46,8 @@ func (g *Game) fireStart(p PlayerID, on string) []Event {
 			items = append(items, item{g.buildingEffects(pos{p, i}, b), effCtx{p: p, at: pos{p, i}, hasSrc: true, card: b.CardID}})
 		}
 	}
-	var ev []Event
+	// The Hero's triggers come first (Lemongrab at the start of the Fight Phase).
+	ev := g.fireHero(p, on)
 	for _, it := range items {
 		ev = append(ev, g.fire(on, it.ctx, it.effects, nil)...)
 	}

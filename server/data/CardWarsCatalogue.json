@@ -34,6 +34,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Each of your Creatures has +1 ATK this turn for each facedown Landscape in play.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Amaizing Avalanche.png",
+    "name" : "Amaizing Avalanche",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "FLOOP >>> Return a random Rainbow card from your discard pile to your hand. If you control a Building in this Lane, gain 1 action.",
     "attack" : 1,
     "cost" : 1,
@@ -315,6 +331,24 @@
     "type" : "Spell"
   },
   {
+    "ability" : "+1 ATK for each different Landscape type you control.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Bouncing Zebracorn.png",
+    "name" : "Bouncing Zebracorn",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "If Brain Gooey replaces a Creature, it has +2 ATK this turn.",
     "attack" : 1,
     "cost" : 1,
@@ -413,6 +447,24 @@
       "Fionna Vs Cake (Cake)" : 1
     },
     "type" : "Hero"
+  },
+  {
+    "ability" : "When a Creature you own leaves play, you may put it underneath this card instead. +1 ATK and +1 DEF for each card under this. When this card leaves play, discard all cards under it.",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Carmel Camel.png",
+    "name" : "Carmel Camel",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Discard a card >>> Your Creature in this Lane cannot be targeted or attacked until the start of your next turn.",
@@ -852,6 +904,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Dragoon Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. Adjacent Creatures have -1 ATK.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Dragoon Parrotrooper.png",
+    "name" : "Dragoon Parrotrooper",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "At the start of your turn, move Drained Cleric to an empty Landscape you control. If you cannot, discard a card.",
     "attack" : 3,
     "cost" : 1,
@@ -888,6 +958,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Return target Creature you own to your hand.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Drop Zone.png",
+    "name" : "Drop Zone",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "Flooped Creatures you control have +1 ATK.",
     "attack" : 1,
     "cost" : 1,
@@ -902,6 +988,24 @@
     "quantity" : 2,
     "sets" : {
       "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+2 ATK for each facedown Landscape in play.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Earth Mover.png",
+    "name" : "Earth Mover",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
     },
     "type" : "Creature"
   },
@@ -1026,6 +1130,24 @@
       "Lemongrab Vs Gunter (Gunter)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "+1 DEF for each different Landscape type you control.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Fancy Zebracorn.png",
+    "name" : "Fancy Zebracorn",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Farmhouse counts as an additional Cornfield Landscape you control.",
@@ -1192,6 +1314,22 @@
       "Lemongrab Vs Gunter (Gunter)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Each of your Creatures has +1 ATK for each Creature that entered play this turn.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Free Fall.png",
+    "name" : "Free Fall",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Swap any amount of damage between two of your Creatures.",
@@ -1366,6 +1504,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "At the start of your turn, you may return Grand Mummy to its owner's hand. If you do, draw 2 cards.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Grand Mummy.png",
+    "name" : "Grand Mummy",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "If Grape Djinni replaces a Creature, you may put a card from your discard pile on top of your deck.",
     "attack" : 1,
     "cost" : 1,
@@ -1484,6 +1640,22 @@
       "Lemongrab Vs Gunter (Gunter)" : 1
     },
     "type" : "Hero"
+  },
+  {
+    "ability" : "Target Creature you control has -5 ATK this turn. Draw a card.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Ham Fist.png",
+    "name" : "Ham Fist",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Put a Building from your discard pile into play.",
@@ -1682,6 +1854,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Husky Parrotrooper enters play, move it to any empty Landscape, then flip that Landscape face down. When Husky Parrotrooper leaves play, flip it face up.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Husky Parrotrooper.png",
+    "name" : "Husky Parrotrooper",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+1 ATK for each frozen Landscape.",
     "attack" : 1,
     "cost" : 1,
@@ -1840,6 +2030,24 @@
     "type" : "Hero"
   },
   {
+    "ability" : "When Jinxed Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. At the start of your turn, discard a card.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Jinxed Parrotrooper.png",
+    "name" : "Jinxed Parrotrooper",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+1 ATK for each Flooped Creature you control.",
     "attack" : 1,
     "cost" : 1,
@@ -1904,6 +2112,20 @@
       "Finn Vs Jake (Jake)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "At the start of your Fight Phase, gain 1 HP if you have 1 or more empty Landscapes. (Can't go over 25.)",
+    "extras" : {
+
+    },
+    "image" : "Lemongrab.png",
+    "name" : "Lemongrab",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Hero"
   },
   {
     "ability" : "Each of your Creatures in a Lane with a Building you control has +2 ATK this turn.",
@@ -1990,6 +2212,22 @@
     "type" : "Hero"
   },
   {
+    "ability" : "FLOOP >>> Draw a card for each Creature that entered play onto your Landscape in this Lane this turn.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Lunchpad.png",
+    "name" : "Lunchpad",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Destroy Mace Stump >>> Target opponent discards a card for every 5 cards in your discard pile.",
     "attack" : 3,
     "cost" : 1,
@@ -2038,6 +2276,24 @@
       "BMO Vs Lady Rainicorn (BMO)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "When Mantle Masher enters play, flip a Landscape in this Lane face down. When Mantle Masher leaves play, flip it face up.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Mantle Masher.png",
+    "name" : "Mantle Masher",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Your Creature in this Lane has +1 DEF for every 5 cards in your discard pile.",
@@ -2212,6 +2468,24 @@
     "type" : "Building"
   },
   {
+    "ability" : "+1 DEF for each different Landscape type you control.",
+    "attack" : 4,
+    "cost" : 2,
+    "defense" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Ol' Corn Eye.png",
+    "name" : "Ol' Corn Eye",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Opposing Creatures in this Lane do not trigger entering or leaving play effects.",
     "cost" : 1,
     "extras" : {
@@ -2242,6 +2516,22 @@
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "Each Creature in this Lane has -1 ATK.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Parrotmilitary Outpost.png",
+    "name" : "Parrotmilitary Outpost",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "FLOOP >>> Deal 1 damage to target Creature. Do this once for each Cornfield Landscape you control. (May only target each Creature once.)",
@@ -2504,6 +2794,40 @@
     "type" : "Building"
   },
   {
+    "ability" : "+2 ATK for each facedown Landscape in play.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Quake Maker.png",
+    "name" : "Quake Maker",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Return target Creature you control to its owner's hand. Gain actions equal to its cost.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Quick Pick Me Up.png",
+    "name" : "Quick Pick Me Up",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "At the start of your turn, you heal 1 hit point for each different Landscape type you control. (Can't go over 25)",
     "attack" : 1,
     "cost" : 1,
@@ -2518,6 +2842,24 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+1 ATK for each different Landscape type you control.",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Rebounding Zebracorn.png",
+    "name" : "Rebounding Zebracorn",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
     },
     "type" : "Creature"
   },
@@ -2584,6 +2926,40 @@
     "quantity" : 1,
     "sets" : {
       "Fionna Vs Cake (Fionna)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "When Rock'n Roller enters play, flip a Landscape in this Lane face down. When Rock'n Roller leaves play, flip it face up.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Rock 'n Roller.png",
+    "name" : "Rock 'n Roller",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Flip target Landscape face down until the start of your next turn.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Rock Out!.png",
+    "name" : "Rock Out!",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
     },
     "type" : "Spell"
   },
@@ -2676,6 +3052,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "+2 ATK for each of your empty Landscapes.",
+    "attack" : 0,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Sandasaurus Rex.png",
+    "name" : "Sandasaurus Rex",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "When Sandhorn Devil enters play, deal 1 damage to every Creature in play (including your own).",
     "attack" : 3,
     "cost" : 1,
@@ -2690,6 +3084,24 @@
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (Lady)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "At the start of your turn, you may return Sandmagus to its owner's hand. If you do, each other Creature you control has +1 ATK this turn.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Sandmagus.png",
+    "name" : "Sandmagus",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
     },
     "type" : "Creature"
   },
@@ -2746,6 +3158,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Discard a card >>> Your Landscape in this Lane loses its type and becomes the type of your choice (except face down) until the start of your next turn.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Silo of Freedom.png",
+    "name" : "Silo of Freedom",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Pay 2 actions >>> Steal a random card from your opponent's hand and play it at no cost.",
     "cost" : 1,
     "extras" : {
@@ -2776,6 +3204,40 @@
       "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "FLOOP and discard a card >>> Flip target Landscape in this Lane face down until the start of your next turn.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Sinkhole.png",
+    "name" : "Sinkhole",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "Ska-pion costs 1 less to play while an opponent controls a Creature you own.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "SandyLands",
+    "image" : "Ska-pion.png",
+    "name" : "Ska-pion",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Discard the top 3 cards of your deck. For each Spell Jiscarded this way, target player discards a card.",
@@ -2946,6 +3408,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Static Parrotrooper enters play, move it to any empty Landscape. It cannot be replaced. At the start of your turn, lose 1 hit point.",
+    "attack" : 0,
+    "cost" : 0,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Static Parrotrooper.png",
+    "name" : "Static Parrotrooper",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "At the start of your turn, discard 2 cards or destroy Steakchop. Discard after your free draw.)",
     "attack" : 4,
     "cost" : 1,
@@ -3028,6 +3508,24 @@
       "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "When TNTimmy leaves play, deal 1 damage to each opposing Creature.",
+    "attack" : 0,
+    "cost" : 0,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "TNTimmy.png",
+    "name" : "TNTimmy",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "This turn, target Creature you control has +2 ATK for each of your exhausted Creatures (at the time you play this).",

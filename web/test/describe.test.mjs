@@ -111,7 +111,7 @@ test("events name a card by card_id even if it was never in a view", () => {
 });
 
 test("every event kind the server can send has a description", () => {
-  const kinds = ["mulligan", "keep_hand", "turn_start", "draw", "play", "replace", "attack", "damage", "hp_loss", "hp_gain", "heal", "die", "game_over", "move", "flip", "ready", "bounce", "destroy", "return", "deck_top", "actions", "floop", "activate", "discard", "steal", "abilities"];
+  const kinds = ["mulligan", "keep_hand", "turn_start", "draw", "play", "replace", "attack", "damage", "hp_loss", "hp_gain", "heal", "die", "game_over", "move", "flip", "ready", "bounce", "destroy", "return", "deck_top", "actions", "floop", "activate", "discard", "steal", "abilities", "under", "retype"];
   for (const k of kinds) assert.notEqual(describeEvent(ctx, { kind: k, player: 0, card: 20, amount: 1 }), k, `${k} falls through to its raw name`);
 });
 
@@ -186,7 +186,12 @@ test("actions that answer a Choice are described", async () => {
   assert.equal(describeAction(theirs, { kind: "choose", lane: 1 }), "Move The Pig to lane 2 on the opponent's side");
   const move = ctxFor(view({ choice: { player: 0, kind: "move_damage", card: "the-pig", count: 3 } }));
   assert.equal(describeAction(move, { kind: "choose", card: 2 }), "Move 2 damage");
-  for (const c of [search, rebound, redirect, move]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
+  const camel = ctxFor(view({ choice: { player: 0, kind: "camel", card: "cool-dog", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
+  assert.equal(describeAction(camel, { kind: "choose", card: 9 }), "Put The Pig under Cool Dog");
+  assert.equal(describeAction(camel, { kind: "choose" }), "Let The Pig go");
+  const silo = ctxFor(view({ choice: { player: 0, kind: "landscape", card: "silo-of-freedom", lane: 2 } }));
+  assert.equal(describeAction(silo, { kind: "choose", card: 4 }), "Make your lane 3 Landscape Nice Lands");
+  for (const c of [search, rebound, redirect, move, camel, silo]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
 });
 
 test("showing a card in hand reads in the log", () => {

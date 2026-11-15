@@ -7,7 +7,7 @@ import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
-import { cardName, landscapeName, seatName, movesToTheirSide } from "./describe.js";
+import { cardName, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide } from "./describe.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -222,7 +222,7 @@ function tile(m, seat, i, on) {
     if (c) on.onInspect(c.card);
   };
   const label = `${mine ? "Your" : "Opponent"} Lane ${i + 1}, ${lane.face_down ? "face-down" : landscapeName(lane.landscape)}${lane.frozen ? ", frozen" : ""}${c ? `: ${cardName(ctx, c.card)}` : ", empty"}`;
-  const stats = c && [c.types && c.types.map(landscapeName).join(" / "), c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced")].filter(Boolean);
+  const stats = c && [c.types && c.types.map(landscapeName).join(" / "), c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced"), c.under?.length > 0 && `${c.under.length} under`].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
     "data-seat": seat, "data-lane": i,
@@ -344,6 +344,22 @@ function choiceModal(m, on) {
     text = theirs ? `${by} has nowhere to go on your side: choose an empty Landscape on your opponent's side.` : `Choose an empty Landscape of yours to move ${by} to.`;
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, `Lane ${(a.lane ?? 0) + 1}`)));
+  } else if (ch.kind === "camel") {
+    const gone = ch.revealed?.[0];
+    const put = choose.find((a) => a.card);
+    const let_go = choose.find((a) => !a.card);
+    title = `${by}: keep it?`;
+    text = `${cardName(ctx, gone?.card)} is leaving play. You may put it underneath ${by} instead; it stays there until ${by} leaves play.`;
+    body = h("div", {},
+      gone && h("div", { class: "modalcards" }, h("div", { class: "modalopt cardopt" }, cardEl(ctx.cards[gone.card] ?? { id: gone.card, name: gone.card }), h("span", { class: "cap" }, cardName(ctx, gone.card)))),
+      h("div", { class: "modalrow" },
+        put && h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(put) }, `Put it under ${by}`),
+        let_go && h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(let_go) }, "Let it go")));
+  } else if (ch.kind === "landscape") {
+    title = by;
+    text = `Choose the type your lane ${ch.lane + 1} Landscape becomes until the start of your next turn.`;
+    body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
+      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, landscapeName(LANDSCAPE_ORDER[a.card - 1]))));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = `${by}: upkeep`;

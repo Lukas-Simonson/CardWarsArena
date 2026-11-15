@@ -222,6 +222,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Learning%20Center.webp"
   },
   {
+    "id": "lunchpad",
+    "name": "Lunchpad",
+    "type": "building",
+    "landscape": "sandy_lands",
+    "cost": 2,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each Creature that entered play onto your Landscape in this Lane this turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lunchpad.webp"
+  },
+  {
     "id": "mausoleum",
     "name": "Mausoleum",
     "type": "building",
@@ -286,6 +302,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Palace%20of%20Bone.webp"
   },
   {
+    "id": "parrotmilitary-outpost",
+    "name": "Parrotmilitary Outpost",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Each Creature in this Lane has -1 ATK.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Parrotmilitary%20Outpost.webp"
+  },
+  {
     "id": "pyramidia",
     "name": "Pyramidia",
     "type": "building",
@@ -334,6 +366,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Schoolhouse.webp"
   },
   {
+    "id": "silo-of-freedom",
+    "name": "Silo of Freedom",
+    "type": "building",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Discard a card \u003e\u003e\u003e Your Landscape in this Lane loses its type and becomes the type of your choice (except face down) until the start of your next turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Silo%20of%20Freedom.webp"
+  },
+  {
     "id": "silo-of-truth",
     "name": "Silo of Truth",
     "type": "building",
@@ -348,6 +396,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Silo%20of%20Truth.webp"
+  },
+  {
+    "id": "sinkhole",
+    "name": "Sinkhole",
+    "type": "building",
+    "landscape": "cornfield",
+    "cost": 2,
+    "text": "FLOOP and discard a card \u003e\u003e\u003e Flip target Landscape in this Lane face down until the start of your next turn.",
+    "printings": [
+      {
+        "deck": "Lemongrab's Deck",
+        "set": "Lemongrab Vs Gunter",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sinkhole.webp"
   },
   {
     "id": "snow-training-camp",

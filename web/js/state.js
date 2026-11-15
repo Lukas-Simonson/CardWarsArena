@@ -33,6 +33,7 @@ export function learnCards(known, view) {
       add(l.creature);
       add(l.building);
       (l.extra ?? []).forEach(add);
+      (l.creature?.under ?? []).forEach(add);
     }
   }
   add(view.pending);
