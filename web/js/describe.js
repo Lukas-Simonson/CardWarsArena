@@ -91,6 +91,7 @@ export function describeAction(ctx, a) {
       if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
       if (ch?.kind === "camel") return a.card ? `Put ${instName(ctx, ch.revealed?.[0]?.uid)} under ${cardName(ctx, ch.card)}` : `Let ${instName(ctx, ch.revealed?.[0]?.uid)} go`;
       if (ch?.kind === "landscape") return `Make your lane ${laneNo(ch.lane)} Landscape ${landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1])}`;
+      if (ch?.kind === "target") return a.targets?.[0]?.length ? withTargets(ctx, `${cardName(ctx, ch.card)}: ${ch.label || "Choose"}`, "target", a.targets) : `${cardName(ctx, ch.card)}: choose nothing`;
       if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${movesToTheirSide(ch, v.you) ? " on the opponent's side" : ""}`;
       return "Choose";
     }

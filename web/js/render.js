@@ -7,7 +7,7 @@ import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
-import { cardName, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide } from "./describe.js";
+import { cardName, describeRef, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide } from "./describe.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -360,6 +360,14 @@ function choiceModal(m, on) {
     text = `Choose the type your lane ${ch.lane + 1} Landscape becomes until the start of your next turn.`;
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, landscapeName(LANDSCAPE_ORDER[a.card - 1]))));
+  } else if (ch.kind === "target") {
+    const none = choose.find((a) => !a.targets?.[0]?.length);
+    title = `${by}: ${ch.label || "choose"}`;
+    text = ch.optional ? `${by} lets you choose. You may choose nothing.` : `${by} triggers. Choose what it acts on.`;
+    body = h("div", {},
+      h("div", { class: "modalrow modalrow2" }, choose.filter((a) => a.targets?.[0]?.length).map((a) =>
+        h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, describeRef(ctx, a.targets[0][0])))),
+      none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, "Choose nothing")));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = `${by}: upkeep`;
