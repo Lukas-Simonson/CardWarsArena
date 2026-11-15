@@ -205,6 +205,7 @@ every other action is refused (`illegal_action`) until they answer.
 | `move` | the Creature in your Lane `lane` (omitted for Lane 0) must move at the start of your turn to an empty Landscape on seat `move_side`'s side (omitted for seat 0, like any zero), one of `lanes` (Drained Cleric, Tired Wombat, Woadic Ring Leader) | `choose` with `lane` = one of `lanes` |
 | `camel` | the Creature in `revealed` is leaving play; you may put it underneath your Camel instead of letting it go to your hand (`count` 1) or discard pile (`count` 0) (Carmel Camel). `lane` is the Lane it left, on seat `move_side`'s side | `choose` with `card` = the Camel's uid, or `choose` with no `card` to let it go |
 | `landscape` | pick the type your Landscape in `lane` becomes until the start of your next turn (Silo of Freedom) | `choose` with `card` = 1 + the type's index in `cornfield, blue_plains, useless_swamp, nice_lands, sandy_lands, icy_lands` |
+| `target` | a trigger of the card chose a target for you (Crystal Palace, Frozen Fish): `targets` lists the legal ones, `label` says what for, and `optional` that you may choose none. `lane` is the card's Lane, on seat `move_side`'s side | `choose` with `targets` = `[[ref]]` for one of the listed refs, or `choose` with no `targets` when `optional` |
 
 As always, send one of the objects in `view.legal`.
 

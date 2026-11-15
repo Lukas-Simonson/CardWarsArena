@@ -1,0 +1,429 @@
+{
+ "abdominal-snowman": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 3
+     },
+     "if": {
+      "opposing_creature_in_lane": false
+     }
+    }
+   ]
+  }
+ ],
+ "cold-soldier": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 3
+     },
+     "if": {
+      "opposing_creature_in_lane": false
+     }
+    }
+   ]
+  }
+ ],
+ "boarder-collie": [
+  {
+   "kind": "floop",
+   "if": {
+    "empty_lanes": {
+     "min": 1
+    }
+   },
+   "do": [
+    {
+     "do": "move_self",
+     "to": "empty_own",
+     "then": [
+      {
+       "do": "gain_actions",
+       "amount": {
+        "n": 1
+       },
+       "if": {
+        "lane_frozen": "either"
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "emperor-penguin": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "any",
+      "frozen": true
+     },
+     "amount": {
+      "n": -1
+     }
+    }
+   ]
+  }
+ ],
+ "frost-dragon": [
+  {
+   "kind": "activate",
+   "cost": 1,
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze",
+     "in_lane": true
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "frozen-fish": [
+  {
+   "kind": "trigger",
+   "on": "deals_creature_damage",
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze",
+     "in_lane": true,
+     "optional": true
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "icemeister": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "any",
+      "frozen": true
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "reign-deer": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "frozen_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "slay-rider": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "frozen": true,
+     "label": "Damage"
+    }
+   ],
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 3
+     }
+    }
+   ]
+  }
+ ],
+ "snow-angel": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "heal_creature",
+     "all": {
+      "rel": "your"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "frozen_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "snow-bunny": [
+  {
+   "kind": "activate",
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze"
+    }
+   ],
+   "do": [
+    {
+     "do": "destroy_creature",
+     "self": true
+    },
+    {
+     "do": "freeze",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "snow-dog": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "adjacent_allies"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "sprucy-lucy": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "frozen_landscapes",
+       "scope": "any"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "crystal-palace": [
+  {
+   "kind": "trigger",
+   "on": "landscape_frozen",
+   "targets": [
+    {
+     "what": "creature",
+     "label": "Damage"
+    }
+   ],
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "ice-olation-cell": [
+  {
+   "kind": "static",
+   "restrict": "frozen_lane_inert"
+  }
+ ],
+ "snow-business": [
+  {
+   "kind": "activate",
+   "cost": 1,
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze",
+     "in_lane": true
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "freeze-ray": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze"
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0
+    },
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "freezing-point": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "freeze",
+     "every": true,
+     "who": "opponent"
+    }
+   ]
+  }
+ ],
+ "frosty-frolic": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "discard_choice",
+     "who": "opponent",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "frozen_landscapes",
+       "scope": "opponent"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "frozen-heart": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "label": "Damage"
+    }
+   ],
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 1
+     },
+     "frozen": false
+    },
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 3
+     },
+     "frozen": true
+    }
+   ]
+  }
+ ],
+ "snow-way": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "landscape",
+     "label": "Freeze",
+     "distinct": "freeze"
+    },
+    {
+     "what": "landscape",
+     "label": "Freeze",
+     "distinct": "freeze"
+    }
+   ],
+   "do": [
+    {
+     "do": "freeze",
+     "slot": 0
+    },
+    {
+     "do": "freeze",
+     "slot": 1
+    }
+   ]
+  }
+ ],
+ "ice-king": [
+  {
+   "kind": "trigger",
+   "on": "attacks_hero",
+   "once_per_turn": true,
+   "do": [
+    {
+     "do": "mod_creature",
+     "attacker": true,
+     "stat": "atk",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ]
+}

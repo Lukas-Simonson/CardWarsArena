@@ -26,9 +26,13 @@ func (g *Game) heroCtx(p PlayerID) effCtx {
 
 // fireHero runs the triggers of p's Hero for an event. A trigger with an `if`
 // only fires while it holds, and one marked once_per_turn only the first time.
-func (g *Game) fireHero(p PlayerID, on string) []Event {
+func (g *Game) fireHero(p PlayerID, on string) []Event { return g.fireHeroFor(p, on, nil) }
+
+// fireHeroFor is fireHero for an event about a Creature: the one that was Activated to Fight.
+func (g *Game) fireHeroFor(p PlayerID, on string, attacker *Creature) []Event {
 	var ev []Event
 	ctx := g.heroCtx(p)
+	ctx.attacker = attacker
 	for i, e := range g.heroEffects(p) {
 		if e.Kind != card.KindTrigger || e.On != on {
 			continue

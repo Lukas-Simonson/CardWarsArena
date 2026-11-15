@@ -101,6 +101,16 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 		if a.Card < 1 || a.Card > len(card.Landscapes) {
 			return ErrBadTarget
 		}
+	case ChoiceTarget:
+		if len(a.Targets) == 0 || (len(a.Targets) == 1 && len(a.Targets[0]) == 0) {
+			if ch.Optional {
+				return nil
+			}
+			return ErrBadTarget
+		}
+		if len(a.Targets) != 1 || len(a.Targets[0]) != 1 || !slices.Contains(ch.Targets, a.Targets[0][0]) {
+			return ErrBadTarget
+		}
 	}
 	return nil
 }
@@ -163,11 +173,14 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 	case ChoiceMove:
 		if cr := g.creatureAt(pos{p, ch.Lane}); cr != nil && cr.UID == ch.SourceUID {
 			ev = g.moveCreature(pos{p, ch.Lane}, pos{ch.MoveSide, a.Lane})
+			ev = append(ev, g.afterMove(ch.Do, p, pos{ch.MoveSide, a.Lane}, g.creatureAt(pos{ch.MoveSide, a.Lane}))...)
 		}
 	case ChoiceCamel:
 		ev = g.camelAnswer(p, ch, a.Card)
 	case ChoiceLandscape:
 		ev = g.retype(p, ch.Lane, card.Landscapes[a.Card-1])
+	case ChoiceTarget:
+		ev = g.answerTarget(ch, a)
 	case ChoiceReveal:
 		pl := &g.State.Players[p]
 		for _, in := range ch.Revealed {
@@ -232,6 +245,13 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 	case ChoiceLandscape:
 		for i := range card.Landscapes {
 			out = append(out, Action{Kind: ActChoose, Card: i + 1})
+		}
+	case ChoiceTarget:
+		for _, r := range ch.Targets {
+			out = append(out, Action{Kind: ActChoose, Targets: [][]TargetRef{{r}}})
+		}
+		if ch.Optional {
+			out = append(out, Action{Kind: ActChoose}) // choose nothing
 		}
 	}
 	return out

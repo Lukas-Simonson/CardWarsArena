@@ -147,12 +147,14 @@ func (g *Game) Clone() *Game {
 		ch := *g.State.Choice
 		ch.Revealed = append([]Instance(nil), ch.Revealed...)
 		ch.Lanes = append([]int(nil), ch.Lanes...)
+		ch.Targets = append([]TargetRef(nil), ch.Targets...)
 		c.State.Choice = &ch
 	}
 	c.State.Queue = append([]Choice(nil), g.State.Queue...)
 	for i := range c.State.Queue {
 		c.State.Queue[i].Revealed = append([]Instance(nil), c.State.Queue[i].Revealed...)
 		c.State.Queue[i].Lanes = append([]int(nil), c.State.Queue[i].Lanes...)
+		c.State.Queue[i].Targets = append([]TargetRef(nil), c.State.Queue[i].Targets...)
 	}
 	c.State.Played = append([]PlayedCard(nil), g.State.Played...)
 	c.State.RainbowHand = append([]int(nil), g.State.RainbowHand...)

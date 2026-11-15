@@ -18,6 +18,10 @@ func (g *Game) fire(on string, ctx effCtx, effects []card.Effect, given [][]Targ
 		if e.Kind != card.KindTrigger || e.On != on {
 			continue
 		}
+		if len(e.Targets) > 0 && on != card.OnEnterPlay && given == nil {
+			ev = append(ev, g.askTrigger(e, ctx)...) // the controller chooses when it fires
+			continue
+		}
 		usable, err := g.checkTargets(e.Targets, given, ctx)
 		if !usable || err != nil {
 			continue

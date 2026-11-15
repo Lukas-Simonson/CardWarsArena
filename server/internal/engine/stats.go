@@ -181,8 +181,11 @@ func (g *Game) value(v card.Value, s source) int {
 func (g *Game) count(c card.Count, s source) int {
 	st := &g.State
 	players := []PlayerID{s.P}
-	if c.Scope == "any" {
+	switch c.Scope {
+	case "any":
 		players = []PlayerID{0, 1}
+	case "opponent":
+		players = []PlayerID{s.P.Opp()}
 	}
 	switch c.Of {
 	case "landscapes":
@@ -423,6 +426,10 @@ func (g *Game) cond(c card.Cond, s source) bool {
 		}
 	case "both":
 		if s.Lane < 0 || !st.Players[s.P].Lanes[s.Lane].Frozen || !st.Players[s.P.Opp()].Lanes[s.Lane].Frozen {
+			return false
+		}
+	case "either":
+		if s.Lane < 0 || (!st.Players[s.P].Lanes[s.Lane].Frozen && !st.Players[s.P.Opp()].Lanes[s.Lane].Frozen) {
 			return false
 		}
 	default:

@@ -171,6 +171,16 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return "Put " + u.instName(ch.Revealed[0].UID) + " under " + u.instName(a.Card)
 		case engine.ChoiceLandscape:
 			return fmt.Sprintf("Make your lane %d Landscape %s", ch.Lane+1, landscapeName(card.Landscapes[a.Card-1]))
+		case engine.ChoiceTarget:
+			name := u.g.Catalog()[ch.Card].Name
+			if len(a.Targets) == 0 {
+				return name + ": choose nothing"
+			}
+			verb := ch.Label
+			if verb == "" {
+				verb = "Choose"
+			}
+			return withTargets(name+": "+verb, "target", u.targets(me, a.Targets))
 		case engine.ChoiceMove:
 			return fmt.Sprintf("Move %s to lane %d (%s side)", u.g.Catalog()[ch.Card].Name, a.Lane+1, u.side(me, ch.MoveSide))
 		}

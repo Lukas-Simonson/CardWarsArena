@@ -76,6 +76,10 @@ type Choice struct {
 	Lane     int   `json:"lane,omitempty"`
 	Lanes    []int `json:"lanes,omitempty"`
 	MoveSide int   `json:"move_side,omitempty"`
+	// target: what may be chosen, and whether the player may choose nothing.
+	Targets  []engine.TargetRef `json:"targets,omitempty"`
+	Optional bool               `json:"optional,omitempty"`
+	Label    string             `json:"label,omitempty"`
 }
 
 // View is a complete picture of the game for one viewer.
@@ -136,7 +140,8 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	}
 	if ch := st.Choice; ch != nil {
 		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...),
-			Lane: ch.Lane, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide)}
+			Lane: ch.Lane, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
+			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label}
 		if ch.Kind == engine.ChoiceSearch && ch.Player != viewer {
 			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
 		}

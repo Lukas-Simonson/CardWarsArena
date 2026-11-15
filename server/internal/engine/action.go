@@ -151,4 +151,5 @@ var (
 	ErrFrozen         = errors.New("a Creature cannot be played onto a frozen Landscape, or replace one there")
 	ErrNotFrozen      = errors.New("that Landscape has no frozen token")
 	ErrNoReplace      = errors.New("that Creature cannot be replaced")
+	ErrInert          = errors.New("a Creature on a frozen Landscape here cannot Fight or use abilities")
 )
