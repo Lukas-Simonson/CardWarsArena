@@ -183,7 +183,7 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `choose` | while a `choice` is open | see "Choices" |
 
 `targets` is a list of target slots (an empty optional slot is `[]`, never `null`), each a list of references
-`{"kind":"creature|building|landscape|lane|discard_card|hand_card","player":0,"lane":1,"card":0}`
+`{"kind":"creature|building|landscape|lane|discard_card|hand_card|player","player":0,"lane":1,"card":0}`
 (`player` = whose side, `lane` for board things, `card` = uid for card piles).
 
 ### Choices

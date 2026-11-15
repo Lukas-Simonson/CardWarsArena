@@ -47,7 +47,7 @@ type Action struct {
 
 // TargetRef names one chosen target. Kind is the TargetSpec "what":
 // creature, building, landscape and lane use Player and Lane; discard_card
-// uses Player and Card (the UID).
+// uses Player and Card (the UID); player uses Player alone.
 type TargetRef struct {
 	Kind   string   `json:"kind"`
 	Player PlayerID `json:"player"`

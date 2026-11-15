@@ -97,7 +97,10 @@ function playerBar(m, seat, on) {
     type: "button", class: "well", disabled: !clickable, onclick: () => on.onDiscard(seat),
     "aria-label": `${label}: ${n} cards`,
   }, `${label} ${n}`);
-  return h("section", { class: "steel pbar", "aria-label": mine ? "You" : "Opponent" },
+  const aim = `player:${seat}:0`; // a player may be what a card is aimed at (Frosty Frolic)
+  const aimed = tokens.has(aim);
+  return h("section", { class: `steel pbar${aimed ? " pick" : ""}${aimed && !mine ? " foe" : ""}`, "aria-label": mine ? "You" : "Opponent" },
+    aimed && h("button", { type: "button", class: "btn-purple aim", onclick: () => on.onToken(aim) }, mine ? "Choose yourself" : "Choose opponent"),
     h("div", { class: "shield", "data-seat": seat, role: "img", "aria-label": `${mine ? "You have" : seatName(ctx, seat) + " has"} ${p.hp} of ${MAX_HP} Hit Points` },
       svg(SHIELD, { viewBox: "0 0 48 54" }), h("span", {}, p.hp)),
     avatarEl(seatName(ctx, seat), ctx.avatars?.[seat], { style: `background:${mine ? "#c98a1f" : "#2e5f9c"}` }),

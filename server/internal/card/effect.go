@@ -175,7 +175,7 @@ type Count struct {
 	// FromTarget counts from the point of view of each chosen Creature
 	// instead of the card (Zazo's Magic Seeds).
 	FromTarget bool   `json:"from_target,omitempty"`
-	Scope      string `json:"scope,omitempty"` // "you" (default), "opponent" or "any"
+	Scope      string `json:"scope,omitempty"` // "you" (default) or "any"
 	// Words, for played_titled: a played card counts if its name has one of them.
 	Words    []string  `json:"words,omitempty"`
 	Type     Landscape `json:"type,omitempty"`
@@ -288,7 +288,7 @@ type Op struct {
 	Slot   *int        `json:"slot,omitempty"`  // target slot acted on
 	Slot2  *int        `json:"slot2,omitempty"` // second slot (destination lane etc.)
 	All    *Selector   `json:"all,omitempty"`   // act on every matching creature instead
-	Who    string      `json:"who,omitempty"`   // you, opponent, each
+	Who    string      `json:"who,omitempty"`   // you, opponent, each; target (discard_choice): the players chosen in Slot
 	Stat   string      `json:"stat,omitempty"`
 	Face   string      `json:"face,omitempty"` // up, down
 	Amount *Value      `json:"amount,omitempty"`
@@ -463,7 +463,7 @@ func (e *Effect) Validate(t Type) error {
 func validateSpecs(specs []TargetSpec) error {
 	for i, ts := range specs {
 		switch ts.What {
-		case "creature", "building", "landscape", "lane", "discard_card", "hand_card":
+		case "creature", "building", "landscape", "lane", "discard_card", "hand_card", "player":
 		default:
 			return fmt.Errorf("target %d: unknown what %q", i, ts.What)
 		}
@@ -496,6 +496,9 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 		}
 		if info.slots == 2 && op.Slot2 == nil {
 			return fmt.Errorf("op %d (%s): needs slot2", i, op.Do)
+		}
+		if op.Who == "target" && (op.Do != "discard_choice" || op.Slot == nil) {
+			return fmt.Errorf("op %d (%s): who target is for discard_choice, with a slot", i, op.Do)
 		}
 		if op.Amount != nil {
 			if err := op.Amount.validate(); err != nil {

@@ -72,6 +72,11 @@ func (u *ui) ref(me engine.PlayerID, r engine.TargetRef) string {
 		return fmt.Sprintf("%s%s landscape (%s, lane %d)", landscapeName(l.Landscape), down, u.side(me, r.Player), r.Lane+1)
 	case "lane":
 		return fmt.Sprintf("lane %d (%s side)", r.Lane+1, u.side(me, r.Player))
+	case "player":
+		if r.Player == me {
+			return "yourself"
+		}
+		return "your opponent"
 	case "discard_card", "hand_card":
 		return u.instName(r.Card)
 	}

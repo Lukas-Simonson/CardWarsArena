@@ -181,11 +181,8 @@ func (g *Game) value(v card.Value, s source) int {
 func (g *Game) count(c card.Count, s source) int {
 	st := &g.State
 	players := []PlayerID{s.P}
-	switch c.Scope {
-	case "any":
+	if c.Scope == "any" {
 		players = []PlayerID{0, 1}
-	case "opponent":
-		players = []PlayerID{s.P.Opp()}
 	}
 	switch c.Of {
 	case "landscapes":

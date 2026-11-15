@@ -43,6 +43,7 @@ export function describeRef(ctx, r) {
     case "building": return `${l.building ? cardName(ctx, l.building.card) : "building"} (${where})`;
     case "landscape": return `${l.face_down ? "face-down " : ""}${landscapeName(l.landscape)} landscape (${where})`;
     case "lane": return `lane ${laneNo(r.lane)} (${side(ctx, r.player)} side)`;
+    case "player": return r.player === ctx.view.you ? "yourself" : "your opponent";
     default: return instName(ctx, r.card);
   }
 }

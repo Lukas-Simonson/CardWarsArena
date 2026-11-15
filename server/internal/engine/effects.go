@@ -52,6 +52,12 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 		}
 		return out
 	}
+	if spec.What == "player" {
+		for _, p := range sidesFor(spec.Side, c.p) {
+			out = append(out, TargetRef{Kind: spec.What, Player: p})
+		}
+		return out
+	}
 	if spec.What == "discard_card" {
 		for _, p := range sidesFor(spec.Side, c.p) {
 			for _, in := range g.State.Players[p].Discard {
@@ -459,8 +465,19 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				ev = append(ev, g.mill(p, amt)...)
 			}
 		case "discard_choice":
-			for _, p := range g.whoList(op.Who, c.p) {
-				ev = append(ev, g.discardChoice(p, amt, c, op.RainbowActions)...)
+			players := g.whoList(op.Who, c.p)
+			if op.Who == "target" {
+				players = players[:0]
+				for _, r := range slotRefs(op.Slot, given) {
+					players = append(players, r.Player)
+				}
+			}
+			for _, p := range players {
+				n := amt
+				if op.Who == "target" && op.Amount != nil && op.Amount.Per != nil && op.Amount.Per.FromTarget {
+					n = g.value(*op.Amount, source{pos: pos{p, 0}}) // counted from the chosen player
+				}
+				ev = append(ev, g.discardChoice(p, n, c, op.RainbowActions)...)
 			}
 		case "exhaust":
 			for _, at := range g.creaturesFor(op, c, given) {

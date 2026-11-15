@@ -335,19 +335,49 @@ func TestFreezeRayAndSnowWayAndFreezingPoint(t *testing.T) {
 	}
 }
 
-func TestFrostyFrolicMakesThemDiscardForTheirOwnFrozenLandscapes(t *testing.T) {
-	g := iceGame(t)
-	g.freezeAt(0, 0) // yours do not count
-	g.freezeAt(1, 1)
-	g.freezeAt(1, 2)
-	g.State.Players[1].Hand = nil
-	for i := 0; i < 4; i++ {
-		g.give(1, "pony")
+func TestFrostyFrolicMakesAnyPlayerDiscardForTheirOwnFrozenLandscapes(t *testing.T) {
+	setup := func() *Game {
+		g := iceGame(t)
+		g.freezeAt(0, 0) // one of yours
+		g.freezeAt(1, 1) // two of theirs
+		g.freezeAt(1, 2)
+		for p := PlayerID(0); p < 2; p++ {
+			g.State.Players[p].Hand = nil
+			for i := 0; i < 4; i++ {
+				g.give(p, "pony")
+			}
+		}
+		return g
 	}
-	g.cast(t, 0, "frosty-frolic")
+	g := setup()
+	g.cast(t, 0, "frosty-frolic", []TargetRef{{Kind: "player", Player: 1}})
 	ch := g.State.Choice
 	if ch == nil || ch.Kind != ChoiceDiscard || ch.Player != 1 || ch.Count != 2 {
-		t.Fatalf("choice %+v", ch)
+		t.Fatalf("against the opponent: choice %+v", ch)
+	}
+	// Chosen for yourself, it counts your own frozen Landscapes.
+	g = setup()
+	g.give(0, "frosty-frolic")
+	g.must(t, 0, Action{Kind: ActPlayCard, Card: g.uid(t, 0, "frosty-frolic"), Targets: [][]TargetRef{{{Kind: "player", Player: 0}}}})
+	ch = g.State.Choice
+	if ch == nil || ch.Kind != ChoiceDiscard || ch.Player != 0 || ch.Count != 1 {
+		t.Fatalf("on yourself: choice %+v", ch)
+	}
+	g = setup()
+	g.give(0, "frosty-frolic")
+	g.mustFail(t, 0, Action{Kind: ActPlayCard, Card: g.uid(t, 0, "frosty-frolic"), Targets: [][]TargetRef{{{Kind: "player", Player: 1}, {Kind: "player", Player: 0}}}}, ErrBadTarget)
+	if got := len(g.LegalActions(0)); got == 0 {
+		t.Error("no legal actions")
+	}
+	// Both players are offered as targets.
+	n := 0
+	for _, a := range g.LegalActions(0) {
+		if a.Kind == ActPlayCard && g.uid(t, 0, "frosty-frolic") == a.Card && len(a.Targets) == 1 && a.Targets[0][0].Kind == "player" {
+			n++
+		}
+	}
+	if n != 2 {
+		t.Errorf("%d player targets offered, want 2", n)
 	}
 }
 

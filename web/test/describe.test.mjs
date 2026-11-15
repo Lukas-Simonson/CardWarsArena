@@ -66,6 +66,8 @@ test("Floop and activated abilities, for creatures and buildings", () => {
 
 test("a face-down landscape target says so", () => {
   assert.equal(describeRef(ctx, { kind: "landscape", player: 1, lane: 1 }), "face-down Cornfield landscape (opp's, lane 2)");
+  assert.equal(describeRef(ctx, { kind: "player", player: 1 }), "your opponent");
+  assert.equal(describeRef(ctx, { kind: "player", player: 0 }), "yourself");
 });
 
 test("playing the stolen card", () => {

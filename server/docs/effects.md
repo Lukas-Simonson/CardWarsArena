@@ -269,11 +269,12 @@ stuck.
   in a Lane with a frozen Landscape; the cond `lane_frozen: "either"`).
 - **Target** `frozen` limits `creature` targets to ones on a frozen Landscape (Slay Rider), and the same field on
   `damage_creature` (and other ops that act on a chosen Creature) acts only if it is on a frozen, or unfrozen,
-  Landscape: Frozen Heart deals 1 or 3 with two such ops. The count scope `opponent` counts the opponent's side only
-  (Frosty Frolic).
+  Landscape: Frozen Heart deals 1 or 3 with two such ops.
+- **Target** `player` picks a player (`side` limits it, as for other targets); the ref is `{"kind":"player","player":N}`.
+  `discard_choice` with `who: "target"` and a `slot` makes the chosen player discard, and a count with
+  `from_target` is counted from their side (Frosty Frolic: a card for each frozen Landscape they control).
 
-Rulings: Frosty Frolic's "target player" is always the opponent, there being no reason to choose yourself and no
-way to choose a player yet. Ice King's bonus is decided when the Creature is Activated to Fight, so a Pied Piper
+Rulings: Frosty Frolic may target yourself, and then counts your own frozen Landscapes. Ice King's bonus is decided when the Creature is Activated to Fight, so a Pied Piper
 redirect does not change it. Emperor Penguin also weakens itself on a frozen Landscape, and Snow Dog boosts the
 Creatures in the Lanes beside it on its own side.
 

@@ -338,15 +338,22 @@
  "frosty-frolic": [
   {
    "kind": "spell",
+   "targets": [
+    {
+     "what": "player",
+     "label": "Discard"
+    }
+   ],
    "do": [
     {
      "do": "discard_choice",
-     "who": "opponent",
+     "who": "target",
+     "slot": 0,
      "amount": {
       "n": 1,
       "per": {
        "of": "frozen_landscapes",
-       "scope": "opponent"
+       "from_target": true
       }
      }
     }
