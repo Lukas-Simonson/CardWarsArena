@@ -70,6 +70,20 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Gunter.webp"
   },
   {
+    "id": "ice-king",
+    "name": "Ice King",
+    "type": "hero",
+    "text": "The first time one of your Creatures attacks your opponent during your turn, it has +1 ATK.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ice%20King.webp"
+  },
+  {
     "id": "jake",
     "name": "Jake",
     "type": "hero",

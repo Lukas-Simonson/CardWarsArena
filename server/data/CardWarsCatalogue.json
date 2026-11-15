@@ -1,5 +1,23 @@
 [
   {
+    "ability" : "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 2,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Abdominal Snowman.png",
+    "name" : "Abdominal Snowman",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Target opponent discards a card from their hand for every 5 cards in your discard pile.",
     "cost" : 2,
     "extras" : {
@@ -315,6 +333,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Move Boarder Collie to any of your empty Landscapes. If either Landscape in that Lane is frozen, gain 1 action.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Boarder Collie.png",
+    "name" : "Boarder Collie",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Play only if you control a Useless Swamp Creature. Target opponent discards a card from their hand.",
     "cost" : 0,
     "extras" : {
@@ -492,12 +528,13 @@
     "image" : "Celestial Castle.png",
     "name" : "Celestial Castle",
     "notes" : "",
-    "quantity" : 6,
+    "quantity" : 7,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 1,
       "BMO Vs Lady Rainicorn (Lady)" : 1,
       "Finn Vs Jake (Finn)" : 2,
       "Finn Vs Jake (Jake)" : 1,
+      "Ice King Vs Marceline (Ice King)" : 1,
       "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
     },
     "type" : "Building"
@@ -566,6 +603,24 @@
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Cold Soldier.png",
+    "name" : "Cold Soldier",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
     },
     "type" : "Creature"
   },
@@ -762,6 +817,22 @@
       "Finn Vs Jake (Jake)" : 1
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "When a Landscape in this Lane becomes frozen, deal 2 damage to target Creature.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Crystal Palace.png",
+    "name" : "Crystal Palace",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "Destroy any number of your Creatures. Draw a card for each Creature destroyed this way.",
@@ -1042,6 +1113,24 @@
     "quantity" : 2,
     "sets" : {
       "Fionna Vs Cake (Fionna)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Creatures on frozen Landscapes have -1 ATK.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Emperor Penguin.png",
+    "name" : "Emperor Penguin",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
     },
     "type" : "Creature"
   },
@@ -1332,6 +1421,38 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Freeze target Landscape, then draw a card.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Freeze Ray.png",
+    "name" : "Freeze Ray",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Freeze each of your opponent's Landscapes.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Freezing Point.png",
+    "name" : "Freezing Point",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "Swap any amount of damage between two of your Creatures.",
     "cost" : 0,
     "extras" : {
@@ -1346,6 +1467,24 @@
       "Fionna Vs Cake (Fionna)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "Pay 1 action >>> Freeze a Landscape in this Lane.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Frost Dragon.png",
+    "name" : "Frost Dragon",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Frosted Deanimator may be played onto a frozen Landscape.",
@@ -1382,6 +1521,56 @@
       "Lemongrab Vs Gunter (Gunter)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Target player discards 1 card from their hand for each frozen Landscape they control.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Frosty Frolic.png",
+    "name" : "Frosty Frolic",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "When Frozen Fish deals damage to a Creature, you may freeze a Landscape in this Lane.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Frozen Fish.png",
+    "name" : "Frozen Fish",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Deal 1 damage to target Creature. If that Creature is on a frozen Landscape, deal 3 damage instead.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Frozen Heart.png",
+    "name" : "Frozen Heart",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "FLOOP >>> Gain 1 action this turn.",
@@ -1868,6 +2057,54 @@
     "quantity" : 1,
     "sets" : {
       "Lemongrab Vs Gunter (Lemongrab)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "The first time one of your Creatures attacks your opponent during your turn, it has +1 ATK.",
+    "extras" : {
+
+    },
+    "image" : "Ice King.png",
+    "name" : "Ice King",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Hero"
+  },
+  {
+    "ability" : "Creatures on frozen Landscapes in this Lane cannot attack or use abilities.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Ice-olation Cell.png",
+    "name" : "Ice-olation Cell",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "At the start of your turn, deal 1 damage to each Creature on a frozen Landscape.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Icemeister.png",
+    "name" : "Icemeister",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
     },
     "type" : "Creature"
   },
@@ -2395,9 +2632,10 @@
     "image" : "Nice Ice Baby.png",
     "name" : "Nice Ice Baby",
     "notes" : "",
-    "quantity" : 2,
+    "quantity" : 4,
     "sets" : {
-      "Finn Vs Jake (Finn)" : 2
+      "Finn Vs Jake (Finn)" : 2,
+      "Ice King Vs Marceline (Ice King)" : 2
     },
     "type" : "Creature"
   },
@@ -2898,6 +3136,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Draw a card for each frozen Landscape.",
+    "attack" : 4,
+    "cost" : 2,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Reign Deer.png",
+    "name" : "Reign Deer",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Target Creature you control has +X ATK this turn, where X is the amount of damage on it.",
     "cost" : 2,
     "extras" : {
@@ -3258,6 +3514,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Deal 3 damage to target Creature on a frozen Landscape.",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Slay Rider.png",
+    "name" : "Slay Rider",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Return a random Useless Swamp Creature from your discard pile to your hand.",
     "cost" : 0,
     "extras" : {
@@ -3292,6 +3566,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Heal 1 damage from each of your Creatures for each frozen Landscape.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Snow Angel.png",
+    "name" : "Snow Angel",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Remove a frozen token from Snow Baller's Landscape >>> Deal 3 damage to target Creature.",
     "attack" : 2,
     "cost" : 1,
@@ -3310,6 +3602,58 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Destroy Snow Bunny >>> Freeze target Landscape.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Snow Bunny.png",
+    "name" : "Snow Bunny",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Pay 1 action >>> Freeze target Landscape in this Lane.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Snow Business.png",
+    "name" : "Snow Business",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "FLOOP >>> Each adjacent Creature has +2 ATK this turn.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Snow Dog.png",
+    "name" : "Snow Dog",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP >>> Freeze both Landscapes in this Lane. May only be used if no frozen tokens are in play.",
     "cost" : 0,
     "extras" : {
@@ -3324,6 +3668,22 @@
       "Lemongrab Vs Gunter (Gunter)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Freeze 2 target Landscapes.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Snow Way.png",
+    "name" : "Snow Way",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Choose a Lane and freeze both of its Landscapes.",
@@ -3374,6 +3734,24 @@
     "type" : "Spell"
   },
   {
+    "ability" : "",
+    "attack" : 3,
+    "cost" : 0,
+    "defense" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Spike Icicle.png",
+    "name" : "Spike Icicle",
+    "notes" : "Look out below!",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP and pay 1 action >>> If you control no Creatures in this Lane, move target Creature in this Lane to your side and ready it. At end of turn, return it to its owner's side.",
     "cost" : 2,
     "extras" : {
@@ -3388,6 +3766,24 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "+1 ATK for each frozen Landscape.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "IcyLands",
+    "image" : "Sprucy Lucy.png",
+    "name" : "Sprucy Lucy",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "Discard a card >>> Heal 1 damage From Squatting Bald Man.",
