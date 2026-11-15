@@ -8,7 +8,9 @@
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { background: #a8793f; }
+/* Two quick taps on a button must not zoom the page (double-tap zoom). Pinch-zoom still works. */
+html { background: #a8793f; touch-action: manipulation; }
+button { touch-action: manipulation; }
 body { margin: 0; min-height: 100vh; font-family: var(--hand-font); font-size: 18px; color: #fff; }
 a { color: #fff; } a:hover { color: #ffe7a3; }
 button { font: inherit; }
