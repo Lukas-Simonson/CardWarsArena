@@ -356,8 +356,9 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.poolCount.textContent = `${list.length} card${list.length === 1 ? "" : "s"} shown`;
     ui.grid.replaceChildren(...(list.length ? list.map((c) => {
       const there = other && h("span", { class: "ncopies there" }, `${other.counts[c.id]} in ${other.name}`);
-      const segs = Array.from({ length: MAX_COPIES + 1 }, (_, n) =>
-        h("button", { type: "button", class: "seg", onclick: () => change(setCopies(deck, c.id, n)) }, String(n)));
+      const segs = Array.from({ length: MAX_COPIES }, (_, i) => i + 1).map((n) =>
+        // Tapping the count a card already has takes it out.
+        h("button", { type: "button", class: "seg", onclick: () => change(setCopies(deck, c.id, copies(deck, c.id) === n ? 0 : n)) }, String(n)));
       const pick = h("div", { class: "well picker", role: "group", "aria-label": `Copies of ${c.name}` }, ...segs);
       cells.set(c.id, { segs, pick, name: c.name });
       return h("div", { class: "cell" }, cardEl(c, null, { lazy: true }), there, pick);
@@ -369,11 +370,12 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     for (const [id, { segs, pick }] of cells) {
       const n = copies(deck, id), most = room(deck, id);
       pick.title = n >= MAX_COPIES ? `At the ${MAX_COPIES}-copy limit` : most < MAX_COPIES && most === n ? whyNot(deck, id) : "";
-      segs.forEach((seg, i) => {
+      segs.forEach((seg, k) => {
+        const i = k + 1;
         seg.classList.toggle("on", i === n);
         seg.setAttribute("aria-pressed", String(i === n));
         seg.disabled = i > most;
-        seg.setAttribute("aria-label", `${i} ${i === 1 ? "copy" : "copies"}`);
+        seg.setAttribute("aria-label", i === n ? `${i} ${i === 1 ? "copy" : "copies"}, tap to remove` : `${i} ${i === 1 ? "copy" : "copies"}`);
       });
     }
   }
