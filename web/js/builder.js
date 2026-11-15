@@ -9,7 +9,7 @@ import { cardEl } from "./card.js";
 import { landscapeName } from "./describe.js";
 import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapesOf, chooseLandscape, autoLandscapes,
-  unplayable, whyUnplayable, costCurve, heroes, pool, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
+  unplayable, whyUnplayable, setCopies, room, costCurve, heroes, pool, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 
@@ -355,24 +355,26 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.fromClear.hidden = !filters.from;
     ui.poolCount.textContent = `${list.length} card${list.length === 1 ? "" : "s"} shown`;
     ui.grid.replaceChildren(...(list.length ? list.map((c) => {
-      const num = h("span", { class: "ncopies" });
-      const dec = h("button", { type: "button", class: "btn-steel step", "aria-label": `Remove one ${c.name}`, onclick: () => change(remove(deck, c.id)) }, "−");
-      const inc = h("button", { type: "button", class: "btn-green step", onclick: () => change(add(deck, c.id)) }, "+");
       const there = other && h("span", { class: "ncopies there" }, `${other.counts[c.id]} in ${other.name}`);
-      cells.set(c.id, { num, dec, inc, name: c.name });
-      return h("div", { class: "cell" }, cardEl(c, null, { lazy: true }), there, h("div", { class: "well stepper" }, dec, num, inc));
+      const segs = Array.from({ length: MAX_COPIES + 1 }, (_, n) =>
+        h("button", { type: "button", class: "seg", onclick: () => change(setCopies(deck, c.id, n)) }, String(n)));
+      const pick = h("div", { class: "well picker", role: "group", "aria-label": `Copies of ${c.name}` }, ...segs);
+      cells.set(c.id, { segs, pick, name: c.name });
+      return h("div", { class: "cell" }, cardEl(c, null, { lazy: true }), there, pick);
     }) : [h("p", { class: "nocards" }, filters.members === "in" && !total(deck) && !other ? "No cards in this deck yet." : "No cards match. Try a different search or filter.")]));
     paintCells();
   }
 
   function paintCells() {
-    for (const [id, { num, dec, inc, name }] of cells) {
-      const n = copies(deck, id), why = whyNot(deck, id);
-      num.textContent = `${n} of ${MAX_COPIES}`;
-      dec.disabled = n === 0;
-      inc.disabled = !!why;
-      inc.setAttribute("aria-label", n >= MAX_COPIES ? `${name}: already at the ${MAX_COPIES}-copy limit` : why ? `${name}: ${why}` : `Add one ${name}`);
-      inc.title = why;
+    for (const [id, { segs, pick }] of cells) {
+      const n = copies(deck, id), most = room(deck, id);
+      pick.title = n >= MAX_COPIES ? `At the ${MAX_COPIES}-copy limit` : most < MAX_COPIES && most === n ? whyNot(deck, id) : "";
+      segs.forEach((seg, i) => {
+        seg.classList.toggle("on", i === n);
+        seg.setAttribute("aria-pressed", String(i === n));
+        seg.disabled = i > most;
+        seg.setAttribute("aria-label", `${i} ${i === 1 ? "copy" : "copies"}`);
+      });
     }
   }
 
