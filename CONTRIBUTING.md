@@ -53,7 +53,7 @@ go vet ./...
 go test ./...       # go test -short ./... plays fewer random games
 
 cd ../web
-npm test            # unit tests, no server needed
+npm test            # unit tests, no server needed (also checks the message catalogues: npm run i18n)
 ```
 
 There is also a smoke test that plays whole games through the web client against a real server:
@@ -65,13 +65,35 @@ cd web && node test/smoke.mjs http://localhost:8080 10    # 10 games
 
 CI also builds both Docker images. A change that adds behaviour should add or update a test with it.
 
+## Translating
+
+Everything a player reads can be translated, and you do not need to write code to help. There are three parts, each
+a JSON file you edit in a pull request:
+
+- **The interface** (buttons, messages, errors): `web/locales/<tag>.json`. Copy `web/locales/en.json` to
+  `web/locales/<tag>.json` (for example `fr` or `pt-BR`), translate the values, keep every `{placeholder}`, add the
+  plural forms your language needs, and list the language in `web/locales/index.json`. Then run `npm run i18n` in `web/`:
+  it fails on a missing key or a changed placeholder. A half-finished file still works while you go, because a key
+  left out shows in English. Try it with `?lang=<tag>` on the page. The message format and the checks are explained in
+  the "Localization" section of [web/README.md](web/README.md).
+- **Card names, rules text and deck names**: `server/data/i18n/<tag>/`. In `server/`, run
+  `go run ./cmd/cardi18n init <tag>` for a skeleton with the English beside each empty entry, fill in what you can (a
+  card at a time is fine), and run `go run ./cmd/cardi18n status` to see how complete it is and what the English has
+  changed since. See [server/docs/localization.md](server/docs/localization.md).
+- **Fixing a translation** that is already there: edit the same files.
+
+When you add a string in code, add it to `web/locales/en.json` and use `t("the.key")` rather than writing English into
+the code; `npm test` fails on text that looks hard-coded. When a server change adds a rule or a deck problem, add its
+`reason.<code>` message to `en.json` too.
+
 ## Where things live
 
 - **Rules engine:** `server/internal/engine`. It is pure and deterministic: the same seed and actions give the same game.
   Keep it free of I/O, and put hidden-information rules in `server/internal/view`, not the client.
 - **Protocol:** `server/docs/protocol.md`. A change to messages changes the server and the web client together, so make
   them in one pull request and update the document.
-- **Web client:** `web/js`. Plain ES modules with no build step and no dependencies. Logic that can be pure (reducers,
+- **Web client:** `web/js`. Plain ES modules with no build step and no dependencies. Text for the player comes from
+  `web/locales/en.json` through `t()`, never written into the code (see Translating). Logic that can be pure (reducers,
   planning, text) goes in its own module with a test in `web/test`. The look follows the project's design (wood, felt
   and steel, Luckiest Guy and Patrick Hand), so match what is there.
 
@@ -90,6 +112,8 @@ Cards come from two places, and neither is edited the obvious way:
   the build; update it deliberately if a deck really changes.
 - `server/data/effects/*.json` holds the hand-written rules for each card, in the effect language described in
   `server/docs/effects.md`. A card without an entry there is "unmodelled": the server only lets it be played with `-dev`.
+
+Translations of the cards are separate, in `server/data/i18n/<tag>/`, and the importer never overwrites them: see Translating.
 
 The server reads card data once at startup, so restart it to see a change. The image bakes the data in, so players get
 it with the next release.
