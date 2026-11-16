@@ -1,6 +1,7 @@
 // What the bar above the player's hand says and offers, from the current
 // selection. Pure: it only reads the view, the context and the picker.
-import { describeAction, cardName, seatName } from "./describe.js";
+import { describeAction, cardName, seatName, labelText } from "./describe.js";
+import { t, fmtList } from "./i18n.js";
 import { kindLabel, kindKey, parseToken } from "./picker.js";
 
 /**
@@ -15,24 +16,24 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
   const out = { text: "", cancel: false, skip: "", confirm: "", kinds: [] };
   const v = ctx.view;
   if (!v) return out;
-  if (v.over) return { ...out, text: "Game over" };
+  if (v.over) return { ...out, text: t("prompt.game_over") };
   if (v.choice) {
     const by = cardName(ctx, v.choice.card);
-    if (myDecision) return { ...out, text: `${by}: make your choice in the dialog.` };
-    return { ...out, text: `Waiting for ${seatName(ctx, v.choice.player)} to decide (${by})…` };
+    if (myDecision) return { ...out, text: t("prompt.choice_mine", { name: by }) };
+    return { ...out, text: t("prompt.choice_theirs", { who: seatName(ctx, v.choice.player), name: by }) };
   }
   if (!myDecision) {
-    const who = v.awaiting.map((s) => (s === v.you ? "you" : seatName(ctx, s))).join(" and ");
-    return { ...out, text: v.awaiting.length ? `Waiting for ${who}…` : "" };
+    const who = fmtList(v.awaiting.map((s) => (s === v.you ? t("prompt.you") : seatName(ctx, s))));
+    return { ...out, text: v.awaiting.length ? t("prompt.waiting", { who }) : "" };
   }
-  if (v.phase === "mulligan") return { ...out, text: "Keep this hand, or mulligan once to draw a new five." };
+  if (v.phase === "mulligan") return { ...out, text: t("prompt.mulligan") };
   if (!source) return { ...out, text: idleText(v) };
 
   out.cancel = true;
   const name = sourceName(ctx, source);
   if (!picker) return out;
   if (awaitingKind) {
-    out.text = `What should ${name} do?`;
+    out.text = t("prompt.what_to_do", { name });
     out.kinds = picker.kinds().map((k) => [k, kindLabel(k, picker.candidates.find((a) => kindKey(a) === k)?.via)]);
     return out;
   }
@@ -46,46 +47,47 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
     return out;
   }
   if (source.startsWith("thaw:")) {
-    out.text = "Choose a card from your hand to discard: it removes the frozen token";
+    out.text = t("prompt.thaw");
     return out;
   }
   const label = picker.label();
-  out.text = label ? `${label}: ${instruction(opts.tokens).toLowerCase()} for ${name}` : `${instruction(opts.tokens)} for ${name}`;
+  out.text = label ? t("prompt.step_labelled", { label: labelText(label), step: instruction(opts.tokens, true), name }) : t("prompt.step", { step: instruction(opts.tokens), name });
   if (opts.can_skip) out.skip = opts.skip_label;
   return out;
 }
 
 function idleText(v) {
-  if (v.pending) return "Play the stolen card for free.";
-  if (v.phase === "fight") return "Fight! Click a glowing Creature to attack.";
-  return "Your move: click a glowing card.";
+  if (v.pending) return t("prompt.idle_pending");
+  if (v.phase === "fight") return t("prompt.idle_fight");
+  return t("prompt.idle");
 }
 
 /** "Choose a lane", "Choose a target", … from what may be clicked. */
-export function instruction(tokens) {
+export function instruction(tokens, inline = false) {
+  const msg = (key) => t(inline ? `${key}_inline` : key);
   const kinds = new Set(tokens.map((t) => parseToken(t).kind));
   if (kinds.size === 1) {
     switch ([...kinds][0]) {
       case "dest":
-      case "lane": return "Choose a lane";
-      case "hand_card": return "Choose a card from your hand";
-      case "discard_card": return "Choose a card from the discard pile";
-      case "landscape": return "Choose a Landscape";
-      case "building": return "Choose a Building";
+      case "lane": return msg("prompt.choose_lane");
+      case "hand_card": return msg("prompt.choose_hand_card");
+      case "discard_card": return msg("prompt.choose_discard_card");
+      case "landscape": return msg("prompt.choose_landscape");
+      case "building": return msg("prompt.choose_building");
     }
   }
-  return "Choose a target";
+  return msg("prompt.choose_target");
 }
 
 function confirmLabel(a, name) {
   switch (a.kind) {
-    case "play_card": return `Cast ${name}`;
-    case "attack": return "Fight!";
-    case "floop": return `Floop ${name}`;
-    case "activate": return "Use ability";
-    case "play_pending": return `Play ${name}`;
-    case "thaw": return "Remove the token";
-    default: return "Confirm";
+    case "play_card": return t("confirm.cast", { name });
+    case "attack": return t("confirm.attack");
+    case "floop": return t("confirm.floop", { name });
+    case "activate": return t("confirm.activate");
+    case "play_pending": return t("confirm.play", { name });
+    case "thaw": return t("confirm.thaw");
+    default: return t("confirm.default");
   }
 }
 
@@ -101,11 +103,11 @@ export function sourceName(ctx, source) {
     const occ = me.lanes[Number(p[1])]?.[p[2]];
     if (occ) return cardName(ctx, occ.card);
   } else if (p[0] === "thaw") {
-    return `the frozen Landscape in lane ${Number(p[1]) + 1}`;
+    return t("prompt.frozen_landscape", { lane: Number(p[1]) + 1 });
   } else if (p[0] === "hero" && me.hero) {
     return cardName(ctx, me.hero.card);
   } else if (p[0] === "pending" && v.pending) {
     return cardName(ctx, v.pending.card);
   }
-  return "this card";
+  return t("prompt.this_card");
 }

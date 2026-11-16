@@ -2,6 +2,7 @@
 // Pure: main.js fetches the lists and draws the shelf.
 import { fromCards, landscapeRow } from "./deckmodel.js";
 import { landscapeName } from "./describe.js";
+import { t } from "./i18n.js";
 
 // The colour of a deck's box and of its Landscape diamonds, as in the design's Lobby board.
 const BOX = { cornfield: "#5ea83a", blue_plains: "#3f7fc0", useless_swamp: "#6e4f98", sandy_lands: "#c98a1f", nice_lands: "#c85a8f", icy_lands: "#4aa3b8" };
@@ -13,7 +14,7 @@ export const diamondColour = (landscape) => DIAMOND[landscape] ?? "#d6d0c4";
 
 /** "Blue Plains", or "Cornfield + Blue Plains" for a deck of two types, from its four Landscapes. */
 export function landscapeTitle(lands) {
-  return [...new Set(lands.filter(Boolean))].map(landscapeName).join(" + ");
+  return [...new Set(lands.filter(Boolean))].map(landscapeName).join(t("deck.lands_sep"));
 }
 
 // The starter decks come in pairs, one set to a box: Finn and Jake, BMO and Lady, PB and LSP, Fionna and Cake.
@@ -28,7 +29,7 @@ export function inBoxOrder(presets) {
 }
 
 /** "Hero: Finn", with the kind of deck in front when it is not a starter ("Custom · Hero: Jake"). */
-const subtitle = (kind, hero) => [kind, hero && `Hero: ${hero.name}`].filter(Boolean).join(" · ");
+const subtitle = (kind, hero) => [kind, hero && t("deck.hero", { name: hero.name })].filter(Boolean).join(t("detail.sep"));
 
 /**
  * @param {{set:string,name:string,owner?:string,size:number,landscapes:string[]}[]} presets  playable starter decks from GET /api/decks
@@ -53,12 +54,12 @@ export function shelf(presets, saved, cards) {
       const lands = d.landscapes?.length === 4 ? d.landscapes : landscapeRow(fromCards(d.cards), cards);
       return {
         value: `my:${d.id}`,
-        name: d.name || "Untitled deck",
-        sub: d.playable ? subtitle("Custom", cards[d.hero]) : "Unfinished",
+        name: d.name || t("deck.untitled"),
+        sub: d.playable ? subtitle(t("deck.custom"), cards[d.hero]) : t("deck.unfinished"),
         lands,
         size: d.cards.length,
         disabled: !d.playable,
-        title: d.playable ? landscapeTitle(lands) : (d.problems ?? []).join("; "),
+        title: d.playable ? landscapeTitle(lands) : (d.problems ?? []).join(t("targets.sep")),
       };
     }),
   };

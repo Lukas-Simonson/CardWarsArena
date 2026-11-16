@@ -16,7 +16,7 @@ export function initialState() {
     seq: 0,                // seq of that view
     known: {},             // uid -> card id, for naming cards in events
     log: [],               // human-readable event lines
-    error: "",             // last error shown to the player
+    error: null,           // last error shown to the player: { code, message }
     closedReason: "",      // why the last room ended
   };
 }
@@ -48,7 +48,7 @@ export function setStatus(state, status) {
 
 /** Clear the current room (used when leaving). */
 export function leave(state) {
-  return { ...state, session: null, view: null, seq: 0, waiting: false, log: [], error: "", opponent: { connected: null, name: "" } };
+  return { ...state, session: null, view: null, seq: 0, waiting: false, log: [], error: null, opponent: { connected: null, name: "" } };
 }
 
 /**
@@ -64,7 +64,7 @@ export function reduce(state, msg, cards = {}) {
         session: { room: msg.room, token: msg.token, seat: msg.seat, vsBot: !!msg.vs_bot },
         names: msg.names ?? state.names,
         avatars: msg.avatars ?? state.avatars,
-        error: "",
+        error: null,
         closedReason: "",
       };
     }
@@ -84,12 +84,12 @@ export function reduce(state, msg, cards = {}) {
       const lines = events.map((e) => describeEvent(ctx, e));
       const log = lines.length ? [...state.log, ...lines].slice(-LOG_LIMIT) : state.log;
       const avatars = msg.avatars?.length ? msg.avatars : state.avatars;
-      return { ...state, view: msg.view, seq: msg.seq, names, avatars, known, log, waiting: false, error: "" };
+      return { ...state, view: msg.view, seq: msg.seq, names, avatars, known, log, waiting: false, error: null };
     }
     case "room_closed":
       return { ...leave(state), closedReason: msg.message ?? "room closed" };
     case "error":
-      return { ...state, error: `${msg.code}: ${msg.message}` };
+      return { ...state, error: { code: msg.code, message: msg.message ?? "" } };
     default: // hello, pong, anything newer than this client
       return state;
   }

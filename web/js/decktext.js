@@ -15,6 +15,7 @@
 // The same reading also covers the text Card Dweeb gives for a deck (see parseDweeb).
 import { MAX_COPIES, MAX_CARDS, LANES, LANDSCAPES, emptyDeck, total, heroes } from "./deckmodel.js";
 import { landscapeName } from "./describe.js";
+import { t } from "./i18n.js";
 
 /**
  * The deck as text: its name, Hero and chosen Landscapes (when it has them), a blank line, then `count name`
@@ -89,10 +90,10 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
       const found = named(heroByName, nameKey(value));
       if (found.length === 1) { out.hero = found[0].id; out.any = true; return; }
       const other = named(byAny, nameKey(value));
-      if (other.length) issue(line, raw, `${other[0].name} is not a Hero the game can play`);
+      if (other.length) issue(line, raw, t("import.not_playable_hero", { name: other[0].name }));
       else {
         const near = nearest(nameKey(value), heroList);
-        issue(line, raw, `no Hero is called “${value}”` + (near ? `. Did you mean ${near.name}?` : ""));
+        issue(line, raw, t("import.no_hero", { name: value, near: near?.name ?? "", hasNear: near ? "yes" : "no" }));
       }
     },
 
@@ -103,8 +104,8 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
       if (!found) {
         const near = nearest(key, landNames);
         issue(line, raw, key === "rainbow"
-          ? "Rainbow is a kind of card, not a Landscape"
-          : `no Landscape is called “${name}”` + (near ? `. Did you mean ${near.name}?` : ""));
+          ? t("import.rainbow")
+          : t("import.no_landscape", { name, near: near?.name ?? "", hasNear: near ? "yes" : "no" }));
         return;
       }
       if (!row.length) { rowLine = line; rowRaw = raw; }
@@ -114,25 +115,25 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
     finishLandscapes() {
       if (!row.length) return;
       if (row.length !== LANES) {
-        issue(rowLine, rowRaw, `a deck has ${LANES} Landscapes, one for each Lane; found ${row.length}, so they were left to the cards`, "warning");
+        issue(rowLine, rowRaw, t("import.lands_count", { lanes: LANES, found: row.length }), "warning");
       } else { out.landscapes = row; out.any = true; }
       row = [];
     },
 
     addCard(line, raw, count, name) {
       const key = nameKey(name);
-      if (!key) { issue(line, raw, "no card name"); return; }
-      if (count === 0) { issue(line, raw, "0 copies, so nothing was added", "warning"); return; }
+      if (!key) { issue(line, raw, t("import.no_name")); return; }
+      if (count === 0) { issue(line, raw, t("import.zero"), "warning"); return; }
 
       const found = named(byName, key);
-      if (found.length > 1) { issue(line, raw, `more than one card is called “${name}”: ${found.map((c) => c.id).join(", ")}`); return; }
+      if (found.length > 1) { issue(line, raw, t("import.ambiguous", { name, ids: found.map((c) => c.id).join(t("strip.sep")) })); return; }
       if (found.length === 0) {
         const other = named(byAny, key)[0];
-        if (other?.type === "hero") issue(line, raw, `${other.name} is a Hero: put it on a “${heroWord}” line, not in the cards`);
-        else if (other) issue(line, raw, `${other.name}'s rules are not implemented yet`);
+        if (other?.type === "hero") issue(line, raw, t("import.is_hero", { name: other.name, word: heroWord }));
+        else if (other) issue(line, raw, t("import.unmodelled", { name: other.name }));
         else {
           const near = nearest(key, playable);
-          issue(line, raw, `no card is called “${name}”` + (near ? `. Did you mean ${near.name}?` : ""));
+          issue(line, raw, t("import.no_card", { name, near: near?.name ?? "", hasNear: near ? "yes" : "no" }));
         }
         return;
       }
@@ -141,10 +142,10 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
       out.any = true;
       const have = out.counts[c.id] ?? 0;
       let n = Math.min(count + have, MAX_COPIES);
-      if (count + have > MAX_COPIES) issue(line, raw, `${c.name} is limited to ${MAX_COPIES} copies`, "warning");
+      if (count + have > MAX_COPIES) issue(line, raw, t("import.limit", { name: c.name, n: MAX_COPIES }), "warning");
       if (total({ counts: out.counts }) - have + n > MAX_CARDS) {
         n = Math.max(0, MAX_CARDS - (total({ counts: out.counts }) - have));
-        issue(line, raw, `a deck holds at most ${MAX_CARDS} cards`, "warning");
+        issue(line, raw, t("import.max_cards", { n: MAX_CARDS }), "warning");
       }
       if (n > 0) out.counts[c.id] = n;
     },
@@ -190,7 +191,7 @@ const HEADING = /^(hero|landscapes?|creatures?|spells?|buildings?)\s*:?\s*(\(\d+
  * deck's chosen Landscapes. Returns what parseDeck does.
  */
 export function parseDweeb(text, cards) {
-  const r = reader(cards, { heroWord: "Hero" });
+  const r = reader(cards, { heroWord: "Hero" }); // i18n-ignore: the keyword of the file format
   let section = "";
   let heroSeen = false;
   lines(text).forEach((raw, i) => {
@@ -210,7 +211,7 @@ export function parseDweeb(text, cards) {
       return;
     }
     if (section === "hero") {
-      if (heroSeen) r.issue(line, raw, "a deck has one Hero; this line was ignored", "warning");
+      if (heroSeen) r.issue(line, raw, t("import.one_hero"), "warning");
       else { heroSeen = true; r.setHero(line, raw, s); }
       return;
     }
@@ -226,7 +227,8 @@ export function parseDweeb(text, cards) {
 /** Does this text look like it came from Card Dweeb? It has headings for the kinds of card. */
 export const looksLikeDweeb = (text) => lines(text).some((l) => /^(landscapes?|creatures?|spells?|buildings?)\s*:?\s*(\(\d+\))?$/i.test(l.trim()));
 
-export const FORMATS = [["auto", "Detect it"], ["list", "Deck list"], ["dweeb", "Card Dweeb"]];
+/** The ways to read pasted text: [value, message key of its name]. */
+export const FORMATS = [["auto", "format.auto"], ["list", "format.list"], ["dweeb", "format.dweeb"]];
 
 /**
  * Deck text read into a deck the builder can show: a draft with no id, ready to be saved or changed.

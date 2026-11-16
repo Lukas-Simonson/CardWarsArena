@@ -6,6 +6,7 @@
 // plan() is pure. applyEffects() uses the Web Animations API and touches only
 // elements the renderer marks with data-seat / data-lane / data-uid.
 import { cardEl } from "./card.js";
+import { t } from "./i18n.js";
 
 const MAX_HP = 25;
 export const HIT_DELAY = 260;   // the blow lands this long after the lunge starts
@@ -237,7 +238,7 @@ export function applyEffects(root, fx, ctx) {
       case "turn": {
         const el = document.createElement("div");
         el.className = `fx-banner ${f.mine ? "mine" : "theirs"}`;
-        el.textContent = f.mine ? "Your turn!" : `${ctx.names?.[f.seat] || "Opponent"}'s turn`;
+        el.textContent = f.mine ? t("anim.your_turn") : t("game.their_turn", { who: ctx.names?.[f.seat] || t("player.opponent") });
         spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.6)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1.05)", offset: 0.2 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.75 }, { opacity: 0, transform: "translate(-50%, -50%) scale(1.15)" }], { duration: BANNER_MS, delay: f.delay });
         break;
       }

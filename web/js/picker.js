@@ -9,6 +9,9 @@
 //
 // Pure: no DOM. ctx = { view, cards } as in describe.js.
 
+import { t } from "./i18n.js";
+import { labelText } from "./describe.js";
+
 // choose answers a Choice (see the modal in render.js): they have no source on the board.
 const GENERAL_KINDS = new Set(["keep_hand", "mulligan", "draw", "end_main", "choose"]);
 
@@ -37,11 +40,11 @@ export const kindKey = (a) => (a.kind === "activate" ? `activate:${a.index ?? 0}
 export const floopKinds = (actions) => [...new Set(actions.filter((a) => a.kind === "floop").map(kindKey))].sort();
 
 export function kindLabel(key, via = "") {
-  if (key === "attack") return "Fight";
-  if (key === "floop" || key.startsWith("floop:")) return via === "hero" ? "Floop (Hero's)" : "Floop";
-  if (key.startsWith("activate")) return "Use ability";
-  if (key === "thaw") return "Remove frozen token";
-  return "Play";
+  if (key === "attack") return t("kind.attack");
+  if (key === "floop" || key.startsWith("floop:")) return t(via === "hero" ? "kind.floop_hero" : "kind.floop");
+  if (key.startsWith("activate")) return t("kind.activate");
+  if (key === "thaw") return t("kind.thaw");
+  return t("kind.play");
 }
 
 /** Group the non-general legal actions by source key. */
@@ -173,7 +176,7 @@ export class ActionPicker {
     });
     // When a labelled step follows, say so: "Next: Deal 1 damage to" is clearer than "Done".
     const next = live.map((a) => slotLabels(a, this.ctx)[i + 1]).find(Boolean);
-    return { tokens: list, can_skip, skip_label: next ? `Next: ${next}` : this.cur.length === 0 ? "None" : "Done" };
+    return { tokens: list, can_skip, skip_label: next ? t("skip.next", { label: labelText(next) }) : this.cur.length === 0 ? t("skip.none") : t("skip.done") };
   }
 
   /** Close slots that every remaining candidate agrees are finished. */

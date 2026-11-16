@@ -4,11 +4,9 @@
 // (GET /api/auth/me). Signing in is a full-page trip to the provider and back,
 // so there is nothing to keep here between visits: the cookie holds it.
 
-const REASONS = {
-  denied: "Sign-in was cancelled.",
-  state: "That sign-in expired or came from somewhere else. Please try again.",
-  failed: "The sign-in did not work. Please try again.",
-};
+import { t } from "./i18n.js";
+
+const REASONS = { denied: "error.sign_in_denied", state: "error.sign_in_state", failed: "error.sign_in_failed" };
 
 /** The address that starts signing in with a provider and brings the player back to this page. */
 export function loginUrl(server, provider, here) {
@@ -29,7 +27,7 @@ export function accountView(config, me) {
 /** The message for a ?login_error=... the server sent the player back with, or "". */
 export function loginErrorText(search) {
   const code = new URLSearchParams(search).get("login_error");
-  return code ? REASONS[code] ?? REASONS.failed : "";
+  return code ? t(REASONS[code] ?? REASONS.failed) : "";
 }
 
 /** The address with the login_error removed, so a reload does not show it again. */

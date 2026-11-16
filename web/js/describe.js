@@ -1,5 +1,7 @@
 // Turns protocol objects (actions, events, target references) into text, and
 // decides which actions belong to a clicked card. Pure functions: no DOM.
+// Every sentence is one message in the locale catalogue, with its names and numbers as parameters,
+// so a language can reorder the words.
 //
 // ctx = { view, cards, names, known }
 //   view   the current view from the server
@@ -8,15 +10,23 @@
 //   known  uid -> card id for every card ever seen (so events can name cards
 //          that have since left play or gone to a hidden zone)
 
-export const LANDSCAPE_NAMES = {
-  cornfield: "Cornfield", blue_plains: "Blue Plains", useless_swamp: "Useless Swamp",
-  nice_lands: "Nice Lands", sandy_lands: "Sandy Lands", icy_lands: "Icy Lands", rainbow: "Rainbow",
-};
+import { t, has } from "./i18n.js";
+
+export const LANDSCAPE_NAMES = new Proxy({}, { get: (_, l) => (typeof l === "string" && has(`landscape.${l}`) ? t(`landscape.${l}`) : undefined) });
 
 /** The Landscape types in the order the server numbers them (a "landscape" choice's `card` is 1 + the index). */
 export const LANDSCAPE_ORDER = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands"];
 
-export const landscapeName = (l) => LANDSCAPE_NAMES[l] ?? l ?? "";
+export const landscapeName = (l) => (l && has(`landscape.${l}`) ? t(`landscape.${l}`) : l ?? "");
+
+/**
+ * What the server calls a target ("Heal", "Freeze"): text written into the card data. The catalogue may translate
+ * it under label.<the text in lower case, with _ for anything else>; without that, it is shown as it came.
+ */
+export function labelText(label) {
+  const key = `label.${String(label).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")}`;
+  return has(key) ? t(key) : label;
+}
 
 export function cardName(ctx, id) {
   return ctx.cards?.[id]?.name ?? id ?? "?";
@@ -24,26 +34,26 @@ export function cardName(ctx, id) {
 
 export function instName(ctx, uid) {
   const id = ctx.known?.[uid];
-  return id ? cardName(ctx, id) : `card #${uid}`;
+  return id ? cardName(ctx, id) : t("card.unknown", { uid });
 }
 
 export function seatName(ctx, seat) {
-  return ctx.names?.[seat] || `Seat ${seat}`;
+  return ctx.names?.[seat] || t("seat.default", { seat });
 }
 
-const side = (ctx, player) => (player === ctx.view.you ? "your" : "opp's");
+const side = (ctx, player) => (player === ctx.view.you ? "you" : "opp");
 const laneNo = (lane) => (lane ?? 0) + 1;
 
 /** One chosen target, e.g. "Cool Dog (opp's, lane 2)". */
 export function describeRef(ctx, r) {
   const l = ctx.view.players[r.player]?.lanes[r.lane ?? 0] ?? {};
-  const where = `${side(ctx, r.player)}, lane ${laneNo(r.lane)}`;
+  const where = { side: side(ctx, r.player), lane: laneNo(r.lane) };
   switch (r.kind) {
-    case "creature": return `${l.creature ? cardName(ctx, l.creature.card) : "creature"} (${where})`;
-    case "building": return `${l.building ? cardName(ctx, l.building.card) : "building"} (${where})`;
-    case "landscape": return `${l.face_down ? "face-down " : ""}${landscapeName(l.landscape)} landscape (${where})`;
-    case "lane": return `lane ${laneNo(r.lane)} (${side(ctx, r.player)} side)`;
-    case "player": return r.player === ctx.view.you ? "yourself" : "your opponent";
+    case "creature": return t("ref.creature", { ...where, name: l.creature ? cardName(ctx, l.creature.card) : t("noun.creature") });
+    case "building": return t("ref.building", { ...where, name: l.building ? cardName(ctx, l.building.card) : t("noun.building") });
+    case "landscape": return t("ref.landscape", { ...where, type: landscapeName(l.landscape), down: l.face_down ? "yes" : "no" });
+    case "lane": return t("ref.lane", where);
+    case "player": return t(r.player === ctx.view.you ? "ref.player_you" : "ref.player_opp");
     default: return instName(ctx, r.card);
   }
 }
@@ -52,74 +62,86 @@ function withTargets(ctx, text, label, slots, labels) {
   if (!slots || slots.length === 0) return text;
   // An optional slot with nothing chosen may arrive as null or [].
   const parts = slots.map((s, i) => {
-    const what = s?.length ? s.map((r) => describeRef(ctx, r)).join(" + ") : "none";
-    return labels?.[i] ? `${labels[i]} ${what}` : what;
+    const what = s?.length ? s.map((r) => describeRef(ctx, r)).join(t("targets.and")) : t("targets.none");
+    return labels?.[i] ? t("targets.slot", { label: labelText(labels[i]), what }) : what;
   });
-  return `${text}  [${label}: ${parts.join("; ")}]`;
+  return t("targets.with", { text, label: t(`targets.label_${label}`), parts: parts.join(t("targets.sep")) });
 }
 
-/** A readable sentence for an action the server listed as legal. */
-export function describeAction(ctx, a) {
+/** The sentence for an action, or null when this client does not know the kind. */
+function actionText(ctx, a) {
   const v = ctx.view;
   const me = v.players[v.you];
   switch (a.kind) {
-    case "keep_hand": return "Keep your opening hand";
-    case "mulligan": return "Mulligan: shuffle your hand back and draw 5 (only once)";
-    case "draw": return "Spend 1 Action to draw a card";
-    case "end_main": return v.turn === 1 ? "End your turn (no Fight on the first turn)" : "Finish: go to the Fight phase";
+    case "keep_hand": return t("action.keep_hand");
+    case "mulligan": return t("action.mulligan");
+    case "draw": return t("action.draw");
+    case "end_main": return t(v.turn === 1 ? "action.end_main_first" : "action.end_main");
     case "play_card": {
       const inst = me.hand.find((c) => c.uid === a.card);
       const c = ctx.cards?.[inst?.card];
       const name = c?.name ?? instName(ctx, a.card);
-      const isSpell = c?.type === "spell";
-      let t = `${isSpell ? "Cast" : "Play"} ${name} (cost ${c?.cost ?? "?"})${isSpell ? "" : ` into lane ${laneNo(a.lane)}`}`;
-      t = withTargets(ctx, t, "discard", a.cost_targets);
-      return withTargets(ctx, t, "targets", a.targets, a.labels);
+      let text = t("action.play_card", { name, cost: c?.cost ?? "?", spell: c?.type === "spell" ? "yes" : "no", lane: laneNo(a.lane) });
+      text = withTargets(ctx, text, "discard", a.cost_targets);
+      return withTargets(ctx, text, "targets", a.targets, a.labels);
     }
     case "play_pending": {
       const c = ctx.cards?.[v.pending?.card];
-      const t = `Play ${c?.name ?? "the stolen card"} for free${c?.type === "spell" ? "" : ` into lane ${laneNo(a.lane)}`}`;
-      return withTargets(ctx, t, "targets", a.targets, a.labels);
+      const text = t("action.play_pending", { name: c?.name ?? t("action.stolen_card"), spell: c?.type === "spell" ? "yes" : "no", lane: laneNo(a.lane) });
+      return withTargets(ctx, text, "targets", a.targets, a.labels);
     }
-    case "choose": {
-      const ch = v.choice;
-      if (ch?.kind === "upkeep" && !a.card) return `Destroy ${cardName(ctx, ch.card)}`;
-      if (ch?.kind === "discard" || ch?.kind === "upkeep") return `Discard ${instName(ctx, a.card)}`;
-      if (ch?.kind === "reveal") return `Put ${instName(ctx, a.card)} on the bottom of your deck`;
-      if (ch?.kind === "search") return `Put ${instName(ctx, a.card)} into play from your deck`;
-      if (ch?.kind === "rebound") return a.card ? `Discard ${instName(ctx, a.card)} to return ${cardName(ctx, ch.card)} to your hand` : `Leave ${cardName(ctx, ch.card)} in the discard pile`;
-      if (ch?.kind === "redirect") return a.card ? `${instName(ctx, a.card)} fights instead` : `${cardName(ctx, ch.card)} fights`;
-      if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
-      if (ch?.kind === "camel") return a.card ? `Put ${instName(ctx, ch.revealed?.[0]?.uid)} under ${cardName(ctx, ch.card)}` : `Let ${instName(ctx, ch.revealed?.[0]?.uid)} go`;
-      if (ch?.kind === "landscape") return `Make your lane ${laneNo(ch.lane)} Landscape ${landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1])}`;
-      if (ch?.kind === "target") return a.targets?.[0]?.length ? withTargets(ctx, `${cardName(ctx, ch.card)}: ${ch.label || "Choose"}`, "target", a.targets) : `${cardName(ctx, ch.card)}: choose nothing`;
-      if (ch?.kind === "ransom") return a.card ? `Discard ${instName(ctx, a.card)} to avoid what ${cardName(ctx, ch.card)} says` : `Take what ${cardName(ctx, ch.card)} says instead`;
-      if (ch?.kind === "amount") return `${cardName(ctx, ch.card)}: ${a.card}`;
-      if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${movesToTheirSide(ch, v.you) ? " on the opponent's side" : ""}`;
-      return "Choose";
-    }
-    case "thaw": return `Discard ${instName(ctx, a.card)} to remove the frozen token from your lane ${laneNo(a.lane)} Landscape`;
+    case "choose": return chooseText(ctx, a);
+    case "thaw": return t("action.thaw", { card: instName(ctx, a.card), lane: laneNo(a.lane) });
     case "attack": {
       const mine = me.lanes[a.lane ?? 0]?.creature;
       const foe = v.players[1 - v.you].lanes[a.lane ?? 0]?.creature;
-      const who = mine ? cardName(ctx, mine.card) : "your Creature";
-      return `Fight in lane ${laneNo(a.lane)}: ${who} ${foe ? `fights ${cardName(ctx, foe.card)}` : "attacks the opposing Hero directly"}`;
+      return t("action.attack", { lane: laneNo(a.lane), who: mine ? cardName(ctx, mine.card) : t("noun.your_creature"), foe: foe ? cardName(ctx, foe.card) : "", hero: foe ? "no" : "yes" });
     }
     case "floop":
     case "activate": {
-      if (a.source === "hero") return withTargets(ctx, `Use ${cardName(ctx, me.hero?.card)}'s ability`, "targets", a.targets, a.labels);
+      if (a.source === "hero") return withTargets(ctx, t("action.hero_ability", { name: cardName(ctx, me.hero?.card) }), "targets", a.targets, a.labels);
       const l = me.lanes[a.lane ?? 0] ?? {};
       const src = a.source === "building" ? l.building : l.creature;
       const name = src ? cardName(ctx, src.card) : "?";
-      const verb = a.kind === "floop" ? `Floop ${name}${a.via === "hero" ? " with your Hero's Floop" : ""}` : `Use ${name}'s ability`;
-      return withTargets(ctx, `${verb} (lane ${laneNo(a.lane)})`, "targets", a.targets, a.labels);
+      const text = t(a.kind === "floop" ? (a.via === "hero" ? "action.floop_hero" : "action.floop") : "action.activate", { name, lane: laneNo(a.lane) });
+      return withTargets(ctx, text, "targets", a.targets, a.labels);
     }
-    default: return `(unknown action: ${JSON.stringify(a)})`;
+    default: return null;
   }
 }
 
+function chooseText(ctx, a) {
+  const v = ctx.view;
+  const ch = v.choice;
+  const card = ch ? cardName(ctx, ch.card) : "";
+  switch (ch?.kind) {
+    case "upkeep": return a.card ? t("choose.discard", { card: instName(ctx, a.card) }) : t("choose.upkeep_destroy", { name: card });
+    case "discard": return t("choose.discard", { card: instName(ctx, a.card) });
+    case "reveal": return t("choose.reveal", { card: instName(ctx, a.card) });
+    case "search": return t("choose.search", { card: instName(ctx, a.card) });
+    case "rebound": return a.card ? t("choose.rebound_return", { card: instName(ctx, a.card), name: card }) : t("choose.rebound_leave", { name: card });
+    case "redirect": return a.card ? t("choose.redirect_other", { card: instName(ctx, a.card) }) : t("choose.redirect_same", { name: card });
+    case "move_damage": return t("choose.move_damage", { n: a.card });
+    case "camel": return a.card ? t("choose.camel_put", { card: instName(ctx, ch.revealed?.[0]?.uid), name: card }) : t("choose.camel_let_go", { card: instName(ctx, ch.revealed?.[0]?.uid) });
+    case "landscape": return t("choose.landscape", { lane: laneNo(ch.lane), type: landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1]) });
+    case "target":
+      return a.targets?.[0]?.length
+        ? withTargets(ctx, t("choose.target", { name: card, label: ch.label ? labelText(ch.label) : t("choose.target_default") }), "target", a.targets)
+        : t("choose.target_none", { name: card });
+    case "ransom": return a.card ? t("choose.ransom_pay", { card: instName(ctx, a.card), name: card }) : t("choose.ransom_take", { name: card });
+    case "amount": return t("choose.amount", { name: card, n: a.card });
+    case "move": return t("choose.move", { name: card, lane: laneNo(a.lane), theirs: movesToTheirSide(ch, v.you) ? "yes" : "no" });
+    default: return t("choose.default");
+  }
+}
+
+/** A readable sentence for an action the server listed as legal. */
+export function describeAction(ctx, a) {
+  return actionText(ctx, a) ?? t("action.unknown", { action: JSON.stringify(a) });
+}
+
 /** True if describeAction understands the action (used by the smoke test). */
-export const isKnownAction = (ctx, a) => !describeAction(ctx, a).startsWith("(unknown");
+export const isKnownAction = (ctx, a) => actionText(ctx, a) !== null;
 
 /**
  * Does a "move" choice send the Creature to the opponent's side? The server leaves `move_side` out when it is
@@ -131,40 +153,42 @@ export const movesToTheirSide = (choice, you) => (choice?.move_side ?? 0) !== yo
 export function describeEvent(ctx, e) {
   const who = seatName(ctx, e.player);
   // The server names publicly revealed cards; fall back to what we have seen.
-  const n = () => (e.card_id ? cardName(ctx, e.card_id) : instName(ctx, e.card));
+  const card = e.card_id ? cardName(ctx, e.card_id) : instName(ctx, e.card);
+  const lane = laneNo(e.lane);
+  const p = { who, card, lane, amount: e.amount };
   switch (e.kind) {
-    case "mulligan": return `${who} takes a mulligan`;
-    case "keep_hand": return `${who} keeps their hand`;
-    case "turn_start": return e.turn ? `── Turn ${e.turn}: ${who}'s turn ──` : `── ${who}'s turn ──`;
-    case "draw": return e.card ? `${who} draws ${n()}` : `${who} draws a card`;
-    case "play": return `${who} plays ${n()}`;
-    case "replace": return `${n()} is replaced`;
-    case "attack": return `${who} fights with ${n()} (lane ${laneNo(e.lane)})`;
-    case "damage": return `${n()} takes ${e.amount} damage`;
-    case "hp_loss": return `${who} loses ${e.amount} HP`;
-    case "hp_gain": return `${who} heals ${e.amount} HP`;
-    case "heal": return `${n()} heals ${e.amount} damage`;
-    case "die": return `${n()} is destroyed`;
-    case "game_over": return `*** ${who} wins! ***`;
-    case "move": return `${n()} moves to lane ${laneNo(e.lane)}`;
-    case "remove": return `${n()} is removed from the game`;
-    case "under": return `${n()} goes under the Camel in lane ${laneNo(e.lane)}`;
-    case "retype": return `${who}'s lane ${laneNo(e.lane)} Landscape becomes ${landscapeName(LANDSCAPE_ORDER[(e.amount ?? 1) - 1])}`;
-    case "flip": return `${who}'s lane ${laneNo(e.lane)} Landscape is flipped`;
-    case "freeze": return `${who}'s lane ${laneNo(e.lane)} Landscape is frozen`;
-    case "thaw": return `${who}'s lane ${laneNo(e.lane)} Landscape thaws`;
-    case "ready": return `${n()} is readied`;
-    case "bounce": return `${n()} returns to ${who}'s hand`;
-    case "destroy": return `${n()} is destroyed`;
-    case "return": return `${who} returns ${n()} from the discard pile to hand`;
-    case "deck_top": return `${who} puts ${n()} on top of their deck`;
-    case "actions": return `${who} gains ${e.amount} Action(s)`;
-    case "floop": return `${who} Floops ${n()}`;
-    case "activate": return `${who} uses ${n()}'s ability`;
-    case "discard": return `${who} discards ${n()}`;
-    case "steal": return `${who} steals ${n()} from the opponent's hand`;
-    case "abilities": return `${n()}'s abilities change`;
-    case "reveal": return `${who} reveals ${n()}`;
+    case "mulligan": return t("event.mulligan", p);
+    case "keep_hand": return t("event.keep_hand", p);
+    case "turn_start": return e.turn ? t("event.turn_start_n", { ...p, turn: e.turn }) : t("event.turn_start", p);
+    case "draw": return t(e.card ? "event.draw_card" : "event.draw", p);
+    case "play": return t("event.play", p);
+    case "replace": return t("event.replace", p);
+    case "attack": return t("event.attack", p);
+    case "damage": return t("event.damage", p);
+    case "hp_loss": return t("event.hp_loss", p);
+    case "hp_gain": return t("event.hp_gain", p);
+    case "heal": return t("event.heal", p);
+    case "die": return t("event.die", p);
+    case "game_over": return t("event.game_over", p);
+    case "move": return t("event.move", p);
+    case "remove": return t("event.remove", p);
+    case "under": return t("event.under", p);
+    case "retype": return t("event.retype", { ...p, type: landscapeName(LANDSCAPE_ORDER[(e.amount ?? 1) - 1]) });
+    case "flip": return t("event.flip", p);
+    case "freeze": return t("event.freeze", p);
+    case "thaw": return t("event.thaw", p);
+    case "ready": return t("event.ready", p);
+    case "bounce": return t("event.bounce", p);
+    case "destroy": return t("event.destroy", p);
+    case "return": return t("event.return", p);
+    case "deck_top": return t("event.deck_top", p);
+    case "actions": return t("event.actions", p);
+    case "floop": return t("event.floop", p);
+    case "activate": return t("event.activate", p);
+    case "discard": return t("event.discard", p);
+    case "steal": return t("event.steal", p);
+    case "abilities": return t("event.abilities", p);
+    case "reveal": return t("event.reveal", p);
     default: return e.kind;
   }
 }

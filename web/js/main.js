@@ -19,16 +19,40 @@ import { gameLogText, logFileName } from "./gamelog.js";
 import { cardName } from "./describe.js";
 import { fillAvatar } from "./avatar.js";
 import { revealGroups, showReveal } from "./reveal.js";
+import { t, has, setLocale, pickLocale, availableLocales, applyDocument, translateDom, locale } from "./i18n.js";
+import { errorText, closedText } from "./errors.js";
 
 const $ = (id) => document.getElementById(id);
-document.title = APP_NAME;
-$("hero-title").textContent = APP_NAME;
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
 const load = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const sstore = (k, v) => { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} };
 const sload = (k) => { try { return sessionStorage.getItem(k); } catch { return null; } };
 
 const params = new URLSearchParams(location.search);
+
+// ---------- language
+
+// The language is chosen from ?lang= (also how the pseudo-locales en-XA and en-XB are tried), then the player's saved
+// choice, then the browser's languages. Changing it reloads the page: a game in progress is rejoined on the way back.
+const offeredLocales = await availableLocales();
+await setLocale(pickLocale(params.get("lang") || load("cw.locale") || "", offeredLocales, navigator.languages ?? []));
+applyDocument();
+translateDom();
+document.title = APP_NAME;
+$("hero-title").textContent = APP_NAME;
+
+function fillLanguages() {
+  const sel = $("lang");
+  sel.parentElement.hidden = offeredLocales.length < 2;
+  sel.replaceChildren(...offeredLocales.map((l) => new Option(l.name, l.tag, false, l.tag === locale())));
+  sel.onchange = () => {
+    store("cw.locale", sel.value);
+    const url = new URL(location.href);
+    url.searchParams.delete("lang");
+    location.href = url.href;
+  };
+}
+fillLanguages();
 // Served together with the game server (Docker, a reverse proxy) the server is the page's own
 // origin; the dev static server on :5173 talks to a game server on :8080.
 const defaultServer = location.port === "5173" ? "http://localhost:8080" : location.origin;
@@ -144,15 +168,15 @@ function floop(key) {
     const source = granted ? v.players[v.you].hero?.card : creature?.card;
     const text = cards[source]?.text;
     return h("button", { type: "button", class: "botdeck floopopt", onclick: () => { dlg.close(); select(key, k); } },
-      h("b", {}, granted ? `${cardName(ctx, source)}'s Floop` : `${name}'s own Floop`),
-      h("span", {}, granted ? `Your Hero gives ${name} this Floop.` : "Printed on the card."),
+      h("b", {}, granted ? t("floop.hero_title", { name: cardName(ctx, source) }) : t("floop.own_title", { name })),
+      h("span", {}, granted ? t("floop.hero_text", { name }) : t("floop.own_text")),
       text && h("span", { class: "floopText" }, text));
   });
   dlg.append(
-    h("h2", { id: "floop-title" }, `Which Floop for ${name}?`),
-    h("p", { class: "ink" }, `${name} can only Floop once: choose the ability to use.`),
+    h("h2", { id: "floop-title" }, t("floop.title", { name })),
+    h("p", { class: "ink" }, t("floop.text", { name })),
     h("div", { class: "botdecks floopopts" }, options),
-    h("div", { class: "modalrow modalrow2" }, h("button", { type: "button", class: "btn-steel", onclick: () => dlg.close() }, "Cancel")));
+    h("div", { class: "modalrow modalrow2" }, h("button", { type: "button", class: "btn-steel", onclick: () => dlg.close() }, t("prompt.cancel"))));
   dlg.addEventListener("close", () => dlg.remove());
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   document.body.append(dlg);
@@ -170,15 +194,15 @@ async function copyLog(button) {
     await navigator.clipboard.writeText(text);
     if (button) {
       const was = button.textContent;
-      button.textContent = "Copied";
+      button.textContent = t("log.copied");
       setTimeout(() => { if (button.isConnected) button.textContent = was; }, 1500);
     }
   } catch {
-    const box = h("textarea", { class: "well decktext", readonly: true, rows: "14", spellcheck: "false", "aria-label": "Game log" });
+    const box = h("textarea", { class: "well decktext", readonly: true, rows: "14", spellcheck: "false", "aria-label": t("log.dialog_title") });
     box.value = text;
-    const dlg = h("dialog", { class: "modal parch deckdialog", "aria-label": "Game log" },
-      h("h2", {}, "Game log"), h("p", {}, "Copy this text."), box,
-      h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: () => dlg.close() }, "Close")));
+    const dlg = h("dialog", { class: "modal parch deckdialog", "aria-label": t("log.dialog_title") },
+      h("h2", {}, t("log.dialog_title")), h("p", {}, t("log.dialog_text")), box,
+      h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: () => dlg.close() }, t("common.close"))));
     dlg.addEventListener("close", () => dlg.remove());
     dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
     document.body.append(dlg);
@@ -257,9 +281,9 @@ function openPractice() {
       h("div", { class: "lands", "aria-hidden": "true" }, (lands ?? []).map((l) => h("i", { style: `background:${diamondColour(l)}` }))),
       h("b", {}, name), h("span", {}, sub));
     options.replaceChildren(
-      opt(RANDOM, "Random", "One of the starter decks", null),
+      opt(RANDOM, t("practice.random"), t("practice.random_sub"), null),
       ...starters.map((b) => opt(b.value, b.name, b.sub, b.lands)),
-      ...(mine.length ? [h("h3", { class: "botdecks-h" }, "Your decks"), ...mine.map((b) => opt(b.value, b.name, b.sub, b.lands, b.disabled, b.title))] : []));
+      ...(mine.length ? [h("h3", { class: "botdecks-h" }, t("practice.yours")), ...mine.map((b) => opt(b.value, b.name, b.sub, b.lands, b.disabled, b.title))] : []));
     options.querySelector('[aria-checked="true"]')?.focus();
   };
   function start() {
@@ -268,11 +292,11 @@ function openPractice() {
     send({ type: "create", ...form(), vs_bot: true, bot_deck: botDeckFor(choice, starters, own, Math.random, mine), bot: $("bot").value || undefined });
   }
   dlg.append(
-    h("h2", { id: "practice-title" }, "Who do you want to face?"),
+    h("h2", { id: "practice-title" }, t("practice.title")),
     options,
     h("div", { class: "modalrow modalrow2" },
-      h("button", { type: "button", class: "btn-steel", onclick: () => dlg.close() }, "Cancel"),
-      h("button", { type: "button", class: "btn-green", onclick: start }, "Start")));
+      h("button", { type: "button", class: "btn-steel", onclick: () => dlg.close() }, t("prompt.cancel")),
+      h("button", { type: "button", class: "btn-green", onclick: start }, t("practice.start"))));
   dlg.addEventListener("close", () => dlg.remove());
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   dlg.addEventListener("keydown", (e) => {
@@ -344,25 +368,25 @@ function renderAccount() {
   const box = $("account"), name = $("name"), here = location.origin + location.pathname;
   box.hidden = !account.show;
   if (account.user) {
-    box.replaceChildren(h("button", { type: "button", class: "btn-steel", onclick: signOut }, "Sign out"));
+    box.replaceChildren(h("button", { type: "button", class: "btn-steel", onclick: signOut }, t("account.sign_out")));
     name.value = account.user.name; // the server plays you under this name whatever is sent
     name.disabled = true;
   } else {
-    box.replaceChildren(...account.providers.map((p) => h("a", { class: "btn-purple", href: loginUrl(server, p.name, here), title: `Sign in with ${p.label} to build and keep decks` }, `Sign in with ${p.label}`)));
+    box.replaceChildren(...account.providers.map((p) => h("a", { class: "btn-purple", href: loginUrl(server, p.name, here), title: t("account.sign_in_title", { provider: p.label }) }, t("account.sign_in", { provider: p.label }))));
     name.disabled = false;
-    name.value = load("cw.name") || "Player";
+    name.value = load("cw.name") || t("account.default_name");
   }
   const build = $("build");
   build.hidden = !account.show; // a server with no accounts has no decks to build
   build.disabled = !account.user;
-  build.title = account.user ? "" : "Sign in to build and keep your own decks";
+  build.title = account.user ? "" : t("account.build_title");
   showWho();
 }
 
 /** The player chip: the first letter of the name, and whether they are signed in. */
 function showWho() {
   fillAvatar($("avatar"), $("name").value, account.user?.avatar);
-  $("whosub").textContent = account.user ? "Signed in" : account.show ? "Guest: sign in to keep decks" : "Your name at the table";
+  $("whosub").textContent = t(account.user ? "account.signed_in" : account.show ? "account.guest" : "account.name_hint");
 }
 
 async function signOut() {
@@ -383,11 +407,11 @@ function render() {
   $("lobby").hidden = inRoom || builder.isOpen();
   $("game").hidden = !inRoom;
   const s = $("status");
-  s.textContent = { open: "connected", connecting: "connecting…", reconnecting: "reconnecting…", closed: "disconnected" }[state.status] ?? state.status;
+  s.textContent = ["open", "connecting", "reconnecting", "closed"].includes(state.status) ? t(`status.${state.status}`) : state.status;
   s.className = "conn " + (state.status === "open" ? "ok" : state.status === "closed" ? "bad" : "warn");
   const banner = $("banner");
-  const gone = inRoom && state.view && state.opponent.connected === false ? "Your opponent has disconnected. The game waits for them to come back." : "";
-  const msg = state.error || catalogError || gone || (!inRoom && state.closedReason ? `The room closed: ${state.closedReason}.` : "");
+  const gone = inRoom && state.view && state.opponent.connected === false ? t("error.opponent_gone") : "";
+  const msg = errorText(state.error) || catalogError || gone || (!inRoom && state.closedReason ? closedText(state.closedReason) : "");
   banner.hidden = !msg;
   banner.textContent = msg;
   banner.className = "banner" + (!state.error && !catalogError ? " info" : "");
@@ -444,9 +468,9 @@ function renderShelf() {
     h("div", { class: "dbody" },
       h("div", { class: "lands", "aria-hidden": "true" }, b.lands.map((l) => h("i", { style: `background:${diamondColour(l)}` }))),
       h("div", { class: "parch plate" }, h("b", {}, b.name), h("span", {}, b.sub)),
-      h("div", { class: "dfoot" }, h("span", {}, `${b.size} cards`), b.value === selectedDeck && h("span", { class: "picked" }, "Selected"))));
+      h("div", { class: "dfoot" }, h("span", {}, t("shelf.cards", { n: b.size })), b.value === selectedDeck && h("span", { class: "picked" }, t("shelf.selected")))));
   $("shelf").replaceChildren(...[...boxes.starters, ...boxes.mine].map(box));
-  $("lobbyhint").textContent = !decks.length ? "The server reports no playable decks." : account.show && !account.user ? "Sign in to build and keep your own decks." : "";
+  $("lobbyhint").textContent = !decks.length ? t("shelf.none") : account.show && !account.user ? t("shelf.sign_in") : "";
 }
 
 /** The feedback and repository links in the footer, when the server turns them on (it does not by default). */
@@ -460,7 +484,7 @@ function fillFeedback(answer) {
 /** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
 function fillBots({ default: first, bots }) {
   const sel = $("bot");
-  sel.replaceChildren(...bots.map((name) => new Option(name[0].toUpperCase() + name.slice(1), name)));
+  sel.replaceChildren(...bots.map((name) => new Option(has(`bot.${name}`) ? t(`bot.${name}`) : name[0].toUpperCase() + name.slice(1), name)));
   const saved = load("cw.bot");
   sel.value = bots.includes(saved) ? saved : bots.includes("heuristic") ? "heuristic" : first;
 }
@@ -475,7 +499,7 @@ async function loadCatalog() {
     cards = Object.fromEntries((await c.json()).map((x) => [x.id, x]));
     fillDecks(await d.json());
   } catch (err) {
-    catalogError = `Cannot load cards from ${server} (${err.message}). Is the server running, and was it started with -origins ${location.host}?`;
+    catalogError = t("error.catalog", { server, detail: err.message, host: location.host });
   }
 }
 
@@ -516,7 +540,7 @@ async function applyServer(text) {
 }
 
 $("server").value = server;
-$("name").value = load("cw.name") || "Player";
+$("name").value = load("cw.name") || t("account.default_name");
 showWho();
 store("cw.server", server);
 render();

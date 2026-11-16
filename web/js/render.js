@@ -7,11 +7,13 @@ import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
-import { cardName, describeRef, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide } from "./describe.js";
+import { cardName, describeRef, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide, labelText } from "./describe.js";
+import { t, fmtList, fmtNumber } from "./i18n.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
 
+const fmtJoin = (parts) => parts.join(t("tile.stats_sep"));
 const SHIELD = `<path d="M24 3 L44 9 V26 C44 40 35 48 24 51 C13 48 4 40 4 26 V9 Z" fill="#3f8fd6" stroke="#16212b" stroke-width="3.5" stroke-linejoin="round"/><path d="M24 8 L39 12.5 V26 C39 37 32 43.5 24 46" fill="none" stroke="#a8d6ff" stroke-width="2.5" opacity="0.7"/>`;
 const MAX_HP = 25;
 const LOG_SHOWN = 40;
@@ -29,9 +31,9 @@ export function renderGame(root, model, on) {
     root.replaceChildren(h("div", { class: "table" },
       h("div", { class: "topbar" }, h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME))),
       h("div", { class: "steel", style: "padding:24px 28px" },
-        h("h2", { class: "h", style: "font-size:30px" }, state.waiting ? "Waiting for an opponent…" : "Joining…"),
-        state.waiting && h("p", {}, "Send this room code to your friend; they type it under “Join”."),
-        state.waiting && h("p", { class: "roomcode", "aria-label": "Room code" }, state.session?.room ?? ""))));
+        h("h2", { class: "h", style: "font-size:30px" }, t(state.waiting ? "game.waiting" : "game.joining")),
+        state.waiting && h("p", {}, t("game.send_code")),
+        state.waiting && h("p", { class: "roomcode", "aria-label": t("game.room_code") }, state.session?.room ?? ""))));
     return;
   }
   const ctx = { view: v, cards, names: state.names, avatars: state.avatars, known: state.known };
@@ -63,7 +65,7 @@ export function updateDetail(root, ctx, cardId) {
   if (old) old.replaceWith(detailPanel(ctx, cardId));
 }
 
-const leaveButton = (on) => h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: on.onLeave }, "‹ Lobby");
+const leaveButton = (on) => h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: on.onLeave }, t("game.lobby"));
 
 function sourceCard(ctx, source) {
   const v = ctx.view;
@@ -79,12 +81,12 @@ function sourceCard(ctx, source) {
 function topbar({ ctx, me }, on) {
   const v = ctx.view;
   const mine = v.active === me;
-  const phase = v.phase === "mulligan" ? "Opening hands" : `${v.phase[0].toUpperCase()}${v.phase.slice(1)} phase`;
+  const phase = t(`phase.${v.phase}`);
   return h("div", { class: "topbar" },
     h("div", { class: "l" }, leaveButton(on), h("h1", { class: "h" }, APP_NAME)),
     h("div", { class: "steel turnbox" },
-      v.phase !== "mulligan" && h("span", { class: "ink" }, `Turn ${v.turn}`),
-      v.phase !== "mulligan" && h("span", { class: `chip ${mine ? "" : "theirs"}` }, mine ? "Your turn" : `${seatName(ctx, v.active)}'s turn`),
+      v.phase !== "mulligan" && h("span", { class: "ink" }, t("game.turn", { turn: v.turn })),
+      v.phase !== "mulligan" && h("span", { class: `chip ${mine ? "" : "theirs"}` }, mine ? t("game.your_turn") : t("game.their_turn", { who: seatName(ctx, v.active) })),
       h("span", { class: "ink", style: "font-size:17px" }, phase)));
 }
 
@@ -95,21 +97,21 @@ function playerBar(m, seat, on) {
   const backs = !mine && Array.from({ length: Math.min(p.hand_count, 10) }, () => h("div", { class: "back", "aria-hidden": "true" }, h("i")));
   const pile = (label, n, clickable) => h("button", {
     type: "button", class: "well", disabled: !clickable, onclick: () => on.onDiscard(seat),
-    "aria-label": `${label}: ${n} cards`,
+    "aria-label": t("player.pile_label", { label, n }),
   }, `${label} ${n}`);
   const aim = `player:${seat}:0`; // a player may be what a card is aimed at (Frosty Frolic)
   const aimed = tokens.has(aim);
-  return h("section", { class: `steel pbar${aimed ? " pick" : ""}${aimed && !mine ? " foe" : ""}`, "aria-label": mine ? "You" : "Opponent" },
-    aimed && h("button", { type: "button", class: "btn-purple aim", onclick: () => on.onToken(aim) }, mine ? "Choose yourself" : "Choose opponent"),
-    h("div", { class: "shield", "data-seat": seat, role: "img", "aria-label": `${mine ? "You have" : seatName(ctx, seat) + " has"} ${p.hp} of ${MAX_HP} Hit Points` },
+  return h("section", { class: `steel pbar${aimed ? " pick" : ""}${aimed && !mine ? " foe" : ""}`, "aria-label": t(mine ? "player.you" : "player.opponent") },
+    aimed && h("button", { type: "button", class: "btn-purple aim", onclick: () => on.onToken(aim) }, t(mine ? "player.choose_self" : "player.choose_opponent")),
+    h("div", { class: "shield", "data-seat": seat, role: "img", "aria-label": t(mine ? "player.hp_you" : "player.hp_them", { who: seatName(ctx, seat), hp: p.hp, max: MAX_HP }) },
       svg(SHIELD, { viewBox: "0 0 48 54" }), h("span", {}, p.hp)),
     avatarEl(seatName(ctx, seat), ctx.avatars?.[seat], { style: `background:${mine ? "#c98a1f" : "#2e5f9c"}` }),
     h("div", { class: "pname" },
-      h("div", { class: "h" }, mine ? `${seatName(ctx, seat)} (you)` : seatName(ctx, seat)),
-      h("div", { class: "sub" }, mine ? `${p.hand?.length ?? 0} in hand` : `${p.hand_count} in hand`)),
+      h("div", { class: "h" }, mine ? t("player.name_you", { who: seatName(ctx, seat) }) : seatName(ctx, seat)),
+      h("div", { class: "sub" }, t("player.in_hand", { n: mine ? p.hand?.length ?? 0 : p.hand_count }))),
     heroChip(m, seat, on),
     backs && h("div", { class: "backs", "aria-hidden": "true" }, backs),
-    !mine && h("div", { class: "counts" }, h("span", { class: "well", style: "padding:2px 10px;border-radius:999px" }, `Deck ${p.deck_count}`), pile("Discard", p.discard.length, true)),
+    !mine && h("div", { class: "counts" }, h("span", { class: "well", style: "padding:2px 10px;border-radius:999px" }, t("player.deck", { n: p.deck_count })), pile(t("player.discard"), p.discard.length, true)),
     h("div", { class: "well hpbar", "data-seat": seat, "aria-hidden": "true" }, h("div", { style: `width:${hpw}%` })));
 }
 
@@ -125,10 +127,10 @@ function heroChip(m, seat, on) {
   return h("div", { class: "herochip" },
     h("button", {
       type: "button", class: `well hero ${abilities.length ? "go" : ""} ${mine && ui.source === "hero" ? "sel" : ""}`,
-      "aria-label": `${mine ? "Your" : "Opponent's"} Hero: ${name}`, title: ctx.cards[hero.card]?.text ?? "",
+      "aria-label": t(mine ? "hero.yours" : "hero.theirs", { name }), title: ctx.cards[hero.card]?.text ?? "",
       onclick: () => on.onInspect(hero.card), onmouseenter: () => on.onInspect(hero.card, true),
-    }, h("span", { class: "tag" }, "Hero"), h("span", { class: "nm" }, name)),
-    abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": `Use ${name}'s ability`, onclick: () => on.onHeroAbility(n) }, "Use ability")));
+    }, h("span", { class: "tag" }, t("hero.tag")), h("span", { class: "nm" }, name)),
+    abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": t("ability.use_named", { name }), onclick: () => on.onHeroAbility(n) }, t("ability.use"))));
 }
 
 function promptBar({ prompt, myDecision, ctx }, on) {
@@ -136,7 +138,7 @@ function promptBar({ prompt, myDecision, ctx }, on) {
   for (const [key, label] of prompt.kinds) kids.push(h("button", { type: "button", class: "btn-purple", onclick: () => on.onKind(key) }, label));
   if (prompt.confirm) kids.push(h("button", { type: "button", class: "btn-green", onclick: on.onConfirm }, prompt.confirm));
   if (prompt.skip) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onSkip }, prompt.skip));
-  if (prompt.cancel) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onCancel }, "Cancel"));
+  if (prompt.cancel) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onCancel }, t("prompt.cancel")));
   return h("div", { role: "status", class: `well prompt ${myDecision && !ctx.view.over ? "you" : ""}` }, kids);
 }
 
@@ -145,7 +147,7 @@ function promptBar({ prompt, myDecision, ctx }, on) {
 function battlefield(m, on) {
   const { ctx, me, opp } = m;
   const v = ctx.view;
-  const felt = h("section", { class: "felt", style: "padding:10px", "aria-label": "Battlefield" },
+  const felt = h("section", { class: "felt", style: "padding:10px", "aria-label": t("game.battlefield") },
     h("div", { class: "lanes" }, [0, 1, 2, 3].map((i) => laneColumn(m, i, on))));
   const veil = overlay(m, on);
   if (veil) felt.append(veil);
@@ -171,9 +173,9 @@ function laneColumn(m, i, on) {
     h("div", { class: "tilewrap" },
       tile(m, me, i, on),
       (canFloop || abilities.length > 0 || canThaw) && h("div", { class: "tileacts" },
-        abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": `Use ${cardName(ctx, mc?.card)}'s ability`, onclick: () => on.onAbility(i, "creature", n) }, "Use ability")),
-        canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": `Floop ${cardName(ctx, mc?.card)}`, onclick: () => on.onFloop(i, "creature") }, "Floop >>>"),
-        canThaw && h("button", { type: "button", class: "btn-ice floop thaw", "aria-label": `Discard a card to remove the frozen token on your lane ${i + 1} Landscape`, onclick: () => on.onThaw(i) }, "❄ Thaw"))),
+        abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": t("ability.use_named", { name: cardName(ctx, mc?.card) }), onclick: () => on.onAbility(i, "creature", n) }, t("ability.use"))),
+        canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": t("ability.floop_named", { name: cardName(ctx, mc?.card) }), onclick: () => on.onFloop(i, "creature") }, t("ability.floop")),
+        canThaw && h("button", { type: "button", class: "btn-ice floop thaw", "aria-label": t("ability.thaw_label", { lane: i + 1 }), onclick: () => on.onThaw(i) }, t("ability.thaw")))),
     landName(ctx, me, i),
     buildingStrip(m, me, i, on));
 }
@@ -181,23 +183,23 @@ function laneColumn(m, i, on) {
 /** The Landscape's name, shown beside the tile so it never covers a card. */
 function landName(ctx, seat, i) {
   const lane = ctx.view.players[seat].lanes[i];
-  return h("div", { class: "landname" }, lane.face_down ? "Face-down" : landscapeName(lane.landscape), lane.frozen && h("span", { class: "frozentag" }, " · Frozen"));
+  return h("div", { class: "landname" }, lane.face_down ? t("land.face_down") : landscapeName(lane.landscape), lane.frozen && h("span", { class: "frozentag" }, t("land.frozen_tag")));
 }
 
 function laneInfo(m, i, mc, oc) {
   const { ctx } = m;
   const v = ctx.view;
   const myTurn = v.active === v.you && v.phase !== "mulligan";
-  let text = "Quiet lane", bg = "#f4e6bf";
+  let text = t("lane.quiet"), bg = "#f4e6bf";
   const atk = mc?.attack ?? 0;
   if (mc && mc.status === "ready") {
-    if (myTurn && oc) { text = `Fights ${cardName(ctx, oc.card)}`; bg = "#ffe08a"; }
-    else if (myTurn) { text = `Hits Hero for ${atk}`; bg = "#c4ee9f"; }
-    else text = "Ready";
-  } else if (mc && mc.status === "flooped") { text = "Flooped, no Fight"; bg = "#dccbf3"; }
-  else if (mc && mc.status === "fought") { text = "Fought"; bg = "#d9cfb8"; }
-  else if (!mc && oc) { text = myTurn ? "Open lane!" : "Open lane"; bg = "#ffb39e"; }
-  return h("div", { class: "info" }, h("span", { class: "pill", title: `Lane ${i + 1}`, style: `background:${bg}` }, text));
+    if (myTurn && oc) { text = t("lane.fights", { name: cardName(ctx, oc.card) }); bg = "#ffe08a"; }
+    else if (myTurn) { text = t("lane.hits_hero", { n: atk }); bg = "#c4ee9f"; }
+    else text = t("lane.ready");
+  } else if (mc && mc.status === "flooped") { text = t("lane.flooped"); bg = "#dccbf3"; }
+  else if (mc && mc.status === "fought") { text = t("lane.fought"); bg = "#d9cfb8"; }
+  else if (!mc && oc) { text = t(myTurn ? "lane.open_mine" : "lane.open"); bg = "#ffb39e"; }
+  return h("div", { class: "info" }, h("span", { class: "pill", title: t("lane.title", { lane: i + 1 }), style: `background:${bg}` }, text));
 }
 
 /** One half of a Lane: Landscape background with the Creature on it. */
@@ -224,8 +226,8 @@ function tile(m, seat, i, on) {
     if (selectable) return on.onLane(i, "creature", c?.card);
     if (c) on.onInspect(c.card);
   };
-  const label = `${mine ? "Your" : "Opponent"} Lane ${i + 1}, ${lane.face_down ? "face-down" : landscapeName(lane.landscape)}${lane.frozen ? ", frozen" : ""}${c ? `: ${cardName(ctx, c.card)}` : ", empty"}`;
-  const stats = c && [c.types && c.types.map(landscapeName).join(" / "), c.protected && "protected", c.stolen && "stolen", c.silenced && (c.lent ? `lent: ${cardName(ctx, c.lent)}` : "silenced"), c.under?.length > 0 && `${c.under.length} under`].filter(Boolean);
+  const label = t("tile.label", { mine: mine ? "yes" : "no", lane: i + 1, down: lane.face_down ? "yes" : "no", type: landscapeName(lane.landscape), frozen: lane.frozen ? "yes" : "no", empty: c ? "no" : "yes", card: c ? cardName(ctx, c.card) : "" });
+  const stats = c && [c.types && c.types.map(landscapeName).join(t("tile.types_sep")), c.protected && t("tile.protected"), c.stolen && t("tile.stolen"), c.silenced && (c.lent ? t("tile.lent", { name: cardName(ctx, c.lent) }) : t("tile.silenced")), c.under?.length > 0 && t("tile.under", { n: c.under.length })].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
     "data-seat": seat, "data-lane": i,
@@ -235,8 +237,8 @@ function tile(m, seat, i, on) {
     lane.frozen && h("div", { class: "ice", "aria-hidden": "true" }, h("span", {}, "❄")),
     c && h("div", { class: `at ${c.status === "ready" ? "" : c.status}` }, cardEl(ctx.cards[c.card])),
     c && tileStats(ctx.cards[c.card], c),
-    c && c.status !== "ready" && h("span", { class: "stat" }, c.status === "fought" ? "Fought" : "Flooped"),
-    c && stats.length > 0 && c.status === "ready" && h("span", { class: "stat" }, stats.join(" · ")));
+    c && c.status !== "ready" && h("span", { class: "stat" }, t(c.status === "fought" ? "lane.fought" : "tile.flooped")),
+    c && stats.length > 0 && c.status === "ready" && h("span", { class: "stat" }, fmtJoin(stats)));
 }
 
 function buildingStrip(m, seat, i, on) {
@@ -259,19 +261,19 @@ function buildingStrip(m, seat, i, on) {
   const card = b && ctx.cards[b.card];
   const main = h("button", {
     type: "button", class: classes.join(" "), onclick: click, "data-seat": seat, "data-lane": i,
-    "aria-label": `${mine ? "Your" : "Opponent"} Building slot, Lane ${i + 1}${b ? `: ${[b, ...extra].map((x) => cardName(ctx, x.card)).join(", ")}` : ", empty"}`,
+    "aria-label": t("strip.label", { mine: mine ? "yes" : "no", lane: i + 1, empty: b ? "no" : "yes", cards: [b, ...extra].filter(Boolean).map((x) => cardName(ctx, x.card)).join(t("strip.sep")) }),
     onmouseenter: b ? () => on.onInspect(b.card, true) : null,
   }, b
-    ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, "Flooped"))
-    : (mine ? "Building slot" : "No Building"));
+    ? h("span", { class: "row" }, h("span", { class: "orb" }, card?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, b.card)), b.status === "flooped" && h("span", { class: "tag" }, t("tile.flooped")))
+    : t(mine ? "strip.mine_empty" : "strip.theirs_empty"));
   if (extra.length === 0) return main;
   // Burly Lumberjack: the other Buildings in the Lane, each on a line of its own to read and inspect.
   return h("div", { class: "stripgroup" }, main, extra.map((x) => h("button", {
     type: "button", class: `strip extra ${mine ? "mine" : "theirs"}`, "data-seat": seat, "data-lane": i,
-    "aria-label": `${mine ? "Your" : "Opponent"} extra Building, Lane ${i + 1}: ${cardName(ctx, x.card)}`,
+    "aria-label": t("strip.extra_label", { mine: mine ? "yes" : "no", lane: i + 1, name: cardName(ctx, x.card) }),
     onclick: () => on.onInspect(x.card), onmouseenter: () => on.onInspect(x.card, true),
   }, h("span", { class: "row" }, h("span", { class: "orb" }, ctx.cards[x.card]?.cost ?? "–"), h("span", { class: "nm" }, cardName(ctx, x.card)),
-    x.status === "flooped" && h("span", { class: "tag" }, "Flooped")))));
+    x.status === "flooped" && h("span", { class: "tag" }, t("tile.flooped"))))));
 }
 
 // ---------- the modal for a Choice
@@ -291,111 +293,111 @@ function choiceModal(m, on) {
   const choose = legal.filter((a) => a.kind === "choose");
   const cardButton = (inst, action) => {
     const c = ctx.cards[inst.card];
-    return h("button", { type: "button", class: "modalopt cardopt", "aria-label": c?.name ?? "card", onclick: () => on.onAction(action) },
+    return h("button", { type: "button", class: "modalopt cardopt", "aria-label": c?.name ?? t("noun.card"), onclick: () => on.onAction(action) },
       cardEl(c ?? { id: inst.card, name: inst.card }), h("span", { class: "cap" }, c?.name ?? inst.card));
   };
   let title, text, body;
   if (ch.kind === "discard") {
-    title = `Discard ${ch.count} card${ch.count === 1 ? "" : "s"}`;
-    text = `${by} makes you discard. Choose from your hand:`;
+    title = t("modal.discard_title", { n: ch.count });
+    text = t("modal.discard_text", { name: by });
     body = h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
   } else if (ch.kind === "reveal") {
     title = by;
-    text = "These are the top cards of your deck. Choose one to put on the bottom; the rest are discarded.";
+    text = t("modal.reveal_text");
     body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
   } else if (ch.kind === "search") {
     title = by;
-    text = "Choose a Building from your deck to put into play. Your deck is shuffled afterwards.";
+    text = t("modal.search_text");
     body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
   } else if (ch.kind === "rebound") {
     const keep = choose.find((a) => !a.card);
-    title = `${by}: return it?`;
-    text = `Discard a card from your hand to return ${by} to your hand, or leave it in the discard pile.`;
+    title = t("modal.rebound_title", { name: by });
+    text = t("modal.rebound_text", { name: by });
     body = h("div", {},
       h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
         const action = choose.find((a) => a.card === inst.uid);
         return action && cardButton(inst, action);
       })),
-      keep && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(keep) }, "Leave it")));
+      keep && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(keep) }, t("modal.leave_it"))));
   } else if (ch.kind === "redirect") {
     const stay = choose.find((a) => !a.card);
-    title = `${by}: who fights?`;
-    text = `${by} attacks. You may have one of your Flooped Creatures fight in its place.`;
+    title = t("modal.redirect_title", { name: by });
+    text = t("modal.redirect_text", { name: by });
     body = h("div", {},
       h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
         const action = choose.find((a) => a.card === inst.uid);
         return action && cardButton(inst, action);
       })),
-      stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(stay) }, `${by} fights`)));
+      stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(stay) }, t("modal.redirect_same", { name: by }))));
   } else if (ch.kind === "move_damage") {
     title = by;
-    text = `Move how much damage? (up to ${ch.count})`;
+    text = t("modal.move_damage_text", { n: ch.count });
     body = h("div", { class: "modalrow" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "move") {
     const theirs = movesToTheirSide(ch, v.you);
-    title = `${by}: where to?`;
-    text = theirs ? `${by} has nowhere to go on your side: choose an empty Landscape on your opponent's side.` : `Choose an empty Landscape of yours to move ${by} to.`;
+    title = t("modal.move_title", { name: by });
+    text = t(theirs ? "modal.move_theirs" : "modal.move_mine", { name: by });
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
-      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, `Lane ${(a.lane ?? 0) + 1}`)));
+      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, t("modal.lane_n", { lane: (a.lane ?? 0) + 1 }))));
   } else if (ch.kind === "camel") {
     const gone = ch.revealed?.[0];
     const put = choose.find((a) => a.card);
     const let_go = choose.find((a) => !a.card);
-    title = `${by}: keep it?`;
-    text = `${cardName(ctx, gone?.card)} is leaving play. You may put it underneath ${by} instead; it stays there until ${by} leaves play.`;
+    title = t("modal.camel_title", { name: by });
+    text = t("modal.camel_text", { card: cardName(ctx, gone?.card), name: by });
     body = h("div", {},
       gone && h("div", { class: "modalcards" }, h("div", { class: "modalopt cardopt" }, cardEl(ctx.cards[gone.card] ?? { id: gone.card, name: gone.card }), h("span", { class: "cap" }, cardName(ctx, gone.card)))),
       h("div", { class: "modalrow" },
-        put && h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(put) }, `Put it under ${by}`),
-        let_go && h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(let_go) }, "Let it go")));
+        put && h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(put) }, t("modal.camel_put", { name: by })),
+        let_go && h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(let_go) }, t("modal.let_go"))));
   } else if (ch.kind === "landscape") {
     title = by;
-    text = `Choose the type your lane ${ch.lane + 1} Landscape becomes until the start of your next turn.`;
+    text = t("modal.landscape_text", { lane: ch.lane + 1 });
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, landscapeName(LANDSCAPE_ORDER[a.card - 1]))));
   } else if (ch.kind === "target") {
     const none = choose.find((a) => !a.targets?.[0]?.length);
-    title = `${by}: ${ch.label || "choose"}`;
-    text = ch.optional ? `${by} lets you choose. You may choose nothing.` : `${by} triggers. Choose what it acts on.`;
+    title = t("modal.target_title", { name: by, label: ch.label ? labelText(ch.label) : t("modal.target_default") });
+    text = t(ch.optional ? "modal.target_optional" : "modal.target_text", { name: by });
     body = h("div", {},
       h("div", { class: "modalrow modalrow2" }, choose.filter((a) => a.targets?.[0]?.length).map((a) =>
         h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, describeRef(ctx, a.targets[0][0])))),
-      none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, "Choose nothing")));
+      none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, t("modal.choose_nothing"))));
   } else if (ch.kind === "ransom") {
     const decline = choose.find((a) => !a.card);
-    title = `${by}: pay or take it`;
-    text = `${by} gives you a choice: discard a card${ch.min_cost ? ` of cost ${ch.min_cost} or more` : ""}, or take what it says.`;
+    title = t("modal.ransom_title", { name: by });
+    text = t("modal.ransom_text", { name: by, min: ch.min_cost ?? 0 });
     body = h("div", {},
       h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
         const action = choose.find((a) => a.card === inst.uid);
         return action && cardButton(inst, action);
       })),
-      decline && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(decline) }, "Take it instead")));
+      decline && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(decline) }, t("modal.take_it"))));
   } else if (ch.kind === "amount") {
     title = by;
-    text = `Choose how much (${ch.options.join(" or ")}).`;
+    text = t("modal.amount_text", { options: ch.options.map(String) });
     body = h("div", { class: "modalrow" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
-    title = `${by}: upkeep`;
-    text = `Discard ${ch.count} cards from your hand, or destroy ${by}.`;
+    title = t("modal.upkeep_title", { name: by });
+    text = t("modal.upkeep_text", { n: ch.count, name: by });
     body = h("div", {},
       h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
         const action = choose.find((a) => a.card === inst.uid);
         return action && cardButton(inst, action);
       })),
-      destroy && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(destroy) }, `Destroy ${by}`)));
+      destroy && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(destroy) }, t("modal.destroy", { name: by }))));
   } else {
     return null;
   }
@@ -414,17 +416,17 @@ function overlay(m, on) {
   if (v.over) {
     const won = v.winner === me;
     return h("div", { class: "veil" }, h("div", { class: "parch" },
-      h("h2", {}, won ? "You win!" : `${seatName(ctx, v.winner)} wins`),
-      h("p", {}, won ? "You are the Cool Guy." : "Better luck next time."),
-      h("div", { class: "row" }, h("button", { type: "button", class: "btn-green", onclick: on.onLeave }, "Back to lobby"))));
+      h("h2", {}, won ? t("over.you_win") : t("over.they_win", { who: seatName(ctx, v.winner) })),
+      h("p", {}, t(won ? "over.you_text" : "over.they_text")),
+      h("div", { class: "row" }, h("button", { type: "button", class: "btn-green", onclick: on.onLeave }, t("over.back")))));
   }
   if (v.phase === "mulligan" && myDecision) {
     return h("div", { class: "veil" }, h("div", { class: "parch" },
-      h("h2", {}, "Your opening hand"),
-      h("p", {}, "Keep it, or mulligan once: shuffle it back and draw a new five."),
+      h("h2", {}, t("mull.title")),
+      h("p", {}, t("mull.text")),
       h("div", { class: "row" },
-        legal.filter((a) => a.kind === "keep_hand").map((a) => h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(a) }, "Keep")),
-        legal.filter((a) => a.kind === "mulligan").map((a) => h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(a) }, "Mulligan")))));
+        legal.filter((a) => a.kind === "keep_hand").map((a) => h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(a) }, t("mull.keep"))),
+        legal.filter((a) => a.kind === "mulligan").map((a) => h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(a) }, t("mull.mulligan"))))));
   }
   // The discard viewer: opened on request, or by a choice that needs a card from a pile.
   const wanted = [...tokens].map(parseToken).find((t) => t.kind === "discard_card");
@@ -432,8 +434,8 @@ function overlay(m, on) {
   if (seat != null) {
     const pile = v.players[seat].discard;
     return h("div", { class: "veil pile" }, h("div", { class: "parch" },
-      h("h2", {}, `${seatName(ctx, seat)}'s discard pile (${pile.length})`),
-      pile.length === 0 ? h("p", {}, "Empty.") :
+      h("h2", {}, t("pile.title", { who: seatName(ctx, seat), n: pile.length })),
+      pile.length === 0 ? h("p", {}, t("pile.empty")) :
         h("div", { class: "pilegrid" }, pile.map((x) => {
           const token = `discard_card:${seat}:${x.uid}`;
           const pick = tokens.has(token);
@@ -442,7 +444,7 @@ function overlay(m, on) {
             onclick: () => (pick ? on.onToken(token) : on.onInspect(x.card)), onmouseenter: () => on.onInspect(x.card, true),
           }, cardEl(ctx.cards[x.card]));
         })),
-      h("div", { class: "row" }, h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: () => on.onDiscard(seat) }, "Close"))));
+      h("div", { class: "row" }, h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: () => on.onDiscard(seat) }, t("common.close")))));
   }
   return null;
 }
@@ -467,7 +469,7 @@ function handSection(m, on) {
     const cls = ["hbtn", sel ? "sel" : "", pick ? "pick" : "", p.rainbow_hand?.includes(inst.uid) ? "rainbow" : "", playable && !ui.picker ? "go" : "", playable || pick || sel ? "" : "off"].join(" ");
     return h("button", {
       type: "button", class: cls, style: `transform:${xf}`, "data-uid": inst.uid, "aria-pressed": sel ? "true" : "false",
-      "aria-label": `${card?.name ?? inst.card}, cost ${card?.cost ?? "?"}${playable ? "" : ", cannot be played now"}`,
+      "aria-label": t("hand.card_label", { name: card?.name ?? inst.card, cost: card?.cost ?? "?", playable: playable ? "yes" : "no" }),
       onclick: () => (pick ? on.onToken(token) : playable ? on.onHand(inst.uid, inst.card) : on.onInspect(inst.card)),
       onmouseenter: () => on.onInspect(inst.card, true),
     }, cardEl(card));
@@ -478,21 +480,21 @@ function handSection(m, on) {
   const canFight = v.turn > 1 && p.lanes.some((l) => l.creature?.status === "ready");
   const myMain = myDecision && v.phase === "main";
   const pending = srcs.pending && !ui.picker;
-  return h("section", { class: "steel handbox", "aria-label": "Your hand and actions" },
+  return h("section", { class: "steel handbox", "aria-label": t("hand.region") },
     h("div", { class: "piles" },
-      h("div", { class: "well" }, h("span", {}, "Deck"), h("b", {}, p.deck_count)),
-      h("button", { type: "button", class: "well", onclick: () => on.onDiscard(me), "aria-label": `Your discard pile, ${p.discard.length} cards` }, h("span", {}, "Discard"), h("b", {}, p.discard.length))),
-    h("div", { class: `well hand${crowded ? " crowded" : ""}`, style: `--n:${Math.max(n, 1)}` }, n === 0 ? h("span", { class: "empty" }, "Your hand is empty") : cardsEl),
+      h("div", { class: "well" }, h("span", {}, t("hand.deck")), h("b", {}, p.deck_count)),
+      h("button", { type: "button", class: "well", onclick: () => on.onDiscard(me), "aria-label": t("hand.discard_label", { n: p.discard.length }) }, h("span", {}, t("player.discard")), h("b", {}, p.discard.length))),
+    h("div", { class: `well hand${crowded ? " crowded" : ""}`, style: `--n:${Math.max(n, 1)}` }, n === 0 ? h("span", { class: "empty" }, t("hand.empty")) : cardsEl),
     h("div", { class: "acts" },
       h("div", { class: "actcount" },
-        h("div", { class: "orb", role: "img", "aria-label": `${v.actions_left} of 2 Actions left` }, myMain || v.active === me ? v.actions_left : "–"),
-        h("span", { class: "lbl" }, "Actions")),
+        h("div", { class: "orb", role: "img", "aria-label": t("hand.actions_label", { n: v.actions_left }) }, myMain || v.active === me ? v.actions_left : "–"),
+        h("span", { class: "lbl" }, t("hand.actions"))),
       h("div", { class: "btns" },
-        pending && h("button", { type: "button", class: "btn-purple", style: "min-height:40px;font-size:16px", onclick: on.onPending }, "Play the stolen card"),
-        h("button", { type: "button", class: "btn-steel", disabled: !draw || !!ui.picker, onclick: () => draw && on.onAction(draw) }, "Draw · 1 Action"),
+        pending && h("button", { type: "button", class: "btn-purple", style: "min-height:40px;font-size:16px", onclick: on.onPending }, t("hand.play_stolen")),
+        h("button", { type: "button", class: "btn-steel", disabled: !draw || !!ui.picker, onclick: () => draw && on.onAction(draw) }, t("hand.draw")),
         end && !ui.picker && (canFight
-          ? h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(end) }, "Fight!")
-          : h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(end) }, "End turn")))));
+          ? h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(end) }, t("confirm.attack"))
+          : h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(end) }, t("hand.end_turn"))))));
 }
 
 // ---------- sidebar
@@ -500,20 +502,20 @@ function handSection(m, on) {
 function detailPanel(ctx, cardId) {
   const c = cardId && ctx.cards[cardId];
   return h("section", { class: "steel detail", "data-role": "detail", "aria-labelledby": "det-h" },
-    h("h2", { class: "h", id: "det-h" }, "Card up close"),
+    h("h2", { class: "h", id: "det-h" }, t("detail.title")),
     h("div", { class: "well" }, c
       ? [cardEl(c),
-        h("div", { class: "tl" }, [c.type && c.type[0].toUpperCase() + c.type.slice(1), c.landscape && landscapeName(c.landscape), c.cost != null && `Cost ${c.cost}`].filter(Boolean).join(" · ")),
+        h("div", { class: "tl" }, [c.type && t(`type.${c.type}`), c.landscape && landscapeName(c.landscape), c.cost != null && t("detail.cost", { cost: c.cost })].filter(Boolean).join(t("detail.sep"))),
         c.image_url && c.text && h("div", { class: "txt" }, c.text),
-        c.modeled === false && h("div", { class: "txt", style: "color:#ffb39e" }, "Rules not modelled by the engine yet")]
-      : h("p", {}, "Point at or click a card to read it big.")));
+        c.modeled === false && h("div", { class: "txt", style: "color:#ffb39e" }, t("detail.unmodelled"))]
+      : h("p", {}, t("detail.hint"))));
 }
 
 /** Under "Card up close": the bug, card and feature forms, when the server offers them. They open in a new tab, so the game is left as it is. */
 function feedbackPanel(links) {
   if (!links?.length) return null;
   return h("section", { class: "steel feedbackpanel", "aria-labelledby": "fb-h" },
-    h("h2", { class: "h", id: "fb-h" }, "Something wrong?"),
+    h("h2", { class: "h", id: "fb-h" }, t("feedback.title")),
     h("div", { class: "fbrow" }, links.map((l) => h("a", { class: "btn-steel", href: l.url, target: "_blank", rel: "noopener" }, l.label))));
 }
 
@@ -522,11 +524,11 @@ function logPanel(state, ctx, on) {
   const names = nameMatcher(ctx.cards);
   return h("section", { class: "parch log", "aria-labelledby": "log-h" },
     h("div", { class: "loghead" },
-      h("h2", { id: "log-h" }, "What just happened"),
+      h("h2", { id: "log-h" }, t("log.title")),
       h("div", { class: "logbtns" },
-        h("button", { type: "button", class: "btn-steel", onclick: (e) => on.onCopyLog(e.currentTarget), title: "Copy the whole game log as text" }, "Copy"),
-        h("button", { type: "button", class: "btn-steel", onclick: () => on.onDownloadLog(), title: "Save the whole game log as a text file" }, "Save"))),
-    lines.length === 0 ? h("p", { class: "muted", style: "margin:0" }, "Nothing yet.") :
+        h("button", { type: "button", class: "btn-steel", onclick: (e) => on.onCopyLog(e.currentTarget), title: t("log.copy_title") }, t("log.copy")),
+        h("button", { type: "button", class: "btn-steel", onclick: () => on.onDownloadLog(), title: t("log.save_title") }, t("log.save")))),
+    lines.length === 0 ? h("p", { class: "muted", style: "margin:0" }, t("log.empty")) :
       h("ul", {}, lines.map((l) => h("li", { class: l.startsWith("──") ? "turn" : l.startsWith("***") ? "big" : "" },
         ...logParts(l.replaceAll("──", "").replaceAll("***", "").trim(), names, on)))));
 }
@@ -561,6 +563,6 @@ function tileStats(card, c) {
   const atk = c.attack ?? base;
   const left = (c.defense ?? card?.defense ?? 0) - (c.damage ?? 0);
   return h("div", { class: "tstats" },
-    h("span", { class: `tstat atk ${atk > base ? "up" : ""}`, title: "Attack" }, h("small", {}, "ATK"), atk),
-    h("span", { class: `tstat def ${c.damage > 0 ? "hurt" : ""}`, title: "Defense left" }, h("small", {}, "DEF"), left));
+    h("span", { class: `tstat atk ${atk > base ? "up" : ""}`, title: t("stat.attack") }, h("small", {}, t("stat.atk")), atk),
+    h("span", { class: `tstat def ${c.damage > 0 ? "hurt" : ""}`, title: t("stat.defense") }, h("small", {}, t("stat.def")), left));
 }

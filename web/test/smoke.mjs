@@ -96,7 +96,7 @@ async function playOne(n) {
   conn.open();
   const timeout = setTimeout(() => {
     const v = state.view;
-    failed(new Error(`game ${n} timed out; last seq ${state.seq}, ` + (v ? `phase ${v.phase}, active ${v.active}, awaiting [${v.awaiting}], legal ${v.legal.length}, pending ${!!v.pending}, error "${state.error}"` : "no view")));
+    failed(new Error(`game ${n} timed out; last seq ${state.seq}, ` + (v ? `phase ${v.phase}, active ${v.active}, awaiting [${v.awaiting}], legal ${v.legal.length}, pending ${!!v.pending}, error ${JSON.stringify(state.error)}` : "no view")));
   }, 15_000);
   const view = await done;
   clearTimeout(timeout);
