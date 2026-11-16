@@ -8,6 +8,9 @@ func (g *Game) canAttack(p PlayerID, lane int) bool {
 	if cr == nil || cr.Status != Ready {
 		return false
 	}
+	if g.inertAt(pos{p, lane}) {
+		return false
+	}
 	opp := pos{p.Opp(), lane}
 	return g.creatureAt(opp) == nil || g.attackable(opp)
 }
@@ -67,6 +70,9 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	att.Status = Fought
 	ev := []Event{{Kind: EvAttack, Player: p, Card: att.UID, Lane: a.Lane}}
 	ctx := effCtx{p: p, at: pos{p, a.Lane}, hasSrc: true, creature: att}
+	if g.creatureAt(pos{p.Opp(), a.Lane}) == nil {
+		ev = append(ev, g.fireHeroFor(p, card.OnAttacksHero, att)...) // it will hit the opposing player
+	}
 	ev = append(ev, g.fire(card.OnAttacks, ctx, g.effectsOf(att), nil)...)
 	if g.State.Choice != nil {
 		return ev
@@ -119,6 +125,7 @@ func (g *Game) fight(p PlayerID, lane, fromLane int) []Event {
 				g.heroDamage = d.dealt
 				ctx := effCtx{p: d.at.P, at: d.at, hasSrc: true, creature: d.dealer}
 				ev = append(ev, g.fire(card.OnDealsDamage, ctx, g.effectsOf(d.dealer), nil)...)
+				ev = append(ev, g.fire(card.OnDealsCreatureDamage, ctx, g.effectsOf(d.dealer), nil)...)
 			}
 		}
 	}

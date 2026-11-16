@@ -141,6 +141,9 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 	if e == nil {
 		return ErrNoAbility
 	}
+	if src.ctx.creature != nil && g.inertAt(src.ctx.at) {
+		return ErrInert
+	}
 	if !usesLeft(src.fired, e, idx) {
 		return ErrLimit
 	}

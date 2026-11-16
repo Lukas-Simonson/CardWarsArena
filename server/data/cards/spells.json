@@ -229,6 +229,38 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Free%20Fall.webp"
   },
   {
+    "id": "freeze-ray",
+    "name": "Freeze Ray",
+    "type": "spell",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "text": "Freeze target Landscape, then draw a card.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Freeze%20Ray.webp"
+  },
+  {
+    "id": "freezing-point",
+    "name": "Freezing Point",
+    "type": "spell",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "text": "Freeze each of your opponent's Landscapes.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Freezing%20Point.webp"
+  },
+  {
     "id": "friendship-bracelet",
     "name": "Friendship Bracelet",
     "type": "spell",
@@ -243,6 +275,38 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Friendship%20Bracelet.webp"
+  },
+  {
+    "id": "frosty-frolic",
+    "name": "Frosty Frolic",
+    "type": "spell",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "text": "Target player discards 1 card from their hand for each frozen Landscape they control.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frosty%20Frolic.webp"
+  },
+  {
+    "id": "frozen-heart",
+    "name": "Frozen Heart",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Deal 1 damage to target Creature. If that Creature is on a frozen Landscape, deal 3 damage instead.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frozen%20Heart.webp"
   },
   {
     "id": "furious-furor",
@@ -563,6 +627,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snake%20Eye%20Ring.webp"
+  },
+  {
+    "id": "snow-way",
+    "name": "Snow Way",
+    "type": "spell",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "text": "Freeze 2 target Landscapes.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Way.webp"
   },
   {
     "id": "snowblower",

@@ -17,9 +17,9 @@ export function landscapeTitle(lands) {
 }
 
 // The starter decks come in pairs, one set to a box: Finn and Jake, BMO and Lady, PB and LSP, Fionna and Cake.
-// Gunter and Lemongrab share a box, which comes last.
+// Gunter and Lemongrab share a box, and Ice King (whose Marceline is not in yet) has the last one.
 // This is how they are laid out, by their Hero. Any deck not named here follows, in the order it came.
-const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake", "gunter", "lemongrab"];
+const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake", "gunter", "lemongrab", "ice-king"];
 
 /** The starter decks from GET /api/decks, in the order of the game's boxes. */
 export function inBoxOrder(presets) {

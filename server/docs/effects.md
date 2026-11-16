@@ -250,7 +250,35 @@ stuck.
   give twice the bonus.
 - A Hero's rules are played by the engine; see "Heroes" below.
 
-All ten preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's and Lemongrab's) are fully modelled.
+## Triggers that choose, and Ice King's deck
+
+- A trigger other than `enter_play` may have **one target slot**: `landscape_frozen` (a Building, when a Landscape in
+  its Lane, on either side, gets a frozen token: Crystal Palace) and `deals_creature_damage` (a Creature, when it has
+  dealt Fight damage to a Creature, not a player: Frozen Fish). With nothing to choose it does nothing; with one
+  forced choice it happens; otherwise its controller is asked (a `target` Choice, listing the legal `targets`), and
+  may choose nothing when the slot is `optional`. What was going to happen still happens if the card that asked
+  left play in the meantime (a Frozen Fish that died in the same Fight).
+- `attacks_hero` is a Hero trigger that fires when a Creature of its controller is Activated to Fight with no
+  Creature opposite, so it will hit the opposing player (Ice King). `once_per_turn` limits it to the first time, and
+  the op `mod_creature` with `attacker` acts on the Creature that attacked. "It has +1 ATK" lasts for the turn.
+- **Restrict** `frozen_lane_inert` (Ice-olation Cell): a Creature whose Landscape is frozen cannot Fight or use
+  Floop or activated abilities (`ErrInert`), if it is in the Building's Lane, on either side. Its triggers and static
+  rules still work.
+- `freeze` with `every` and `who` freezes every Landscape that player controls (Freezing Point). `move_self` takes
+  `then` ops that run once the Creature has moved, from its new Lane (Boarder Collie gains an Action if it is
+  in a Lane with a frozen Landscape; the cond `lane_frozen: "either"`).
+- **Target** `frozen` limits `creature` targets to ones on a frozen Landscape (Slay Rider), and the same field on
+  `damage_creature` (and other ops that act on a chosen Creature) acts only if it is on a frozen, or unfrozen,
+  Landscape: Frozen Heart deals 1 or 3 with two such ops.
+- **Target** `player` picks a player (`side` limits it, as for other targets); the ref is `{"kind":"player","player":N}`.
+  `discard_choice` with `who: "target"` and a `slot` makes the chosen player discard, and a count with
+  `from_target` is counted from their side (Frosty Frolic: a card for each frozen Landscape they control).
+
+Rulings: Frosty Frolic may target yourself, and then counts your own frozen Landscapes. Ice King's bonus is decided when the Creature is Activated to Fight, so a Pied Piper
+redirect does not change it. Emperor Penguin also weakens itself on a frozen Landscape, and Snow Dog boosts the
+Creatures in the Lanes beside it on its own side.
+
+All eleven preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's and Ice King's) are fully modelled.
 
 - Spazzy Cola gives +1 ATK to the Creatures in play when it is played, not to ones that enter later this turn.
 - A "frozen Landscape" count (Icy Commando, Floating Ice Palace) counts the tokens on both sides of the board.

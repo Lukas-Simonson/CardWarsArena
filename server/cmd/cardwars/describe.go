@@ -72,6 +72,11 @@ func (u *ui) ref(me engine.PlayerID, r engine.TargetRef) string {
 		return fmt.Sprintf("%s%s landscape (%s, lane %d)", landscapeName(l.Landscape), down, u.side(me, r.Player), r.Lane+1)
 	case "lane":
 		return fmt.Sprintf("lane %d (%s side)", r.Lane+1, u.side(me, r.Player))
+	case "player":
+		if r.Player == me {
+			return "yourself"
+		}
+		return "your opponent"
 	case "discard_card", "hand_card":
 		return u.instName(r.Card)
 	}
@@ -171,6 +176,16 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return "Put " + u.instName(ch.Revealed[0].UID) + " under " + u.instName(a.Card)
 		case engine.ChoiceLandscape:
 			return fmt.Sprintf("Make your lane %d Landscape %s", ch.Lane+1, landscapeName(card.Landscapes[a.Card-1]))
+		case engine.ChoiceTarget:
+			name := u.g.Catalog()[ch.Card].Name
+			if len(a.Targets) == 0 {
+				return name + ": choose nothing"
+			}
+			verb := ch.Label
+			if verb == "" {
+				verb = "Choose"
+			}
+			return withTargets(name+": "+verb, "target", u.targets(me, a.Targets))
 		case engine.ChoiceMove:
 			return fmt.Sprintf("Move %s to lane %d (%s side)", u.g.Catalog()[ch.Card].Name, a.Lane+1, u.side(me, ch.MoveSide))
 		}

@@ -17,6 +17,7 @@ type effCtx struct {
 	entering *pos      // for creature_enters triggers: the Creature that entered
 	card     string    // the source card's id when it is not a Creature (a Spell, Building or Hero)
 	hero     bool      // the source is its controller's Hero
+	attacker *Creature // for attacks_hero triggers: the Creature that was Activated to Fight
 }
 
 // cardID is the id of the card using the effect.
@@ -48,6 +49,12 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 			if in.UID != c.playing {
 				out = append(out, TargetRef{Kind: spec.What, Player: c.p, Card: in.UID})
 			}
+		}
+		return out
+	}
+	if spec.What == "player" {
+		for _, p := range sidesFor(spec.Side, c.p) {
+			out = append(out, TargetRef{Kind: spec.What, Player: p})
 		}
 		return out
 	}
@@ -90,7 +97,8 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 				if cr := l.Creature; cr != nil && !(cr.Shielded && p != c.p) && (!spec.Owned || cr.Owner == c.p) {
 					ok = (spec.Landscape == "" || g.isType(pos{p, lane}, spec.Landscape)) &&
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
-						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0)
+						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0) &&
+						(spec.Frozen == nil || l.Frozen == *spec.Frozen)
 				}
 			case "building":
 				ok = l.Building != nil
@@ -308,6 +316,12 @@ func (g *Game) creaturesFor(op card.Op, c effCtx, given [][]TargetRef) []pos {
 		}
 		return out
 	}
+	if op.Attacker {
+		if at, ok := g.posOf(c.attacker); ok && c.attacker != nil {
+			out = append(out, at)
+		}
+		return out
+	}
 	if op.All != nil {
 		for p := range g.State.Players {
 			for lane := range g.State.Players[p].Lanes {
@@ -321,7 +335,7 @@ func (g *Game) creaturesFor(op card.Op, c effCtx, given [][]TargetRef) []pos {
 	}
 	if op.Slot != nil && *op.Slot < len(given) {
 		for _, r := range given[*op.Slot] {
-			if g.creatureAt(pos{r.Player, r.Lane}) != nil {
+			if g.creatureAt(pos{r.Player, r.Lane}) != nil && (op.Frozen == nil || g.frozen(pos{r.Player, r.Lane}) == *op.Frozen) {
 				out = append(out, pos{r.Player, r.Lane})
 			}
 		}
@@ -451,8 +465,19 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				ev = append(ev, g.mill(p, amt)...)
 			}
 		case "discard_choice":
-			for _, p := range g.whoList(op.Who, c.p) {
-				ev = append(ev, g.discardChoice(p, amt, c, op.RainbowActions)...)
+			players := g.whoList(op.Who, c.p)
+			if op.Who == "target" {
+				players = players[:0]
+				for _, r := range slotRefs(op.Slot, given) {
+					players = append(players, r.Player)
+				}
+			}
+			for _, p := range players {
+				n := amt
+				if op.Who == "target" && op.Amount != nil && op.Amount.Per != nil && op.Amount.Per.FromTarget {
+					n = g.value(*op.Amount, source{pos: pos{p, 0}}) // counted from the chosen player
+				}
+				ev = append(ev, g.discardChoice(p, n, c, op.RainbowActions)...)
 			}
 		case "exhaust":
 			for _, at := range g.creaturesFor(op, c, given) {

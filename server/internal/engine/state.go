@@ -203,6 +203,9 @@ const (
 	ChoiceCamel = "camel"
 	// landscape: pick the type Silo of Freedom makes the Landscape in Lane: Card is 1 for the first of card.Landscapes.
 	ChoiceLandscape = "landscape"
+	// target: pick what a trigger acts on (Crystal Palace, Frozen Fish): Targets are the legal choices, answered
+	// with Action.Targets holding one of them, or (when Optional) nothing at all.
+	ChoiceTarget = "target"
 )
 
 // PlayedCard is a card played this turn, as it was when it was played.
@@ -235,6 +238,14 @@ type Choice struct {
 	// reveal: the cards shown, out of the deck until the choice is made. The
 	// chosen one goes to the bottom of the deck and the rest are discarded.
 	Revealed []Instance `json:"revealed,omitempty"`
+	// target: what may be chosen, whether the player may choose nothing, and what the choice is for. Lane is the
+	// Lane of the card that asks and MoveSide its side.
+	Targets  []TargetRef `json:"targets,omitempty"`
+	Optional bool        `json:"optional,omitempty"`
+	Label    string      `json:"label,omitempty"`
+	// Do is what happens once the choice is made (target), or once the Creature has moved (move). The engine
+	// keeps it to itself: players see only the card that asks.
+	Do []card.Op `json:"-"`
 }
 
 // Offer is an optional ability a trigger has put on a Creature ("you may",

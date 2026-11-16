@@ -7,7 +7,7 @@ import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
-import { cardName, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide } from "./describe.js";
+import { cardName, describeRef, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide } from "./describe.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -97,7 +97,10 @@ function playerBar(m, seat, on) {
     type: "button", class: "well", disabled: !clickable, onclick: () => on.onDiscard(seat),
     "aria-label": `${label}: ${n} cards`,
   }, `${label} ${n}`);
-  return h("section", { class: "steel pbar", "aria-label": mine ? "You" : "Opponent" },
+  const aim = `player:${seat}:0`; // a player may be what a card is aimed at (Frosty Frolic)
+  const aimed = tokens.has(aim);
+  return h("section", { class: `steel pbar${aimed ? " pick" : ""}${aimed && !mine ? " foe" : ""}`, "aria-label": mine ? "You" : "Opponent" },
+    aimed && h("button", { type: "button", class: "btn-purple aim", onclick: () => on.onToken(aim) }, mine ? "Choose yourself" : "Choose opponent"),
     h("div", { class: "shield", "data-seat": seat, role: "img", "aria-label": `${mine ? "You have" : seatName(ctx, seat) + " has"} ${p.hp} of ${MAX_HP} Hit Points` },
       svg(SHIELD, { viewBox: "0 0 48 54" }), h("span", {}, p.hp)),
     avatarEl(seatName(ctx, seat), ctx.avatars?.[seat], { style: `background:${mine ? "#c98a1f" : "#2e5f9c"}` }),
@@ -360,6 +363,14 @@ function choiceModal(m, on) {
     text = `Choose the type your lane ${ch.lane + 1} Landscape becomes until the start of your next turn.`;
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, landscapeName(LANDSCAPE_ORDER[a.card - 1]))));
+  } else if (ch.kind === "target") {
+    const none = choose.find((a) => !a.targets?.[0]?.length);
+    title = `${by}: ${ch.label || "choose"}`;
+    text = ch.optional ? `${by} lets you choose. You may choose nothing.` : `${by} triggers. Choose what it acts on.`;
+    body = h("div", {},
+      h("div", { class: "modalrow modalrow2" }, choose.filter((a) => a.targets?.[0]?.length).map((a) =>
+        h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, describeRef(ctx, a.targets[0][0])))),
+      none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, "Choose nothing")));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = `${by}: upkeep`;

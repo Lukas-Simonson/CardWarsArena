@@ -216,6 +216,9 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .tile.sel { outline: 4px solid var(--gold); outline-offset: 3px; box-shadow: 0 0 18px 6px rgba(255,211,77,.55); }
 .tile.pick { outline: 4px dashed var(--gold); outline-offset: 3px; }
 .tile.pick.foe { outline-color: #ff6b5a; }
+.pbar.pick { outline: 4px dashed var(--gold); outline-offset: 2px; }
+.pbar.pick.foe { outline-color: #ff6b5a; }
+.pbar .aim { min-height: 44px; padding: 0 14px; }
 .lane .info { display: flex; justify-content: center; }
 .lane .info small { font-size: 14px; color: #e3f0dc; }
 .tilewrap { position: relative; }

@@ -43,6 +43,7 @@ export function describeRef(ctx, r) {
     case "building": return `${l.building ? cardName(ctx, l.building.card) : "building"} (${where})`;
     case "landscape": return `${l.face_down ? "face-down " : ""}${landscapeName(l.landscape)} landscape (${where})`;
     case "lane": return `lane ${laneNo(r.lane)} (${side(ctx, r.player)} side)`;
+    case "player": return r.player === ctx.view.you ? "yourself" : "your opponent";
     default: return instName(ctx, r.card);
   }
 }
@@ -91,6 +92,7 @@ export function describeAction(ctx, a) {
       if (ch?.kind === "move_damage") return `Move ${a.card} damage`;
       if (ch?.kind === "camel") return a.card ? `Put ${instName(ctx, ch.revealed?.[0]?.uid)} under ${cardName(ctx, ch.card)}` : `Let ${instName(ctx, ch.revealed?.[0]?.uid)} go`;
       if (ch?.kind === "landscape") return `Make your lane ${laneNo(ch.lane)} Landscape ${landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1])}`;
+      if (ch?.kind === "target") return a.targets?.[0]?.length ? withTargets(ctx, `${cardName(ctx, ch.card)}: ${ch.label || "Choose"}`, "target", a.targets) : `${cardName(ctx, ch.card)}: choose nothing`;
       if (ch?.kind === "move") return `Move ${cardName(ctx, ch.card)} to lane ${laneNo(a.lane)}${movesToTheirSide(ch, v.you) ? " on the opponent's side" : ""}`;
       return "Choose";
     }

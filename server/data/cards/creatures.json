@@ -1,5 +1,23 @@
 [
   {
+    "id": "abdominal-snowman",
+    "name": "Abdominal Snowman",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 2,
+    "text": "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Abdominal%20Snowman.webp"
+  },
+  {
     "id": "albino-eyebat",
     "name": "Albino Eyebat",
     "type": "creature",
@@ -216,6 +234,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blueberry%20Djinni.webp"
   },
   {
+    "id": "boarder-collie",
+    "name": "Boarder Collie",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Move Boarder Collie to any of your empty Landscapes. If either Landscape in that Lane is frozen, gain 1 action.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Boarder%20Collie.webp"
+  },
+  {
     "id": "bouncing-zebracorn",
     "name": "Bouncing Zebracorn",
     "type": "creature",
@@ -323,6 +359,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Chest%20Burster.webp"
+  },
+  {
+    "id": "cold-soldier",
+    "name": "Cold Soldier",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4,
+    "text": "+3 ATK while your opponent does not control a Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cold%20Soldier.webp"
   },
   {
     "id": "cool-dog",
@@ -722,6 +776,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Emboldened%20Retriever.webp"
   },
   {
+    "id": "emperor-penguin",
+    "name": "Emperor Penguin",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "Creatures on frozen Landscapes have -1 ATK.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Emperor%20Penguin.webp"
+  },
+  {
     "id": "evil-eye",
     "name": "Evil Eye",
     "type": "creature",
@@ -884,6 +956,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20Stalker.webp"
   },
   {
+    "id": "frost-dragon",
+    "name": "Frost Dragon",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "Pay 1 action \u003e\u003e\u003e Freeze a Landscape in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frost%20Dragon.webp"
+  },
+  {
     "id": "frosted-deanimator",
     "name": "Frosted Deanimator",
     "type": "creature",
@@ -918,6 +1008,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frosted%20Snowwoman.webp"
+  },
+  {
+    "id": "frozen-fish",
+    "name": "Frozen Fish",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "When Frozen Fish deals damage to a Creature, you may freeze a Landscape in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Frozen%20Fish.webp"
   },
   {
     "id": "fummy",
@@ -1297,6 +1405,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Husky%20Parrotrooper.webp"
   },
   {
+    "id": "icemeister",
+    "name": "Icemeister",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "text": "At the start of your turn, deal 1 damage to each Creature on a frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Icemeister.webp"
+  },
+  {
     "id": "icy-commando",
     "name": "Icy Commando",
     "type": "creature",
@@ -1670,6 +1796,11 @@
         "deck": "Finn's Deck",
         "set": "Finn Vs Jake",
         "copies": 2
+      },
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Nice%20Ice%20Baby.webp"
@@ -1981,6 +2112,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Red%20Eyeling.webp"
   },
   {
+    "id": "reign-deer",
+    "name": "Reign Deer",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 4,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card for each frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Reign%20Deer.webp"
+  },
+  {
     "id": "rock-n-roller",
     "name": "Rock 'n Roller",
     "type": "creature",
@@ -2197,6 +2346,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Skeletal%20Hand.webp"
   },
   {
+    "id": "slay-rider",
+    "name": "Slay Rider",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5,
+    "text": "FLOOP \u003e\u003e\u003e Deal 3 damage to target Creature on a frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Slay%20Rider.webp"
+  },
+  {
     "id": "snakemint",
     "name": "Snakemint",
     "type": "creature",
@@ -2215,6 +2382,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snakemint.webp"
   },
   {
+    "id": "snow-angel",
+    "name": "Snow Angel",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Heal 1 damage from each of your Creatures for each frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Angel.webp"
+  },
+  {
     "id": "snow-baller",
     "name": "Snow Baller",
     "type": "creature",
@@ -2231,6 +2416,78 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Baller.webp"
+  },
+  {
+    "id": "snow-bunny",
+    "name": "Snow Bunny",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "text": "Destroy Snow Bunny \u003e\u003e\u003e Freeze target Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Bunny.webp"
+  },
+  {
+    "id": "snow-dog",
+    "name": "Snow Dog",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "FLOOP \u003e\u003e\u003e Each adjacent Creature has +2 ATK this turn.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Dog.webp"
+  },
+  {
+    "id": "spike-icicle",
+    "name": "Spike Icicle",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 3,
+    "defense": 1,
+    "notes": "Look out below!",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spike%20Icicle.webp"
+  },
+  {
+    "id": "sprucy-lucy",
+    "name": "Sprucy Lucy",
+    "type": "creature",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "+1 ATK for each frozen Landscape.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sprucy%20Lucy.webp"
   },
   {
     "id": "squatting-bald-man",

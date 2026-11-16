@@ -29,7 +29,8 @@ func (g *Game) freeze(p PlayerID, lane int) []Event {
 		return nil
 	}
 	l.Frozen = true
-	return []Event{{Kind: EvFreeze, Player: p, Lane: lane}}
+	ev := []Event{{Kind: EvFreeze, Player: p, Lane: lane}}
+	return append(ev, g.fireFrozen(lane)...)
 }
 
 // thaw takes the frozen token off a Landscape, if it has one.
@@ -94,6 +95,14 @@ func (g *Game) thawActions(p PlayerID) []Action {
 // ones, and with Both the Landscape opposite as well.
 func (g *Game) freezeTargets(op card.Op, c effCtx, given [][]TargetRef) []pos {
 	var at []pos
+	if op.Every {
+		for _, p := range g.whoList(op.Who, c.p) {
+			for lane := 0; lane < NumLanes; lane++ {
+				at = append(at, pos{p, lane})
+			}
+		}
+		return at
+	}
 	if op.Self {
 		if c.hasSrc {
 			at = append(at, c.at)
@@ -140,8 +149,9 @@ func (g *Game) moveSelf(op card.Op, c effCtx) []Event {
 	case 0:
 		return g.runOps(op.Else, c, nil)
 	case 1:
-		return g.moveCreature(c.at, pos{side, lanes[0]})
+		ev := g.moveCreature(c.at, pos{side, lanes[0]})
+		return append(ev, g.afterMove(op.Then, c.p, pos{side, lanes[0]}, cr)...)
 	}
-	g.ask(Choice{Player: c.p, Kind: ChoiceMove, Card: c.cardID(), Lane: c.at.Lane, SourceUID: cr.UID, Lanes: lanes, MoveSide: side})
+	g.ask(Choice{Player: c.p, Kind: ChoiceMove, Card: c.cardID(), Lane: c.at.Lane, SourceUID: cr.UID, Lanes: lanes, MoveSide: side, Do: op.Then})
 	return nil
 }

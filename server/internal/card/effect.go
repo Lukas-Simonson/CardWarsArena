@@ -105,6 +105,13 @@ const (
 	// OnReturns fires on a Hero when its controller returns a Creature to their hand from play
 	// or from their discard pile on their turn; cond `returned` counts them (Lady Rainicorn).
 	OnReturns = "returns"
+	// OnLandscapeFrozen fires on a Building when a Landscape in its Lane gets a frozen token (Crystal Palace).
+	OnLandscapeFrozen = "landscape_frozen"
+	// OnDealsCreatureDamage is OnDealsDamage when the damage went to a Creature, not a player (Frozen Fish).
+	OnDealsCreatureDamage = "deals_creature_damage"
+	// OnAttacksHero fires on a Hero when one of its controller's Creatures is Activated to Fight with no
+	// Creature in its way, so it will hit the opposing player (Ice King).
+	OnAttacksHero = "attacks_hero"
 )
 
 // Restrictions (Effect.Restrict).
@@ -134,13 +141,15 @@ const (
 	RestrictCannotBeReplaced = "cannot_be_replaced"
 	// When a Creature its controller owns leaves play, the controller may put it underneath this one (Carmel Camel).
 	RestrictCollectLeaving = "collect_leaving"
+	// Creatures on frozen Landscapes in the Lane, on both sides, cannot Fight or use abilities (Ice-olation Cell).
+	RestrictFrozenInert = "frozen_lane_inert"
 )
 
 var validRestricts = map[string]bool{
 	RestrictAdjacentAlliesNotAttackable: true, RestrictOpposingNoEnterLeave: true, RestrictLaneRainbow: true,
 	RestrictAlsoRainbow: true, RestrictLaneNoFloop: true, RestrictExtraBuildings: true,
 	RestrictSilenceOpposingBuildings: true, RestrictCountsAsLandscape: true, RestrictCopyAdjacentBuildings: true,
-	RestrictNoReady: true, RestrictPlayOnFrozen: true, RestrictCannotBeReplaced: true, RestrictCollectLeaving: true,
+	RestrictNoReady: true, RestrictPlayOnFrozen: true, RestrictCannotBeReplaced: true, RestrictCollectLeaving: true, RestrictFrozenInert: true,
 }
 
 // Mod adjusts the ATK or DEF of every creature matching To. The stat
@@ -214,7 +223,8 @@ type Cond struct {
 	Played                 *PlayedCond    `json:"played,omitempty"`            // cards of a type you played this turn
 	LandscapeTypes         *Range         `json:"landscape_types,omitempty"`   // you control this many face-up Landscape types
 	Returned               *Range         `json:"returned,omitempty"`          // Creatures you returned to your hand this turn
-	// LaneFrozen: "own" means the card's Landscape has a frozen token, "both" that both Landscapes in its Lane do.
+	// LaneFrozen: "own" means the card's Landscape has a frozen token, "both" that both Landscapes in its Lane do,
+	// "either" that at least one does.
 	LaneFrozen string `json:"lane_frozen,omitempty"`
 	// FrozenLandscapes bounds how many frozen Landscapes there are, on both sides.
 	FrozenLandscapes  *Range `json:"frozen_landscapes,omitempty"`
@@ -252,6 +262,7 @@ type TargetSpec struct {
 	CardType     Type      `json:"card_type,omitempty"` // discard_card
 	Cost         *int      `json:"cost,omitempty"`      // discard_card
 	Flooped      *bool     `json:"flooped,omitempty"`   // creatures
+	Frozen       *bool     `json:"frozen,omitempty"`    // creatures: only ones on a frozen (or unfrozen) Landscape
 	Ready        bool      `json:"ready,omitempty"`     // creatures: only Ready ones (not Flooped or Fought)
 	Exhausted    bool      `json:"exhausted,omitempty"` // creatures: only exhausted ones (Flooped or Fought)
 	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
@@ -277,7 +288,7 @@ type Op struct {
 	Slot   *int        `json:"slot,omitempty"`  // target slot acted on
 	Slot2  *int        `json:"slot2,omitempty"` // second slot (destination lane etc.)
 	All    *Selector   `json:"all,omitempty"`   // act on every matching creature instead
-	Who    string      `json:"who,omitempty"`   // you, opponent, each
+	Who    string      `json:"who,omitempty"`   // you, opponent, each; target (discard_choice): the players chosen in Slot
 	Stat   string      `json:"stat,omitempty"`
 	Face   string      `json:"face,omitempty"` // up, down
 	Amount *Value      `json:"amount,omitempty"`
@@ -297,8 +308,15 @@ type Op struct {
 	Tracked bool   `json:"tracked,omitempty"`
 	// Both, on freeze, freezes both Landscapes in the Lane (the card's own, or the chosen one).
 	Both bool `json:"both,omitempty"`
+	// Every, on freeze, freezes every Landscape Who controls (Freezing Point).
+	Every bool `json:"every,omitempty"`
+	// Frozen limits an op that acts on chosen Creatures to those on a frozen (or unfrozen) Landscape (Frozen Heart).
+	Frozen *bool `json:"frozen,omitempty"`
+	// Attacker acts on the Creature that was just Activated to Fight (the Hero's attacks_hero trigger).
+	Attacker bool `json:"attacker,omitempty"`
 	// move_self moves the Creature to an empty Landscape: To is "empty_own" (one you control), and ElseTo, if set,
-	// is where it goes when there is none ("empty_opponent"). When there is still nowhere, Else runs.
+	// is where it goes when there is none ("empty_opponent"). When there is still nowhere, Else runs. Then runs
+	// once it has moved, from its new Lane (Boarder Collie).
 	To     string `json:"to,omitempty"`
 	ElseTo string `json:"else_to,omitempty"`
 	Else   []Op   `json:"else,omitempty"`
@@ -376,7 +394,12 @@ func (e *Effect) Validate(t Type) error {
 		switch e.On {
 		case OnEnterPlay, OnLeavePlay, OnTurnStart, OnChangeLanes, OnCreatureEnters, OnHeroDamage,
 			OnDealsDamage, OnAttacks, OnDiscarded, OnFightStart:
-		case OnReplaces, OnBuildingPlayed, OnReturns:
+		case OnLandscapeFrozen:
+			if t != Building {
+				return fmt.Errorf("landscape_frozen triggers belong to buildings")
+			}
+		case OnDealsCreatureDamage:
+		case OnReplaces, OnBuildingPlayed, OnReturns, OnAttacksHero:
 			if t != Hero {
 				return fmt.Errorf("%s triggers belong to heroes", e.On)
 			}
@@ -386,8 +409,8 @@ func (e *Effect) Validate(t Type) error {
 		if t != Creature && t != Building && t != Hero {
 			return fmt.Errorf("triggers belong to creatures, buildings and heroes")
 		}
-		if len(e.Targets) > 0 && e.On != OnEnterPlay {
-			return fmt.Errorf("only enter_play triggers can have targets")
+		if len(e.Targets) > 0 && e.On != OnEnterPlay && e.On != OnLandscapeFrozen && e.On != OnDealsCreatureDamage {
+			return fmt.Errorf("only enter_play, landscape_frozen and deals_creature_damage triggers can have targets")
 		}
 	case KindFloop:
 		if t != Creature && t != Building {
@@ -440,7 +463,7 @@ func (e *Effect) Validate(t Type) error {
 func validateSpecs(specs []TargetSpec) error {
 	for i, ts := range specs {
 		switch ts.What {
-		case "creature", "building", "landscape", "lane", "discard_card", "hand_card":
+		case "creature", "building", "landscape", "lane", "discard_card", "hand_card", "player":
 		default:
 			return fmt.Errorf("target %d: unknown what %q", i, ts.What)
 		}
@@ -474,6 +497,9 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 		if info.slots == 2 && op.Slot2 == nil {
 			return fmt.Errorf("op %d (%s): needs slot2", i, op.Do)
 		}
+		if op.Who == "target" && (op.Do != "discard_choice" || op.Slot == nil) {
+			return fmt.Errorf("op %d (%s): who target is for discard_choice, with a slot", i, op.Do)
+		}
 		if op.Amount != nil {
 			if err := op.Amount.validate(); err != nil {
 				return fmt.Errorf("op %d: %w", i, err)
@@ -503,8 +529,10 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 			if err := validateOps(op.Then, op.Targets); err != nil {
 				return fmt.Errorf("op %d: %w", i, err)
 			}
-		} else if len(op.Then) > 0 || len(op.Targets) > 0 {
+		} else if len(op.Targets) > 0 || (len(op.Then) > 0 && op.Do != "move_self") {
 			return fmt.Errorf("op %d (%s): then/targets belong to may", i, op.Do)
+		} else if err := validateOps(op.Then, nil); err != nil {
+			return fmt.Errorf("op %d: %w", i, err)
 		}
 	}
 	return nil

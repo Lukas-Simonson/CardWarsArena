@@ -425,6 +425,10 @@ func (g *Game) cond(c card.Cond, s source) bool {
 		if s.Lane < 0 || !st.Players[s.P].Lanes[s.Lane].Frozen || !st.Players[s.P.Opp()].Lanes[s.Lane].Frozen {
 			return false
 		}
+	case "either":
+		if s.Lane < 0 || (!st.Players[s.P].Lanes[s.Lane].Frozen && !st.Players[s.P.Opp()].Lanes[s.Lane].Frozen) {
+			return false
+		}
 	default:
 		return false
 	}

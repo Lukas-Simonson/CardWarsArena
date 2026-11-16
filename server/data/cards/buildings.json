@@ -117,6 +117,11 @@
         "copies": 1
       },
       {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      },
+      {
         "deck": "PB's Deck",
         "set": "Princess Bubblegum Vs Lumpy Space Princess",
         "copies": 1
@@ -155,6 +160,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Charming%20City.webp"
+  },
+  {
+    "id": "crystal-palace",
+    "name": "Crystal Palace",
+    "type": "building",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "text": "When a Landscape in this Lane becomes frozen, deal 2 damage to target Creature.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Crystal%20Palace.webp"
   },
   {
     "id": "fancy-spa",
@@ -203,6 +224,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Floating%20Ice%20Palace.webp"
+  },
+  {
+    "id": "ice-olation-cell",
+    "name": "Ice-olation Cell",
+    "type": "building",
+    "landscape": "icy_lands",
+    "cost": 1,
+    "text": "Creatures on frozen Landscapes in this Lane cannot attack or use abilities.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ice-olation%20Cell.webp"
   },
   {
     "id": "learning-center",
@@ -412,6 +449,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sinkhole.webp"
+  },
+  {
+    "id": "snow-business",
+    "name": "Snow Business",
+    "type": "building",
+    "landscape": "icy_lands",
+    "cost": 2,
+    "text": "Pay 1 action \u003e\u003e\u003e Freeze target Landscape in this Lane.",
+    "printings": [
+      {
+        "deck": "Ice King's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Snow%20Business.webp"
   },
   {
     "id": "snow-training-camp",
