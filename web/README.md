@@ -60,6 +60,10 @@ js/deckmodel.js  pure: a deck being built and the rules it is judged by
 js/decktext.js   pure: a deck as plain text (and Card Dweeb lists), to copy, download and import
 js/builder.js    the deck builder screen
 js/avatar.js     a player's picture, or the first letter of their name
+js/i18n.js       t(key, params), the message format, locale choice, pseudo-locales
+js/errors.js     server error codes -> messages
+locales/         message catalogues: en.json (the source) and index.json (the locales offered)
+tools/           the checks on the catalogues (npm run i18n)
 test/            node --test unit tests, fixtures, and a smoke test
 serve.mjs        tiny static server for development
 ```
@@ -75,6 +79,39 @@ The smoke test chooses every action through the picker, as a player would, and
 fails if the picker ever offers an action the server did not list or leaves
 the player with nothing to click. Start the server with `-bot-delay 1ms` to
 make it fast.
+
+## Localization
+
+Every string the player reads is a message in `locales/<tag>.json`, looked up by a stable key: `t("lobby.join")`,
+`t("shelf.cards", { n })`. English (`en.json`) is the source and the fallback for any key a language lacks.
+
+Messages use a small part of ICU MessageFormat, so word order, plurals and choices live in the message and not in the code:
+
+```
+"Hello {name}"                                                  a parameter
+"{n, plural, =0 {no cards} one {# card} other {# cards}}"       plural rules of the language (# is the number)
+"{kind, select, creature {…} other {…}}"                        choose by a string
+"{items, list}"                                                 "a, b and c" (pass an array)
+'{' and '}' in quotes are literal; a lone ' is an apostrophe.
+```
+
+**Adding a string.** Add the key to `locales/en.json` and use it with `t()` (or `data-i18n="key"` / `data-i18n-attr="title:key"`
+in `index.html`). Write whole sentences with parameters; never join phrases in code. `npm run i18n` (and `npm test`) fail on a key
+the code uses that English lacks, a key nothing uses, a locale that differs from English, or text that looks hard-coded
+(`node tools/i18n-check.mjs --strings` lists it; `// i18n-ignore` marks a word that is not for the player).
+
+**Adding a language.** Copy `locales/en.json` to `locales/<tag>.json` (for example `fr` or `pt-BR`), translate the values, keep every
+`{placeholder}` and add the plural forms the language needs, then list it in `locales/index.json`. A key left out falls back to English
+while you work, but CI requires a finished file to have every key. The language picker appears once two languages are listed;
+`?lang=fr` tries one without saving it, and a saved choice (`cw.locale`) wins over the browser's languages. `fr-CA` falls back to `fr`, then English.
+
+**Testing layout.** `?lang=en-XA` shows every message accented and about 40% longer (anything still in plain English is hard-coded);
+`?lang=en-XB` also lays the page out right to left.
+
+**Card data.** Card names and rules text come from the card data and are English for now. The names a card gives its targets
+("Heal", "Freeze") are looked up as `label.<the text in lower case>`; `node tools/i18n-check.mjs --add-labels` adds any a new card brings.
+Server errors arrive as a code and the client writes the message (`error.<code>` in the catalogue); the detail the server adds is
+still English until the server sends parameters instead.
 
 ## Docker
 

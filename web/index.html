@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Card Wars Arena</title>
-<meta name="description" content="Card Wars Arena: play the Adventure Time Card Wars card game in your browser, against a bot or a friend.">
+<meta name="description" data-i18n-attr="content:meta.description" content="Card Wars Arena: play the Adventure Time Card Wars card game in your browser, against a bot or a friend.">
 <meta property="og:site_name" content="Card Wars Arena">
 <meta property="og:title" content="Card Wars Arena">
 <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
@@ -15,27 +15,30 @@
 </head>
 <body class="wood">
 <div id="banner" class="banner" hidden role="alert"></div>
-<span id="status" class="conn" role="status">connecting…</span>
+<span id="status" class="conn" role="status" data-i18n="status.connecting">connecting…</span>
 
 <main id="lobby" class="lobby">
   <header class="lhead">
     <div class="steel who">
       <div id="avatar" class="well avatar" aria-hidden="true">P</div>
       <div class="whotext">
-        <label for="name" class="sr">Your name</label>
-        <input id="name" class="whoname" value="Player" maxlength="24" autocomplete="off" placeholder="Your name">
+        <label for="name" class="sr" data-i18n="lobby.your_name">Your name</label>
+        <input id="name" class="whoname" value="Player" maxlength="24" autocomplete="off" placeholder="Your name" data-i18n-attr="placeholder:lobby.your_name">
         <span id="whosub" class="ink"></span>
       </div>
     </div>
-    <div id="account" class="laccount" hidden></div>
+    <div class="lright">
+      <label class="langbox ink" for="lang"><span data-i18n="lang.label">Language</span> <select id="lang" class="well"></select></label>
+      <div id="account" class="laccount" hidden></div>
+    </div>
   </header>
 
   <section class="felt hero" aria-labelledby="hero-title">
     <h1 id="hero-title">Card Wars Arena</h1>
     <section id="decks" aria-labelledby="deck-title" class="lsection herodecks">
       <div class="deckhead">
-        <h2 id="deck-title" class="h">Pick your deck</h2>
-        <button id="build" type="button" class="btn-steel" hidden>Build a new deck</button>
+        <h2 id="deck-title" class="h" data-i18n="lobby.pick_deck">Pick your deck</h2>
+        <button id="build" type="button" class="btn-steel" hidden data-i18n="lobby.build">Build a new deck</button>
       </div>
       <div class="shelf"><div id="shelf" class="shelfgrid"></div></div>
       <p class="hint" id="lobbyhint"></p>
@@ -43,28 +46,28 @@
   </section>
 
   <section id="play" aria-labelledby="modes-title" class="lsection">
-    <h2 id="modes-title" class="h">How do you wanna play?</h2>
+    <h2 id="modes-title" class="h" data-i18n="lobby.modes">How do you wanna play?</h2>
     <div class="modes">
       <article class="steel mode">
         <div class="modeicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="8" r="3.2" fill="#ffd34d" stroke="#16212b" stroke-width="2"/><circle cx="16" cy="9" r="2.7" fill="#dbe6ee" stroke="#16212b" stroke-width="2"/><path d="M3 20 C 3 14 14 14 14 20 Z" fill="#ffd34d" stroke="#16212b" stroke-width="2" stroke-linejoin="round"/><path d="M14.5 14.5 C 18 13.5 21.5 15 21.5 19.5 H 15.5" fill="#dbe6ee" stroke="#16212b" stroke-width="2" stroke-linejoin="round"/></svg></div>
-        <h3 class="h">Play a Friend</h3>
-        <label for="code" class="ink">Got a room code?</label>
+        <h3 class="h" data-i18n="lobby.friend">Play a Friend</h3>
+        <label for="code" class="ink" data-i18n="lobby.code_label">Got a room code?</label>
         <div class="joinrow">
           <input id="code" class="well" placeholder="PIG-42" maxlength="8" spellcheck="false" autocomplete="off">
-          <button id="join" type="button" class="btn-steel">Join</button>
+          <button id="join" type="button" class="btn-steel" data-i18n="lobby.join">Join</button>
         </div>
-        <button id="create" type="button" class="btn-steel">Make a new room</button>
+        <button id="create" type="button" class="btn-steel" data-i18n="lobby.create">Make a new room</button>
       </article>
 
       <article class="steel mode">
         <div class="modeicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#f4e6bf" stroke="#16212b" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="#d2352b" stroke="#16212b" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="#16212b"/></svg></div>
-        <h3 class="h">Practice</h3>
-        <p class="ink">Play the computer. Try decks out, learn the Floop timing, nobody's judging.</p>
+        <h3 class="h" data-i18n="lobby.practice">Practice</h3>
+        <p class="ink" data-i18n="lobby.practice_text">Play the computer. Try decks out, learn the Floop timing, nobody's judging.</p>
         <details class="options">
-          <summary>Options</summary>
-          <label for="bot" class="ink">Bot <select id="bot" class="well"><option value="">Random</option></select></label>
+          <summary data-i18n="lobby.options">Options</summary>
+          <label for="bot" class="ink"><span data-i18n="lobby.bot">Bot</span> <select id="bot" class="well"><option value="" data-i18n="practice.random">Random</option></select></label>
         </details>
-        <button id="vsbot" type="button" class="btn-green big">Practice</button>
+        <button id="vsbot" type="button" class="btn-green big" data-i18n="lobby.practice">Practice</button>
       </article>
 
     </div>
@@ -72,28 +75,28 @@
 
   <section id="rules" aria-labelledby="rules-title" class="parch rules">
     <div class="ruleshead">
-      <h2 id="rules-title">Your turn, in seven steps</h2>
-      <span>Win by taking your opponent from 25 HP to 0.</span>
+      <h2 id="rules-title" data-i18n="rules.title">Your turn, in seven steps</h2>
+      <span data-i18n="rules.win">Win by taking your opponent from 25 HP to 0.</span>
     </div>
     <ol class="steps">
-      <li><span class="stepno" aria-hidden="true">1</span><span>Ready all your cards</span></li>
-      <li><span class="stepno" aria-hidden="true">2</span><span>Draw a card</span></li>
-      <li><span class="stepno" aria-hidden="true">3</span><span>Get 2 Actions</span></li>
-      <li><span class="stepno" aria-hidden="true">4</span><span>Floop (optional)</span></li>
-      <li><span class="stepno" aria-hidden="true">5</span><span>Spend 1 Action to draw</span></li>
-      <li><span class="stepno" aria-hidden="true">6</span><span>Fight!</span></li>
-      <li><span class="stepno" aria-hidden="true">7</span><span>End of turn</span></li>
+      <li><span class="stepno" aria-hidden="true">1</span><span data-i18n="rules.step1">Ready all your cards</span></li>
+      <li><span class="stepno" aria-hidden="true">2</span><span data-i18n="rules.step2">Draw a card</span></li>
+      <li><span class="stepno" aria-hidden="true">3</span><span data-i18n="rules.step3">Get 2 Actions</span></li>
+      <li><span class="stepno" aria-hidden="true">4</span><span data-i18n="rules.step4">Floop (optional)</span></li>
+      <li><span class="stepno" aria-hidden="true">5</span><span data-i18n="rules.step5">Spend 1 Action to draw</span></li>
+      <li><span class="stepno" aria-hidden="true">6</span><span data-i18n="rules.step6">Fight!</span></li>
+      <li><span class="stepno" aria-hidden="true">7</span><span data-i18n="rules.step7">End of turn</span></li>
     </ol>
   </section>
 
   <footer class="well disclaimer">
-    A fan-made table for the Adventure Time Card Wars TCG. Not affiliated with Cartoon Network or Cryptozoic Entertainment.
-    <p class="aidisclosure">AI coding assistants helped build this project; its maintainers and contributors direct and review the work. The card catalogue and card images are not AI-generated. <a href="https://github.com/Lukas-Simonson/CardWarsArena#ai-disclosure" target="_blank" rel="noopener">Read the AI disclosure</a>.</p>
-    <nav id="feedback" class="feedback" aria-label="Feedback" hidden></nav>
+    <span data-i18n="footer.disclaimer">A fan-made table for the Adventure Time Card Wars TCG. Not affiliated with Cartoon Network or Cryptozoic Entertainment.</span>
+    <p class="aidisclosure"><span data-i18n="footer.ai">AI coding assistants helped build this project; its maintainers and contributors direct and review the work. The card catalogue and card images are not AI-generated.</span> <a href="https://github.com/Lukas-Simonson/CardWarsArena#ai-disclosure" target="_blank" rel="noopener" data-i18n="footer.ai_link">Read the AI disclosure.</a></p>
+    <nav id="feedback" class="feedback" aria-label="Feedback" data-i18n-attr="aria-label:footer.feedback" hidden></nav>
     <details class="serverbox">
-      <summary>Server</summary>
-      <label for="server" class="ink">Server address <input id="server" class="well" spellcheck="false" autocomplete="off"></label>
-      <button id="applyServer" type="button" class="btn-steel">Connect</button>
+      <summary data-i18n="footer.server">Server</summary>
+      <label for="server" class="ink"><span data-i18n="footer.server_address">Server address</span> <input id="server" class="well" spellcheck="false" autocomplete="off"></label>
+      <button id="applyServer" type="button" class="btn-steel" data-i18n="footer.connect">Connect</button>
     </details>
   </footer>
 </main>

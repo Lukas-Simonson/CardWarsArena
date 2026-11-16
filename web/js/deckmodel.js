@@ -5,6 +5,7 @@
 // A deck is { id, name, hero, counts, landscapes } where counts maps a card id to its copies and landscapes is
 // the four the player chose, one for each Lane, or null to let the cards decide.
 import { landscapeName } from "./describe.js";
+import { t, locale } from "./i18n.js";
 
 export const MIN_CARDS = 40;
 export const MAX_COPIES = 3;
@@ -31,8 +32,8 @@ export const copies = (deck, id) => deck.counts[id] ?? 0;
 
 /** Why one more copy of a card cannot go in, or "" when it can. */
 export function whyNot(deck, id) {
-  if (copies(deck, id) >= MAX_COPIES) return `Already ${MAX_COPIES} copies`;
-  if (total(deck) >= MAX_CARDS) return `A deck holds at most ${MAX_CARDS} cards`;
+  if (copies(deck, id) >= MAX_COPIES) return t("deck.why_copies", { n: MAX_COPIES });
+  if (total(deck) >= MAX_CARDS) return t("deck.why_full", { n: MAX_CARDS });
   return "";
 }
 
@@ -71,7 +72,7 @@ export function landscapeRow(deck, cards) {
     const ls = cards[id]?.landscape;
     if (ls && ls !== "rainbow") count[ls] = (count[ls] ?? 0) + n;
   }
-  const kinds = Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b));
+  const kinds = Object.keys(count).sort((a, b) => count[b] - count[a] || a.localeCompare(b, locale()));
   if (kinds.length === 1) return [kinds[0], kinds[0], kinds[0], kinds[0]];
   if (kinds.length === 2) return [kinds[0], kinds[0], kinds[1], kinds[1]];
   if (kinds.length === 3) return [kinds[0], kinds[0], kinds[1], kinds[2]];
@@ -109,13 +110,13 @@ export function unplayable(deck, cards) {
     const have = row.filter((l) => l === c.landscape).length;
     if (have < c.cost) out.push({ id, name: c.name, type: c.landscape, cost: c.cost, have, never: have === 0 });
   }
-  return out.sort((a, b) => Number(b.never) - Number(a.never) || a.name.localeCompare(b.name));
+  return out.sort((a, b) => Number(b.never) - Number(a.never) || a.name.localeCompare(b.name, locale()));
 }
 
 /** Why a card in the list above may not be playable, in words. */
 export const whyUnplayable = (u) => u.never
-  ? `no ${landscapeName(u.type)} Landscape`
-  : `costs ${u.cost} but the deck has ${u.have} ${landscapeName(u.type)} Landscape${u.have === 1 ? "" : "s"}`;
+  ? t("deck.unplayable_never", { type: landscapeName(u.type) })
+  : t("deck.unplayable_few", { cost: u.cost, have: u.have, type: landscapeName(u.type) });
 
 /** How many cards of each cost the deck holds, from cost 0 up to the dearest card (at least up to 2). */
 export function costCurve(deck, cards) {
@@ -129,16 +130,16 @@ export function costCurve(deck, cards) {
   return Array.from({ length: top + 1 }, (_, cost) => ({ cost, count: byCost[cost] ?? 0 }));
 }
 
-/** What stops the deck being played, in the server's words ([] when nothing does). */
+/** What stops the deck being played, as sentences ([] when nothing does). */
 export function problems(deck, cards) {
   const out = [];
   const n = total(deck);
-  if (!deck.hero) out.push("choose a Hero");
-  if (n < MIN_CARDS) out.push(`${n} cards: a deck needs at least ${MIN_CARDS}`);
+  if (!deck.hero) out.push(t("deck.problem_hero"));
+  if (n < MIN_CARDS) out.push(t("deck.problem_size", { n, min: MIN_CARDS }));
   if (!deck.landscapes) { // the cards decide, so they must be able to
     const types = landscapeTypes(deck, cards).length;
-    if (types > LANES) out.push(`uses ${types} Landscape types: choose your ${LANES} Landscapes`);
-    else if (types === 0 && n > 0) out.push("choose your Landscapes: no card says which (they are all Rainbow)");
+    if (types > LANES) out.push(t("deck.problem_types", { types, lanes: LANES }));
+    else if (types === 0 && n > 0) out.push(t("deck.problem_rainbow"));
   }
   return out;
 }
@@ -154,7 +155,7 @@ export function mix(deck, cards) {
 }
 
 /** Heroes the game can play, by name. */
-export const heroes = (cards) => Object.values(cards).filter((c) => c.type === "hero" && c.modeled).sort((a, b) => a.name.localeCompare(b.name));
+export const heroes = (cards) => Object.values(cards).filter((c) => c.type === "hero" && c.modeled).sort((a, b) => a.name.localeCompare(b.name, locale()));
 
 /**
  * The cards that may be put in a deck (not Heroes; only those whose rules the game plays), narrowed by
@@ -163,7 +164,7 @@ export const heroes = (cards) => Object.values(cards).filter((c) => c.type === "
  * by `counts` (card id -> copies; the deck being built). `from` is another deck's counts: only its cards stay.
  */
 export function pool(cards, { text = "", type = "", landscape = "", members = "", counts = {}, from = null } = {}) {
-  const q = text.trim().toLowerCase();
+  const q = text.trim().toLocaleLowerCase(locale());
   return Object.values(cards)
     .filter((c) => c.type !== "hero" && c.modeled)
     .filter((c) => members !== "in" || (counts[c.id] ?? 0) > 0)
@@ -171,8 +172,8 @@ export function pool(cards, { text = "", type = "", landscape = "", members = ""
     .filter((c) => !from || (from[c.id] ?? 0) > 0)
     .filter((c) => !type || c.type === type)
     .filter((c) => !landscape || c.landscape === landscape)
-    .filter((c) => !q || c.name.toLowerCase().includes(q) || (c.text ?? "").toLowerCase().includes(q))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .filter((c) => !q || c.name.toLocaleLowerCase(locale()).includes(q) || (c.text ?? "").toLocaleLowerCase(locale()).includes(q))
+    .sort((a, b) => a.name.localeCompare(b.name, locale()));
 }
 
 /** Is there anything here that has not been saved? Compares with the deck as last saved (or an empty one). */

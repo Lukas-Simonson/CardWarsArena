@@ -11,6 +11,7 @@
 // The panel shows the newest lines first with markers around them; this is the whole log, oldest first, markers
 // taken off, and a turn's line set apart by a blank line so it reads as a heading.
 import { APP_NAME } from "./brand.js";
+import { t } from "./i18n.js";
 
 const MARK = /^(──|\*\*\*)\s*|\s*(──|\*\*\*)$/g;
 
@@ -24,21 +25,21 @@ const plain = (line) => String(line).replace(MARK, "").trim();
  */
 export function gameLogText(state, cards, limit = Infinity) {
   const v = state.view;
-  const head = [`${APP_NAME} game log`];
-  const where = [state.session?.room && `Room: ${state.session.room}`, v?.turn != null && `Turn ${v.turn}`].filter(Boolean);
-  if (where.length) head.push(where.join(" · "));
+  const head = [t("gamelog.title", { app: APP_NAME })];
+  const where = [state.session?.room && t("gamelog.room", { room: state.session.room }), v?.turn != null && t("game.turn", { turn: v.turn })].filter(Boolean);
+  if (where.length) head.push(where.join(t("detail.sep")));
   if (v) {
     const players = [0, 1].map((seat) => {
-      const name = state.names?.[seat] || (seat === v.you ? "You" : "Opponent");
+      const name = state.names?.[seat] || t(seat === v.you ? "player.you" : "player.opponent");
       const hero = v.players?.[seat]?.hero;
       const heroName = hero && (cards?.[hero.card]?.name ?? hero.card);
-      return heroName ? `${name} (Hero: ${heroName})` : name;
+      return heroName ? t("gamelog.player_hero", { name, hero: heroName }) : name;
     });
-    head.push(`Players: ${players.join(", ")}`);
+    head.push(t("gamelog.players", { players }));
   }
 
   const body = [];
-  if (state.log.length >= limit) body.push("(The start of the game is missing: only the latest lines are kept.)");
+  if (state.log.length >= limit) body.push(t("gamelog.truncated"));
   for (const raw of state.log) {
     const line = plain(raw), mark = String(raw).trim().slice(0, 2);
     if (!line) continue;
@@ -46,7 +47,7 @@ export function gameLogText(state, cards, limit = Infinity) {
     if (set && body.length) body.push("");
     body.push(mark === "──" ? `── ${line} ──` : line);
   }
-  if (!state.log.length) body.push("Nothing has happened yet.");
+  if (!state.log.length) body.push(t("gamelog.empty"));
   return [...head, "", ...body].join("\n") + "\n";
 }
 

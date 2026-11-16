@@ -13,7 +13,7 @@ test("the log is whole, oldest first, with a header and the markers taken off", 
   assert.equal(gameLogText(state, cards), [
     "Card Wars Arena game log",
     "Room: B69K · Turn 7",
-    "Players: Lukas (Hero: Finn), Bot (Hero: Jake)",
+    "Players: Lukas (Hero: Finn) and Bot (Hero: Jake)",
     "",
     "Lukas draws a card",
     "",
@@ -29,7 +29,7 @@ test("it still reads with no view, no room or no log", () => {
   const t = gameLogText({ log: [], view: null, names: [], session: null }, cards);
   assert.equal(t, "Card Wars Arena game log\n\nNothing has happened yet.\n");
   const bare = gameLogText({ ...state, session: null, view: { turn: 2, you: 1, players: [{}, {}] }, names: [] }, cards);
-  assert.match(bare, /Turn 2\nPlayers: Opponent, You\n/);
+  assert.match(bare, /Turn 2\nPlayers: Opponent and You\n/);
 });
 
 test("a log at the client's limit says the start is missing", () => {

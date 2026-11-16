@@ -67,13 +67,13 @@ const wide = { ...cards,
   san: { id: "san", name: "Sandcastle", type: "creature", landscape: "sandy_lands", modeled: true },
   nice: { id: "nice", name: "Nice Guy", type: "creature", landscape: "nice_lands", modeled: true } };
 
-test("problems use the server's words", () => {
-  assert.deepEqual(problems(emptyDeck(), cards), ["choose a Hero", "0 cards: a deck needs at least 40"]);
+test("problems are whole sentences", () => {
+  assert.deepEqual(problems(emptyDeck(), cards), ["Choose a Hero.", "0 cards: a deck needs at least 40."]);
   const five = fromCards(["pup", "ice", "sea", "san", "nice"], { hero: "finn" });
-  assert.ok(problems(five, wide).includes("uses 5 Landscape types: choose your 4 Landscapes"));
+  assert.ok(problems(five, wide).includes("Uses 5 Landscape types: choose your 4 Landscapes."));
   const four = fromCards(["pup", "ice", "sea", "san"], { hero: "finn" });
   assert.ok(!problems(four, wide).some((p) => /Landscape/.test(p)));
-  assert.ok(problems(fromCards(["rain"], { hero: "finn" }), cards).includes("choose your Landscapes: no card says which (they are all Rainbow)"));
+  assert.ok(problems(fromCards(["rain"], { hero: "finn" }), cards).includes("Choose your Landscapes: no card says which (they are all Rainbow)."));
   const counts = {};
   for (let i = 0; i < 14; i++) counts[`x${i}`] = 3; // 42 cards of nothing in particular
   cards.x0 = { id: "x0", landscape: "cornfield" };

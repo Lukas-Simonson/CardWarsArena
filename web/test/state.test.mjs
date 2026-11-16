@@ -76,9 +76,9 @@ test("the log is capped", () => {
 test("errors are kept until the next update", () => {
   let s = reduce(initialState(), joined(), cards);
   s = reduce(s, { type: "error", code: "stale_state", message: "the game has moved on" }, cards);
-  assert.equal(s.error, "stale_state: the game has moved on");
+  assert.deepEqual(s.error, { code: "stale_state", message: "the game has moved on" });
   s = reduce(s, update(1), cards);
-  assert.equal(s.error, "");
+  assert.equal(s.error, null);
 });
 
 test("waiting and opponent presence", () => {

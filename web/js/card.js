@@ -1,5 +1,6 @@
 // Draws one card: the printed scan from the catalog's image_url.
 import { h } from "./dom.js";
+import { t } from "./i18n.js";
 
 /** What stands in for a scan that is missing or fails to load: just the name. */
 const placeholder = (card) => h("div", { class: "noart" }, card.name ?? card.id);
@@ -23,8 +24,8 @@ export function cardEl(card, live = null, { lazy = false } = {}) {
   if (live && c.type === "creature") {
     const left = (live.def ?? c.defense ?? 0) - (live.damage ?? 0);
     el.append(
-      h("span", { class: `badge atk ${live.atk > (c.attack ?? 0) ? "up" : ""}`, title: "Attack" }, live.atk ?? c.attack ?? 0),
-      h("span", { class: `badge def ${live.damage > 0 ? "hurt" : ""}`, title: "Defense left" }, left));
+      h("span", { class: `badge atk ${live.atk > (c.attack ?? 0) ? "up" : ""}`, title: t("stat.attack") }, live.atk ?? c.attack ?? 0),
+      h("span", { class: `badge def ${live.damage > 0 ? "hurt" : ""}`, title: t("stat.defense") }, left));
   }
   return el;
 }
