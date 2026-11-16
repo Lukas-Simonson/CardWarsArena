@@ -497,8 +497,8 @@ func TestLeaveClosesTheRoom(t *testing.T) {
 	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
 	b.expect(MsgJoined)
 	a.send(ClientMsg{Type: MsgLeave})
-	if m := b.expect(MsgRoomClosed); m.Message != "opponent left" {
-		t.Errorf("reason = %q", m.Message)
+	if m := b.expect(MsgRoomClosed); m.Message != "opponent left" || m.Reason != ReasonOpponentLeft {
+		t.Errorf("reason = %q (%q)", m.Reason, m.Message)
 	}
 	if n := h.srv.RoomCount(); n != 0 {
 		t.Errorf("rooms = %d", n)
@@ -810,5 +810,56 @@ func TestPlayersSeeEachOthersAvatars(t *testing.T) {
 	grace.send(ClientMsg{Type: MsgCreate, Deck: "finn", VsBot: true})
 	if av := grace.expect(MsgJoined).Avatars; av[0] != "https://img.example.test/Grace.png" || av[1] != "" {
 		t.Errorf("against the bot: %q", av)
+	}
+}
+
+// A client words a failure itself, so the server sends what it needs: the kind (code), what exactly (reason) and the
+// values the message uses (params), besides the English text.
+func TestErrorsCarryAReasonAndParamsForTheClient(t *testing.T) {
+	h := newHarness(t, unmodelled(t, "mace-stump"))
+	c := h.dial()
+	reply := func(m ClientMsg) ServerMsg {
+		c.t.Helper()
+		c.send(m)
+		return c.expect(MsgError)
+	}
+	if m := reply(ClientMsg{Type: "fly"}); m.Code != ErrBadRequest || m.Reason != "unknown_message_type" || m.Params["type"] != "fly" {
+		t.Errorf("unknown type: %+v", m)
+	}
+	c.sendRaw([]byte("{not json"))
+	if m := c.expect(MsgError); m.Reason != "invalid_json" || m.Params["detail"] == nil {
+		t.Errorf("invalid JSON: %+v", m)
+	}
+	if m := reply(ClientMsg{Type: MsgCreate, Deck: "nonsense"}); m.Code != ErrUnknownDeck || m.Reason != "no_deck_matches" || m.Params["query"] != "nonsense" {
+		t.Errorf("unknown deck: %+v", m)
+	}
+	if m := reply(ClientMsg{Type: MsgCreate, Deck: "bmo"}); m.Code != ErrDeckNotReady || m.Params["deck"] == nil {
+		t.Errorf("deck not ready: %+v", m)
+	}
+	if m := reply(ClientMsg{Type: MsgJoin, Room: "ZZZZ", Deck: "finn"}); m.Code != ErrRoomNotFound || m.Reason != "" {
+		t.Errorf("no such room: %+v", m)
+	}
+
+	// A rule of the game that was broken names itself.
+	a, b := h.dial(), h.dial()
+	a.send(ClientMsg{Type: MsgCreate, Deck: "finn", Seed: ptr(uint64(2))})
+	a.expect(MsgJoined)
+	b.send(ClientMsg{Type: MsgJoin, Room: a.room, Deck: "jake"})
+	b.expect(MsgJoined)
+	a.expect(MsgUpdate)
+	b.expect(MsgUpdate)
+	b.send(ClientMsg{Type: MsgAction, Action: &engine.Action{Kind: engine.ActEndMain}})
+	if m := b.expect(MsgError); m.Code != ErrIllegal || m.Reason != "wrong_phase" || m.Message == "" {
+		t.Errorf("illegal action: %+v", m)
+	}
+	b.send(ClientMsg{Type: MsgAction, Action: &engine.Action{Kind: "teleport_me_to_victory"}})
+	if m := b.expect(MsgError); m.Reason != "unknown_action" {
+		t.Errorf("unknown action: %+v", m)
+	}
+	// A move chosen from an old position says where the game is now.
+	old := 0
+	b.send(ClientMsg{Type: MsgAction, Seq: &old, Action: &engine.Action{Kind: engine.ActKeepHand}})
+	if m := b.expect(MsgError); m.Code != ErrStale || m.Params["seq"] == nil {
+		t.Errorf("stale: %+v", m)
 	}
 }

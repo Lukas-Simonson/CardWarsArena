@@ -15,7 +15,7 @@ const presets = [
 ];
 const saved = [
   { id: "a1", name: "Ponies", hero: "finn", cards: ["pup", "pup", "ice"], playable: true, problems: [] },
-  { id: "b2", name: "", hero: "", cards: ["pup"], playable: false, problems: ["choose a Hero", "1 cards: a deck needs at least 40"] },
+  { id: "b2", name: "", hero: "", cards: ["pup"], playable: false, problems: [{ code: "choose_hero", text: "choose a Hero" }, { code: "deck_too_small", params: { n: 1, min: 40 }, text: "1 cards: a deck needs at least 40" }] },
 ];
 
 test("starters are asked for by words, titled with the deck's own name and led by their Hero", () => {
@@ -33,7 +33,7 @@ test("a saved deck is asked for as my:<id>, with its Landscapes worked out from 
 test("an unfinished deck is on the shelf but cannot be taken, and says why", () => {
   const wip = shelf(presets, saved, cards).mine[1];
   assert.deepEqual([wip.name, wip.sub, wip.disabled], ["Untitled deck", "Unfinished", true]);
-  assert.equal(wip.title, "choose a Hero; 1 cards: a deck needs at least 40");
+  assert.equal(wip.title, "Choose a Hero.; 1 card: a deck needs at least 40.");
 });
 
 test("a starter deck says only who leads it, and has no subtitle without a Hero", () => {

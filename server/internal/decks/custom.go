@@ -1,12 +1,12 @@
 package decks
 
 import (
-	"fmt"
 	"slices"
 	"sort"
 
 	"cardwars/internal/card"
 	"cardwars/internal/engine"
+	"cardwars/internal/problem"
 )
 
 // MaxCards is the most cards a saved deck may hold. The game needs 40; this only stops absurd saves.
@@ -17,11 +17,11 @@ const MaxCards = 120
 // with it (too few cards, too many Landscape types, no Hero yet) only stops it being played, not saved: see Problems.
 func Check(cat card.Catalog, hero string, cards []string) error {
 	if len(cards) > MaxCards {
-		return fmt.Errorf("a deck holds at most %d cards", MaxCards)
+		return problem.Newf("deck_too_large", "a deck holds at most %d cards", []any{MaxCards}, "max", MaxCards)
 	}
 	if hero != "" {
 		if h := cat[hero]; h == nil || h.Type != card.Hero {
-			return fmt.Errorf("%q is not a Hero", hero)
+			return problem.Newf("not_a_hero", "%q is not a Hero", []any{hero}, "card", hero)
 		}
 	}
 	copies := map[string]int{}
@@ -29,12 +29,12 @@ func Check(cat card.Catalog, hero string, cards []string) error {
 		c := cat[id]
 		switch {
 		case c == nil:
-			return fmt.Errorf("unknown card %q", id)
+			return problem.Newf("unknown_card", "unknown card %q", []any{id}, "card", id)
 		case c.Type == card.Hero:
-			return fmt.Errorf("%s is a Hero: choose it as the deck's Hero, not as a card", c.Name)
+			return problem.Newf("hero_as_card", "%s is a Hero: choose it as the deck's Hero, not as a card", []any{c.Name}, "card", id)
 		}
 		if copies[id]++; copies[id] > engine.MaxCopies {
-			return fmt.Errorf("more than %d copies of %s", engine.MaxCopies, c.Name)
+			return problem.Newf("too_many_copies", "more than %d copies of %s", []any{engine.MaxCopies, c.Name}, "max", engine.MaxCopies, "card", id)
 		}
 	}
 	return nil
@@ -47,11 +47,11 @@ func CheckLandscapes(landscapes []string) error {
 		return nil
 	}
 	if len(landscapes) != engine.NumLanes {
-		return fmt.Errorf("a deck has %d Landscapes, one for each Lane (or none, to let the cards decide)", engine.NumLanes)
+		return problem.Newf("landscape_count", "a deck has %d Landscapes, one for each Lane (or none, to let the cards decide)", []any{engine.NumLanes}, "lanes", engine.NumLanes)
 	}
 	for _, l := range landscapes {
 		if !slices.Contains(card.Landscapes, card.Landscape(l)) {
-			return fmt.Errorf("%q is not a Landscape", l)
+			return problem.Newf("not_a_landscape", "%q is not a Landscape", []any{l}, "landscape", l)
 		}
 	}
 	return nil
@@ -71,17 +71,18 @@ func Custom(cat card.Catalog, name, owner, hero string, cards []string, landscap
 	return d
 }
 
-// Problems says, in words, what stops the deck being played; none means it can be. unmodelled
-// allows cards whose rules the engine does not play (development servers). The cards must have passed Check.
-func (d Info) Problems(cat card.Catalog, unmodelled bool) []string {
-	var out []string
+// Problems says what stops the deck being played; none means it can be. Each is a code and the values for a client to
+// word itself (cards by id), with English text as well. unmodelled allows cards whose rules the engine does not play
+// (development servers). The cards must have passed Check.
+func (d Info) Problems(cat card.Catalog, unmodelled bool) []*problem.Problem {
+	var out []*problem.Problem
 	if d.Hero == "" {
-		out = append(out, "choose a Hero")
+		out = append(out, problem.New("choose_hero", "choose a Hero"))
 	} else if h := cat[d.Hero]; !unmodelled && !h.Implemented() {
-		out = append(out, h.Name+"'s rules are not implemented yet")
+		out = append(out, problem.New("unmodelled", h.Name+"'s rules are not implemented yet", "card", d.Hero))
 	}
 	if len(d.Cards) < engine.MinDeckSize {
-		out = append(out, fmt.Sprintf("%d cards: a deck needs at least %d", len(d.Cards), engine.MinDeckSize))
+		out = append(out, problem.Newf("deck_too_small", "%d cards: a deck needs at least %d", []any{len(d.Cards), engine.MinDeckSize}, "n", len(d.Cards), "min", engine.MinDeckSize))
 	}
 	if !d.LandOK {
 		out = append(out, landscapeProblem(cat, d.Cards))
@@ -97,13 +98,22 @@ func (d Info) Problems(cat card.Catalog, unmodelled bool) []string {
 		}
 		sort.Strings(ids)
 		for _, id := range ids {
-			out = append(out, cat[id].Name+"'s rules are not implemented yet")
+			out = append(out, problem.New("unmodelled", cat[id].Name+"'s rules are not implemented yet", "card", id))
 		}
 	}
 	return out
 }
 
-func landscapeProblem(cat card.Catalog, ids []string) string {
+// Texts are the problems in English, one string each (for a log or a command line).
+func Texts(ps []*problem.Problem) []string {
+	out := make([]string, len(ps))
+	for i, p := range ps {
+		out[i] = p.Text
+	}
+	return out
+}
+
+func landscapeProblem(cat card.Catalog, ids []string) *problem.Problem {
 	kinds := map[card.Landscape]bool{}
 	for _, id := range ids {
 		if ls := cat[id].Landscape; ls != "" && ls != card.Rainbow {
@@ -111,7 +121,7 @@ func landscapeProblem(cat card.Catalog, ids []string) string {
 		}
 	}
 	if len(kinds) == 0 {
-		return "choose your Landscapes: no card says which (they are all Rainbow)"
+		return problem.New("choose_landscapes_rainbow", "choose your Landscapes: no card says which (they are all Rainbow)")
 	}
-	return fmt.Sprintf("uses %d Landscape types: choose your %d Landscapes", len(kinds), engine.NumLanes)
+	return problem.Newf("too_many_landscape_types", "uses %d Landscape types: choose your %d Landscapes", []any{len(kinds), engine.NumLanes}, "types", len(kinds), "lanes", engine.NumLanes)
 }

@@ -309,7 +309,7 @@ func TestADeckIsKeptWithinLimits(t *testing.T) {
 	if r := h.call("Grace", "POST", "/api/my/decks", deckBody{}); true {
 		var e savedDeck
 		r.json(t, &e)
-		if e.Name != "Untitled deck" {
+		if e.Name != "" {
 			t.Errorf("an empty name became %q", e.Name)
 		}
 	}
@@ -393,5 +393,50 @@ func TestPreflightForTheSavedDecksAPI(t *testing.T) {
 	resp.Body.Close()
 	if resp.Header.Get("Access-Control-Allow-Origin") != "" || resp.Header.Get("Access-Control-Allow-Methods") != "" {
 		t.Errorf("an unlisted origin got CORS headers: %v", resp.Header)
+	}
+}
+
+// Every failure of the deck API names its kind and gives the values a client needs to word it itself.
+func TestDeckAPIFailuresCarryACodeAndParams(t *testing.T) {
+	h := decksHarness(t)
+	code := func(r apiReply) (string, map[string]any) {
+		t.Helper()
+		var e struct {
+			Error  string
+			Code   string
+			Params map[string]any
+		}
+		r.json(t, &e)
+		if e.Error == "" {
+			t.Errorf("no English text in %s", r.body)
+		}
+		return e.Code, e.Params
+	}
+	if c, _ := code(h.call("", "GET", "/api/my/decks", nil)); c != "sign_in_required" {
+		t.Errorf("signed out: %s", c)
+	}
+	if c, p := code(h.call("Ada", "POST", "/api/my/decks", deckBody{Name: "x", Cards: []string{"nope"}})); c != "unknown_card" || p["card"] != "nope" {
+		t.Errorf("unknown card: %s %v", c, p)
+	}
+	if c, p := code(h.call("Ada", "POST", "/api/my/decks", deckBody{Name: "x", Landscapes: []string{"cornfield"}})); c != "landscape_count" || p["lanes"] != float64(4) {
+		t.Errorf("landscape count: %s %v", c, p)
+	}
+	if c, _ := code(h.call("Ada", "PUT", "/api/my/decks/missing", deckBody{Name: "x"})); c != "deck_not_found" {
+		t.Errorf("missing deck: %s", c)
+	}
+	var made savedDeck
+	h.call("Ada", "POST", "/api/my/decks", deckBody{Name: "short"}).json(t, &made)
+	codes := map[string]bool{}
+	for _, p := range made.Problems {
+		codes[p.Code] = true
+	}
+	if !codes["choose_hero"] || !codes["deck_too_small"] {
+		t.Errorf("a draft's problems: %+v", made.Problems)
+	}
+	for i := 1; i < maxDecksPerUser; i++ {
+		h.call("Ada", "POST", "/api/my/decks", deckBody{Name: fmt.Sprint("deck ", i)})
+	}
+	if c, p := code(h.call("Ada", "POST", "/api/my/decks", deckBody{Name: "one too many"})); c != "deck_limit" || p["max"] != float64(maxDecksPerUser) {
+		t.Errorf("limit: %s %v", c, p)
 	}
 }

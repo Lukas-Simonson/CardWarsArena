@@ -47,6 +47,15 @@ const (
 	ErrStale         = "stale_state"
 )
 
+// Why a room closed (room_closed's reason), with the English a client without its own words shows.
+const (
+	ReasonHostLeft     = "host_left"
+	ReasonOpponentLeft = "opponent_left"
+	ReasonExpired      = "room_expired"
+)
+
+var closedText = map[string]string{ReasonHostLeft: "host left", ReasonOpponentLeft: "opponent left", ReasonExpired: "room expired"}
+
 // ClientMsg is anything a client may send. Which fields matter depends on Type.
 type ClientMsg struct {
 	Type    string         `json:"type"`
@@ -86,6 +95,12 @@ type ServerMsg struct {
 	Connected *bool  `json:"connected,omitempty"` // opponent
 	Name      string `json:"name,omitempty"`      // opponent
 
-	Code    string `json:"code,omitempty"`    // error
-	Message string `json:"message,omitempty"` // error, room_closed (reason)
+	// error: Code is the kind of failure; Reason, when there is one, says exactly what (a rule of the game that was
+	// broken, a deck problem); Params are the values a message about it needs (cards by id). A client words the
+	// failure itself from these. Message is the same in English, for logs and for a client that knows no better.
+	// room_closed: Reason says why (host_left, opponent_left, room_expired) and Message says it in English.
+	Code    string         `json:"code,omitempty"`
+	Reason  string         `json:"reason,omitempty"`
+	Params  map[string]any `json:"params,omitempty"`
+	Message string         `json:"message,omitempty"`
 }

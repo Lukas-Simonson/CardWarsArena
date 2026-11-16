@@ -3,6 +3,7 @@
 import { fromCards, landscapeRow } from "./deckmodel.js";
 import { landscapeName } from "./describe.js";
 import { t } from "./i18n.js";
+import { problemTexts } from "./errors.js";
 
 // The colour of a deck's box and of its Landscape diamonds, as in the design's Lobby board.
 const BOX = { cornfield: "#5ea83a", blue_plains: "#3f7fc0", useless_swamp: "#6e4f98", sandy_lands: "#c98a1f", nice_lands: "#c85a8f", icy_lands: "#4aa3b8" };
@@ -33,7 +34,7 @@ const subtitle = (kind, hero) => [kind, hero && t("deck.hero", { name: hero.name
 
 /**
  * @param {{set:string,name:string,owner?:string,size:number,landscapes:string[]}[]} presets  playable starter decks from GET /api/decks
- * @param {{id:string,name:string,hero:string,cards:string[],playable:boolean,problems?:string[]}[]} saved  from GET /api/my/decks
+ * @param {{id:string,name:string,hero:string,cards:string[],playable:boolean,problems?:{code:string,params?:object,text?:string}[]}[]} saved  from GET /api/my/decks
  * @param {object} cards  the catalog by id
  * @returns {{starters:Box[], mine:Box[]}}  Box: {value, name, sub, lands, size, disabled, title}
  */
@@ -59,7 +60,7 @@ export function shelf(presets, saved, cards) {
         lands,
         size: d.cards.length,
         disabled: !d.playable,
-        title: d.playable ? landscapeTitle(lands) : (d.problems ?? []).join(t("targets.sep")),
+        title: d.playable ? landscapeTitle(lands) : problemTexts(d.problems, cards).join(t("targets.sep")),
       };
     }),
   };

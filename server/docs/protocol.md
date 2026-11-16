@@ -92,8 +92,8 @@ who goes first. Keep the `token` from `joined` (the debug page keeps it in
 | `waiting` | `room`: share this code |
 | `update` | `seq`, `view`, `events`, `names`, `avatars` |
 | `opponent` | `connected`, `name` |
-| `room_closed` | `message` (reason) |
-| `error` | `code`, `message` |
+| `room_closed` | `reason` (`host_left`, `opponent_left`, `room_expired`), `message` (the same in English) |
+| `error` | `code`, `reason`, `params`, `message` |
 | `pong` | |
 
 `avatars` is in the same order as `names` (seat 0, seat 1): the address of each player's picture at their sign-in
@@ -108,10 +108,31 @@ current `seq` and no events.
 
 ### Error codes
 
-`bad_request`, `unknown_deck`, `deck_not_playable`, `room_not_found`,
-`room_full`, `not_in_room`, `already_in_room`, `bad_token`, `illegal_action`
-(the rules refuse it; `message` says why), `game_not_started`, `server_full`,
-`rate_limited`, `stale_state`.
+The server sends no prose a player has to read: it sends what went wrong as codes and values, and the client words it
+in the player's language. An `error` has
+
+- `code`: the kind: `bad_request`, `unknown_deck`, `deck_not_playable`, `room_not_found`, `room_full`, `not_in_room`,
+  `already_in_room`, `bad_token`, `illegal_action`, `game_not_started`, `server_full`, `rate_limited`, `stale_state`.
+- `reason` (when there is one): exactly what. For `illegal_action` it is the rule that was broken: `game_over`,
+  `wrong_phase`, `not_your_turn`, `already_decided`, `no_mulligan`, `unknown_action`, `no_such_card`, `bad_lane`,
+  `no_actions`, `landscapes`, `flooped`, `deck_empty`, `no_attacker`, `first_turn`, `not_playable`, `cannot_attack`,
+  `no_target`, `not_ready`, `no_ability`, `pending`, `no_pending`, `bad_target`, `condition`, `choice`, `no_choice`,
+  `limit`, `no_floop`, `frozen`, `not_frozen`, `no_replace`, `inert`. For `bad_request` it is `not_text`,
+  `invalid_json` (`detail`), `action_required`, `unknown_message_type` (`type`), `unknown_bot` (`name`, `bots`). For
+  `unknown_deck` it is `no_deck_matches` (`query`), `deck_ambiguous` (`query`, `decks`), `deck_not_found`,
+  `sign_in_required` or `no_bot_deck`; for `deck_not_playable`, `problems` lists the deck's problems (see below).
+- `params`: the values a message about it needs. A card is named by its id (`card`), never by its name, so a client
+  can use the name in its own language. `stale_state` has `seq` (where the game is now).
+- `message`: the same in English, for logs and for a client that does not know the code. It may change; do not match on it.
+
+The deck API (`/api/my/decks`) answers a failure with `{"error": "<English>", "code": "...", "params": {...}}`: `sign_in_required`
+(401), `wrong_origin` (403), `json_required` (415), `not_a_deck` (400, `detail`), `unknown_card`, `not_a_hero`,
+`hero_as_card` (`card`), `too_many_copies` (`card`, `max`), `deck_too_large` (`max`), `landscape_count` (`lanes`),
+`not_a_landscape` (`landscape`) (all 422), `deck_limit` (409, `max`), `deck_not_found` (404) and `store_unreachable` (500).
+
+A *problem* is `{"code", "params", "text"}`: the same three things in one object. The deck problems below are a list of
+them: `choose_hero`, `deck_too_small` (`n`, `min`), `choose_landscapes_rainbow`, `too_many_landscape_types` (`types`,
+`lanes`) and `unmodelled` (`card`).
 
 ## The view
 
@@ -251,9 +272,9 @@ as the starter decks do. A card whose Landscape is not among the four can be har
 needs as many face-up Landscapes of its type as it costs), but that does not stop the deck being played; the
 client warns about it. Saving accepts work in progress: only a deck that makes no sense is refused
 (`422`: an unknown card, a Hero among the cards, a Hero that is not one, more than 3 copies of a card, more than
-120 cards, `landscapes` that are not four real ones), so a half-built deck can be kept. `playable` says whether it can be played, and `problems` says in
-words what stops it (no Hero, fewer than 40 cards, Landscapes the cards cannot decide and the player has not chosen, rules not implemented yet). A name
-is trimmed to 40 characters; a player may keep 50 decks (`409` past that). A request that changes something
+120 cards, `landscapes` that are not four real ones), so a half-built deck can be kept. `playable` says whether it can be played, and `problems` is a list of problems (code, params, English text) saying
+what stops it (no Hero, fewer than 40 cards, Landscapes the cards cannot decide and the player has not chosen, rules not implemented yet). A name
+is trimmed to 40 characters (a blank one stays blank: the client says "Untitled deck" in the player's language); a player may keep 50 decks (`409` past that). A request that changes something
 must carry `application/json` and, if it has an `Origin`, be from this site or an allowed web client.
 
 ### Signing in

@@ -6,13 +6,13 @@
 package bot
 
 import (
-	"fmt"
 	"math/rand/v2"
 	"sort"
 	"strings"
 
 	"cardwars/internal/card"
 	"cardwars/internal/engine"
+	"cardwars/internal/problem"
 )
 
 // Bot chooses actions for a computer-controlled player. Every Bot returns only
@@ -48,7 +48,7 @@ func New(name string) (Bot, error) {
 	}
 	b, ok := registry[name]
 	if !ok {
-		return nil, fmt.Errorf("unknown bot %q (have %s)", name, strings.Join(Names(), ", "))
+		return nil, problem.Newf("unknown_bot", "unknown bot %q (have %s)", []any{name, strings.Join(Names(), ", ")}, "name", name, "bots", Names())
 	}
 	return b, nil
 }

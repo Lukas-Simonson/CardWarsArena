@@ -16,8 +16,9 @@ export function initialState() {
     seq: 0,                // seq of that view
     known: {},             // uid -> card id, for naming cards in events
     log: [],               // human-readable event lines
-    error: null,           // last error shown to the player: { code, message }
-    closedReason: "",      // why the last room ended
+    error: null,           // last error shown to the player: { code, reason, params, message }
+    closedReason: "",      // why the last room ended, in English
+    closedCode: "",        // and as a code
   };
 }
 
@@ -66,6 +67,7 @@ export function reduce(state, msg, cards = {}) {
         avatars: msg.avatars ?? state.avatars,
         error: null,
         closedReason: "",
+        closedCode: "",
       };
     }
     case "waiting":
@@ -87,9 +89,9 @@ export function reduce(state, msg, cards = {}) {
       return { ...state, view: msg.view, seq: msg.seq, names, avatars, known, log, waiting: false, error: null };
     }
     case "room_closed":
-      return { ...leave(state), closedReason: msg.message ?? "room closed" };
+      return { ...leave(state), closedReason: msg.message ?? "room closed", closedCode: msg.reason ?? "" };
     case "error":
-      return { ...state, error: { code: msg.code, message: msg.message ?? "" } };
+      return { ...state, error: { code: msg.code, reason: msg.reason, params: msg.params, message: msg.message ?? "" } };
     default: // hello, pong, anything newer than this client
       return state;
   }

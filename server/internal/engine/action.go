@@ -1,8 +1,9 @@
 package engine
 
 import (
-	"errors"
 	"fmt"
+
+	"cardwars/internal/problem"
 )
 
 // ActionKind names something a player can do.
@@ -120,37 +121,37 @@ type Event struct {
 	Amount int       `json:"amount,omitempty"`
 }
 
-// Rule violations returned by Apply.
+// Rule violations returned by Apply. Each is a *problem.Problem: its code is stable and the client words it.
 var (
-	ErrGameOver       = errors.New("game is over")
-	ErrWrongPhase     = errors.New("action not allowed in this phase")
-	ErrNotYourTurn    = errors.New("not your turn")
-	ErrAlreadyDecided = errors.New("mulligan decision already made")
-	ErrNoMulligan     = errors.New("mulligan already used")
-	ErrUnknownAction  = errors.New("unknown action")
-	ErrNoSuchCard     = errors.New("card not in hand")
-	ErrBadLane        = errors.New("lane out of range")
-	ErrNoActions      = errors.New("not enough Actions")
-	ErrLandscapes     = errors.New("not enough Landscapes of the required type")
-	ErrFlooped        = errors.New("cannot replace a Flooped card")
-	ErrDeckEmpty      = errors.New("deck is empty")
-	ErrNoAttacker     = errors.New("no Ready Creature in that Lane")
-	ErrFirstTurn      = errors.New("the first player may not Floop or Fight on the first turn")
-	ErrNotPlayable    = errors.New("card cannot be played")
-	ErrCannotAttack   = errors.New("that Creature cannot be attacked")
-	ErrNoTarget       = errors.New("no legal target")
-	ErrNotReady       = errors.New("that card is not Ready")
-	ErrNoAbility      = errors.New("that card has no such ability")
-	ErrPending        = errors.New("the stolen card must be played first")
-	ErrNoPending      = errors.New("there is no stolen card to play")
-	ErrBadTarget      = errors.New("invalid target choice")
-	ErrCondition      = errors.New("the card's condition is not met")
-	ErrChoice         = errors.New("a decision must be made first")
-	ErrNoChoice       = errors.New("there is no decision to make")
-	ErrLimit          = errors.New("that ability has been used as often as it can be this turn")
-	ErrNoFloop        = errors.New("Creatures in this Lane cannot use Floop abilities")
-	ErrFrozen         = errors.New("a Creature cannot be played onto a frozen Landscape, or replace one there")
-	ErrNotFrozen      = errors.New("that Landscape has no frozen token")
-	ErrNoReplace      = errors.New("that Creature cannot be replaced")
-	ErrInert          = errors.New("a Creature on a frozen Landscape here cannot Fight or use abilities")
+	ErrGameOver       = problem.New("game_over", "game is over")
+	ErrWrongPhase     = problem.New("wrong_phase", "action not allowed in this phase")
+	ErrNotYourTurn    = problem.New("not_your_turn", "not your turn")
+	ErrAlreadyDecided = problem.New("already_decided", "mulligan decision already made")
+	ErrNoMulligan     = problem.New("no_mulligan", "mulligan already used")
+	ErrUnknownAction  = problem.New("unknown_action", "unknown action")
+	ErrNoSuchCard     = problem.New("no_such_card", "card not in hand")
+	ErrBadLane        = problem.New("bad_lane", "lane out of range")
+	ErrNoActions      = problem.New("no_actions", "not enough Actions")
+	ErrLandscapes     = problem.New("landscapes", "not enough Landscapes of the required type")
+	ErrFlooped        = problem.New("flooped", "cannot replace a Flooped card")
+	ErrDeckEmpty      = problem.New("deck_empty", "deck is empty")
+	ErrNoAttacker     = problem.New("no_attacker", "no Ready Creature in that Lane")
+	ErrFirstTurn      = problem.New("first_turn", "the first player may not Floop or Fight on the first turn")
+	ErrNotPlayable    = problem.New("not_playable", "card cannot be played")
+	ErrCannotAttack   = problem.New("cannot_attack", "that Creature cannot be attacked")
+	ErrNoTarget       = problem.New("no_target", "no legal target")
+	ErrNotReady       = problem.New("not_ready", "that card is not Ready")
+	ErrNoAbility      = problem.New("no_ability", "that card has no such ability")
+	ErrPending        = problem.New("pending", "the stolen card must be played first")
+	ErrNoPending      = problem.New("no_pending", "there is no stolen card to play")
+	ErrBadTarget      = problem.New("bad_target", "invalid target choice")
+	ErrCondition      = problem.New("condition", "the card's condition is not met")
+	ErrChoice         = problem.New("choice", "a decision must be made first")
+	ErrNoChoice       = problem.New("no_choice", "there is no decision to make")
+	ErrLimit          = problem.New("limit", "that ability has been used as often as it can be this turn")
+	ErrNoFloop        = problem.New("no_floop", "Creatures in this Lane cannot use Floop abilities")
+	ErrFrozen         = problem.New("frozen", "a Creature cannot be played onto a frozen Landscape, or replace one there")
+	ErrNotFrozen      = problem.New("not_frozen", "that Landscape has no frozen token")
+	ErrNoReplace      = problem.New("no_replace", "that Creature cannot be replaced")
+	ErrInert          = problem.New("inert", "a Creature on a frozen Landscape here cannot Fight or use abilities")
 )

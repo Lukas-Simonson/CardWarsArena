@@ -1,6 +1,8 @@
 package server
 
 import (
+	"cardwars/internal/problem"
+	"errors"
 	"fmt"
 	"math/rand/v2"
 	"sync"
@@ -26,12 +28,27 @@ type seat struct {
 	sink   Sink // nil while disconnected
 }
 
-// roomError is a failure reported to one client.
-type roomError struct{ code, msg string }
+// roomError is a failure reported to one client: a code for what kind, and a Problem for what exactly.
+type roomError struct {
+	code string
+	p    *problem.Problem
+}
 
-func (e *roomError) Error() string { return e.msg }
+func (e *roomError) Error() string { return e.p.Text }
 
-func fail(code, msg string) error { return &roomError{code, msg} }
+// fail reports a failure of the given kind. Params are name, value pairs for the client's message.
+func fail(code, msg string, params ...any) error {
+	return &roomError{code, problem.New(code, msg, params...)}
+}
+
+// failBecause reports a failure of the given kind for a specific reason (a Problem with its own code).
+func failBecause(code string, err error) error {
+	var p *problem.Problem
+	if !errors.As(err, &p) {
+		p = problem.New(code, err.Error())
+	}
+	return &roomError{code, p}
+}
 
 // Room is one match: two seats (one possibly a bot) and the game.
 type Room struct {
@@ -135,7 +152,7 @@ func (r *Room) join(sink Sink, name, avatar string, deck decks.Info) (string, er
 	r.touched = time.Now()
 	if err := r.startLocked(); err != nil {
 		r.seats[1] = nil
-		return "", fail(ErrBadRequest, err.Error())
+		return "", failBecause(ErrBadRequest, err)
 	}
 	sink.Send(r.joinedMsg(1))
 	r.notifyOpponentLocked(1, true)
@@ -202,11 +219,11 @@ func (r *Room) act(token string, a engine.Action, seq *int) error {
 		return fail(ErrNotStarted, "waiting for an opponent")
 	}
 	if seq != nil && *seq != r.seq {
-		return fail(ErrStale, fmt.Sprintf("the game has moved on (now at seq %d)", r.seq))
+		return fail(ErrStale, fmt.Sprintf("the game has moved on (now at seq %d)", r.seq), "seq", r.seq)
 	}
 	events, err := r.g.Apply(engine.PlayerID(i), a)
 	if err != nil {
-		return fail(ErrIllegal, err.Error())
+		return failBecause(ErrIllegal, err)
 	}
 	r.touched = time.Now()
 	r.broadcastLocked(events)
@@ -223,9 +240,9 @@ func (r *Room) leave(token string) {
 	if !ok {
 		return
 	}
-	reason := "host left"
+	reason := ReasonHostLeft
 	if started {
-		reason = "opponent left"
+		reason = ReasonOpponentLeft
 	}
 	r.close(reason, token)
 }
@@ -240,7 +257,7 @@ func (r *Room) close(reason, skipToken string) {
 	r.closed = true
 	for _, s := range r.seats {
 		if s != nil && s.sink != nil && !s.isBot && s.token != skipToken {
-			s.sink.Send(ServerMsg{Type: MsgRoomClosed, Message: reason})
+			s.sink.Send(ServerMsg{Type: MsgRoomClosed, Reason: reason, Message: closedText[reason]})
 		}
 	}
 	cb := r.onClose

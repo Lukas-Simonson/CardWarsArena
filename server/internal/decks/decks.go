@@ -9,6 +9,7 @@ import (
 
 	"cardwars/internal/card"
 	"cardwars/internal/engine"
+	"cardwars/internal/problem"
 )
 
 // Info is a preconstructed deck found in the card data's printings.
@@ -151,7 +152,7 @@ func Pick(decks []Info, query string) (Info, error) {
 	}
 	switch len(hits) {
 	case 0:
-		return Info{}, fmt.Errorf("no deck matches %q (try --list-decks)", query)
+		return Info{}, problem.Newf("no_deck_matches", "no deck matches %q (try --list-decks)", []any{query}, "query", query)
 	case 1:
 		return hits[0], nil
 	}
@@ -159,7 +160,7 @@ func Pick(decks []Info, query string) (Info, error) {
 	for _, h := range hits {
 		names = append(names, h.Key())
 	}
-	return Info{}, fmt.Errorf("%q is ambiguous: %s", query, strings.Join(names, "; "))
+	return Info{}, problem.Newf("deck_ambiguous", "%q is ambiguous: %s", []any{query, strings.Join(names, "; ")}, "query", query, "decks", names)
 }
 
 // Table formats a deck list for people.

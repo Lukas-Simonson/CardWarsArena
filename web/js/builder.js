@@ -13,6 +13,7 @@ import {
 } from "./deckmodel.js";
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 import { t, locale } from "./i18n.js";
+import { errorText, apiError } from "./errors.js";
 import { labelText } from "./describe.js";
 
 // The colours of the Landscapes, as in the design: a tile colour and a darker diamond.
@@ -54,9 +55,12 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
       const data = res.status === 204 ? null : await res.json().catch(() => null);
       return { ok: res.ok, status: res.status, data };
     } catch {
-      return { ok: false, status: 0, data: { error: t("builder.unreachable") } };
+      return { ok: false, status: 0, data: { error: t("builder.unreachable"), code: "unreachable" } };
     }
   }
+
+  /** What to tell the player when the deck API said no: its code worded here, else its English text, else the status. */
+  const failure = (r) => (apiError(r.data) ? errorText(apiError(r.data), cards()) : r.data?.error ?? t("builder.server_said", { status: r.status }));
 
   const dirty = () => changed(deck, saved);
   const leaveOk = () => !dirty() || confirm(t("builder.unsaved"));
@@ -107,7 +111,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     const r = deck.id ? await api("PUT", `/${encodeURIComponent(deck.id)}`, body) : await api("POST", "", body);
     busy = false;
     if (!r.ok) {
-      say(r.status === 401 ? t("builder.signed_out") : r.data?.error ?? t("builder.server_said", { status: r.status }), true);
+      say(r.status === 401 ? t("builder.signed_out") : failure(r), true);
       return;
     }
     deck = fromSaved(r.data);
@@ -126,7 +130,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     busy = true;
     const r = await api("DELETE", `/${encodeURIComponent(deck.id)}`);
     busy = false;
-    if (!r.ok && r.status !== 404) { say(r.data?.error ?? t("builder.server_said", { status: r.status }), true); return; }
+    if (!r.ok && r.status !== 404) { say(failure(r), true); return; }
     await refresh();
     onSaved(myDecks);
     fillPicker();

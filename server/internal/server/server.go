@@ -3,6 +3,7 @@
 package server
 
 import (
+	"cardwars/internal/problem"
 	"context"
 	"encoding/json"
 	"log/slog"
@@ -126,7 +127,7 @@ func (s *Server) sweep(now time.Time) {
 	}
 	s.mu.Unlock()
 	for _, r := range stale {
-		r.close("room expired", "")
+		r.close(ReasonExpired, "")
 	}
 }
 
@@ -153,11 +154,11 @@ func (s *Server) room(code string) *Room {
 func (s *Server) deckFor(query string) (decks.Info, error) {
 	d, err := decks.Pick(s.decks, query)
 	if err != nil {
-		return d, fail(ErrUnknownDeck, err.Error())
+		return d, failBecause(ErrUnknownDeck, err)
 	}
 	ok := d.LandOK && len(d.Cards) >= engine.MinDeckSize && (d.Modelled == d.Distinct || s.cfg.AllowUnmodelled)
 	if !ok {
-		return d, fail(ErrDeckNotReady, d.Key()+" cannot be played yet")
+		return d, fail(ErrDeckNotReady, d.Key()+" cannot be played yet", "deck", d.Name)
 	}
 	return d, nil
 }
@@ -182,7 +183,7 @@ func (s *Server) botDeckFor(user *store.User, query string, player decks.Info) (
 	if len(playable) > 0 { // the player has a deck of their own: any starter will do
 		return playable[0], nil
 	}
-	return decks.Info{}, fail(ErrUnknownDeck, "no deck available for the bot")
+	return decks.Info{}, failBecause(ErrUnknownDeck, problem.New("no_bot_deck", "no deck available for the bot"))
 }
 
 // avatarOf is a signed-in player's picture, or "" for a guest.
@@ -221,7 +222,7 @@ func (s *Server) create(sink Sink, user *store.User, m ClientMsg) (*Room, string
 	var opponent bot.Bot
 	if m.VsBot {
 		if opponent, err = bot.New(m.Bot); err != nil {
-			return nil, "", fail(ErrBadRequest, err.Error())
+			return nil, "", failBecause(ErrBadRequest, err)
 		}
 		if botDeck, err = s.botDeckFor(user, m.BotDeck, deck); err != nil {
 			return nil, "", err
@@ -248,7 +249,7 @@ func (s *Server) create(sink Sink, user *store.User, m ClientMsg) (*Room, string
 		r.seats[1] = &seat{name: "Bot", isBot: true, deck: botDeck}
 		if err := r.startLocked(); err != nil {
 			s.mu.Unlock()
-			return nil, "", fail(ErrBadRequest, err.Error())
+			return nil, "", failBecause(ErrBadRequest, err)
 		}
 	}
 	s.rooms[id] = r

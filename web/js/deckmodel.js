@@ -134,12 +134,12 @@ export function costCurve(deck, cards) {
 export function problems(deck, cards) {
   const out = [];
   const n = total(deck);
-  if (!deck.hero) out.push(t("deck.problem_hero"));
-  if (n < MIN_CARDS) out.push(t("deck.problem_size", { n, min: MIN_CARDS }));
+  if (!deck.hero) out.push(t("reason.choose_hero"));
+  if (n < MIN_CARDS) out.push(t("reason.deck_too_small", { n, min: MIN_CARDS }));
   if (!deck.landscapes) { // the cards decide, so they must be able to
     const types = landscapeTypes(deck, cards).length;
-    if (types > LANES) out.push(t("deck.problem_types", { types, lanes: LANES }));
-    else if (types === 0 && n > 0) out.push(t("deck.problem_rainbow"));
+    if (types > LANES) out.push(t("reason.too_many_landscape_types", { types, lanes: LANES }));
+    else if (types === 0 && n > 0) out.push(t("reason.choose_landscapes_rainbow"));
   }
   return out;
 }
