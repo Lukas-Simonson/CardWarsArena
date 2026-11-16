@@ -278,7 +278,34 @@ Rulings: Frosty Frolic may target yourself, and then counts your own frozen Land
 redirect does not change it. Emperor Penguin also weakens itself on a frozen Landscape, and Snow Dog boosts the
 Creatures in the Lanes beside it on its own side.
 
-All eleven preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's and Ice King's) are fully modelled.
+## Discards, damage thresholds and Marceline's deck
+
+- **Trigger** `opponent_discards` fires on a Creature or Building when a card leaves the hand of its controller's
+  opponent for their discard pile, by any means (an effect, a cost, paying for a thaw): Man-Witch, Funeral Home. Cards
+  milled from a deck do not count.
+- **Cond** `ready`: the Creature is neither Flooped nor tired from a Fight (Bog Bum, Bog Frog Bomb, when they leave play).
+- Ops: `discard_random` (a random card from the hand of each `who`), `discard_cost` with `cost: 0` (each `who` discards
+  a card of exactly that cost, choosing if several, or shows their hand if they have none), `may_discard` with `who`,
+  optionally `cost` (the least cost of the card) and `else` ops (the `ransom` Choice: discard a card, or the `else` ops
+  happen to them; with no such card in hand they happen at once: Blood Bath, Bums Away!), `move_all_damage` with `self`
+  and a slot (all the damage on the card goes onto the chosen Creature, on either side: Bag Ban-She Angel) and
+  `remove_card` with a `discard_card` slot (the card goes to its owner's `removed` pile, out of the game; the count
+  `removed_cost` is its cost: Blood Transfusion).
+- `thaw` with a slot removes the token from a chosen Landscape (Ban-She Princess and Queen, with a `landscape` target that
+  has `frozen: true`, `adjacent_lane: true`, `side: "you"` and is `optional`). Targets `frozen` also works on Landscapes,
+  and `damage` (a `{min?, max?}` range) limits Creature targets (Pentaid, which heals exactly 5).
+- `options: [1, 2]` on an op with no slot makes its controller pick the amount (an `amount` Choice) before the op and
+  the ops after it run (The Big Hen House). With no Creature for the op to act on, nothing is asked.
+- The count scope `opponent` counts the opponent's side (Black Hole Pendant: `landscape_types`).
+- A card may have two Floops with different `if`s, only one of which is usable at a time (Dr. Stuffenstein).
+
+Rulings: "ready" for Bog Bum and Bog Frog Bomb means not Flooped and not Fought. A Creature on an "adjacent
+Landscape" is on the same side, in the Lane beside it. Blood Transfusion needs a card in a discard pile to remove, and
+a card that is not removed is not healed for. Blood Bath's and Bums Away!'s "target opponent" is the opponent, there
+being only one. Cards removed from the game stay out for good and show in the log. The Big Hen House heals you
+even when it has no Creature to hurt.
+
+All twelve preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's, Ice King's and Marceline's) are fully modelled.
 
 - Spazzy Cola gives +1 ATK to the Creatures in play when it is played, not to ones that enter later this turn.
 - A "frozen Landscape" count (Icy Commando, Floating Ice Palace) counts the tokens on both sides of the board.

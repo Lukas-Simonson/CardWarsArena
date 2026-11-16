@@ -195,7 +195,7 @@ every other action is refused (`illegal_action`) until they answer.
 
 | `kind` | question | answer |
 |---|---|---|
-| `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
+| `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump); with `only_cost`, only a card of that cost (Fly Swatter) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
 | `upkeep` | discard `count` cards from your hand, or destroy the card that asks (Steakchop) | `choose` with `card` = a hand uid, or `choose` with no `card` to destroy it. After the first discard it becomes a `discard` choice |
 | `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
 | `search` | the Buildings in your deck, `revealed` (only the decider is sent them): pick one to put into play, then the deck is shuffled (Deforestation) | `choose` with `card` = the revealed uid |
@@ -206,6 +206,8 @@ every other action is refused (`illegal_action`) until they answer.
 | `camel` | the Creature in `revealed` is leaving play; you may put it underneath your Camel instead of letting it go to your hand (`count` 1) or discard pile (`count` 0) (Carmel Camel). `lane` is the Lane it left, on seat `move_side`'s side | `choose` with `card` = the Camel's uid, or `choose` with no `card` to let it go |
 | `landscape` | pick the type your Landscape in `lane` becomes until the start of your next turn (Silo of Freedom) | `choose` with `card` = 1 + the type's index in `cornfield, blue_plains, useless_swamp, nice_lands, sandy_lands, icy_lands` |
 | `target` | a trigger of the card chose a target for you (Crystal Palace, Frozen Fish): `targets` lists the legal ones, `label` says what for, and `optional` that you may choose none. `lane` is the card's Lane, on seat `move_side`'s side | `choose` with `targets` = `[[ref]]` for one of the listed refs, or `choose` with no `targets` when `optional` |
+| `ransom` | you may discard a card (of cost `min_cost` or more) or take what the card that asks says: it happens to you if you do not (Blood Bath, Bums Away!) | `choose` with `card` = a card in your hand, or `choose` with no `card` to take it |
+| `amount` | pick how much: `options` are the numbers (The Big Hen House) | `choose` with `card` = one of the numbers |
 
 As always, send one of the objects in `view.legal`.
 
@@ -224,7 +226,7 @@ same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
+`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Running

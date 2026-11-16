@@ -123,10 +123,12 @@ type Lane struct {
 
 // Player is everything one player owns.
 type Player struct {
-	HP         int            `json:"hp"`
-	Deck       []Instance     `json:"deck"` // index 0 is the top
-	Hand       []Instance     `json:"hand"`
-	Discard    []Instance     `json:"discard"`
+	HP      int        `json:"hp"`
+	Deck    []Instance `json:"deck"` // index 0 is the top
+	Hand    []Instance `json:"hand"`
+	Discard []Instance `json:"discard"`
+	// Removed are the cards of this player's that were removed from the game (Blood Transfusion).
+	Removed    []Instance     `json:"removed,omitempty"`
 	Lanes      [NumLanes]Lane `json:"lanes"`
 	Kept       bool           `json:"kept"`       // finished the mulligan decision
 	Mulliganed bool           `json:"mulliganed"` // used their one mulligan
@@ -206,6 +208,11 @@ const (
 	// target: pick what a trigger acts on (Crystal Palace, Frozen Fish): Targets are the legal choices, answered
 	// with Action.Targets holding one of them, or (when Optional) nothing at all.
 	ChoiceTarget = "target"
+	// ransom: the player may discard a card (of at least MinCost, if set), or else what Do says happens to them
+	// (Blood Bath, Bums Away!). Answered with a card of theirs, or with nothing.
+	ChoiceRansom = "ransom"
+	// amount: pick one of Options; the ops in Do then run with it (The Big Hen House). Card is the number.
+	ChoiceAmount = "amount"
 )
 
 // PlayedCard is a card played this turn, as it was when it was played.
@@ -246,6 +253,13 @@ type Choice struct {
 	// Do is what happens once the choice is made (target), or once the Creature has moved (move). The engine
 	// keeps it to itself: players see only the card that asks.
 	Do []card.Op `json:"-"`
+	// discard: only cards of this cost may be discarded (Fly Swatter). ransom: the least cost of the card.
+	// amount: the numbers to pick from.
+	OnlyCost *int `json:"only_cost,omitempty"`
+	// hasSrc says the card that asked sits in a Lane (not a Spell), so its Do ops may refer to it.
+	hasSrc  bool
+	MinCost *int  `json:"min_cost,omitempty"`
+	Options []int `json:"options,omitempty"`
 }
 
 // Offer is an optional ability a trigger has put on a Creature ("you may",

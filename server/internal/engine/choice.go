@@ -35,8 +35,27 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 		if a.Kind != ActChoose {
 			return ErrChoice
 		}
-		if g.handIndex(p, a.Card) < 0 {
+		i := g.handIndex(p, a.Card)
+		if i < 0 {
 			return ErrNoSuchCard
+		}
+		if ch.OnlyCost != nil && g.handCost(g.State.Players[p].Hand[i]) != *ch.OnlyCost {
+			return ErrBadTarget
+		}
+	case ChoiceRansom:
+		if a.Card == 0 {
+			return nil // take what comes instead
+		}
+		i := g.handIndex(p, a.Card)
+		if i < 0 {
+			return ErrNoSuchCard
+		}
+		if g.handCost(g.State.Players[p].Hand[i]) < *ch.MinCost {
+			return ErrBadTarget
+		}
+	case ChoiceAmount:
+		if !slices.Contains(ch.Options, a.Card) {
+			return ErrBadTarget
 		}
 	case ChoiceUpkeep:
 		if a.Kind != ActChoose {
@@ -181,6 +200,10 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 		ev = g.retype(p, ch.Lane, card.Landscapes[a.Card-1])
 	case ChoiceTarget:
 		ev = g.answerTarget(ch, a)
+	case ChoiceRansom:
+		ev = g.answerRansom(ch, a)
+	case ChoiceAmount:
+		ev = g.answerAmount(ch, a.Card)
 	case ChoiceReveal:
 		pl := &g.State.Players[p]
 		for _, in := range ch.Revealed {
@@ -206,7 +229,20 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 	switch ch.Kind {
 	case ChoiceDiscard:
 		for _, in := range g.State.Players[p].Hand {
-			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+			if ch.OnlyCost == nil || g.handCost(in) == *ch.OnlyCost {
+				out = append(out, Action{Kind: ActChoose, Card: in.UID})
+			}
+		}
+	case ChoiceRansom:
+		for _, in := range g.State.Players[p].Hand {
+			if g.handCost(in) >= *ch.MinCost {
+				out = append(out, Action{Kind: ActChoose, Card: in.UID})
+			}
+		}
+		out = append(out, Action{Kind: ActChoose}) // take what comes instead
+	case ChoiceAmount:
+		for _, n := range ch.Options {
+			out = append(out, Action{Kind: ActChoose, Card: n})
 		}
 	case ChoiceUpkeep:
 		for _, in := range g.State.Players[p].Hand {

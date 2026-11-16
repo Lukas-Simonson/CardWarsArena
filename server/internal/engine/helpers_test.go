@@ -144,7 +144,7 @@ func (g *Game) ownedCount(p PlayerID) int {
 	}
 	for q := range g.State.Players {
 		pl := g.State.Players[q]
-		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard} {
+		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard, pl.Removed} {
 			for _, in := range list {
 				tally(in)
 			}

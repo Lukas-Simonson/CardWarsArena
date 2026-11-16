@@ -98,7 +98,7 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 					ok = (spec.Landscape == "" || g.isType(pos{p, lane}, spec.Landscape)) &&
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
 						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0) &&
-						(spec.Frozen == nil || l.Frozen == *spec.Frozen)
+						(spec.Frozen == nil || l.Frozen == *spec.Frozen) && (spec.Damage == nil || spec.Damage.Has(cr.Damage))
 				}
 			case "building":
 				ok = l.Building != nil
@@ -108,6 +108,9 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 					ok = false // a face-down Landscape has no type
 				}
 				if spec.FaceDown != nil && l.FaceDown != *spec.FaceDown {
+					ok = false
+				}
+				if spec.Frozen != nil && l.Frozen != *spec.Frozen {
 					ok = false
 				}
 			case "lane":
@@ -354,8 +357,16 @@ func slotRefs(i *int, given [][]TargetRef) []TargetRef {
 func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 	var ev []Event
 	s := c.source()
-	for _, op := range ops {
+	for i, op := range ops {
 		if op.If != nil && !g.cond(*op.If, s) {
+			continue
+		}
+		if len(op.Options) > 1 {
+			// A choice of amounts: the rest waits for the answer. With nothing to act on, there is nothing to choose.
+			if len(g.creaturesFor(op, c, given)) > 0 {
+				g.askAmount(ops[i:], c)
+				return ev
+			}
 			continue
 		}
 		amt := 0
@@ -456,6 +467,29 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "thaw":
 			if op.Self && c.hasSrc {
 				ev = append(ev, g.thaw(c.at.P, c.at.Lane)...)
+			}
+			for _, r := range slotRefs(op.Slot, given) {
+				ev = append(ev, g.thaw(r.Player, r.Lane)...)
+			}
+		case "discard_random":
+			for _, p := range g.whoList(op.Who, c.p) {
+				ev = append(ev, g.discardRandom(p, max(amt, 1))...)
+			}
+		case "discard_cost":
+			for _, p := range g.whoList(op.Who, c.p) {
+				ev = append(ev, g.discardCost(p, *op.Cost)...)
+			}
+		case "may_discard":
+			for _, p := range g.whoList(op.Who, c.p) {
+				ev = append(ev, g.mayDiscard(p, op, c)...)
+			}
+		case "move_all_damage":
+			if refs := slotRefs(op.Slot, given); op.Self && c.hasSrc && len(refs) == 1 {
+				ev = append(ev, g.moveAllDamage(c.at, pos{refs[0].Player, refs[0].Lane})...)
+			}
+		case "remove_card":
+			for _, r := range slotRefs(op.Slot, given) {
+				ev = append(ev, g.removeCard(r)...)
 			}
 		case "move_self":
 			ev = append(ev, g.moveSelf(op, c)...)
@@ -560,15 +594,7 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 		case "discard":
 			for _, r := range slotRefs(op.Slot, given) {
-				pl := &g.State.Players[r.Player]
-				for i, in := range pl.Hand {
-					if in.UID == r.Card {
-						pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
-						g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
-						ev = append(ev, Event{Kind: EvDiscard, Player: r.Player, Card: in.UID})
-						break
-					}
-				}
+				ev = append(ev, g.discardFromHand(r.Player, r.Card)...)
 			}
 		case "move_building":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
@@ -809,7 +835,8 @@ func (g *Game) discardFromHand(p PlayerID, uid int) []Event {
 		if in.UID == uid {
 			pl.Hand = append(pl.Hand[:i:i], pl.Hand[i+1:]...)
 			g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
-			return []Event{{Kind: EvDiscard, Player: p, Card: in.UID}}
+			ev := []Event{{Kind: EvDiscard, Player: p, Card: in.UID}}
+			return append(ev, g.fireOpponentDiscard(p)...)
 		}
 	}
 	return nil

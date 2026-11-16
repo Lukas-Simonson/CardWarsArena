@@ -57,7 +57,8 @@ type Player struct {
 	Hand      []engine.Instance `json:"hand,omitempty"`
 	// RainbowHand lists the UIDs of the cards in Hand that are Rainbow cards this turn.
 	RainbowHand []int                 `json:"rainbow_hand,omitempty"`
-	Discard     []engine.Instance     `json:"discard"` // public
+	Discard     []engine.Instance     `json:"discard"`           // public
+	Removed     []engine.Instance     `json:"removed,omitempty"` // public: cards removed from the game
 	Lanes       [engine.NumLanes]Lane `json:"lanes"`
 	Kept        bool                  `json:"kept"`
 	Mulliganed  bool                  `json:"mulliganed"`
@@ -80,6 +81,10 @@ type Choice struct {
 	Targets  []engine.TargetRef `json:"targets,omitempty"`
 	Optional bool               `json:"optional,omitempty"`
 	Label    string             `json:"label,omitempty"`
+	// discard: only cards of cost OnlyCost; ransom: only cards of at least MinCost; amount: pick from Options.
+	OnlyCost *int  `json:"only_cost,omitempty"`
+	MinCost  *int  `json:"min_cost,omitempty"`
+	Options  []int `json:"options,omitempty"`
 }
 
 // View is a complete picture of the game for one viewer.
@@ -141,7 +146,8 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	if ch := st.Choice; ch != nil {
 		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...),
 			Lane: ch.Lane, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
-			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label}
+			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label,
+			OnlyCost: ch.OnlyCost, MinCost: ch.MinCost, Options: append([]int(nil), ch.Options...)}
 		if ch.Kind == engine.ChoiceSearch && ch.Player != viewer {
 			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
 		}
@@ -153,6 +159,7 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 			DeckCount:  len(src.Deck),
 			HandCount:  len(src.Hand),
 			Discard:    append([]engine.Instance{}, src.Discard...),
+			Removed:    append([]engine.Instance(nil), src.Removed...),
 			Kept:       src.Kept,
 			Mulliganed: src.Mulliganed,
 		}

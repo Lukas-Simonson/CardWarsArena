@@ -107,6 +107,7 @@ const (
 	EvFreeze    EventKind = "freeze"    // a Landscape got a frozen token (Player, Lane)
 	EvThaw      EventKind = "thaw"      // a Landscape lost its frozen token (Player, Lane)
 	EvUnder     EventKind = "under"     // a Creature (Card) went underneath the Camel in Lane (Player is its owner)
+	EvRemove    EventKind = "remove"    // a card (Card, owned by Player) was removed from the game
 	EvRetype    EventKind = "retype"    // a Landscape changed type (Player, Lane; Amount is 1 + its index in card.Landscapes)
 )
 
