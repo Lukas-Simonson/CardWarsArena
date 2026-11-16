@@ -194,6 +194,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Heal or deal 1 damage to your Creature in this Lane.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Auto-Plucker.png",
+    "name" : "Auto-Plucker",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "Discard a card from your hand >>> Deal 1 damage to target Creature.",
     "extras" : {
 
@@ -206,6 +222,60 @@
       "BMO Vs Lady Rainicorn (Lady)" : 1
     },
     "type" : "Hero"
+  },
+  {
+    "ability" : "Pay 1 action >>> Move all damage on this Creature to target Creature.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Bag Ban-She Angel.png",
+    "name" : "Bag Ban-She Angel",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Ban-She Princess enters play, you may remove a token from an adjacent Landscape.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 7,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Ban-She Princess.png",
+    "name" : "Ban-She Princess",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Ban-She Queen enters play, you may remove a token from an adjacent Landscape.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Ban-She Queen.png",
+    "name" : "Ban-She Queen",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "FLOOP >>> Return a Creature in an adjacent Lane to its owner's hand.",
@@ -244,6 +314,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Target Creature has +X ATK this turn, where X is the number of different Landscape types your opponent controls.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Black Hole Pendant.png",
+    "name" : "Black Hole Pendant",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "",
     "attack" : 3,
     "cost" : 2,
@@ -260,6 +346,22 @@
       "BMO Vs Lady Rainicorn (BMO)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Target opponent may discard a card with cost 2 or greater. If they do not, deal 5 damage to them.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Blood Bath.png",
+    "name" : "Blood Bath",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Each time an opposing Creature in this Lane takes damage, increase the amount by 1.",
@@ -297,6 +399,22 @@
       "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Remove a card in any player's discard pile from the game. Heal target Creature X damage, where X is the cost of the removed card.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Blood Transfusion.png",
+    "name" : "Blood Transfusion",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Heal up to 3 damage from target Creature you control.",
@@ -347,6 +465,42 @@
     "quantity" : 1,
     "sets" : {
       "Ice King Vs Marceline (Ice King)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "If Bog Bum leaves play while ready, each opponent discards a random card.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Bog Bum.png",
+    "name" : "Bog Bum",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "If Bog Frog Bomb leaves play while ready, deal 2 damage to each opposing Creature.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Bog Frog Bomb.png",
+    "name" : "Bog Frog Bomb",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
     },
     "type" : "Creature"
   },
@@ -419,6 +573,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Target opponent may discard a card. If they do not, deal 2 damage to each of their Creatures.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Bums Away!.png",
+    "name" : "Bums Away!",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "You may play additional Buildings in this Lane.",
     "attack" : 2,
     "cost" : 2,
@@ -483,6 +653,22 @@
       "Fionna Vs Cake (Cake)" : 1
     },
     "type" : "Hero"
+  },
+  {
+    "ability" : "Cardboard Mansion costs 1 less to play for every 5 cards in your discard pile. FLOOP >>> Gain 1 action.",
+    "cost" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Cardboard Mansion.png",
+    "name" : "Cardboard Mansion",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "When a Creature you own leaves play, you may put it underneath this card instead. +1 ATK and +1 DEF for each card under this. When this card leaves play, discard all cards under it.",
@@ -767,6 +953,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Deal 1 damage to target Creature. If Cottonpult has 5 or more damage on it, ready it and heal 1 damage.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Cottonpult.png",
+    "name" : "Cottonpult",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "",
     "attack" : 1,
     "cost" : 0,
@@ -935,6 +1139,24 @@
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Heal 2 damage from a Creature on an adjacent Landscape. If Dr. Stuffenstein has 5 or more damage on it, heal 2 damage from each of your Creatures instead.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Dr. Stuffenstein.png",
+    "name" : "Dr. Stuffenstein",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
     },
     "type" : "Creature"
   },
@@ -1405,6 +1627,24 @@
     "type" : "Building"
   },
   {
+    "ability" : "FLOOP >>> Each opponent discards a card with cost O or reveals a hand with none.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Fly Swatter.png",
+    "name" : "Fly Swatter",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Each of your Creatures has +1 ATK for each Creature that entered play this turn.",
     "cost" : 1,
     "extras" : {
@@ -1591,6 +1831,40 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When an opponent discards a card, your Creature in this Lane has +1 ATK until end of turn.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Funeral Home.png",
+    "name" : "Funeral Home",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "+1 ATK for each damage on it.",
+    "attack" : 0,
+    "cost" : 0,
+    "defense" : 5,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Furious Chick.png",
+    "name" : "Furious Chick",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Target Creature has +2 ATK this turn for each Flooped Creature you control.",
     "cost" : 1,
     "extras" : {
@@ -1605,6 +1879,42 @@
       "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Spell"
+  },
+  {
+    "ability" : "+1 ATK for each damage on it.",
+    "attack" : 0,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Furious Hen.png",
+    "name" : "Furious Hen",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "+1 ATK for each damage on it.",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Furious Rooster.png",
+    "name" : "Furious Rooster",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
   },
   {
     "ability" : "If Future Scholar replaces a Creature, gain 1 action.",
@@ -2515,6 +2825,24 @@
     "type" : "Spell"
   },
   {
+    "ability" : "When an opponent discards a card, deal 1 damage to them.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 11,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Man-Witch.png",
+    "name" : "Man-Witch",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "When Mantle Masher enters play, flip a Landscape in this Lane face down. When Mantle Masher leaves play, flip it face up.",
     "attack" : 1,
     "cost" : 1,
@@ -2531,6 +2859,20 @@
       "Lemongrab Vs Gunter (Lemongrab)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Your Creatures with 5 or more damage on them have +1 ATK.",
+    "extras" : {
+
+    },
+    "image" : "Marceline.png",
+    "name" : "Marceline",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Hero"
   },
   {
     "ability" : "Your Creature in this Lane has +1 DEF for every 5 cards in your discard pile.",
@@ -2617,6 +2959,24 @@
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (Lady)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Draw a card. If Music Mallard has 5 or more damage on it, draw an additional card.",
+    "attack" : 0,
+    "cost" : 1,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Music Mallard.png",
+    "name" : "Music Mallard",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
     },
     "type" : "Creature"
   },
@@ -2756,6 +3116,24 @@
     "type" : "Spell"
   },
   {
+    "ability" : "While Papercut Tiger has exactly 5 damage on it, it has +5 ATK.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Papercut Tiger.png",
+    "name" : "Papercut Tiger",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Each Creature in this Lane has -1 ATK.",
     "cost" : 0,
     "extras" : {
@@ -2806,6 +3184,22 @@
       "BMO Vs Lady Rainicorn (Lady)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Heal exactly 5 damage from target Creature you control (no more and no less).",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Pentaid.png",
+    "name" : "Pentaid",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "",
@@ -3976,6 +4370,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "At the start of your turn, deal 1 or 2 damage to your Creature in this Lane, then you heal 1 HP (Max 25).",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "The Big Hen House.png",
+    "name" : "The Big Hen House",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "When The Cooler leaves play, freeze its Landscape.",
     "attack" : 4,
     "cost" : 2,
@@ -4236,6 +4646,24 @@
     "quantity" : 1,
     "sets" : {
       "Finn Vs Jake (Finn)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "At the start of your turn, each player draws a card and then discards a card.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "Useless Swamp",
+    "image" : "Unicyclops.png",
+    "name" : "Unicyclops",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Ice King Vs Marceline (Marceline)" : 2
     },
     "type" : "Creature"
   },

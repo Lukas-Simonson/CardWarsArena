@@ -181,8 +181,11 @@ func (g *Game) value(v card.Value, s source) int {
 func (g *Game) count(c card.Count, s source) int {
 	st := &g.State
 	players := []PlayerID{s.P}
-	if c.Scope == "any" {
+	switch c.Scope {
+	case "any":
 		players = []PlayerID{0, 1}
+	case "opponent":
+		players = []PlayerID{s.P.Opp()}
 	}
 	switch c.Of {
 	case "landscapes":
@@ -203,14 +206,16 @@ func (g *Game) count(c card.Count, s source) int {
 		return n
 	case "landscape_types":
 		seen := map[card.Landscape]bool{}
-		for _, l := range st.Players[s.P].Lanes {
-			if !l.FaceDown {
-				seen[l.Landscape] = true
+		for _, p := range players {
+			for _, l := range st.Players[p].Lanes {
+				if !l.FaceDown {
+					seen[l.Landscape] = true
+				}
 			}
-		}
-		for _, ls := range card.Landscapes {
-			if g.extraLandscapes(s.P, ls) > 0 {
-				seen[ls] = true
+			for _, ls := range card.Landscapes {
+				if g.extraLandscapes(p, ls) > 0 {
+					seen[ls] = true
+				}
 			}
 		}
 		return len(seen)
@@ -288,6 +293,8 @@ func (g *Game) count(c card.Count, s source) int {
 		return st.Entered[s.P][s.Lane]
 	case "bounced_cost":
 		return g.bouncedCost
+	case "removed_cost":
+		return g.removedCost
 	case "under":
 		if s.creature == nil {
 			return 0
@@ -390,6 +397,9 @@ func (g *Game) cond(c card.Cond, s source) bool {
 		return false
 	}
 	if c.Flooped != nil && (s.creature == nil || (s.creature.Status == Flooped) != *c.Flooped) {
+		return false
+	}
+	if c.Ready != nil && (s.creature == nil || (s.creature.Status == Ready) != *c.Ready) {
 		return false
 	}
 	if c.OtherCreatures != nil {

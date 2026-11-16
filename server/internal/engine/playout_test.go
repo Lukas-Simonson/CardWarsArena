@@ -58,7 +58,7 @@ func (g *Game) checkInvariants(total [2]int) error {
 	}
 	for p := range st.Players {
 		pl := &st.Players[p]
-		for name, list := range map[string][]Instance{"deck": pl.Deck, "hand": pl.Hand, "discard": pl.Discard} {
+		for name, list := range map[string][]Instance{"deck": pl.Deck, "hand": pl.Hand, "discard": pl.Discard, "removed": pl.Removed} {
 			for _, in := range list {
 				if err := count(in, name); err != nil {
 					return err

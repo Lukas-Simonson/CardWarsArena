@@ -231,3 +231,43 @@ func TestHeuristicPlaysIceKingsDeck(t *testing.T) {
 		}
 	}
 }
+
+// Whole games with Marceline's deck, which asks players to discard, pay or pick an amount, finish with the bots answering every decision it asks.
+func TestHeuristicPlaysMarcelinesDeck(t *testing.T) {
+	cat := starterGame(t, 1).Catalog()
+	games := 12
+	if testing.Short() {
+		games = 6
+	}
+	for seed := uint64(1); seed <= uint64(games); seed++ {
+		ls := [4]card.Landscape{card.UselessSwamp, card.UselessSwamp, card.NiceLands, card.NiceLands}
+		g, err := engine.NewGame(cat, engine.Config{Seed: seed, First: engine.PlayerID(seed % 2)}, [2]engine.DeckSpec{
+			{Landscapes: ls, Cards: cat.Deck("Ice King Vs Marceline", "Marceline's Deck"), Hero: "marceline"},
+			{Landscapes: ls, Cards: cat.Deck("Ice King Vs Marceline", "Marceline's Deck"), Hero: "marceline"},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		rng := rand.New(rand.NewPCG(seed, 9))
+		for n := 0; g.State.Phase != engine.PhaseOver; n++ {
+			if n > 20000 {
+				t.Fatalf("seed %d: the game did not finish", seed)
+			}
+			acted := false
+			for _, p := range []engine.PlayerID{g.State.Active, g.State.Active.Opp()} {
+				a, ok := Heuristic{}.Choose(g, p, rng)
+				if !ok {
+					continue
+				}
+				if _, err := g.Apply(p, a); err != nil {
+					t.Fatalf("illegal action %s: %v", a, err)
+				}
+				acted = true
+				break
+			}
+			if !acted {
+				t.Fatalf("seed %d: nobody can act", seed)
+			}
+		}
+	}
+}

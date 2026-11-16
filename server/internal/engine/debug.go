@@ -81,7 +81,7 @@ func (g *Game) Instances() map[int]string {
 		if pl.Hero.CardID != "" {
 			add(pl.Hero)
 		}
-		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard} {
+		for _, list := range [][]Instance{pl.Deck, pl.Hand, pl.Discard, pl.Removed} {
 			for _, in := range list {
 				add(in)
 			}

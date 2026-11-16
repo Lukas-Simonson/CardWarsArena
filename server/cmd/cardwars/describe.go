@@ -176,6 +176,13 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 			return "Put " + u.instName(ch.Revealed[0].UID) + " under " + u.instName(a.Card)
 		case engine.ChoiceLandscape:
 			return fmt.Sprintf("Make your lane %d Landscape %s", ch.Lane+1, landscapeName(card.Landscapes[a.Card-1]))
+		case engine.ChoiceRansom:
+			if a.Card == 0 {
+				return "Take what " + u.g.Catalog()[ch.Card].Name + " says instead"
+			}
+			return "Discard " + u.instName(a.Card) + " to avoid what " + u.g.Catalog()[ch.Card].Name + " says"
+		case engine.ChoiceAmount:
+			return fmt.Sprintf("%s: %d", u.g.Catalog()[ch.Card].Name, a.Card)
 		case engine.ChoiceTarget:
 			name := u.g.Catalog()[ch.Card].Name
 			if len(a.Targets) == 0 {
@@ -276,6 +283,8 @@ func (u *ui) event(me engine.PlayerID, e engine.Event) string {
 		return fmt.Sprintf("%s's lane %d Landscape is frozen", u.who(e.Player), lane)
 	case engine.EvThaw:
 		return fmt.Sprintf("%s's lane %d Landscape thaws", u.who(e.Player), lane)
+	case engine.EvRemove:
+		return fmt.Sprintf("%s is removed from the game", name())
 	case engine.EvUnder:
 		return fmt.Sprintf("%s goes under the Camel in lane %d", name(), lane)
 	case engine.EvRetype:

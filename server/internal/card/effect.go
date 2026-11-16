@@ -112,6 +112,9 @@ const (
 	// OnAttacksHero fires on a Hero when one of its controller's Creatures is Activated to Fight with no
 	// Creature in its way, so it will hit the opposing player (Ice King).
 	OnAttacksHero = "attacks_hero"
+	// OnOpponentDiscards fires on a Creature or Building when a card is discarded from the hand of its
+	// controller's opponent (Man-Witch, Funeral Home).
+	OnOpponentDiscards = "opponent_discards"
 )
 
 // Restrictions (Effect.Restrict).
@@ -175,7 +178,7 @@ type Count struct {
 	// FromTarget counts from the point of view of each chosen Creature
 	// instead of the card (Zazo's Magic Seeds).
 	FromTarget bool   `json:"from_target,omitempty"`
-	Scope      string `json:"scope,omitempty"` // "you" (default) or "any"
+	Scope      string `json:"scope,omitempty"` // "you" (default), "opponent" or "any"
 	// Words, for played_titled: a played card counts if its name has one of them.
 	Words    []string  `json:"words,omitempty"`
 	Type     Landscape `json:"type,omitempty"`
@@ -219,6 +222,7 @@ type Cond struct {
 	Damage                 *Range         `json:"damage,omitempty"`            // the card (a Creature) has this much damage on it
 	Replaced               *bool          `json:"replaced,omitempty"`          // the card replaced a Creature when it entered play
 	Flooped                *bool          `json:"flooped,omitempty"`           // the card (a Creature) is Flooped
+	Ready                  *bool          `json:"ready,omitempty"`             // the card (a Creature) is (or is not) Ready: neither Flooped nor tired from a Fight
 	OtherCreatures         *Range         `json:"other_creatures,omitempty"`   // you control this many Creatures besides the card
 	Played                 *PlayedCond    `json:"played,omitempty"`            // cards of a type you played this turn
 	LandscapeTypes         *Range         `json:"landscape_types,omitempty"`   // you control this many face-up Landscape types
@@ -262,7 +266,8 @@ type TargetSpec struct {
 	CardType     Type      `json:"card_type,omitempty"` // discard_card
 	Cost         *int      `json:"cost,omitempty"`      // discard_card
 	Flooped      *bool     `json:"flooped,omitempty"`   // creatures
-	Frozen       *bool     `json:"frozen,omitempty"`    // creatures: only ones on a frozen (or unfrozen) Landscape
+	Frozen       *bool     `json:"frozen,omitempty"`    // creatures and landscapes: only ones that are (or are not) frozen
+	Damage       *Range    `json:"damage,omitempty"`    // creatures: only ones with this much damage on them (Pentaid)
 	Ready        bool      `json:"ready,omitempty"`     // creatures: only Ready ones (not Flooped or Fought)
 	Exhausted    bool      `json:"exhausted,omitempty"` // creatures: only exhausted ones (Flooped or Fought)
 	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
@@ -314,6 +319,12 @@ type Op struct {
 	Frozen *bool `json:"frozen,omitempty"`
 	// Attacker acts on the Creature that was just Activated to Fight (the Hero's attacks_hero trigger).
 	Attacker bool `json:"attacker,omitempty"`
+	// Cost, on discard_cost, is the cost of the card each player must discard (0), and on may_discard the least
+	// cost of the card that may be discarded; unset, any card will do.
+	Cost *int `json:"cost,omitempty"`
+	// Options, on an op with no slot, make its controller pick the amount from these numbers first (The Big
+	// Hen House: 1 or 2 damage). The ops after it wait for the answer.
+	Options []int `json:"options,omitempty"`
 	// move_self moves the Creature to an empty Landscape: To is "empty_own" (one you control), and ElseTo, if set,
 	// is where it goes when there is none ("empty_opponent"). When there is still nowhere, Else runs. Then runs
 	// once it has moved, from its new Lane (Boarder Collie).
@@ -348,6 +359,7 @@ var validOps = map[string]struct{ slots int }{
 	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
 	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
 	"freeze": {0}, "thaw": {0}, "move_self": {0}, "retype_landscape": {0},
+	"discard_random": {0}, "discard_cost": {0}, "may_discard": {0}, "move_all_damage": {1}, "remove_card": {1},
 }
 
 // Validate checks that an effect is well formed for a card of the given type.
@@ -398,7 +410,7 @@ func (e *Effect) Validate(t Type) error {
 			if t != Building {
 				return fmt.Errorf("landscape_frozen triggers belong to buildings")
 			}
-		case OnDealsCreatureDamage:
+		case OnDealsCreatureDamage, OnOpponentDiscards:
 		case OnReplaces, OnBuildingPlayed, OnReturns, OnAttacksHero:
 			if t != Hero {
 				return fmt.Errorf("%s triggers belong to heroes", e.On)
@@ -511,8 +523,22 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 		if (op.Track || op.Tracked) && op.Do != "flip_landscape" {
 			return fmt.Errorf("op %d (%s): track and tracked belong to flip_landscape", i, op.Do)
 		}
-		if (op.To != "" || op.ElseTo != "" || len(op.Else) > 0) && op.Do != "move_self" {
-			return fmt.Errorf("op %d (%s): to and else belong to move_self", i, op.Do)
+		if (op.To != "" || op.ElseTo != "") && op.Do != "move_self" {
+			return fmt.Errorf("op %d (%s): to and else_to belong to move_self", i, op.Do)
+		}
+		if len(op.Else) > 0 && op.Do != "move_self" && op.Do != "may_discard" {
+			return fmt.Errorf("op %d (%s): else belongs to move_self and may_discard", i, op.Do)
+		}
+		if op.Do == "may_discard" {
+			if err := validateOps(op.Else, nil); err != nil {
+				return fmt.Errorf("op %d: %w", i, err)
+			}
+		}
+		if len(op.Options) > 0 && (len(op.Options) < 2 || op.Amount != nil || op.Slot != nil || op.Slot2 != nil) {
+			return fmt.Errorf("op %d (%s): options are two or more numbers, instead of an amount and without slots", i, op.Do)
+		}
+		if op.Cost != nil && op.Do != "discard_cost" && op.Do != "may_discard" {
+			return fmt.Errorf("op %d (%s): cost belongs to discard_cost and may_discard", i, op.Do)
 		}
 		if op.Do == "move_self" {
 			if op.To != "empty_own" || (op.ElseTo != "" && op.ElseTo != "empty_opponent") {
@@ -547,7 +573,7 @@ func (v Value) validate() error {
 		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost",
 		"milled_spells", "damage", "damage_dealt", "buildings", "played_titled", "drawn_this_turn",
 		"frozen_landscapes", "exhausted_creatures", "destroyed", "face_down_landscapes", "entered_lane",
-		"bounced_cost", "under":
+		"bounced_cost", "under", "removed_cost":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

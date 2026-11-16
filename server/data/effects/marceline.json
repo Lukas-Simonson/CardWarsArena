@@ -1,0 +1,586 @@
+{
+ "bag-ban-she-angel": [
+  {
+   "kind": "activate",
+   "cost": 1,
+   "targets": [
+    {
+     "what": "creature",
+     
+     "label": "Move all damage to"
+    }
+   ],
+   "do": [
+    {
+     "do": "move_all_damage",
+     "self": true,
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "ban-she-princess": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "landscape",
+     "side": "you",
+     "adjacent_lane": true,
+     "frozen": true,
+     "optional": true,
+     "label": "Remove the token from"
+    }
+   ],
+   "do": [
+    {
+     "do": "thaw",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "ban-she-queen": [
+  {
+   "kind": "trigger",
+   "on": "enter_play",
+   "targets": [
+    {
+     "what": "landscape",
+     "side": "you",
+     "adjacent_lane": true,
+     "frozen": true,
+     "optional": true,
+     "label": "Remove the token from"
+    }
+   ],
+   "do": [
+    {
+     "do": "thaw",
+     "slot": 0
+    }
+   ]
+  }
+ ],
+ "bog-bum": [
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "discard_random",
+     "who": "opponent",
+     "if": {
+      "ready": true
+     }
+    }
+   ]
+  }
+ ],
+ "bog-frog-bomb": [
+  {
+   "kind": "trigger",
+   "on": "leave_play",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "opposing"
+     },
+     "amount": {
+      "n": 2
+     },
+     "if": {
+      "ready": true
+     }
+    }
+   ]
+  }
+ ],
+ "cottonpult": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "label": "Damage"
+    }
+   ],
+   "do": [
+    {
+     "do": "damage_creature",
+     "slot": 0,
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "ready_creature",
+     "self": true,
+     "if": {
+      "damage": {
+       "min": 5
+      }
+     }
+    },
+    {
+     "do": "heal_creature",
+     "self": true,
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "damage": {
+       "min": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "dr-stuffenstein": [
+  {
+   "kind": "floop",
+   "if": {
+    "damage": {
+     "max": 4
+    }
+   },
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "adjacent_lane": true,
+     "label": "Heal"
+    }
+   ],
+   "do": [
+    {
+     "do": "heal_creature",
+     "slot": 0,
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  },
+  {
+   "kind": "floop",
+   "if": {
+    "damage": {
+     "min": 5
+    }
+   },
+   "do": [
+    {
+     "do": "heal_creature",
+     "all": {
+      "rel": "your"
+     },
+     "amount": {
+      "n": 2
+     }
+    }
+   ]
+  }
+ ],
+ "fly-swatter": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "discard_cost",
+     "who": "opponent",
+     "cost": 0
+    }
+   ]
+  }
+ ],
+ "furious-chick": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "damage"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "furious-hen": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "damage"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "furious-rooster": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "damage"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "man-witch": [
+  {
+   "kind": "trigger",
+   "on": "opponent_discards",
+   "do": [
+    {
+     "do": "damage_hero",
+     "who": "opponent",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "music-mallard": [
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "draw",
+     "amount": {
+      "n": 1
+     },
+     "if": {
+      "damage": {
+       "min": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "papercut-tiger": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "self"
+     },
+     "amount": {
+      "n": 5
+     },
+     "if": {
+      "damage": {
+       "min": 5,
+       "max": 5
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "unicyclops": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "draw",
+     "who": "each",
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "discard_choice",
+     "who": "each",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "auto-plucker": [
+  {
+   "kind": "floop",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "in_lane": true,
+     "optional": true,
+     "group": "mode",
+     "label": "Heal 1 damage from"
+    },
+    {
+     "what": "creature",
+     "side": "you",
+     "in_lane": true,
+     "optional": true,
+     "group": "mode",
+     "label": "Deal 1 damage to"
+    }
+   ],
+   "do": [
+    {
+     "do": "heal_creature",
+     "slot": 0,
+     "amount": {
+      "n": 1
+     }
+    },
+    {
+     "do": "damage_creature",
+     "slot": 1,
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "cardboard-mansion": [
+  {
+   "kind": "cost_mod",
+   "reduce": {
+    "n": 1,
+    "per": {
+     "of": "discard",
+     "div": 5
+    }
+   }
+  },
+  {
+   "kind": "floop",
+   "do": [
+    {
+     "do": "gain_actions",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "funeral-home": [
+  {
+   "kind": "trigger",
+   "on": "opponent_discards",
+   "do": [
+    {
+     "do": "mod_creature",
+     "all": {
+      "rel": "lane_ally"
+     },
+     "stat": "atk",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "the-big-hen-house": [
+  {
+   "kind": "trigger",
+   "on": "turn_start",
+   "do": [
+    {
+     "do": "damage_creature",
+     "all": {
+      "rel": "lane_ally"
+     },
+     "options": [
+      1,
+      2
+     ]
+    },
+    {
+     "do": "heal_hero",
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ],
+ "black-hole-pendant": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "label": "+ATK"
+    }
+   ],
+   "do": [
+    {
+     "do": "mod_creature",
+     "slot": 0,
+     "stat": "atk",
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "landscape_types",
+       "scope": "opponent"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "blood-bath": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "may_discard",
+     "who": "opponent",
+     "cost": 2,
+     "else": [
+      {
+       "do": "damage_hero",
+       "who": "opponent",
+       "amount": {
+        "n": 5
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "blood-transfusion": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "discard_card",
+     "label": "Remove from the game"
+    },
+    {
+     "what": "creature",
+     "label": "Heal"
+    }
+   ],
+   "do": [
+    {
+     "do": "remove_card",
+     "slot": 0
+    },
+    {
+     "do": "heal_creature",
+     "slot": 1,
+     "amount": {
+      "n": 1,
+      "per": {
+       "of": "removed_cost"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "bums-away": [
+  {
+   "kind": "spell",
+   "do": [
+    {
+     "do": "may_discard",
+     "who": "opponent",
+     "else": [
+      {
+       "do": "damage_creature",
+       "all": {
+        "rel": "opposing"
+       },
+       "amount": {
+        "n": 2
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "pentaid": [
+  {
+   "kind": "spell",
+   "targets": [
+    {
+     "what": "creature",
+     "side": "you",
+     "damage": {
+      "min": 5
+     },
+     "label": "Heal 5 from"
+    }
+   ],
+   "do": [
+    {
+     "do": "heal_creature",
+     "slot": 0,
+     "amount": {
+      "n": 5
+     }
+    }
+   ]
+  }
+ ],
+ "marceline": [
+  {
+   "kind": "static",
+   "mods": [
+    {
+     "stat": "atk",
+     "to": {
+      "rel": "your",
+      "damage": {
+       "min": 5
+      }
+     },
+     "amount": {
+      "n": 1
+     }
+    }
+   ]
+  }
+ ]
+}

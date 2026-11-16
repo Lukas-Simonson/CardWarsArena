@@ -1,5 +1,21 @@
 [
   {
+    "id": "auto-plucker",
+    "name": "Auto-Plucker",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "FLOOP \u003e\u003e\u003e Heal or deal 1 damage to your Creature in this Lane.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Auto-Plucker.webp"
+  },
+  {
     "id": "blood-castle",
     "name": "Blood Castle",
     "type": "building",
@@ -71,6 +87,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cabin%20of%20Many%20Woods.webp"
+  },
+  {
+    "id": "cardboard-mansion",
+    "name": "Cardboard Mansion",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 5,
+    "text": "Cardboard Mansion costs 1 less to play for every 5 cards in your discard pile. FLOOP \u003e\u003e\u003e Gain 1 action.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cardboard%20Mansion.webp"
   },
   {
     "id": "cave-of-solitude",
@@ -224,6 +256,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Floating%20Ice%20Palace.webp"
+  },
+  {
+    "id": "funeral-home",
+    "name": "Funeral Home",
+    "type": "building",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "When an opponent discards a card, your Creature in this Lane has +1 ATK until end of turn.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Funeral%20Home.webp"
   },
   {
     "id": "ice-olation-cell",
@@ -497,6 +545,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Spirit%20Tower.webp"
+  },
+  {
+    "id": "the-big-hen-house",
+    "name": "The Big Hen House",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "At the start of your turn, deal 1 or 2 damage to your Creature in this Lane, then you heal 1 HP (Max 25).",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/The%20Big%20Hen%20House.webp"
   },
   {
     "id": "weary-trading-post",

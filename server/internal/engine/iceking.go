@@ -34,7 +34,7 @@ func (g *Game) askTrigger(e card.Effect, ctx effCtx) []Event {
 		uid = ctx.creature.UID
 	}
 	g.ask(Choice{Player: ctx.p, Kind: ChoiceTarget, Card: ctx.cardID(), Lane: ctx.at.Lane, SourceUID: uid, MoveSide: ctx.at.P,
-		Targets: cands, Optional: spec.Optional, Label: spec.Label, Do: e.Do})
+		Targets: cands, Optional: spec.Optional, Label: spec.Label, Do: e.Do, hasSrc: true})
 	return nil
 }
 
@@ -44,11 +44,17 @@ func (g *Game) answerTarget(ch *Choice, a Action) []Event {
 	if len(a.Targets) != 1 || len(a.Targets[0]) != 1 {
 		return nil
 	}
-	ctx := effCtx{p: ch.Player, at: pos{ch.MoveSide, ch.Lane}, hasSrc: true, card: ch.Card}
-	if cr := g.creatureAt(ctx.at); cr != nil && cr.UID == ch.SourceUID && ch.SourceUID != 0 {
+	return g.runOps(ch.Do, g.ctxOfChoice(ch, ch.Player), a.Targets)
+}
+
+// ctxOfChoice is who is using the effect that asked a Choice: controller p, at the card that asked if it was
+// in a Lane. A Creature that has left play is no longer the source.
+func (g *Game) ctxOfChoice(ch *Choice, p PlayerID) effCtx {
+	ctx := effCtx{p: p, at: pos{ch.MoveSide, ch.Lane}, hasSrc: ch.hasSrc, card: ch.Card}
+	if cr := g.creatureAt(ctx.at); ctx.hasSrc && cr != nil && cr.UID == ch.SourceUID && ch.SourceUID != 0 {
 		ctx.creature, ctx.card = cr, ""
 	}
-	return g.runOps(ch.Do, ctx, a.Targets)
+	return ctx
 }
 
 // afterMove runs what a moving Creature does once it has arrived at to (Boarder Collie).

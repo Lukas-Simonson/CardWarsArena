@@ -43,6 +43,7 @@ type Game struct {
 	heroDamage   int // damage a Creature just dealt to a player (Snakemint)
 	destroyed    int // how many Creatures the last destroy_creature op destroyed (Cute Overload)
 	bouncedCost  int // the cost of the Creatures the last bounce op returned (Quick Pick Me Up)
+	removedCost  int // the cost of the card the last remove_card op took out of the game (Blood Transfusion)
 }
 
 // NewGame validates the decks, shuffles, deals opening hands and returns a
@@ -123,6 +124,7 @@ func (g *Game) Clone() *Game {
 		dst.Deck = append([]Instance(nil), src.Deck...)
 		dst.Hand = append([]Instance(nil), src.Hand...)
 		dst.Discard = append([]Instance(nil), src.Discard...)
+		dst.Removed = append([]Instance(nil), src.Removed...)
 		for i := range src.Lanes {
 			if cr := src.Lanes[i].Creature; cr != nil {
 				v := *cr
@@ -148,6 +150,7 @@ func (g *Game) Clone() *Game {
 		ch.Revealed = append([]Instance(nil), ch.Revealed...)
 		ch.Lanes = append([]int(nil), ch.Lanes...)
 		ch.Targets = append([]TargetRef(nil), ch.Targets...)
+		ch.Options = append([]int(nil), ch.Options...)
 		c.State.Choice = &ch
 	}
 	c.State.Queue = append([]Choice(nil), g.State.Queue...)
@@ -155,6 +158,7 @@ func (g *Game) Clone() *Game {
 		c.State.Queue[i].Revealed = append([]Instance(nil), c.State.Queue[i].Revealed...)
 		c.State.Queue[i].Lanes = append([]int(nil), c.State.Queue[i].Lanes...)
 		c.State.Queue[i].Targets = append([]TargetRef(nil), c.State.Queue[i].Targets...)
+		c.State.Queue[i].Options = append([]int(nil), c.State.Queue[i].Options...)
 	}
 	c.State.Played = append([]PlayedCard(nil), g.State.Played...)
 	c.State.RainbowHand = append([]int(nil), g.State.RainbowHand...)

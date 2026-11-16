@@ -197,6 +197,12 @@ test("actions that answer a Choice are described", async () => {
   assert.match(describeAction(target, { kind: "choose", targets: [[{ kind: "landscape", player: 1, lane: 2 }]] }), /^Cool Dog: Freeze {2}\[target: .*landscape \(opp's, lane 3\)\]$/);
   assert.equal(describeAction(target, { kind: "choose" }), "Cool Dog: choose nothing");
   assert.equal(isKnownAction(target, { kind: "choose" }), true);
+  const ransom = ctxFor(view({ choice: { player: 0, kind: "ransom", card: "cool-dog", min_cost: 2 } }));
+  assert.equal(describeAction(ransom, { kind: "choose", card: 10 }), "Discard Cool Dog to avoid what Cool Dog says");
+  assert.equal(describeAction(ransom, { kind: "choose" }), "Take what Cool Dog says instead");
+  const amount = ctxFor(view({ choice: { player: 0, kind: "amount", card: "cool-dog", options: [1, 2] } }));
+  assert.equal(describeAction(amount, { kind: "choose", card: 2 }), "Cool Dog: 2");
+  for (const c of [ransom, amount]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
   for (const c of [search, rebound, redirect, move, camel, silo]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
 });
 
