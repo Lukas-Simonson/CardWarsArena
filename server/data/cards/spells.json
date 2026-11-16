@@ -32,6 +32,54 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Amaizing%20Avalanche.webp"
   },
   {
+    "id": "black-hole-pendant",
+    "name": "Black Hole Pendant",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Target Creature has +X ATK this turn, where X is the number of different Landscape types your opponent controls.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Black%20Hole%20Pendant.webp"
+  },
+  {
+    "id": "blood-bath",
+    "name": "Blood Bath",
+    "type": "spell",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "text": "Target opponent may discard a card with cost 2 or greater. If they do not, deal 5 damage to them.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Bath.webp"
+  },
+  {
+    "id": "blood-transfusion",
+    "name": "Blood Transfusion",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 0,
+    "text": "Remove a card in any player's discard pile from the game. Heal target Creature X damage, where X is the cost of the removed card.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Blood%20Transfusion.webp"
+  },
+  {
     "id": "blue-candy",
     "name": "Blue Candy",
     "type": "spell",
@@ -78,6 +126,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Brief%20Power.webp"
+  },
+  {
+    "id": "bums-away",
+    "name": "Bums Away!",
+    "type": "spell",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "text": "Target opponent may discard a card. If they do not, deal 2 damage to each of their Creatures.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Bums%20Away%21.webp"
   },
   {
     "id": "cerebral-bloodstorm",
@@ -483,6 +547,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pants%20Of%20Awesome.webp"
+  },
+  {
+    "id": "pentaid",
+    "name": "Pentaid",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "Heal exactly 5 damage from target Creature you control (no more and no less).",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pentaid.webp"
   },
   {
     "id": "piestorm",

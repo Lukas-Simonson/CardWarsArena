@@ -140,6 +140,20 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lumpy%20Space%20Princess.webp"
   },
   {
+    "id": "marceline",
+    "name": "Marceline",
+    "type": "hero",
+    "text": "Your Creatures with 5 or more damage on them have +1 ATK.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Marceline.webp"
+  },
+  {
     "id": "princess-bubblegum",
     "name": "Princess Bubblegum",
     "type": "hero",

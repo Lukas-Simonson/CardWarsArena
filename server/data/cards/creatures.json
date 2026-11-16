@@ -162,6 +162,60 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Archer%20Danica.webp"
   },
   {
+    "id": "bag-ban-she-angel",
+    "name": "Bag Ban-She Angel",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7,
+    "text": "Pay 1 action \u003e\u003e\u003e Move all damage on this Creature to target Creature.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Bag%20Ban-She%20Angel.webp"
+  },
+  {
+    "id": "ban-she-princess",
+    "name": "Ban-She Princess",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7,
+    "text": "When Ban-She Princess enters play, you may remove a token from an adjacent Landscape.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ban-She%20Princess.webp"
+  },
+  {
+    "id": "ban-she-queen",
+    "name": "Ban-She Queen",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "text": "When Ban-She Queen enters play, you may remove a token from an adjacent Landscape.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ban-She%20Queen.webp"
+  },
+  {
     "id": "beach-mummy",
     "name": "Beach Mummy",
     "type": "creature",
@@ -250,6 +304,42 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Boarder%20Collie.webp"
+  },
+  {
+    "id": "bog-bum",
+    "name": "Bog Bum",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6,
+    "text": "If Bog Bum leaves play while ready, each opponent discards a random card.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Bog%20Bum.webp"
+  },
+  {
+    "id": "bog-frog-bomb",
+    "name": "Bog Frog Bomb",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 3,
+    "defense": 8,
+    "text": "If Bog Frog Bomb leaves play while ready, deal 2 damage to each opposing Creature.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Bog%20Frog%20Bomb.webp"
   },
   {
     "id": "bouncing-zebracorn",
@@ -505,6 +595,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cotton%20Eyebat.webp"
   },
   {
+    "id": "cottonpult",
+    "name": "Cottonpult",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Deal 1 damage to target Creature. If Cottonpult has 5 or more damage on it, ready it and heal 1 damage.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cottonpult.webp"
+  },
+  {
     "id": "cow",
     "name": "Cow",
     "type": "creature",
@@ -611,6 +719,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dr.%20Death.webp"
+  },
+  {
+    "id": "dr-stuffenstein",
+    "name": "Dr. Stuffenstein",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "FLOOP \u003e\u003e\u003e Heal 2 damage from a Creature on an adjacent Landscape. If Dr. Stuffenstein has 5 or more damage on it, heal 2 damage from each of your Creatures instead.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dr.%20Stuffenstein.webp"
   },
   {
     "id": "dragon-claw",
@@ -956,6 +1082,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20Stalker.webp"
   },
   {
+    "id": "fly-swatter",
+    "name": "Fly Swatter",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "FLOOP \u003e\u003e\u003e Each opponent discards a card with cost O or reveals a hand with none.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fly%20Swatter.webp"
+  },
+  {
     "id": "frost-dragon",
     "name": "Frost Dragon",
     "type": "creature",
@@ -1044,6 +1188,60 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fummy.webp"
+  },
+  {
+    "id": "furious-chick",
+    "name": "Furious Chick",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 0,
+    "defense": 5,
+    "text": "+1 ATK for each damage on it.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Furious%20Chick.webp"
+  },
+  {
+    "id": "furious-hen",
+    "name": "Furious Hen",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 0,
+    "defense": 10,
+    "text": "+1 ATK for each damage on it.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Furious%20Hen.webp"
+  },
+  {
+    "id": "furious-rooster",
+    "name": "Furious Rooster",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 8,
+    "text": "+1 ATK for each damage on it.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Furious%20Rooster.webp"
   },
   {
     "id": "future-scholar",
@@ -1693,6 +1891,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mace%20Stump.webp"
   },
   {
+    "id": "man-witch",
+    "name": "Man-Witch",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 11,
+    "text": "When an opponent discards a card, deal 1 damage to them.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Man-Witch.webp"
+  },
+  {
     "id": "mantle-masher",
     "name": "Mantle Masher",
     "type": "creature",
@@ -1783,6 +1999,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ms.%20Mummy.webp"
   },
   {
+    "id": "music-mallard",
+    "name": "Music Mallard",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 0,
+    "defense": 9,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card. If Music Mallard has 5 or more damage on it, draw an additional card.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Music%20Mallard.webp"
+  },
+  {
     "id": "nice-ice-baby",
     "name": "Nice Ice Baby",
     "type": "creature",
@@ -1840,6 +2074,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ol%27%20Corn%20Eye.webp"
+  },
+  {
+    "id": "papercut-tiger",
+    "name": "Papercut Tiger",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 2,
+    "defense": 9,
+    "text": "While Papercut Tiger has exactly 5 damage on it, it has +5 ATK.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Papercut%20Tiger.webp"
   },
   {
     "id": "patchy-the-pumpkin",
@@ -2813,6 +3065,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Uni-Knight.webp"
+  },
+  {
+    "id": "unicyclops",
+    "name": "Unicyclops",
+    "type": "creature",
+    "landscape": "useless_swamp",
+    "cost": 2,
+    "attack": 1,
+    "defense": 10,
+    "text": "At the start of your turn, each player draws a card and then discards a card.",
+    "printings": [
+      {
+        "deck": "Marceline's Deck",
+        "set": "Ice King Vs Marceline",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Unicyclops.webp"
   },
   {
     "id": "vampire-lord",
