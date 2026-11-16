@@ -18,6 +18,7 @@ import { feedbackLinks } from "./feedback.js";
 import { gameLogText, logFileName } from "./gamelog.js";
 import { cardName } from "./describe.js";
 import { fillAvatar } from "./avatar.js";
+import { revealGroups, showReveal } from "./reveal.js";
 
 const $ = (id) => document.getElementById(id);
 document.title = APP_NAME;
@@ -75,6 +76,9 @@ function dispatch(msg) {
   state = reduce(state, msg, cards);
   if (msg.view) preloadArt(msg.view.preload, cards);
   if (msg.type === "update") resetSelection(); // the position changed: old clicks no longer apply
+  if (msg.type === "update" && state.seq !== before.seq) {
+    for (const group of revealGroups(msg.events)) showReveal(group, { you: state.view?.you, name: state.names?.[group.player], cards });
+  }
   if (msg.type === "update" && before.view && state.seq !== before.seq) pendingFx = { seq: state.seq, prev: before.view, events: msg.events ?? [] };
   if (msg.type === "joined") sstore("cw.session", JSON.stringify({ server, room: msg.room, token: msg.token }));
   if (msg.type === "room_closed") { sstore("cw.session", null); resetUi(); }
