@@ -108,7 +108,7 @@ while you work, but CI requires a finished file to have every key. The language 
 **Testing layout.** `?lang=en-XA` shows every message accented and about 40% longer (anything still in plain English is hard-coded);
 `?lang=en-XB` also lays the page out right to left.
 
-**Card data.** Card names and rules text come from the card data and are English for now. The names a card gives its targets
+**Card data.** Card names and rules text come from the server in the language asked for (`?lang=`): the translations live in `server/data/i18n/<tag>/` and are never overwritten by the card importer; see `server/docs/localization.md` for how to start a language (`go run ./cmd/cardi18n init <tag>`). A card with no translation is English, and `name_en` lets a deck list be written and read in English whatever language is shown. The names a card gives its targets
 ("Heal", "Freeze") are looked up as `label.<the text in lower case>`; `node tools/i18n-check.mjs --add-labels` adds any a new card brings.
 The server sends no prose for the client to translate: an error arrives as a `code` (the kind), a `reason` (exactly what: a rule
 of the game, a deck problem, why a room closed) and `params` (cards by id), and the client words it from `reason.<reason>` or

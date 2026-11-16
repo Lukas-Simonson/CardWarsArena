@@ -12,7 +12,7 @@ import {
   unplayable, whyUnplayable, costCurve, heroes, pool, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
-import { t, locale } from "./i18n.js";
+import { t, locale, cardText } from "./i18n.js";
 import { errorText, apiError } from "./errors.js";
 import { labelText } from "./describe.js";
 
@@ -304,7 +304,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     const group = (label, opts) => { const g = h("optgroup", { label }); g.append(...opts); return g; };
     ui.from.replaceChildren(h("option", { value: "" }, t("builder.any_deck")));
     if (myDecks.length) ui.from.append(group(t("builder.my_decks"), myDecks.map((d) => h("option", { value: `my:${d.id}` }, d.playable ? d.name : t("builder.unfinished_deck", { name: d.name })))));
-    ui.from.append(group(t("builder.starter_decks"), starters().map((d) => h("option", { value: `starter:${d.set} ${d.name}` }, t("builder.starter_option", { owner: d.owner || d.name, name: d.name })))));
+    ui.from.append(group(t("builder.starter_decks"), starters().map((d) => h("option", { value: `starter:${d.set} ${d.name}` }, t("builder.starter_option", { owner: cardText(d.owner_title || d.owner || d.name), name: cardText(d.title || d.name) })))));
     if (![...ui.from.options].some((o) => o.value === filters.from)) filters = { ...filters, from: "" };
     ui.from.value = filters.from;
   }
@@ -322,7 +322,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     const group = (label, opts) => { const g = h("optgroup", { label }); g.append(...opts); return g; };
     ui.pick.replaceChildren(h("option", { value: "" }, t("builder.new_deck")));
     if (myDecks.length) ui.pick.append(group(t("builder.my_decks"), myDecks.map((d) => h("option", { value: d.id }, d.playable ? d.name : t("builder.unfinished_deck", { name: d.name })))));
-    ui.pick.append(group(t("builder.start_from"), starters().map((d) => h("option", { value: `starter:${d.set} ${d.name}` }, t("builder.starter_option", { owner: d.owner || d.name, name: d.name })))));
+    ui.pick.append(group(t("builder.start_from"), starters().map((d) => h("option", { value: `starter:${d.set} ${d.name}` }, t("builder.starter_option", { owner: cardText(d.owner_title || d.owner || d.name), name: cardText(d.title || d.name) })))));
   }
 
   function paintChips() {

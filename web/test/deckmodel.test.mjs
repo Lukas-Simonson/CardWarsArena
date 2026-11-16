@@ -206,3 +206,13 @@ test("one Landscape of a type for a one-cost card is enough", () => {
   const d = { ...fromCards(["cheap"]), landscapes: ["sandy_lands", "cornfield", "cornfield", "cornfield"] };
   assert.deepEqual(unplayable(d, priced), []);
 });
+
+test("the card search finds a card by the name shown, the English name or its text", () => {
+  const cs = {
+    chiot: { id: "chiot", name: "Chiot Maïs", name_en: "Corn Pup", type: "creature", landscape: "cornfield", modeled: true, text: "Piochez." },
+    other: { id: "other", name: "Autre", type: "spell", landscape: "cornfield", modeled: true, text: "Draw." },
+  };
+  assert.deepEqual(pool(cs, { text: "chiot" }).map((c) => c.id), ["chiot"]);
+  assert.deepEqual(pool(cs, { text: "corn pup" }).map((c) => c.id), ["chiot"]);
+  assert.deepEqual(pool(cs, { text: "draw" }).map((c) => c.id), ["other"]);
+});

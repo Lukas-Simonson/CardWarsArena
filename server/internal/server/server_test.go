@@ -863,3 +863,81 @@ func TestErrorsCarryAReasonAndParamsForTheClient(t *testing.T) {
 		t.Errorf("stale: %+v", m)
 	}
 }
+
+// The card data is sent in the language asked for with ?lang=, and English when there is no translation.
+func TestCardAndDeckDataFollowTheRequestedLanguage(t *testing.T) {
+	h := newHarness(t, func(cfg *Config) {
+		cfg.Locales = card.Locales{
+			"fr": {
+				Cards: map[string]card.Translation{"cool-dog": {Name: "Chien Cool", Text: "Texte français."}},
+				Decks: map[string]card.DeckTranslation{card.DeckKey("Finn Vs Jake", "Finn's Deck"): {Title: "Le deck de Finn", Owner: "Finn", Set: "Finn contre Jake"}},
+			},
+		}
+	})
+	type apiCard struct {
+		ID, Name, Text string
+		NameEN         string `json:"name_en"`
+	}
+	getCards := func(query string) (map[string]apiCard, string) {
+		resp, err := http.Get(h.ts.URL + "/api/cards" + query)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		var list []apiCard
+		if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+			t.Fatal(err)
+		}
+		out := map[string]apiCard{}
+		for _, c := range list {
+			out[c.ID] = c
+		}
+		return out, resp.Header.Get("Content-Language")
+	}
+	fr, lang := getCards("?lang=fr-CA")
+	if c := fr["cool-dog"]; c.Name != "Chien Cool" || c.NameEN != "Cool Dog" || c.Text != "Texte français." || lang != "fr" {
+		t.Errorf("fr-CA: %+v (Content-Language %q)", c, lang)
+	}
+	if c := fr["the-pig"]; c.Name != "The Pig" || c.NameEN != "" {
+		t.Errorf("an untranslated card is English: %+v", c)
+	}
+	for _, q := range []string{"", "?lang=en", "?lang=de"} {
+		en, lang := getCards(q)
+		if c := en["cool-dog"]; c.Name != "Cool Dog" || c.NameEN != "" || lang != "en" {
+			t.Errorf("%q: %+v (Content-Language %q)", q, c, lang)
+		}
+	}
+
+	resp, err := http.Get(h.ts.URL + "/api/decks?lang=fr")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	var list []struct {
+		Name       string
+		Title      string
+		OwnerTitle string `json:"owner_title"`
+		SetTitle   string `json:"set_title"`
+		Set        string
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, d := range list {
+		switch d.Name {
+		case "Finn's Deck":
+			found = true
+			if d.Title != "Le deck de Finn" || d.OwnerTitle != "Finn" || d.SetTitle != "Finn contre Jake" || d.Set != "Finn Vs Jake" {
+				t.Errorf("Finn's deck: %+v (the English name and set stay as the identity)", d)
+			}
+		default:
+			if d.Title != "" {
+				t.Errorf("%s: an untranslated deck has no title: %+v", d.Name, d)
+			}
+		}
+	}
+	if !found {
+		t.Error("no Finn's Deck")
+	}
+}
