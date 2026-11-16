@@ -480,3 +480,12 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .lname { flex: 1 1 auto; min-width: 0; }
 .lkind { font-size: 14px; color: #5c4826; }
 .lcount { font-family: var(--big-font); font-size: 18px; padding-top: 2px; }
+
+/* the sound control */
+.soundbtn { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 10px; }
+.soundbtn svg { width: 24px; height: 24px; }
+.sounddialog .soundrow { display: grid; grid-template-columns: 9em 1fr 3.5em; align-items: center; gap: 10px; }
+.sounddialog .soundrow output { text-align: end; }
+.sounddialog .soundcheck { display: flex; align-items: center; gap: 8px; min-height: 36px; font-size: 18px; }
+.sounddialog input[type="checkbox"] { width: 22px; height: 22px; }
+.sounddialog input[type="range"] { width: 100%; min-height: 32px; }

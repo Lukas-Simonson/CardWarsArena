@@ -21,6 +21,8 @@ import { fillAvatar } from "./avatar.js";
 import { revealGroups, showReveal } from "./reveal.js";
 import { t, has, cardText, setLocale, pickLocale, availableLocales, applyDocument, translateDom, locale } from "./i18n.js";
 import { errorText, closedText } from "./errors.js";
+import { sound } from "./sound.js";
+import { soundButton } from "./soundui.js";
 
 const $ = (id) => document.getElementById(id);
 const store = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
@@ -40,6 +42,8 @@ applyDocument();
 translateDom();
 document.title = APP_NAME;
 $("hero-title").textContent = APP_NAME;
+
+$("soundslot").replaceWith(soundButton());
 
 function fillLanguages() {
   const sel = $("lang");
@@ -100,6 +104,7 @@ function dispatch(msg) {
   state = reduce(state, msg, cards);
   if (msg.view) preloadArt(msg.view.preload, cards);
   if (msg.type === "update") resetSelection(); // the position changed: old clicks no longer apply
+  heard(before, msg);
   if (msg.type === "update" && state.seq !== before.seq) {
     for (const group of revealGroups(msg.events)) showReveal(group, { you: state.view?.you, name: state.names?.[group.player], cards });
   }
@@ -108,6 +113,14 @@ function dispatch(msg) {
   if (msg.type === "room_closed") { sstore("cw.session", null); resetUi(); }
   if (msg.type === "error" && (msg.code === "bad_token" || msg.code === "room_not_found")) sstore("cw.session", null);
   if (state !== before) render();
+}
+
+/** The sounds for what a message means beyond the update's effects: joining, the game starting, a refusal. */
+function heard(before, msg) {
+  if (msg.type === "joined") sound.play("room_joined");
+  else if (msg.type === "opponent" && msg.connected && before.opponent.connected !== true && state.view) sound.play("opponent_joined");
+  else if (msg.type === "update" && !before.view && state.view?.phase === "mulligan") sound.play("game_start");
+  else if (msg.type === "error" && msg.code !== "stale_state" && msg.code !== "rate_limited") sound.play("ui_error");
 }
 
 function resetSelection() { ui.source = ""; ui.picker = null; ui.awaitingKind = false; }
@@ -426,6 +439,7 @@ function render() {
       const before = { ...state, view: { ...fx.prev, legal: [], awaiting: [] } };
       renderGame($("game"), { state: before, cards, ui: { ...ui, source: "", picker: null, awaitingKind: false, discard: null } }, on);
       applyEffects($("game"), casts, { ...ctxNow(), view: before.view });
+      sound.playEffects(casts, ctxNow());
       staging = fx.staged = true;
       stageTimer = setTimeout(() => { staging = false; render(); }, STAGE_MS);
       return;
@@ -440,10 +454,15 @@ function render() {
     actSeq = state.seq;
     renderGame(game, { state, cards, ui: { ...ui, modalAgain: modalSeq === state.seq } }, on);
     if (state.view?.choice) {
+      if (modalSeq !== state.seq && state.view.choice.player === state.view.you) sound.play("ui_open");
       modalSeq = state.seq;
       if (!game.querySelector(".modal")?.contains(document.activeElement)) game.querySelector(".modalopt")?.focus();
     }
-    if (fx) applyEffects($("game"), effects.filter((f) => f.t !== "cast"), ctxNow());
+    if (fx) {
+      const rest = effects.filter((f) => f.t !== "cast");
+      applyEffects($("game"), rest, ctxNow());
+      sound.playEffects(rest, ctxNow());
+    }
     pendingFx = null; // later re-renders (a click, a hover) must not replay it
   }
 }

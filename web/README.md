@@ -62,6 +62,11 @@ js/builder.js    the deck builder screen
 js/avatar.js     a player's picture, or the first letter of their name
 js/i18n.js       t(key, params), the message format, locale choice, pseudo-locales
 js/errors.js     server error codes -> messages
+js/sounds.js     pure: the sound cues, and which sounds the planned effects make
+js/audio.js      the Web Audio engine (unlock, buffers, limits, variation), with the browser passed in
+js/sound.js      the engine wired to the browser, the saved settings and the click sounds
+js/soundui.js    the speaker button and the sound settings dialog
+audio/           the sound files (two formats each) and CREDITS.md
 locales/         message catalogues: en.json (the source) and index.json (the locales offered)
 tools/           the checks on the catalogues (npm run i18n)
 test/            node --test unit tests, fixtures, and a smoke test
@@ -79,6 +84,24 @@ The smoke test chooses every action through the picker, as a player would, and
 fails if the picker ever offers an action the server did not list or leaves
 the player with nothing to click. Start the server with `-bot-delay 1ms` to
 make it fast.
+
+## Sound
+
+Sound is driven from the same plan as the animation: `plan()` in `js/anim.js` lists what happens in an update, and
+`soundsFor()` in `js/sounds.js` turns those effects into cues to play at the same delays, so what is heard stays in step with
+what is seen and with the pacing. The cues (which files, how loud, how soon one may repeat, which are "core") are the table in
+`js/sounds.js`; `js/audio.js` plays them with the Web Audio API.
+
+- Nothing plays until the player has clicked or pressed a key (browsers insist); a sound asked for earlier is dropped quietly.
+  With no audio support, or files that fail to load, it does nothing and nothing breaks. Nothing plays while the tab is hidden.
+- A cue has a cooldown, hits share a limit, and at most 8 sounds play at once, so a busy board is not a wall of noise. Each
+  play varies a little in pitch and loudness.
+- The speaker button (lobby and match) opens the settings: volume, sound effects, mute, and "fewer sounds" (only turns, hits,
+  defeats, errors and the end of the game; on by default when the system prefers reduced motion). They are kept in the browser.
+- Files are in `audio/`, each as `.ogg` and `.m4a` (a browser that cannot play Ogg gets the `.m4a`). Every file is from a CC0 pack
+  by Kenney and credited in `audio/CREDITS.md`; `npm test` fails on an uncredited, unused or missing file, or if they grow past
+  2 MB. To use another sound, add it (original, CC0 or CC-BY: never from a show or game), credit it, and name it in `sounds.js`.
+- There is no music yet: Kenney's packs have none, and nothing else we may use has been chosen.
 
 ## Localization
 

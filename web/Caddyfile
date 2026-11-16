@@ -8,5 +8,9 @@
 	@game path /ws /api/* /healthz
 	reverse_proxy @game {$CARDWARS_UPSTREAM:server:8080}
 
+	# The sound files do not change under their names often; a day is long enough to spare players the download.
+	@audio path /audio/*
+	header @audio Cache-Control "public, max-age=86400"
+
 	file_server
 }

@@ -76,8 +76,17 @@ export function plan(prev, view, events = [], ctx = {}) {
       case "hp_gain": fx.push({ t: "hpgain", seat: e.player, amount: e.amount, delay: 0 }); break;
       case "turn_start": fx.push({ t: "turn", seat: e.player, mine: e.player === me }); break;
       case "play": if (ctx.cards?.[e.card_id]?.type === "spell") fx.push({ t: "cast", card: e.card_id, seat: e.player }); break;
+      // Nothing to see for these, but something to hear (see sounds.js): applyEffects ignores them.
+      case "discard": fx.push({ t: "discard", seat: e.player, delay: 0 }); break;
+      case "floop": fx.push({ t: "floop", seat: e.player, delay: 0 }); break;
+      case "activate": fx.push({ t: "ability", seat: e.player, delay: 0 }); break;
+      case "mulligan": fx.push({ t: "shuffle", seat: e.player, delay: 0 }); break;
+      case "reveal": fx.push({ t: "reveal", seat: e.player, delay: 0 }); break;
+      case "freeze": fx.push({ t: "freeze", seat: e.player, delay: 0 }); break;
+      case "game_over": fx.push({ t: "over", seat: e.player, won: e.player === me, delay: fought ? HIT_DELAY + 900 : 0 }); break;
     }
   }
+  if (prev.phase !== "fight" && view.phase === "fight") fx.push({ t: "fight", delay: 0 });
 
   view.players.forEach((p, seat) => {
     if (p.hp !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), to: pct(p.hp), delay: fought ? HIT_DELAY : 0 });

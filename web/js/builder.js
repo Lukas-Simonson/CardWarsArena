@@ -14,6 +14,7 @@ import {
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 import { t, locale, cardText } from "./i18n.js";
 import { errorText, apiError } from "./errors.js";
+import { sound } from "./sound.js";
 import { labelText } from "./describe.js";
 
 // The colours of the Landscapes, as in the design: a tile colour and a darker diamond.
@@ -64,7 +65,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
 
   const dirty = () => changed(deck, saved);
   const leaveOk = () => !dirty() || confirm(t("builder.unsaved"));
-  const say = (text, error = false) => { note = { text, error }; paintDeck(); };
+  const say = (text, error = false) => { note = { text, error }; if (error) sound.play("ui_error"); paintDeck(); };
 
   // ---------- opening and choosing a deck
 
@@ -122,6 +123,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.name.value = deck.name;
     ui.pick.value = deck.id;
     paintAll();
+    sound.play("ui_confirm");
     say(t(r.data.playable ? "builder.saved_ready" : asDraft ? "builder.saved_draft" : "builder.saved_unplayable"));
   }
 

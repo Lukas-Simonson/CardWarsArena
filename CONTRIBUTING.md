@@ -4,7 +4,7 @@ Thanks for helping with Card Wars Arena. This page covers how the repository is 
 and how to run it, see the [README](README.md).
 
 Card Wars Arena is an unofficial fan project; please keep it that way (see the README's [fan project](README.md#a-fan-project)
-note). Do not add artwork, card scans or other material you do not have the right to share.
+note). Do not add artwork, card scans, sounds or other material you do not have the right to share. Sounds in particular must be original, made by you, or CC0 / CC-BY, and credited in `web/audio/CREDITS.md`; never taken from Adventure Time, Card Wars or another show or game.
 
 ## Reporting problems and ideas
 

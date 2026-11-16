@@ -12,6 +12,7 @@ import { t, fmtList, fmtNumber } from "./i18n.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
+import { soundButton } from "./soundui.js";
 
 const fmtJoin = (parts) => parts.join(t("tile.stats_sep"));
 const SHIELD = `<path d="M24 3 L44 9 V26 C44 40 35 48 24 51 C13 48 4 40 4 26 V9 Z" fill="#3f8fd6" stroke="#16212b" stroke-width="3.5" stroke-linejoin="round"/><path d="M24 8 L39 12.5 V26 C39 37 32 43.5 24 46" fill="none" stroke="#a8d6ff" stroke-width="2.5" opacity="0.7"/>`;
@@ -87,7 +88,8 @@ function topbar({ ctx, me }, on) {
     h("div", { class: "steel turnbox" },
       v.phase !== "mulligan" && h("span", { class: "ink" }, t("game.turn", { turn: v.turn })),
       v.phase !== "mulligan" && h("span", { class: `chip ${mine ? "" : "theirs"}` }, mine ? t("game.your_turn") : t("game.their_turn", { who: seatName(ctx, v.active) })),
-      h("span", { class: "ink", style: "font-size:17px" }, phase)));
+      h("span", { class: "ink", style: "font-size:17px" }, phase),
+      soundButton()));
 }
 
 function playerBar(m, seat, on) {
