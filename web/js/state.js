@@ -29,6 +29,7 @@ export function learnCards(known, view) {
     add(p.hero);
     (p.hand ?? []).forEach(add);
     p.discard.forEach(add);
+    (p.removed ?? []).forEach(add);
     for (const l of p.lanes) {
       add(l.creature);
       add(l.building);

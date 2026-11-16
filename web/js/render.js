@@ -371,6 +371,21 @@ function choiceModal(m, on) {
       h("div", { class: "modalrow modalrow2" }, choose.filter((a) => a.targets?.[0]?.length).map((a) =>
         h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, describeRef(ctx, a.targets[0][0])))),
       none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, "Choose nothing")));
+  } else if (ch.kind === "ransom") {
+    const decline = choose.find((a) => !a.card);
+    title = `${by}: pay or take it`;
+    text = `${by} gives you a choice: discard a card${ch.min_cost ? ` of cost ${ch.min_cost} or more` : ""}, or take what it says.`;
+    body = h("div", {},
+      h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
+        const action = choose.find((a) => a.card === inst.uid);
+        return action && cardButton(inst, action);
+      })),
+      decline && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(decline) }, "Take it instead")));
+  } else if (ch.kind === "amount") {
+    title = by;
+    text = `Choose how much (${ch.options.join(" or ")}).`;
+    body = h("div", { class: "modalrow" }, choose.map((a) =>
+      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = `${by}: upkeep`;
