@@ -411,7 +411,7 @@ function render() {
   s.className = "conn " + (state.status === "open" ? "ok" : state.status === "closed" ? "bad" : "warn");
   const banner = $("banner");
   const gone = inRoom && state.view && state.opponent.connected === false ? t("error.opponent_gone") : "";
-  const msg = errorText(state.error) || catalogError || gone || (!inRoom && state.closedReason ? closedText(state.closedReason) : "");
+  const msg = errorText(state.error, cards) || catalogError || gone || (!inRoom && state.closedReason ? closedText(state.closedCode, state.closedReason) : "");
   banner.hidden = !msg;
   banner.textContent = msg;
   banner.className = "banner" + (!state.error && !catalogError ? " info" : "");

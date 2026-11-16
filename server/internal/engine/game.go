@@ -5,6 +5,7 @@ import (
 	"math/rand/v2"
 
 	"cardwars/internal/card"
+	"cardwars/internal/problem"
 )
 
 const (
@@ -79,36 +80,36 @@ func (g *Game) checkDeck(d DeckSpec) error {
 		h, ok := g.cat[d.Hero]
 		switch {
 		case !ok:
-			return fmt.Errorf("unknown Hero %q", d.Hero)
+			return problem.Newf("unknown_hero", "unknown Hero %q", []any{d.Hero}, "card", d.Hero)
 		case h.Type != card.Hero:
-			return fmt.Errorf("%s is not a Hero", h.Name)
+			return problem.Newf("not_a_hero", "%s is not a Hero", []any{h.Name}, "card", d.Hero)
 		case !g.cfg.AllowUnimplemented && !h.Implemented():
-			return fmt.Errorf("%s has rules text the engine does not implement yet", h.Name)
+			return problem.Newf("unmodelled", "%s has rules text the engine does not implement yet", []any{h.Name}, "card", d.Hero)
 		}
 	}
 	for _, ls := range d.Landscapes {
 		if ls == "" || ls == card.Rainbow {
-			return fmt.Errorf("invalid Landscape %q", ls)
+			return problem.Newf("invalid_landscape", "invalid Landscape %q", []any{ls}, "landscape", string(ls))
 		}
 	}
 	if !g.cfg.SkipDeckRules && len(d.Cards) < MinDeckSize {
-		return fmt.Errorf("%d cards, minimum is %d", len(d.Cards), MinDeckSize)
+		return problem.Newf("deck_too_small", "%d cards, minimum is %d", []any{len(d.Cards), MinDeckSize}, "n", len(d.Cards), "min", MinDeckSize)
 	}
 	copies := map[string]int{}
 	for _, id := range d.Cards {
 		c, ok := g.cat[id]
 		if !ok {
-			return fmt.Errorf("unknown card %q", id)
+			return problem.Newf("unknown_card", "unknown card %q", []any{id}, "card", id)
 		}
 		if c.Type == card.Hero {
-			return fmt.Errorf("%s is a Hero and cannot be in the deck", c.Name)
+			return problem.Newf("hero_in_deck", "%s is a Hero and cannot be in the deck", []any{c.Name}, "card", id)
 		}
 		if !g.cfg.AllowUnimplemented && !c.Implemented() {
-			return fmt.Errorf("%s has rules text the engine does not implement yet", c.Name)
+			return problem.Newf("unmodelled", "%s has rules text the engine does not implement yet", []any{c.Name}, "card", id)
 		}
 		copies[id]++
 		if !g.cfg.SkipDeckRules && copies[id] > MaxCopies {
-			return fmt.Errorf("more than %d copies of %s", MaxCopies, c.Name)
+			return problem.Newf("too_many_copies", "more than %d copies of %s", []any{MaxCopies, c.Name}, "max", MaxCopies, "card", id)
 		}
 	}
 	return nil

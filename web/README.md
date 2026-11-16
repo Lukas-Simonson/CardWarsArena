@@ -110,8 +110,10 @@ while you work, but CI requires a finished file to have every key. The language 
 
 **Card data.** Card names and rules text come from the card data and are English for now. The names a card gives its targets
 ("Heal", "Freeze") are looked up as `label.<the text in lower case>`; `node tools/i18n-check.mjs --add-labels` adds any a new card brings.
-Server errors arrive as a code and the client writes the message (`error.<code>` in the catalogue); the detail the server adds is
-still English until the server sends parameters instead.
+The server sends no prose for the client to translate: an error arrives as a `code` (the kind), a `reason` (exactly what: a rule
+of the game, a deck problem, why a room closed) and `params` (cards by id), and the client words it from `reason.<reason>` or
+`error.<code>` in the catalogue (`js/errors.js`); the English `message` shows only for a code the client has no message for.
+See "Error codes" in `server/docs/protocol.md`. Adding a rule or a deck problem on the server means adding its `reason.<code>` message here.
 
 ## Docker
 

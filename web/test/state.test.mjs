@@ -73,10 +73,16 @@ test("the log is capped", () => {
   assert.equal(s.log.length, LOG_LIMIT);
 });
 
+test("an error keeps its code, reason and params for the client to word", () => {
+  const s = reduce(initialState(), { type: "error", code: "illegal_action", reason: "wrong_phase", params: { x: 1 }, message: "action not allowed in this phase" }, cards);
+  assert.deepEqual(s.error, { code: "illegal_action", reason: "wrong_phase", params: { x: 1 }, message: "action not allowed in this phase" });
+});
+
 test("errors are kept until the next update", () => {
   let s = reduce(initialState(), joined(), cards);
   s = reduce(s, { type: "error", code: "stale_state", message: "the game has moved on" }, cards);
-  assert.deepEqual(s.error, { code: "stale_state", message: "the game has moved on" });
+  assert.equal(s.error.code, "stale_state");
+  assert.equal(s.error.message, "the game has moved on");
   s = reduce(s, update(1), cards);
   assert.equal(s.error, null);
 });
@@ -98,6 +104,8 @@ test("room_closed clears the room and says why", () => {
   assert.equal(s.session, null);
   assert.equal(s.view, null);
   assert.equal(s.closedReason, "opponent left");
+  s = reduce(reduce(initialState(), joined(), cards), { type: "room_closed", reason: "room_expired", message: "room expired" }, cards);
+  assert.equal(s.closedCode, "room_expired");
 });
 
 test("joining a different room starts fresh; rejoining the same room keeps the log", () => {

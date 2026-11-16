@@ -1,11 +1,14 @@
 package decks
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
 
 	"cardwars/internal/card"
+	"cardwars/internal/engine"
+	"cardwars/internal/problem"
 )
 
 func TestLandscapesOf(t *testing.T) {
@@ -158,7 +161,7 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 	} {
 		found := false
 		for _, p := range tc.d.Problems(cat, false) {
-			found = found || strings.Contains(p, tc.want)
+			found = found || strings.Contains(p.Text, tc.want)
 		}
 		if !found {
 			t.Errorf("%s: problems %v lack %q", name, tc.d.Problems(cat, false), tc.want)
@@ -167,8 +170,8 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 	// Up to four types are fine: one for each Lane.
 	four := Custom(cat, "x", "o", "finn", append([]string{"corn", "icy", "blue", "sand"}, ok...), nil)
 	for _, p := range four.Problems(cat, false) {
-		if strings.Contains(p, "Landscape") {
-			t.Errorf("a deck of four Landscape types was refused: %q", p)
+		if strings.Contains(p.Text, "Landscape") {
+			t.Errorf("a deck of four Landscape types was refused: %q", p.Text)
 		}
 	}
 	// Landscapes the player chose are used whatever the cards say, so a deck of five types, or of Rainbow
@@ -180,8 +183,8 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 			t.Errorf("%s: chosen Landscapes not used: %v ok=%v chosen=%v", name, d.Landscapes, d.LandOK, d.Chosen)
 		}
 		for _, p := range d.Problems(cat, false) {
-			if strings.Contains(p, "Landscape") {
-				t.Errorf("%s: a deck with chosen Landscapes was refused: %q", name, p)
+			if strings.Contains(p.Text, "Landscape") {
+				t.Errorf("%s: a deck with chosen Landscapes was refused: %q", name, p.Text)
 			}
 		}
 	}
@@ -191,8 +194,8 @@ func TestProblemsSayWhatStopsADeckBeingPlayed(t *testing.T) {
 	// A development server plays cards whose rules are not modelled.
 	withVague := Custom(cat, "x", "o", "vagueh", append([]string{"vague"}, ok...), nil)
 	for _, p := range withVague.Problems(cat, true) {
-		if strings.Contains(p, "rules") {
-			t.Errorf("unmodelled cards were reported on a server that allows them: %q", p)
+		if strings.Contains(p.Text, "rules") {
+			t.Errorf("unmodelled cards were reported on a server that allows them: %q", p.Text)
 		}
 	}
 }
@@ -225,5 +228,44 @@ func TestCheckLandscapes(t *testing.T) {
 		if err := CheckLandscapes(tc.in); (err == nil) != tc.ok {
 			t.Errorf("%s: %v", name, err)
 		}
+	}
+}
+
+// A client words a problem itself from its code and params, so those are part of the answer.
+func TestProblemsCarryCodesAndParamsForAClient(t *testing.T) {
+	cat := customCatalog()
+	ok := repeat("corn", 3)
+	for i := 0; i < 13; i++ {
+		id := fmt.Sprintf("rainbow%d", i)
+		cat[id] = &card.Card{ID: id, Name: "Rainbow " + id, Type: card.Creature, Landscape: card.Rainbow}
+		ok = append(ok, repeat(id, 3)...)
+	}
+	byCode := func(d Info) map[string]map[string]any {
+		out := map[string]map[string]any{}
+		for _, p := range d.Problems(cat, false) {
+			out[p.Code] = p.Params
+		}
+		return out
+	}
+	got := byCode(Custom(cat, "x", "o", "", ok[:10], nil))
+	if _, has := got["choose_hero"]; !has {
+		t.Errorf("codes %v", got)
+	}
+	if got["deck_too_small"]["n"] != 10 || got["deck_too_small"]["min"] != engine.MinDeckSize {
+		t.Errorf("deck_too_small params %v", got["deck_too_small"])
+	}
+	if p := byCode(Custom(cat, "x", "o", "finn", append([]string{"vague"}, ok...), nil))["unmodelled"]; p["card"] != "vague" {
+		t.Errorf("a card is named by id: %v", p)
+	}
+	if p := byCode(Custom(cat, "x", "o", "finn", append([]string{"corn", "icy", "blue", "sand", "nice"}, ok...), nil))["too_many_landscape_types"]; p["types"] != 5 {
+		t.Errorf("types %v", p)
+	}
+	err := Check(cat, "", []string{"nope"})
+	var pr *problem.Problem
+	if !errors.As(err, &pr) || pr.Code != "unknown_card" || pr.Params["card"] != "nope" {
+		t.Errorf("Check: %v", err)
+	}
+	if err := CheckLandscapes([]string{"cornfield"}); !errors.As(err, &pr) || pr.Code != "landscape_count" {
+		t.Errorf("CheckLandscapes: %v", err)
 	}
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"cardwars/internal/problem"
 	"context"
 	"encoding/json"
 	"errors"
@@ -67,11 +68,14 @@ func (c *client) setMembership(r *Room, token string) {
 
 func (c *client) fail(err error) {
 	var re *roomError
-	if errors.As(err, &re) {
-		c.Send(ServerMsg{Type: MsgError, Code: re.code, Message: re.msg})
-		return
+	if !errors.As(err, &re) {
+		re = failBecause(ErrBadRequest, err).(*roomError)
 	}
-	c.Send(ServerMsg{Type: MsgError, Code: ErrBadRequest, Message: err.Error()})
+	m := ServerMsg{Type: MsgError, Code: re.code, Message: re.p.Text, Params: re.p.Params}
+	if re.p.Code != re.code {
+		m.Reason = re.p.Code
+	}
+	c.Send(m)
 }
 
 func (c *client) writer(ctx context.Context) {
@@ -133,7 +137,7 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if typ != websocket.MessageText {
-			c.fail(fail(ErrBadRequest, "messages must be JSON text"))
+			c.fail(failBecause(ErrBadRequest, problem.New("not_text", "messages must be JSON text")))
 			continue
 		}
 		if !c.bucket.allow() {
@@ -149,7 +153,7 @@ func (s *Server) handleWS(w http.ResponseWriter, r *http.Request) {
 		c.violations = 0
 		var m ClientMsg
 		if err := json.Unmarshal(data, &m); err != nil {
-			c.fail(fail(ErrBadRequest, "invalid JSON: "+err.Error()))
+			c.fail(failBecause(ErrBadRequest, problem.New("invalid_json", "invalid JSON: "+err.Error(), "detail", err.Error())))
 			continue
 		}
 		c.dispatch(m)
@@ -218,7 +222,7 @@ func (c *client) dispatch(m ClientMsg) {
 			return
 		}
 		if m.Action == nil {
-			c.fail(fail(ErrBadRequest, "action is required"))
+			c.fail(failBecause(ErrBadRequest, problem.New("action_required", "action is required")))
 			return
 		}
 		if err := room.act(token, *m.Action, m.Seq); err != nil {
@@ -233,7 +237,7 @@ func (c *client) dispatch(m ClientMsg) {
 		c.setMembership(nil, "")
 		room.leave(token)
 	default:
-		c.fail(fail(ErrBadRequest, "unknown message type "+m.Type))
+		c.fail(failBecause(ErrBadRequest, problem.New("unknown_message_type", "unknown message type "+m.Type, "type", m.Type)))
 	}
 }
 

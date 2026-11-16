@@ -1,6 +1,7 @@
 package server
 
 import (
+	"cardwars/internal/problem"
 	"context"
 	"encoding/json"
 	"errors"
@@ -31,12 +32,12 @@ type savedDeck struct {
 	Cards []string `json:"cards"` // one id per copy, as the game takes a deck
 	// Landscapes are the four it is played with, in Lane order; empty when the cards do not say. Chosen says
 	// whether the player picked them (otherwise they follow the cards).
-	Landscapes []card.Landscape `json:"landscapes"`
-	Chosen     bool             `json:"landscapes_chosen"`
-	Created    time.Time        `json:"created"`
-	Updated    time.Time        `json:"updated"`
-	Playable   bool             `json:"playable"`
-	Problems   []string         `json:"problems"` // what stops it being played, in words
+	Landscapes []card.Landscape   `json:"landscapes"`
+	Chosen     bool               `json:"landscapes_chosen"`
+	Created    time.Time          `json:"created"`
+	Updated    time.Time          `json:"updated"`
+	Playable   bool               `json:"playable"`
+	Problems   []*problem.Problem `json:"problems"` // what stops it being played: a code and params for a client to word, and English text
 }
 
 type deckBody struct {
@@ -56,10 +57,25 @@ func (s *Server) mountMyDecks(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/my/decks/{id}", s.signedIn(s.deleteMyDeck))
 }
 
-func writeError(w http.ResponseWriter, status int, msg string) {
+// writeError replies with a failure: error is the English text, code says what went wrong (and params the values a
+// message about it needs) so a client can word it in the player's language.
+func writeError(w http.ResponseWriter, status int, code, msg string, params ...any) {
+	writeProblem(w, status, problem.New(code, msg, params...))
+}
+
+func writeProblem(w http.ResponseWriter, status int, p *problem.Problem) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]string{"error": msg})
+	_ = json.NewEncoder(w).Encode(map[string]any{"error": p.Text, "code": p.Code, "params": p.Params})
+}
+
+// asProblem is err as a Problem, or a plain one with the code "failed".
+func asProblem(err error) *problem.Problem {
+	var p *problem.Problem
+	if errors.As(err, &p) {
+		return p
+	}
+	return problem.New("failed", err.Error())
 }
 
 // signedIn runs h for a signed-in player. A request that changes something must also come from this
@@ -68,12 +84,12 @@ func (s *Server) signedIn(h func(http.ResponseWriter, *http.Request, store.User)
 	return func(w http.ResponseWriter, r *http.Request) {
 		u, ok := s.cfg.Auth.Identify(r)
 		if !ok {
-			writeError(w, http.StatusUnauthorized, "sign in first")
+			writeError(w, http.StatusUnauthorized, "sign_in_required", "sign in first")
 			return
 		}
 		if r.Method != http.MethodGet {
 			if o := r.Header.Get("Origin"); o != "" && !s.originAllowed(o, r.Host) {
-				writeError(w, http.StatusForbidden, "wrong origin")
+				writeError(w, http.StatusForbidden, "wrong_origin", "wrong origin")
 				return
 			}
 		}
@@ -96,20 +112,20 @@ func cleanDeckName(n string) string {
 	if name := strings.TrimSpace(b.String()); name != "" {
 		return name
 	}
-	return "Untitled deck"
+	return "" // the client says "Untitled deck" in the player's language
 }
 
 // readDeck reads and checks a request body. It writes the error reply itself when there is one.
 func (s *Server) readDeck(w http.ResponseWriter, r *http.Request) (deckBody, bool) {
 	if mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type")); err != nil || mt != "application/json" {
-		writeError(w, http.StatusUnsupportedMediaType, "send the deck as application/json")
+		writeError(w, http.StatusUnsupportedMediaType, "json_required", "send the deck as application/json")
 		return deckBody{}, false
 	}
 	var b deckBody
 	dec := json.NewDecoder(http.MaxBytesReader(w, r.Body, maxDeckBody))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(&b); err != nil {
-		writeError(w, http.StatusBadRequest, "not a deck: "+err.Error())
+		writeError(w, http.StatusBadRequest, "not_a_deck", "not a deck: "+err.Error(), "detail", err.Error())
 		return deckBody{}, false
 	}
 	b.Name, b.Hero = cleanDeckName(b.Name), strings.TrimSpace(b.Hero)
@@ -117,11 +133,11 @@ func (s *Server) readDeck(w http.ResponseWriter, r *http.Request) (deckBody, boo
 		b.Cards = []string{}
 	}
 	if err := decks.Check(s.cat, b.Hero, b.Cards); err != nil {
-		writeError(w, http.StatusUnprocessableEntity, err.Error())
+		writeProblem(w, http.StatusUnprocessableEntity, asProblem(err))
 		return deckBody{}, false
 	}
 	if err := decks.CheckLandscapes(b.Landscapes); err != nil {
-		writeError(w, http.StatusUnprocessableEntity, err.Error())
+		writeProblem(w, http.StatusUnprocessableEntity, asProblem(err))
 		return deckBody{}, false
 	}
 	return b, true
@@ -129,12 +145,12 @@ func (s *Server) readDeck(w http.ResponseWriter, r *http.Request) (deckBody, boo
 
 // describeSaved says what stops a saved deck being played. The card data can change after a deck was
 // saved, so a card it names may be gone.
-func (s *Server) describeSaved(d store.Deck, owner string) (decks.Info, []string) {
+func (s *Server) describeSaved(d store.Deck, owner string) (decks.Info, []*problem.Problem) {
 	if err := decks.Check(s.cat, d.Hero, d.Cards); err != nil {
-		return decks.Info{}, []string{err.Error()}
+		return decks.Info{}, []*problem.Problem{asProblem(err)}
 	}
 	if err := decks.CheckLandscapes(d.Landscapes); err != nil {
-		return decks.Info{}, []string{err.Error()}
+		return decks.Info{}, []*problem.Problem{asProblem(err)}
 	}
 	info := decks.Custom(s.cat, d.Name, owner, d.Hero, d.Cards, d.Landscapes)
 	return info, info.Problems(s.cat, s.cfg.AllowUnmodelled)
@@ -143,7 +159,7 @@ func (s *Server) describeSaved(d store.Deck, owner string) (decks.Info, []string
 func (s *Server) savedView(d store.Deck, owner string) savedDeck {
 	info, problems := s.describeSaved(d, owner)
 	if problems == nil {
-		problems = []string{}
+		problems = []*problem.Problem{}
 	}
 	lands := []card.Landscape{}
 	if info.LandOK {
@@ -159,7 +175,7 @@ func storeCtx(r *http.Request) (context.Context, context.CancelFunc) {
 
 func (s *Server) storeFailed(w http.ResponseWriter, err error) {
 	s.log.Error("deck store", "err", err)
-	writeError(w, http.StatusInternalServerError, "could not reach the deck store; try again")
+	writeError(w, http.StatusInternalServerError, "store_unreachable", "could not reach the deck store; try again")
 }
 
 func (s *Server) listMyDecks(w http.ResponseWriter, r *http.Request, u store.User) {
@@ -190,7 +206,7 @@ func (s *Server) createMyDeck(w http.ResponseWriter, r *http.Request, u store.Us
 		return
 	}
 	if len(have) >= maxDecksPerUser {
-		writeError(w, http.StatusConflict, "you can keep at most 50 decks: delete one first")
+		writeError(w, http.StatusConflict, "deck_limit", "you can keep at most 50 decks: delete one first", "max", maxDecksPerUser)
 		return
 	}
 	d, err := s.cfg.Store.SaveDeck(ctx, store.Deck{Owner: u.ID, Name: b.Name, Hero: b.Hero, Cards: b.Cards, Landscapes: b.Landscapes})
@@ -212,7 +228,7 @@ func (s *Server) updateMyDeck(w http.ResponseWriter, r *http.Request, u store.Us
 	d, err := s.cfg.Store.SaveDeck(ctx, store.Deck{ID: r.PathValue("id"), Owner: u.ID, Name: b.Name, Hero: b.Hero, Cards: b.Cards, Landscapes: b.Landscapes})
 	switch {
 	case errors.Is(err, store.ErrNotFound):
-		writeError(w, http.StatusNotFound, "no such deck")
+		writeError(w, http.StatusNotFound, "deck_not_found", "no such deck")
 	case err != nil:
 		s.storeFailed(w, err)
 	default:
@@ -225,7 +241,7 @@ func (s *Server) deleteMyDeck(w http.ResponseWriter, r *http.Request, u store.Us
 	defer cancel()
 	switch err := s.cfg.Store.DeleteDeck(ctx, u.ID, r.PathValue("id")); {
 	case errors.Is(err, store.ErrNotFound):
-		writeError(w, http.StatusNotFound, "no such deck")
+		writeError(w, http.StatusNotFound, "deck_not_found", "no such deck")
 	case err != nil:
 		s.storeFailed(w, err)
 	default:
@@ -241,21 +257,21 @@ func (s *Server) resolveDeck(user *store.User, query string) (decks.Info, error)
 		return s.deckFor(query)
 	}
 	if user == nil || s.cfg.Store == nil {
-		return decks.Info{}, fail(ErrUnknownDeck, "sign in to play your own decks")
+		return decks.Info{}, failBecause(ErrUnknownDeck, problem.New("sign_in_required", "sign in to play your own decks"))
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), storeTimeout)
 	defer cancel()
 	d, err := s.cfg.Store.Deck(ctx, user.ID, id)
 	if errors.Is(err, store.ErrNotFound) {
-		return decks.Info{}, fail(ErrUnknownDeck, "no such deck")
+		return decks.Info{}, failBecause(ErrUnknownDeck, problem.New("deck_not_found", "no such deck"))
 	}
 	if err != nil {
 		s.log.Error("deck store", "err", err)
-		return decks.Info{}, fail(ErrBadRequest, "could not load that deck; try again")
+		return decks.Info{}, failBecause(ErrBadRequest, problem.New("store_unreachable", "could not load that deck; try again"))
 	}
 	info, problems := s.describeSaved(d, user.DisplayName)
 	if len(problems) > 0 {
-		return decks.Info{}, fail(ErrDeckNotReady, d.Name+" cannot be played yet: "+strings.Join(problems, "; "))
+		return decks.Info{}, fail(ErrDeckNotReady, d.Name+" cannot be played yet: "+strings.Join(decks.Texts(problems), "; "), "deck", d.Name, "problems", problems)
 	}
 	return info, nil
 }
