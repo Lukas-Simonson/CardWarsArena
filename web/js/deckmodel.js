@@ -172,7 +172,7 @@ export function pool(cards, { text = "", type = "", landscape = "", members = ""
     .filter((c) => !from || (from[c.id] ?? 0) > 0)
     .filter((c) => !type || c.type === type)
     .filter((c) => !landscape || c.landscape === landscape)
-    .filter((c) => !q || c.name.toLocaleLowerCase(locale()).includes(q) || (c.text ?? "").toLocaleLowerCase(locale()).includes(q))
+    .filter((c) => !q || c.name.toLocaleLowerCase(locale()).includes(q) || (c.name_en ?? "").toLocaleLowerCase(locale()).includes(q) || (c.text ?? "").toLocaleLowerCase(locale()).includes(q))
     .sort((a, b) => a.name.localeCompare(b.name, locale()));
 }
 

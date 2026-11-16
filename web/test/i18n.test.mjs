@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { format, parse, pseudoize, fallbackChain, pickLocale, direction, addCatalog, setLocale, t, locale } from "../js/i18n.js";
+import { format, parse, pseudoize, pseudoText, cardText, tEn, fallbackChain, pickLocale, direction, addCatalog, setLocale, t, locale } from "../js/i18n.js";
 
 test("a message fills in its parameters, and leaves an unknown one visible", () => {
   assert.equal(format("Hello {name}!", { name: "Finn" }, "en"), "Hello Finn!");
@@ -93,4 +93,25 @@ test("t falls back to English for a missing key, and to the key itself when Engl
   assert.match(t("test.hello", { name: "Finn" }), /^\[.*Finn.*\]$/);
   await setLocale("en");
   assert.equal(t("test.hello", { name: "Finn" }), "Hello Finn");
+});
+
+test("card words are shown as they came, except in a pseudo-locale", async () => {
+  await setLocale("en");
+  assert.equal(cardText("Corn Dog"), "Corn Dog");
+  assert.equal(cardText(undefined), undefined);
+  await setLocale("en-XA");
+  assert.match(cardText("Corn Dog"), /^\[.*~+\]$/);
+  assert.notEqual(cardText("Corn Dog"), "Corn Dog");
+  assert.match(pseudoText("{braces} stay"), /\{.*\}/); // plain text: braces are not placeholders here
+  await setLocale("en");
+});
+
+test("English text is there whatever the locale is, for what is exchanged with other players", async () => {
+  addCatalog("en", { "test.hello": "Hello {name}" });
+  addCatalog("fr", { "test.hello": "Bonjour {name}" });
+  await setLocale("fr");
+  assert.equal(t("test.hello", { name: "A" }), "Bonjour A");
+  assert.equal(tEn("test.hello", { name: "A" }), "Hello A");
+  assert.equal(tEn("test.none"), "test.none");
+  await setLocale("en");
 });

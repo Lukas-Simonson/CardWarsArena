@@ -215,3 +215,24 @@ test("Card Dweeb's Landscapes section gives the deck its Landscapes, in order", 
   assert.deepEqual(odd.counts, { dog: 1 });
   assert.deepEqual(parseDweeb("Landscapes\n4 - Icy Lands", real).landscapes, ["icy_lands", "icy_lands", "icy_lands", "icy_lands"]);
 });
+
+// A deck list is exchanged in English whatever the language shown, and read in either.
+const french = {
+  pup: { id: "pup", name: "Chiot Maïs", name_en: "Corn Pup", type: "creature", landscape: "cornfield", modeled: true },
+  dog: { id: "dog", name: "Chien Maïs", name_en: "Corn Dog", type: "creature", landscape: "cornfield", modeled: true },
+  finn: { id: "finn", name: "Finn l'Humain", name_en: "Finn the Human", type: "hero", modeled: true },
+};
+
+test("a deck list is written with English names, even when the names shown are translated", () => {
+  const d = fromCards(["pup", "dog", "dog"], { name: "Ferme", hero: "finn" });
+  assert.equal(formatDeck(d, french), "Name: Ferme\nHero: Finn the Human\n\n2 Corn Dog\n1 Corn Pup\n");
+});
+
+test("cards are read by the name shown or the English one, and a near miss suggests the name shown", () => {
+  const r = importDeck("Hero: Finn l'Humain\n2 Chien Maïs\n1 corn pup\n1 Chiot Mais", french);
+  assert.deepEqual(r.issues, []);
+  assert.equal(r.deck.hero, "finn");
+  assert.deepEqual(r.deck.counts, { dog: 2, pup: 2 });
+  const miss = importDeck("1 Chien Maïss", french);
+  assert.match(miss.issues[0].reason, /Did you mean Chien Maïs\?/);
+});

@@ -27,8 +27,9 @@ import (
 // Config holds server settings. The zero value is usable once DataDir or
 // Catalog is set.
 type Config struct {
-	DataDir  string        // directory with cards/ and effects/ (ignored if Catalog is set)
+	DataDir  string        // directory with cards/, effects/ and i18n/ (ignored if Catalog is set)
 	Catalog  card.Catalog  // preloaded catalog (tests)
+	Locales  card.Locales  // translations of the card data, from DataDir/i18n unless set; nil means English only
 	BotDelay time.Duration // pause between the bot's moves, so clients can animate
 	MaxRooms int           // default 1000
 	// Per-connection message limit: Burst messages at once, refilling at
@@ -74,6 +75,11 @@ func New(cfg Config) (*Server, error) {
 			return nil, err
 		}
 		cfg.Catalog = cat
+		if cfg.Locales == nil {
+			if cfg.Locales, err = card.LoadLocales(cfg.DataDir); err != nil {
+				return nil, err
+			}
+		}
 	}
 	if cfg.MaxRooms == 0 {
 		cfg.MaxRooms = 1000
@@ -329,25 +335,59 @@ func writeJSON(w http.ResponseWriter, v any) {
 	_ = json.NewEncoder(w).Encode(v)
 }
 
-func (s *Server) handleDecks(w http.ResponseWriter, _ *http.Request) {
-	list := make([]decks.Info, 0, len(s.decks))
+// handleDecks lists the preconstructed decks. With ?lang=<tag> each also carries its words in that language: title,
+// owner_title and set_title, where the card data has translations (the English name stays, and is the deck's identity).
+func (s *Server) handleDecks(w http.ResponseWriter, r *http.Request) {
+	type apiDeck struct {
+		decks.Info
+		Title      string `json:"title,omitempty"`
+		OwnerTitle string `json:"owner_title,omitempty"`
+		SetTitle   string `json:"set_title,omitempty"`
+	}
+	lang := r.URL.Query().Get("lang")
+	list := make([]apiDeck, 0, len(s.decks))
 	for _, d := range s.decks {
 		_, err := s.deckFor(d.Key())
 		d.Ready = err == nil // what this server will accept, not just the strict rule
-		list = append(list, d)
+		out := apiDeck{Info: d}
+		if tr, ok := s.cfg.Locales.Deck(d.Set, d.Name, lang); ok {
+			out.Title, out.OwnerTitle, out.SetTitle = tr.Title, tr.Owner, tr.Set
+		}
+		list = append(list, out)
 	}
+	setContentLanguage(w, lang, s.cfg.Locales)
 	writeJSON(w, list)
 }
 
-func (s *Server) handleCards(w http.ResponseWriter, _ *http.Request) {
+// setContentLanguage says which language the answer is in (the best the data has for what was asked) and that the
+// answer depends on the request's lang.
+func setContentLanguage(w http.ResponseWriter, lang string, l card.Locales) {
+	w.Header().Add("Vary", "Accept-Language")
+	for _, t := range card.Chain(lang) {
+		if l[t] != nil {
+			w.Header().Set("Content-Language", t)
+			return
+		}
+	}
+	w.Header().Set("Content-Language", "en")
+}
+
+// handleCards lists every card. With ?lang=<tag> the name, rules text, flavour text, ruling and picture are the ones in
+// that language where the card data has them (fr-CA falls back to fr, then English); name_en is the English name when
+// the name differs, so a deck list in either language can be read.
+func (s *Server) handleCards(w http.ResponseWriter, r *http.Request) {
 	type apiCard struct {
 		*card.Card
-		Modeled bool `json:"modeled"`
+		NameEN  string `json:"name_en,omitempty"`
+		Modeled bool   `json:"modeled"`
 	}
+	lang := r.URL.Query().Get("lang")
 	list := make([]apiCard, 0, len(s.cat))
 	for _, c := range s.cat {
-		list = append(list, apiCard{c, c.Implemented()})
+		local, en := s.cfg.Locales.Localized(c, lang)
+		list = append(list, apiCard{Card: &local, NameEN: en, Modeled: c.Implemented()})
 	}
 	sort.Slice(list, func(i, j int) bool { return list[i].ID < list[j].ID })
+	setContentLanguage(w, lang, s.cfg.Locales)
 	writeJSON(w, list)
 }

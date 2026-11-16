@@ -2,7 +2,7 @@
 // Pure: main.js fetches the lists and draws the shelf.
 import { fromCards, landscapeRow } from "./deckmodel.js";
 import { landscapeName } from "./describe.js";
-import { t } from "./i18n.js";
+import { t, cardText } from "./i18n.js";
 import { problemTexts } from "./errors.js";
 
 // The colour of a deck's box and of its Landscape diamonds, as in the design's Lobby board.
@@ -42,7 +42,7 @@ export function shelf(presets, saved, cards) {
   return {
     starters: presets.map((d) => ({
       value: `${d.set} ${d.name}`,
-      name: d.name,
+      name: cardText(d.title || d.name),
       sub: subtitle("", cards[d.hero]),
       lands: d.landscapes,
       size: d.size,

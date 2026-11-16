@@ -15,7 +15,7 @@
 // The same reading also covers the text Card Dweeb gives for a deck (see parseDweeb).
 import { MAX_COPIES, MAX_CARDS, LANES, LANDSCAPES, emptyDeck, total, heroes } from "./deckmodel.js";
 import { landscapeName } from "./describe.js";
-import { t } from "./i18n.js";
+import { t, tEn } from "./i18n.js";
 
 /**
  * The deck as text: its name, Hero and chosen Landscapes (when it has them), a blank line, then `count name`
@@ -25,10 +25,10 @@ export function formatDeck(deck, cards) {
   const head = [];
   if (deck.name?.trim()) head.push(`Name: ${deck.name.trim()}`);
   const hero = deck.hero && cards[deck.hero];
-  if (hero) head.push(`Hero: ${hero.name}`);
-  if (deck.landscapes?.length === LANES) head.push(`Landscapes: ${deck.landscapes.map(landscapeName).join(", ")}`);
+  if (hero) head.push(`Hero: ${hero.name_en ?? hero.name}`);
+  if (deck.landscapes?.length === LANES) head.push(`Landscapes: ${deck.landscapes.map((l) => tEn(`landscape.${l}`)).join(", ")}`);
   const lines = Object.entries(deck.counts)
-    .map(([id, n]) => [cards[id]?.name ?? id, n])
+    .map(([id, n]) => [cards[id]?.name_en ?? cards[id]?.name ?? id, n])
     .sort((a, b) => a[0].localeCompare(b[0]))
     .map(([name, n]) => `${n} ${name}`);
   return [...head, ...(head.length && lines.length ? [""] : []), ...lines].join("\n") + (head.length || lines.length ? "\n" : "");
@@ -48,9 +48,12 @@ function distance(a, b) {
   return prev[b.length];
 }
 
+/** The names a card goes by: the one shown, and its English name (a deck list is exchanged in English). */
+const namesOf = (c) => [...new Set([c.name, c.name_en].filter(Boolean))];
+
 const index = (list) => {
   const m = new Map();
-  for (const c of list) m.set(nameKey(c.name), [...(m.get(nameKey(c.name)) ?? []), c]);
+  for (const c of list) for (const key of new Set(namesOf(c).map(nameKey))) m.set(key, [...(m.get(key) ?? []), c]);
   return m;
 };
 
@@ -58,8 +61,10 @@ const index = (list) => {
 function nearest(key, list) {
   let best = null, bd = 3;
   for (const c of list) {
-    const d = distance(key, nameKey(c.name));
-    if (d < bd) { best = c; bd = d; }
+    for (const name of namesOf(c)) {
+      const d = distance(key, nameKey(name));
+      if (d < bd) { best = c; bd = d; }
+    }
   }
   return best;
 }
@@ -78,7 +83,7 @@ function reader(cards, { heroWord = "Hero:" } = {}) {
   const out = { name: "", hero: "", landscapes: null, counts: {}, issues: [], any: false };
   const issue = (line, raw, reason, level = "error") => out.issues.push({ line, text: raw.trim(), reason, level });
   const named = (list, key) => list.get(key) ?? [];
-  const landNames = LANDSCAPES.map((id) => ({ id, name: landscapeName(id) }));
+  const landNames = LANDSCAPES.flatMap((id) => [...new Set([landscapeName(id), tEn(`landscape.${id}`)])].map((name) => ({ id, name })));
   let row = [], rowLine = 0, rowRaw = "";
 
   return {

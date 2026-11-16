@@ -117,3 +117,9 @@ test("Random with one deck, an own deck that is not a starter, or no decks", () 
   assert.equal(botDeckFor(RANDOM, [], ""), undefined);
   assert.equal(botDeckFor("gone", [{ value: "A Finn" }], "", () => 0), "A Finn");
 });
+
+test("a deck's title in the language shown is its name on the shelf; the English name stays its identity", () => {
+  const [finn] = shelf([{ ...presets[0], title: "Le deck de Finn", owner_title: "Finn" }], [], cards).starters;
+  assert.equal(finn.name, "Le deck de Finn");
+  assert.equal(finn.value, "Finn Vs Jake Finn's Deck");
+});

@@ -19,7 +19,7 @@ import { gameLogText, logFileName } from "./gamelog.js";
 import { cardName } from "./describe.js";
 import { fillAvatar } from "./avatar.js";
 import { revealGroups, showReveal } from "./reveal.js";
-import { t, has, setLocale, pickLocale, availableLocales, applyDocument, translateDom, locale } from "./i18n.js";
+import { t, has, cardText, setLocale, pickLocale, availableLocales, applyDocument, translateDom, locale } from "./i18n.js";
 import { errorText, closedText } from "./errors.js";
 
 const $ = (id) => document.getElementById(id);
@@ -489,14 +489,17 @@ function fillBots({ default: first, bots }) {
   sel.value = bots.includes(saved) ? saved : bots.includes("heuristic") ? "heuristic" : first;
 }
 
+/** A card as the server sent it, its words shown the way this locale shows them (see cardText). */
+const localizedCard = (c) => ({ ...c, name: cardText(c.name), text: cardText(c.text), notes: cardText(c.notes), clarification: cardText(c.clarification) });
+
 async function loadCatalog() {
   catalogError = "";
   try {
-    const [c, d, b] = await Promise.all([fetch(`${server}/api/cards`), fetch(`${server}/api/decks`), fetch(`${server}/api/bots`).catch(() => null)]);
+    const [c, d, b] = await Promise.all([fetch(`${server}/api/cards?lang=${encodeURIComponent(locale())}`), fetch(`${server}/api/decks?lang=${encodeURIComponent(locale())}`), fetch(`${server}/api/bots`).catch(() => null)]);
     if (!c.ok || !d.ok) throw new Error(`HTTP ${c.status}/${d.status}`);
     if (b?.ok) fillBots(await b.json());
     fillFeedback(await fetch(`${server}/api/feedback`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
-    cards = Object.fromEntries((await c.json()).map((x) => [x.id, x]));
+    cards = Object.fromEntries((await c.json()).map((x) => [x.id, localizedCard(x)]));
     fillDecks(await d.json());
   } catch (err) {
     catalogError = t("error.catalog", { server, detail: err.message, host: location.host });

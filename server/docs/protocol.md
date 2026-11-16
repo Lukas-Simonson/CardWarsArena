@@ -24,8 +24,8 @@ Plain HTTP endpoints:
 |---|---|
 | `GET /api/bots` | `{"default":"heuristic","bots":["heuristic","random"]}`: the bots `create` may ask for |
 | `GET /api/feedback` | `{"enabled":true,"links":[{"id":"bug","label":"Report a bug","url":"https://…"}]}`: the links the home screen shows. `enabled` is false, and `links` empty, unless the server runs with `-feedback` |
-| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `cards` (ids, one per copy), `landscapes`, `hero` (card id), `playable` |
-| `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled` |
+| `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `cards` (ids, one per copy), `landscapes`, `hero` (card id), `playable`. `?lang=<tag>` adds `title`, `owner_title` and `set_title` in that language where the card data has them; `name` and `set` stay English and are the deck's identity |
+| `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled`. `?lang=<tag>` gives `name`, `text`, `notes`, `clarification` and `image_url` in that language where the card data has them (`fr-CA` falls back to `fr`, then English), with `name_en` when the name differs. The answer has `Content-Language`. See [localization.md](localization.md) |
 | `GET /api/auth/config` | `{"mode":"none"\|"oauth","providers":[{"name":"github","label":"GitHub"}]}`: what the client may offer |
 | `GET /api/auth/me` | `{"user":{"id","name","avatar"}}`, or `{"user":null}` when not signed in |
 | `GET /api/auth/login/{provider}` | start signing in: redirects to the provider (`-auth oauth` only). `?return=<page>` is where to come back to: this site, or a host allowed by `-origins` |
