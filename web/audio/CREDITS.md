@@ -13,7 +13,6 @@ from it with `afconvert -f m4af -d aac -b 64000`) for browsers that do not play 
 | Prefix | Pack | Author | Source | Licence | Licence text |
 |---|---|---|---|---|---|
 | casino | Casino Audio | Kenney | https://kenney.nl/assets/casino-audio | CC0 1.0 | licenses/casino-audio.txt |
-| digital | Digital Audio | Kenney | https://kenney.nl/assets/digital-audio | CC0 1.0 | licenses/digital-audio.txt |
 | impact | Impact Sounds | Kenney | https://kenney.nl/assets/impact-sounds | CC0 1.0 | licenses/impact-sounds.txt |
 | interface | Interface Sounds | Kenney | https://kenney.nl/assets/interface-sounds | CC0 1.0 | licenses/interface-sounds.txt |
 | rpg | RPG Audio | Kenney | https://kenney.nl/assets/rpg-audio | CC0 1.0 | licenses/rpg-audio.txt |
