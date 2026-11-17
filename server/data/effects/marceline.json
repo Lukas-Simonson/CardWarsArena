@@ -347,7 +347,8 @@
      "in_lane": true,
      "optional": true,
      "group": "mode",
-     "label": "Heal 1 damage from"
+     "label": "Heal 1 damage from",
+     "skip_label": "Don't heal"
     },
     {
      "what": "creature",
@@ -355,7 +356,8 @@
      "in_lane": true,
      "optional": true,
      "group": "mode",
-     "label": "Deal 1 damage to"
+     "label": "Deal 1 damage to",
+     "skip_label": "Don't deal damage"
     }
    ],
    "do": [

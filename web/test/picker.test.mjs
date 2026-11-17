@@ -310,3 +310,18 @@ test("a card without wording for skipping is played at the last click as before"
   assert.ok(p.skip());
   assert.deepEqual(p.result().targets, [[]]);
 });
+
+// Heal-or-damage cards (Green Candy, Auto-Plucker): each half has its own skip wording, and choosing neither is confirmed.
+test("heal-or-damage: skipping both parts warns, and a skip says what it skips", () => {
+  const ctx = myTurn();
+  const c = { kind: "creature", player: 0, lane: 0 };
+  const labels = ["Heal 1 damage from", "Deal 1 damage to"], skip_labels = ["Don't heal", "Don't deal damage"];
+  const act = (targets) => ({ kind: "play_card", card: 11, targets, labels, skip_labels });
+  const p = new ActionPicker([act([[], []]), act([[c], []]), act([[], [c]])], ctx);
+  assert.equal(p.options().skip_label, "Don't heal");
+  assert.ok(p.skip());
+  assert.equal(p.options().skip_label, "Don't deal damage");
+  assert.ok(p.skip());
+  assert.equal(p.result(), null);
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).confirm, "Cast Corn Scepter anyway");
+});
