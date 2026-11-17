@@ -47,6 +47,12 @@ export function kindLabel(key, via = "") {
   return t("kind.play");
 }
 
+/**
+ * Does playing this action need a deliberate Confirm, not just the last click? Yes when an optional part that the card
+ * words a skip for (skip_labels) was left out: the player sees what will and will not happen first.
+ */
+export const needsConfirm = (a) => (a.skip_labels ?? []).some((l, i) => l && !(a.targets?.[i]?.length));
+
 /** Group the non-general legal actions by source key. */
 export function sources(legal) {
   const out = {};
@@ -174,9 +180,14 @@ export class ActionPicker {
       const s = this.slots.get(a);
       return i < s.length && same(cur, s[i]);
     });
+    // Leaving a slot empty says what it does where the card words it ("Don't move a Building").
+    const skip = this.cur.length === 0 ? live.map((a) => a.skip_labels?.[i]).find(Boolean) : "";
     // When a labelled step follows, say so: "Next: Deal 1 damage to" is clearer than "Done".
     const next = live.map((a) => slotLabels(a, this.ctx)[i + 1]).find(Boolean);
-    return { tokens: list, can_skip, skip_label: next ? t("skip.next", { label: labelText(next) }) : this.cur.length === 0 ? t("skip.none") : t("skip.done") };
+    return {
+      tokens: list, can_skip, optional: can_skip && this.cur.length === 0,
+      skip_label: skip ? labelText(skip) : next ? t("skip.next", { label: labelText(next) }) : this.cur.length === 0 ? t("skip.none") : t("skip.done"),
+    };
   }
 
   /** Close slots that every remaining candidate agrees are finished. */
@@ -217,10 +228,12 @@ export class ActionPicker {
    * The action to send, once the clicks leave exactly one possibility. Before
    * the player has clicked anything this is null even if only one action
    * remains: that case is confirm() (a Spell with no choices still wants a
-   * deliberate click). After a click, choices that are now forced fill in.
+   * deliberate click), and likewise when an optional part was declined (needsConfirm).
+   * After a click, choices that are now forced fill in.
    */
   result() {
-    return this.acted ? this.confirm() : null;
+    const a = this.acted ? this.confirm() : null;
+    return a && !needsConfirm(a) ? a : null;
   }
 
   /** The remaining single action, if there is exactly one: for a Confirm button. */

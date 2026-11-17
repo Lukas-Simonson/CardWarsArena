@@ -1,6 +1,6 @@
 // What the bar above the player's hand says and offers, from the current
 // selection. Pure: it only reads the view, the context and the picker.
-import { describeAction, cardName, seatName, labelText } from "./describe.js";
+import { describeAction, cardName, seatName, labelText, summaryText } from "./describe.js";
 import { t, fmtList } from "./i18n.js";
 import { kindLabel, kindKey, parseToken } from "./picker.js";
 
@@ -41,8 +41,9 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
   if (opts.tokens.length === 0 && !opts.can_skip) {
     const action = picker.confirm();
     if (action) {
-      out.text = describeAction(ctx, action);
-      out.confirm = confirmLabel(action, name);
+      const summary = summaryText(ctx, action, name);
+      out.text = summary ?? describeAction(ctx, action);
+      out.confirm = summary && !(action.targets ?? []).some((s) => s?.length) ? t("confirm.anyway", { name }) : confirmLabel(action, name);
     }
     return out;
   }
@@ -51,7 +52,8 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
     return out;
   }
   const label = picker.label();
-  out.text = label ? t("prompt.step_labelled", { label: labelText(label), step: instruction(opts.tokens, true), name }) : t("prompt.step", { step: instruction(opts.tokens), name });
+  const optional = opts.optional ? "yes" : "no";
+  out.text = label ? t("prompt.step_labelled", { label: labelText(label), step: instruction(opts.tokens, true), name, optional }) : t("prompt.step", { step: instruction(opts.tokens), name, optional });
   if (opts.can_skip) out.skip = opts.skip_label;
   return out;
 }

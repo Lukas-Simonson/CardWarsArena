@@ -55,7 +55,18 @@ created with `AllowUnimplemented`.
   one choice between them: "heal or deal 1 damage"), `distinct` (slots of one name may not pick
   the same target), `label` (what the choice is for; sent with the legal action as `labels`), `landscape`, `face_down`,
   `without` (for lanes: `creature` or `building`), `ready` and `damaged` (creatures), `card_type`, `optional`, and
-  `count` (a Value: choose up to that many *distinct* targets).
+  `count` (a Value: choose up to that many *distinct* targets), `requires` (see below) and `skip_label`.
+
+  **Chained optional slots.** `requires: N` makes a slot depend on an earlier one: it is asked only when slot N was
+  chosen, and when it was not the slot is left empty (a choice for it is refused). Reclaim Landscape's third slot, the
+  Lane to move a Building to, `requires` the Building slot, so skipping the Building never asks for a Lane; the slot
+  is not optional itself, so a Building that is moved always has a destination (when no Lane is free, there is nothing
+  to choose and it is left empty). A slot with no legal choice is never asked: the legal actions have it empty.
+  `skip_label` ("Don't move a Building") is what leaving an optional slot empty does; it is sent with the legal action as
+  `skip_labels`, one per slot, and is for the button that skips the slot and for the summary before the card is played.
+  A card that words its skips this way is confirmed before it is played whenever a part was skipped, and a card whose
+  parts were all skipped warns that it will do nothing. Other cards with several slots (Green Candy, Auto-Plucker's
+  "heal or damage" `group`, Volcano's `lane_of`) already ask only what applies, so they need neither.
 - **Op**: one step of `do`: `draw`, `damage_creature`, `damage_hero`,
   `mod_creature`, `move_creature`, `move_building`, `flip_landscape`,
   `ready_creature`, `bounce`, `destroy_building`, `gain_actions`,

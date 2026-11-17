@@ -100,3 +100,23 @@ func TestModelledTwiceIsRejected(t *testing.T) {
 		t.Error("two effect files for one card should be an error")
 	}
 }
+
+func TestTargetSlotsMayRequireAnEarlierOne(t *testing.T) {
+	one, three := 1, 3
+	ok := Effect{Kind: KindSpell, Targets: []TargetSpec{{What: "building", Optional: true, SkipLabel: "Don't"}, {What: "lane", Requires: &[]int{0}[0]}}}
+	if err := ok.Validate(Spell); err != nil {
+		t.Errorf("a slot that requires an earlier one: %v", err)
+	}
+	forward := Effect{Kind: KindSpell, Targets: []TargetSpec{{What: "lane", Requires: &one}, {What: "building"}}}
+	if err := forward.Validate(Spell); err == nil {
+		t.Error("requires a later slot should be refused")
+	}
+	self := Effect{Kind: KindSpell, Targets: []TargetSpec{{What: "lane", Requires: &three}}}
+	if err := self.Validate(Spell); err == nil {
+		t.Error("requires a slot that does not exist should be refused")
+	}
+	bad := Effect{Kind: KindSpell, Targets: []TargetSpec{{What: "building", SkipLabel: "Don't"}}}
+	if err := bad.Validate(Spell); err == nil {
+		t.Error("a skip_label on a slot that cannot be skipped should be refused")
+	}
+}

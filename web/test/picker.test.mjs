@@ -137,7 +137,7 @@ test("prompt: choosing a lane, a target, and confirming", () => {
   assert.equal(p2.confirm, "Cast Corn Scepter");
   const targets = new ActionPicker([play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [[]])], ctx);
   const p3 = buildPrompt(ctx, true, "hand:11", targets, false);
-  assert.equal(p3.text, "Choose a target for Corn Scepter");
+  assert.equal(p3.text, "Choose a target for Corn Scepter (optional)");
   assert.equal(p3.skip, "None");
 });
 
@@ -230,4 +230,83 @@ test("a card's two Floops are told apart, the first keeping the plain key", () =
   assert.deepEqual(floopKinds([granted]), ["floop:1"]); // only the granted one is usable: no choice to make
   assert.equal(kindLabel("floop:1", "hero"), "Floop (Hero's)");
   assert.equal(kindLabel("floop"), "Floop");
+});
+
+// Reclaim Landscape: flip a face-down Landscape, move a Building to a Lane without one; every part optional, and the Lane
+// is asked only once a Building is chosen (the server lists exactly the combinations that make sense).
+const reclaim = (() => {
+  const flip = { kind: "landscape", player: 0, lane: 1 }, building = { kind: "building", player: 0, lane: 0 };
+  const labels = ["Flip", "Move", "Move to"], skip_labels = ["Don't flip a Landscape", "Don't move a Building", ""];
+  const act = (targets) => ({ kind: "play_card", card: 11, targets, labels, skip_labels });
+  const lanes = [2, 3].map((lane) => ({ kind: "lane", player: 0, lane }));
+  return [
+    act([[], [], []]), act([[flip], [], []]),
+    ...lanes.flatMap((l) => [act([[], [building], [l]]), act([[flip], [building], [l]])]),
+  ];
+})();
+
+test("Reclaim Landscape: skipping the Building never asks for a Lane, and the skip says what it skips", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker(reclaim, ctx);
+  const o1 = p.options();
+  assert.deepEqual(o1.tokens, ["landscape:0:1"]);
+  assert.equal(o1.skip_label, "Don't flip a Landscape");
+  assert.equal(o1.optional, true);
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Flip: choose a Landscape for Corn Scepter (optional)");
+  assert.ok(p.skip());
+  const o2 = p.options();
+  assert.deepEqual(o2.tokens, ["building:0:0"]);
+  assert.equal(o2.skip_label, "Don't move a Building");
+  assert.ok(p.skip());
+  // the Lane question is not asked: nothing is left to click, and the card is not played by that click
+  assert.deepEqual(p.options().tokens, []);
+  assert.equal(p.result(), null);
+  const prompt = buildPrompt(ctx, true, "hand:11", p, false);
+  assert.equal(prompt.text, "This won't do anything: Corn Scepter has nothing chosen.");
+  assert.equal(prompt.confirm, "Cast Corn Scepter anyway");
+  assert.deepEqual(p.confirm().targets, [[], [], []]);
+});
+
+test("Reclaim Landscape: flip only waits for a Confirm that says what is skipped", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker(reclaim, ctx);
+  assert.ok(p.pick("landscape:0:1"));
+  assert.equal(p.options().skip_label, "Don't move a Building");
+  assert.ok(p.skip());
+  assert.equal(p.result(), null);
+  const prompt = buildPrompt(ctx, true, "hand:11", p, false);
+  assert.match(prompt.text, /^Flip .*\(your, lane 2\)\. Don't move a Building\.$/);
+  assert.equal(prompt.confirm, "Cast Corn Scepter");
+});
+
+test("Reclaim Landscape: move only asks which Lane, then summarizes before it is cast", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker(reclaim, ctx);
+  assert.ok(p.skip()); // no flip
+  assert.ok(p.pick("building:0:0"));
+  const o = p.options();
+  assert.deepEqual(o.tokens, ["lane:0:2", "lane:0:3"]);
+  assert.equal(o.optional, false, "a Building to move needs somewhere to go");
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Move to: choose a lane for Corn Scepter");
+  assert.ok(p.pick("lane:0:3"));
+  assert.equal(p.result(), null, "the flip was declined, so it is confirmed first");
+  assert.match(buildPrompt(ctx, true, "hand:11", p, false).text, /^Don't flip a Landscape\. Move building \(your, lane 1\)\. Move to lane 4 \(your side\)\.$/);
+});
+
+test("Reclaim Landscape: flip and move together are played at the last click", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker(reclaim, ctx);
+  assert.ok(p.pick("landscape:0:1"));
+  assert.ok(p.pick("building:0:0"));
+  assert.ok(p.pick("lane:0:2"));
+  const a = p.result();
+  assert.ok(a, "nothing was declined: no confirmation needed");
+  assert.deepEqual(a.targets.map((s) => s.length), [1, 1, 1]);
+});
+
+test("a card without wording for skipping is played at the last click as before", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker([play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [[]])], ctx);
+  assert.ok(p.skip());
+  assert.deepEqual(p.result().targets, [[]]);
 });

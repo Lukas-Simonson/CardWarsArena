@@ -96,7 +96,7 @@ export async function effectLabels(dir = join(WEB, "..", "server", "data", "effe
   const labels = new Set();
   const walk = (o) => {
     if (Array.isArray(o)) o.forEach(walk);
-    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "label" && typeof v === "string" ? labels.add(v) : walk(v));
+    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) ((k === "label" || k === "skip_label") && typeof v === "string" ? labels.add(v) : walk(v));
   };
   for (const f of await files(dir, [".json"])) walk(JSON.parse(await readFile(f, "utf8")));
   return [...labels].sort();

@@ -135,6 +135,24 @@ function chooseText(ctx, a) {
   }
 }
 
+/**
+ * What a card with optional parts will do, said before it is played: the parts chosen and the parts declined, or
+ * that it will do nothing when every part was declined. null for an action whose card has no wording for skipping.
+ */
+export function summaryText(ctx, a, name) {
+  const skips = a.skip_labels ?? [], labels = a.labels ?? [], slots = a.targets ?? [];
+  if (!skips.some(Boolean)) return null;
+  if (slots.every((s) => !s?.length)) return t("summary.nothing", { name });
+  const parts = [];
+  slots.forEach((s, i) => {
+    if (s?.length) parts.push(withLabel(labels[i], s.map((r) => describeRef(ctx, r)).join(t("targets.and"))));
+    else if (skips[i]) parts.push(labelText(skips[i]));
+  });
+  return t("summary.sentence", { parts: parts.join(t("summary.sep")) });
+}
+
+const withLabel = (label, what) => (label ? t("targets.slot", { label: labelText(label), what }) : what);
+
 /** A readable sentence for an action the server listed as legal. */
 export function describeAction(ctx, a) {
   return actionText(ctx, a) ?? t("action.unknown", { action: JSON.stringify(a) });
