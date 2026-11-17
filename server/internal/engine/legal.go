@@ -66,10 +66,17 @@ func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
 	var out []Action
 	for _, cost := range g.costChoices(p, in) {
 		for _, targets := range choices {
-			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e)})
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e), Groups: spellGroups(e)})
 		}
 	}
 	return out
+}
+
+func spellGroups(e *card.Effect) []string {
+	if e == nil {
+		return nil
+	}
+	return groupsOf(e.Targets)
 }
 
 func spellSkipLabels(e *card.Effect) []string {
@@ -118,7 +125,7 @@ func (g *Game) laneActions(p PlayerID, in Instance, lane int) []Action {
 	var out []Action
 	for _, cost := range costs {
 		for _, targets := range triggerChoices {
-			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e)})
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e), Groups: spellGroups(e)})
 		}
 	}
 	return out

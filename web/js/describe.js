@@ -146,9 +146,15 @@ export function summaryText(ctx, a, name) {
   const parts = [];
   slots.forEach((s, i) => {
     if (s?.length) parts.push(withLabel(labels[i], s.map((r) => describeRef(ctx, r)).join(t("targets.and"))));
-    else if (skips[i]) parts.push(labelText(skips[i]));
+    else if (skips[i] && !slotFilled(a, i)) parts.push(labelText(skips[i]));
   });
   return t("summary.sentence", { parts: parts.join(t("summary.sep")) });
+}
+
+/** Is target slot i filled, or, when it shares a target with others (Group), is any slot of its group? */
+export function slotFilled(a, i) {
+  const g = a.groups?.[i];
+  return (a.targets ?? []).some((s, j) => s?.length && (j === i || (g && a.groups[j] === g)));
 }
 
 const withLabel = (label, what) => (label ? t("targets.slot", { label: labelText(label), what }) : what);

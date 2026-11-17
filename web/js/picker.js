@@ -10,7 +10,7 @@
 // Pure: no DOM. ctx = { view, cards } as in describe.js.
 
 import { t } from "./i18n.js";
-import { labelText } from "./describe.js";
+import { labelText, slotFilled } from "./describe.js";
 
 // choose answers a Choice (see the modal in render.js): they have no source on the board.
 const GENERAL_KINDS = new Set(["keep_hand", "mulligan", "draw", "end_main", "choose"]);
@@ -51,7 +51,26 @@ export function kindLabel(key, via = "") {
  * Does playing this action need a deliberate Confirm, not just the last click? Yes when an optional part that the card
  * words a skip for (skip_labels) was left out: the player sees what will and will not happen first.
  */
-export const needsConfirm = (a) => (a.skip_labels ?? []).some((l, i) => l && !(a.targets?.[i]?.length));
+export const needsConfirm = (a) => (a.skip_labels ?? []).some((l, i) => l && !slotFilled(a, i));
+
+/**
+ * Slots that share one target between them (Green Candy: heal one Creature or damage one) are asked as two steps:
+ * the Creature, then which of the group's slots it goes in. Returns { at: [first, second] } as indices into the
+ * action's targets, or null when the action has no group of exactly two.
+ */
+function groupPlan(a) {
+  const idx = (a.groups ?? []).map((g, i) => (g ? i : -1)).filter((i) => i >= 0);
+  return idx.length === 2 && a.groups[idx[0]] === a.groups[idx[1]] ? { at: idx } : null;
+}
+
+const MODE = "mode:";
+export const isModeToken = (t) => t.startsWith(MODE);
+
+/** The slot labels of an action's group, by mode token ("mode:0" is the group's first slot): what each way of using the target does. */
+export function modeLabel(a, token) {
+  const plan = groupPlan(a);
+  return plan ? (a.labels?.[plan.at[Number(token.slice(MODE.length))]] ?? "") : "";
+}
 
 /** Group the non-general legal actions by source key. */
 export function sources(legal) {
@@ -101,7 +120,8 @@ export function slotLabels(a, ctx) {
   const out = [];
   if (needsLane(a, ctx)) out.push("");
   for (const _ of a.cost_targets ?? []) out.push("");
-  (a.targets ?? []).forEach((_, i) => out.push(a.labels?.[i] ?? ""));
+  const plan = groupPlan(a);
+  (a.targets ?? []).forEach((_, i) => out.push(plan && plan.at.includes(i) ? "" : (a.labels?.[i] ?? "")));
   return out;
 }
 
@@ -112,6 +132,14 @@ export function slotsOf(a, ctx) {
   if (needsLane(a, ctx)) out.push([`dest:${a.lane ?? 0}`]);
   for (const group of [a.cost_targets, a.targets]) {
     for (const slot of group ?? []) out.push((slot ?? []).map(tokenOfRef).sort());
+  }
+  const plan = groupPlan(a);
+  if (plan) {
+    const base = out.length - (a.targets?.length ?? 0), [x, y] = plan.at;
+    const toks = [out[base + x], out[base + y]];
+    const filled = toks[0].length ? 0 : toks[1].length ? 1 : -1;
+    out[base + x] = filled < 0 ? [] : toks[filled];
+    out[base + y] = filled < 0 ? [] : [`${MODE}${filled}`];
   }
   return out;
 }
@@ -184,8 +212,9 @@ export class ActionPicker {
     const skip = this.cur.length === 0 ? live.map((a) => a.skip_labels?.[i]).find(Boolean) : "";
     // When a labelled step follows, say so: "Next: Deal 1 damage to" is clearer than "Done".
     const next = live.map((a) => slotLabels(a, this.ctx)[i + 1]).find(Boolean);
+    const modes = list.filter(isModeToken).map((token) => ({ token, label: live.map((a) => modeLabel(a, token)).find(Boolean) ?? "" }));
     return {
-      tokens: list, can_skip, optional: can_skip && this.cur.length === 0,
+      tokens: list, modes, can_skip, optional: can_skip && this.cur.length === 0,
       skip_label: skip ? labelText(skip) : next ? t("skip.next", { label: labelText(next) }) : this.cur.length === 0 ? t("skip.none") : t("skip.done"),
     };
   }

@@ -193,7 +193,7 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `kind` | when | fields |
 |---|---|---|
 | `keep_hand`, `mulligan` | mulligan phase | |
-| `play_card` | main | `card` (hand uid), `lane` (not for Spells), `cost_targets`, `targets`. A legal one also carries `labels` and `skip_labels`, one per target slot, for display (what each choice is for, and what leaving an optional slot empty does); they are ignored when played |
+| `play_card` | main | `card` (hand uid), `lane` (not for Spells), `cost_targets`, `targets`. A legal one also carries `labels`, `skip_labels` and `groups`, one per target slot, for display (what each choice is for, what leaving an optional slot empty does, and which slots share one target, as heal-or-damage does); they are ignored when played |
 | `draw` | main | spend 1 Action to draw |
 | `floop` | main | `lane`, `source` (`creature`/`building`), `index` (which of the card's Floop abilities, default 0: its own come first, then one its Hero grants it, as with Finn), `targets`. A legal `floop` also carries `via: "hero"` when the ability is granted (display only) |
 | `activate` | main | `lane`, `source`, `index`, `targets`; `source: "hero"` for a Hero's ability (no `lane`) |

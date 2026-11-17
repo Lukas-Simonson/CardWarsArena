@@ -144,7 +144,6 @@
         "n": 4
        },
        "label": "Heal 1 damage from",
-       "skip_label": "Don't heal",
        "distinct": "mode"
       },
       {
@@ -155,7 +154,6 @@
         "n": 4
        },
        "label": "Deal 1 damage to",
-       "skip_label": "Don't deal damage",
        "distinct": "mode"
       }
      ],
@@ -483,15 +481,14 @@
      "what": "creature",
      "optional": true,
      "group": "mode",
-     "label": "Heal 1 damage from",
-     "skip_label": "Don't heal"
+     "label": "Heal 1 damage",
+     "skip_label": "Don't heal or deal damage"
     },
     {
      "what": "creature",
      "optional": true,
      "group": "mode",
-     "label": "Deal 1 damage to",
-     "skip_label": "Don't deal damage"
+     "label": "Deal 1 damage"
     }
    ],
    "do": [

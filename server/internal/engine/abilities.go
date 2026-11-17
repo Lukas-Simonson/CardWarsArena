@@ -246,6 +246,7 @@ func (g *Game) abilitiesOf(p PlayerID, probe Action, out []Action) []Action {
 			b.Targets = targets
 			b.Labels = labelsOf(e.Targets)
 			b.SkipLabels = skipLabelsOf(e.Targets)
+			b.Groups = groupsOf(e.Targets)
 			out = append(out, b)
 		}
 	}

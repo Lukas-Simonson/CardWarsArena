@@ -136,6 +136,7 @@ function heroChip(m, seat, on) {
 function promptBar({ prompt, myDecision, ctx }, on) {
   const kids = [h("span", {}, prompt.text)];
   for (const [key, label] of prompt.kinds) kids.push(h("button", { type: "button", class: "btn-purple", onclick: () => on.onKind(key) }, label));
+  for (const [token, label] of prompt.modes) kids.push(h("button", { type: "button", class: "btn-purple", onclick: () => on.onToken(token) }, label));
   if (prompt.confirm) kids.push(h("button", { type: "button", class: "btn-green", onclick: on.onConfirm }, prompt.confirm));
   if (prompt.skip) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onSkip }, prompt.skip));
   if (prompt.cancel) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onCancel }, t("prompt.cancel")));
