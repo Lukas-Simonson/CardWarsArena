@@ -284,6 +284,13 @@ type TargetSpec struct {
 	Other    bool   `json:"other,omitempty"`
 	LaneOf   *int   `json:"lane_of,omitempty"`
 	Group    string `json:"group,omitempty"`
+	// Requires makes the slot depend on an earlier one: it is asked only when that slot was chosen, and left empty
+	// when it was not (Reclaim Landscape: "to which Lane?" only after a Building was picked to move).
+	Requires *int `json:"requires,omitempty"`
+	// SkipLabel says what leaving an optional slot empty does ("Don't move a Building"), for the button that skips
+	// it and the summary before the card is played. A card whose slots all have one tells the player when they have
+	// declined every part, so it would do nothing.
+	SkipLabel string `json:"skip_label,omitempty"`
 }
 
 // Op is one step of an effect.
@@ -486,6 +493,12 @@ func validateSpecs(specs []TargetSpec) error {
 		}
 		if ts.LaneOf != nil && (*ts.LaneOf < 0 || *ts.LaneOf >= i) {
 			return fmt.Errorf("target %d: lane_of must name an earlier slot", i)
+		}
+		if ts.Requires != nil && (*ts.Requires < 0 || *ts.Requires >= i) {
+			return fmt.Errorf("target %d: requires must name an earlier slot", i)
+		}
+		if ts.SkipLabel != "" && !ts.Optional && ts.Requires == nil {
+			return fmt.Errorf("target %d: skip_label is for an optional slot", i)
 		}
 	}
 	return nil

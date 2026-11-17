@@ -423,18 +423,23 @@
           "what": "landscape",
           "side": "you",
           "face_down": true,
-          "optional": true
+          "optional": true,
+          "label": "Flip",
+          "skip_label": "Don't flip a Landscape"
         },
         {
           "what": "building",
           "side": "you",
-          "optional": true
+          "optional": true,
+          "label": "Move",
+          "skip_label": "Don't move a Building"
         },
         {
           "what": "lane",
           "side": "you",
           "without": "building",
-          "optional": true
+          "label": "Move to",
+          "requires": 1
         }
       ],
       "do": [

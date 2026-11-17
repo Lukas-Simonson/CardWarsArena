@@ -44,6 +44,9 @@ type Action struct {
 	// Labels is sent with a legal action, one per target slot, saying what
 	// each choice is for. It is for display only and is ignored when played.
 	Labels []string `json:"labels,omitempty"`
+	// SkipLabels is sent with a legal action too, one per target slot: what leaving that optional slot empty does
+	// ("Don't move a Building"), or "" for a slot that has no such wording. Display only.
+	SkipLabels []string `json:"skip_labels,omitempty"`
 }
 
 // TargetRef names one chosen target. Kind is the TargetSpec "what":

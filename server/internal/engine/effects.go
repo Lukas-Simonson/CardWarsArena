@@ -152,6 +152,20 @@ func withoutTaken(cands []TargetRef, specs []card.TargetSpec, i int, given [][]T
 	return out
 }
 
+// skipLabelsOf is the SkipLabels of an action choosing for specs, or nil when no slot has one.
+func skipLabelsOf(specs []card.TargetSpec) []string {
+	var out []string
+	any := false
+	for _, s := range specs {
+		out = append(out, s.SkipLabel)
+		any = any || s.SkipLabel != ""
+	}
+	if !any {
+		return nil
+	}
+	return out
+}
+
 // labelsOf is the Labels of an action choosing for specs, or nil when none is set.
 func labelsOf(specs []card.TargetSpec) []string {
 	var out []string
@@ -187,7 +201,7 @@ func (g *Game) checkTargets(specs []card.TargetSpec, given [][]TargetRef, c effC
 	cands := make([][]TargetRef, len(specs))
 	for i, spec := range specs {
 		cands[i] = withoutTaken(g.candidates(spec, c, given), specs, i, given)
-		if len(cands[i]) == 0 && !spec.Optional {
+		if len(cands[i]) == 0 && !spec.Optional && spec.Requires == nil {
 			return false, nil
 		}
 	}
@@ -196,6 +210,13 @@ func (g *Game) checkTargets(specs []card.TargetSpec, given [][]TargetRef, c effC
 		var chosen []TargetRef
 		if i < len(given) {
 			chosen = given[i]
+		}
+		if spec.Requires != nil && len(slotRefs(spec.Requires, given)) == 0 {
+			// the slot it depends on was left empty, so this one is not asked: it must be empty too
+			if len(chosen) > 0 {
+				return true, ErrBadTarget
+			}
+			continue
 		}
 		max := g.slotMax(spec, c, len(cands[i]))
 		need := max
@@ -240,6 +261,10 @@ func (g *Game) targetCombos(specs []card.TargetSpec, c effCtx, limit int) [][][]
 	for i, spec := range specs {
 		var next [][][]TargetRef
 		for _, partial := range out {
+			if spec.Requires != nil && len(partial[*spec.Requires]) == 0 {
+				next = append(next, append(append([][]TargetRef(nil), partial...), nil)) // not asked
+				continue
+			}
 			cands := withoutTaken(g.candidates(spec, c, partial), specs, i, partial)
 			max := g.slotMax(spec, c, len(cands))
 			lo := max
