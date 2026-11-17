@@ -54,19 +54,24 @@ export function kindLabel(key, via = "") {
 export const needsConfirm = (a) => (a.skip_labels ?? []).some((l, i) => l && !slotFilled(a, i));
 
 /**
- * Slots that share one target between them (Green Candy: heal one Creature or damage one) are asked as two steps:
- * the Creature, then which of the group's slots it goes in. Returns { at: [first, second] } as indices into the
- * action's targets, or null when the action has no group of exactly two.
+ * Slots that share their targets (Green Candy: heal one Creature or damage one; Apple Pieclops: heal some, damage
+ * others) are asked as "which Creature", then "what to do to it", as often as the card allows. Returns { at: [first,
+ * second] } as indices into the action's targets, or null when the action has no group of exactly two.
  */
 function groupPlan(a) {
   const idx = (a.groups ?? []).map((g, i) => (g ? i : -1)).filter((i) => i >= 0);
   return idx.length === 2 && a.groups[idx[0]] === a.groups[idx[1]] ? { at: idx } : null;
 }
 
+// Within a grouped step each choice is one token "creature:0:1|mode:0": the Creature and which of the group's slots
+// (0 = the first, 1 = the second) it goes in. The player makes it in two clicks; the picker remembers the first.
 const MODE = "mode:";
 export const isModeToken = (t) => t.startsWith(MODE);
+const isPair = (t) => t.includes("|");
+const creatureOf = (t) => t.split("|")[0];
+const modeOf = (t) => t.split("|")[1];
 
-/** The slot labels of an action's group, by mode token ("mode:0" is the group's first slot): what each way of using the target does. */
+/** What the group's slot j does, as the card words it ("Heal 1 damage"). */
 export function modeLabel(a, token) {
   const plan = groupPlan(a);
   return plan ? (a.labels?.[plan.at[Number(token.slice(MODE.length))]] ?? "") : "";
@@ -121,7 +126,7 @@ export function slotLabels(a, ctx) {
   if (needsLane(a, ctx)) out.push("");
   for (const _ of a.cost_targets ?? []) out.push("");
   const plan = groupPlan(a);
-  (a.targets ?? []).forEach((_, i) => out.push(plan && plan.at.includes(i) ? "" : (a.labels?.[i] ?? "")));
+  (a.targets ?? []).forEach((_, i) => { if (!plan || i !== plan.at[1]) out.push(plan && i === plan.at[0] ? "" : (a.labels?.[i] ?? "")); });
   return out;
 }
 
@@ -135,11 +140,10 @@ export function slotsOf(a, ctx) {
   }
   const plan = groupPlan(a);
   if (plan) {
+    // the group's two slots become one, of "creature|mode" tokens; the second slot's place is closed up
     const base = out.length - (a.targets?.length ?? 0), [x, y] = plan.at;
-    const toks = [out[base + x], out[base + y]];
-    const filled = toks[0].length ? 0 : toks[1].length ? 1 : -1;
-    out[base + x] = filled < 0 ? [] : toks[filled];
-    out[base + y] = filled < 0 ? [] : [`${MODE}${filled}`];
+    out[base + x] = [...out[base + x].map((t) => `${t}|${MODE}0`), ...out[base + y].map((t) => `${t}|${MODE}1`)].sort();
+    out.splice(base + y, 1);
   }
   return out;
 }
@@ -155,6 +159,7 @@ export class ActionPicker {
     this.done = [];   // completed choice slots, each a sorted list of tokens
     this.cur = [];    // tokens clicked in the slot being filled
     this.acted = false; // the player has made at least one choice
+    this.pending = null; // in a grouped step, the Creature clicked while its mode is still to be chosen
     this.slots = new Map();
     for (const a of actions) {
       if (kind === "" || kindKey(a) === kind) {
@@ -201,10 +206,10 @@ export class ActionPicker {
       const s = this.slots.get(a);
       if (i < s.length) for (const t of s[i]) if (!this.cur.includes(t)) tokens.add(t);
     }
-    const list = [...tokens].sort(); // a stable order, whatever order the server listed the actions in
+    let list = [...tokens].sort(); // a stable order, whatever order the server listed the actions in
     // the slot may be closed early if some candidate wants exactly what is chosen
     const cur = sorted(this.cur);
-    const can_skip = list.length > 0 && live.some((a) => {
+    const can_skip = !this.pending && list.length > 0 && live.some((a) => {
       const s = this.slots.get(a);
       return i < s.length && same(cur, s[i]);
     });
@@ -212,9 +217,20 @@ export class ActionPicker {
     const skip = this.cur.length === 0 ? live.map((a) => a.skip_labels?.[i]).find(Boolean) : "";
     // When a labelled step follows, say so: "Next: Deal 1 damage to" is clearer than "Done".
     const next = live.map((a) => slotLabels(a, this.ctx)[i + 1]).find(Boolean);
-    const modes = list.filter(isModeToken).map((token) => ({ token, label: live.map((a) => modeLabel(a, token)).find(Boolean) ?? "" }));
+    // A grouped step offers the Creatures first, then (once one is clicked) what to do to it.
+    const pairing = list.some(isPair);
+    let modes = [];
+    if (pairing) {
+      if (this.pending) {
+        const ms = [...new Set(list.filter((t) => creatureOf(t) === this.pending).map(modeOf))].sort();
+        modes = ms.map((token) => ({ token, label: live.map((a) => modeLabel(a, token)).find(Boolean) ?? "" }));
+        list = ms;
+      } else {
+        list = [...new Set(list.map(creatureOf))].sort();
+      }
+    }
     return {
-      tokens: list, modes, can_skip, optional: can_skip && this.cur.length === 0,
+      tokens: list, modes, pairing, can_skip, optional: can_skip && this.cur.length === 0,
       skip_label: skip ? labelText(skip) : next ? t("skip.next", { label: labelText(next) }) : this.cur.length === 0 ? t("skip.none") : t("skip.done"),
     };
   }
@@ -236,9 +252,15 @@ export class ActionPicker {
 
   /** Click a token. False if it is not currently allowed. */
   pick(token) {
-    if (!this.options().tokens.includes(token)) return false;
-    this.cur.push(token);
+    const o = this.options();
+    if (!o.tokens.includes(token)) return false;
     this.acted = true;
+    if (o.pairing && !isModeToken(token)) {
+      this.pending = token; // its mode comes next
+      return true;
+    }
+    this.cur.push(o.pairing ? `${this.pending}|${token}` : token);
+    this.pending = null;
     this.#advance();
     return true;
   }

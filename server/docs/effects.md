@@ -64,6 +64,8 @@ created with `AllowUnimplemented`.
   to choose and it is left empty). A slot with no legal choice is never asked: the legal actions have it empty.
   `skip_label` ("Don't move a Building") is what leaving an optional slot empty does; it is sent with the legal action as
   `skip_labels`, one per slot, and is for the button that skips the slot and for the summary before the card is played.
+  `together` names two slots (or a `group`'s) that a client asks as one step: pick a target, then which of the two
+  slots it goes in (Apple Pieclops: a Creature, then heal or damage it). It is sent as `groups`, display only.
   A card that words its skips this way is confirmed before it is played whenever a part was skipped, and a card whose
   parts were all skipped warns that it will do nothing. Other cards with several slots (Green Candy, Auto-Plucker's
   "heal or damage" `group`, Volcano's `lane_of`) already ask only what applies, so they need neither.

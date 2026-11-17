@@ -209,7 +209,7 @@ func TestApplePieclopsListsEveryChoiceOnce(t *testing.T) {
 			continue
 		}
 		n++
-		if len(a.Labels) != 2 || a.Labels[0] != "Heal 1 damage from" || a.Labels[1] != "Deal 1 damage to" {
+		if len(a.Labels) != 2 || a.Labels[0] != "Heal 1 damage" || a.Labels[1] != "Deal 1 damage" || !slices.Equal(a.Groups, []string{"mode", "mode"}) {
 			t.Fatalf("labels = %v", a.Labels)
 		}
 		for _, r := range a.Targets[0] {

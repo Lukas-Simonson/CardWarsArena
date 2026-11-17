@@ -143,8 +143,9 @@
        "count": {
         "n": 4
        },
-       "label": "Heal 1 damage from",
-       "distinct": "mode"
+       "label": "Heal 1 damage",
+       "distinct": "mode",
+       "together": "mode"
       },
       {
        "what": "creature",
@@ -153,8 +154,9 @@
        "count": {
         "n": 4
        },
-       "label": "Deal 1 damage to",
-       "distinct": "mode"
+       "label": "Deal 1 damage",
+       "distinct": "mode",
+       "together": "mode"
       }
      ],
      "then": [

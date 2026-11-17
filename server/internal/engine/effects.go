@@ -166,13 +166,17 @@ func skipLabelsOf(specs []card.TargetSpec) []string {
 	return out
 }
 
-// groupsOf is the Groups of an action choosing for specs, or nil when no slot is grouped.
+// groupsOf is the Groups of an action choosing for specs (a spec's Group, or its Together), or nil when none is.
 func groupsOf(specs []card.TargetSpec) []string {
 	var out []string
 	any := false
 	for _, s := range specs {
-		out = append(out, s.Group)
-		any = any || s.Group != ""
+		g := s.Group
+		if g == "" {
+			g = s.Together
+		}
+		out = append(out, g)
+		any = any || g != ""
 	}
 	if !any {
 		return nil
