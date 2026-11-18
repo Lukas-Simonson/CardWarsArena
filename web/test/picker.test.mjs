@@ -310,3 +310,66 @@ test("a card without wording for skipping is played at the last click as before"
   assert.ok(p.skip());
   assert.deepEqual(p.result().targets, [[]]);
 });
+
+// Heal-or-damage cards (Green Candy, Auto-Plucker): pick the Creature first, then say what to do to it.
+const healOrDamage = (() => {
+  const c0 = { kind: "creature", player: 0, lane: 0 }, c1 = { kind: "creature", player: 0, lane: 1 };
+  const labels = ["Heal 1 damage", "Deal 1 damage"], skip_labels = ["Don't heal or deal damage", ""], groups = ["mode", "mode"];
+  const act = (targets) => ({ kind: "play_card", card: 11, targets, labels, skip_labels, groups });
+  // c0 is damaged (may be healed or damaged), c1 is whole (damage only)
+  return [act([[], []]), act([[c0], []]), act([[], [c0]]), act([[], [c1]])];
+})();
+
+test("heal-or-damage: the Creature is chosen first, then heal or damage directly", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker(healOrDamage, ctx);
+  const o = p.options();
+  assert.deepEqual(o.tokens, ["creature:0:0", "creature:0:1"]);
+  assert.equal(o.skip_label, "Don't heal or deal damage");
+  assert.ok(p.pick("creature:0:0"));
+  const modes = p.options();
+  assert.deepEqual(modes.modes, [{ token: "mode:0", label: "Heal 1 damage" }, { token: "mode:1", label: "Deal 1 damage" }]);
+  const prompt = buildPrompt(ctx, true, "hand:11", p, false);
+  assert.equal(prompt.text, "What should Corn Scepter do to it?");
+  assert.deepEqual(prompt.modes, [["mode:0", "Heal 1 damage"], ["mode:1", "Deal 1 damage"]]);
+  assert.ok(p.pick("mode:1"));
+  assert.deepEqual(p.result().targets, [[], [{ kind: "creature", player: 0, lane: 0 }]]);
+});
+
+test("heal-or-damage: a Creature with only one possible use still asks, offering just that", () => {
+  const p = new ActionPicker(healOrDamage, myTurn());
+  assert.ok(p.pick("creature:0:1"));
+  assert.deepEqual(p.options().modes.map((m) => m.token), ["mode:1"]);
+});
+
+test("heal-or-damage: choosing nothing is confirmed with a warning", () => {
+  const ctx = myTurn();
+  const p = new ActionPicker(healOrDamage, ctx);
+  assert.ok(p.skip());
+  assert.equal(p.result(), null);
+  const prompt = buildPrompt(ctx, true, "hand:11", p, false);
+  assert.equal(prompt.text, "This won't do anything: Corn Scepter has nothing chosen.");
+  assert.equal(prompt.confirm, "Cast Corn Scepter anyway");
+});
+
+// Apple Pieclops: heal some Creatures and damage others, each chosen as "which Creature", then "heal or damage it".
+test("heal-and-damage-several: each Creature is picked, then healed or damaged, until Done", () => {
+  const ctx = myTurn();
+  const c = (lane) => ({ kind: "creature", player: 0, lane });
+  const labels = ["Heal 1 damage", "Deal 1 damage"], groups = ["mode", "mode"];
+  const act = (h, d) => ({ kind: "activate", lane: 0, targets: [h.map(c), d.map(c)], labels, groups });
+  const all = [act([], []), act([1], []), act([], [1]), act([2], []), act([], [2]), act([1], [2]), act([2], [1]), act([1, 2], []), act([], [1, 2])];
+  const p = new ActionPicker(all, ctx);
+  assert.deepEqual(p.options().tokens, ["creature:0:1", "creature:0:2"]);
+  assert.ok(p.options().can_skip); // heal and damage nothing
+  assert.ok(p.pick("creature:0:1"));
+  assert.equal(p.options().can_skip, false); // the mode is owed
+  assert.deepEqual(p.options().modes.map((m) => m.label), ["Heal 1 damage", "Deal 1 damage"]);
+  assert.ok(p.pick("mode:0"));
+  assert.deepEqual(p.options().tokens, ["creature:0:2"]); // the healed one is not offered again
+  assert.ok(p.options().can_skip);
+  assert.ok(p.pick("creature:0:2"));
+  assert.deepEqual(p.options().modes.map((m) => m.token), ["mode:0", "mode:1"]);
+  assert.ok(p.pick("mode:1"));
+  assert.deepEqual(p.result().targets, [[c(1)], [c(2)]]);
+});

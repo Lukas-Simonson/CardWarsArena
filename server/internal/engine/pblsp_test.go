@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"slices"
 	"testing"
 
 	"cardwars/internal/card"
@@ -208,7 +209,7 @@ func TestApplePieclopsListsEveryChoiceOnce(t *testing.T) {
 			continue
 		}
 		n++
-		if len(a.Labels) != 2 || a.Labels[0] != "Heal 1 damage from" || a.Labels[1] != "Deal 1 damage to" {
+		if len(a.Labels) != 2 || a.Labels[0] != "Heal 1 damage" || a.Labels[1] != "Deal 1 damage" || !slices.Equal(a.Groups, []string{"mode", "mode"}) {
 			t.Fatalf("labels = %v", a.Labels)
 		}
 		for _, r := range a.Targets[0] {
@@ -667,5 +668,18 @@ func TestFairyShepherdProtectsAdjacentNiceLandsCreatures(t *testing.T) {
 	g.put(1, 2, "cow")      // 1/5 Rainbow
 	if g.defOf(1, 0) != 9 || g.defOf(1, 2) != 5 {
 		t.Errorf("DEF %d %d, want 9 and 5", g.defOf(1, 0), g.defOf(1, 2))
+	}
+}
+
+func TestGreenCandySendsItsGroupSoClientsCanAskForTheCreatureFirst(t *testing.T) {
+	g := pbGame(t)
+	g.put(1, 0, "fairy-shepherd")
+	uid := g.give(1, "green-candy")
+	for _, a := range g.LegalActions(1) {
+		if a.Kind == ActPlayCard && a.Card == uid {
+			if !slices.Equal(a.Groups, []string{"mode", "mode"}) || !slices.Equal(a.Labels, []string{"Heal 1 damage", "Deal 1 damage"}) {
+				t.Errorf("groups %v labels %v", a.Groups, a.Labels)
+			}
+		}
 	}
 }

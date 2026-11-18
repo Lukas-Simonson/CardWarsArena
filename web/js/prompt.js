@@ -11,9 +11,10 @@ import { kindLabel, kindKey, parseToken } from "./picker.js";
  *   skip    label for the "None"/"Done" button, or "" for none
  *   confirm label for a Confirm button, or "" for none
  *   kinds   when the selected card can do several things, the choices
+ *   modes   when a chosen target can be used in several ways (heal it or damage it): [token, label] buttons
  */
 export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
-  const out = { text: "", cancel: false, skip: "", confirm: "", kinds: [] };
+  const out = { text: "", cancel: false, skip: "", confirm: "", kinds: [], modes: [] };
   const v = ctx.view;
   if (!v) return out;
   if (v.over) return { ...out, text: t("prompt.game_over") };
@@ -45,6 +46,11 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
       out.text = summary ?? describeAction(ctx, action);
       out.confirm = summary && !(action.targets ?? []).some((s) => s?.length) ? t("confirm.anyway", { name }) : confirmLabel(action, name);
     }
+    return out;
+  }
+  if (opts.modes.length && opts.modes.length === opts.tokens.length) {
+    out.text = t("prompt.choose_mode", { name });
+    out.modes = opts.modes.map((m) => [m.token, labelText(m.label)]);
     return out;
   }
   if (source.startsWith("thaw:")) {

@@ -284,6 +284,10 @@ type TargetSpec struct {
 	Other    bool   `json:"other,omitempty"`
 	LaneOf   *int   `json:"lane_of,omitempty"`
 	Group    string `json:"group,omitempty"`
+	// Together names slots that are chosen as one step: the player picks a target, then which of these slots it goes
+	// in (Apple Pieclops: pick a Creature, then heal it or damage it, as often as wanted). Slots in a Group are always
+	// shown this way. Display only: the rules are those of Group and Distinct.
+	Together string `json:"together,omitempty"`
 	// Requires makes the slot depend on an earlier one: it is asked only when that slot was chosen, and left empty
 	// when it was not (Reclaim Landscape: "to which Lane?" only after a Building was picked to move).
 	Requires *int `json:"requires,omitempty"`

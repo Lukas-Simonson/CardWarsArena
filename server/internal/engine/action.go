@@ -47,6 +47,10 @@ type Action struct {
 	// SkipLabels is sent with a legal action too, one per target slot: what leaving that optional slot empty does
 	// ("Don't move a Building"), or "" for a slot that has no such wording. Display only.
 	SkipLabels []string `json:"skip_labels,omitempty"`
+	// Groups is sent with a legal action too, one per target slot: the Group of slots that share one target between
+	// them ("mode": heal one Creature or damage one), or "" for a slot of its own. A client may ask for the target first
+	// and then which of the group's slots it goes in. Display only.
+	Groups []string `json:"groups,omitempty"`
 }
 
 // TargetRef names one chosen target. Kind is the TargetSpec "what":
