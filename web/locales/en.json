@@ -28,6 +28,8 @@
  "action.stolen_card": "the stolen card",
  "action.thaw": "Discard {card} to remove the frozen token from your lane {lane} Landscape",
  "action.unknown": "(unknown action: {action})",
+ "anim.cast_them": "{who} cast {card}",
+ "anim.cast_you": "You cast {card}",
  "anim.your_turn": "Your turn!",
  "bot.heuristic": "Heuristic",
  "bot.random": "Random",

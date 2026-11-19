@@ -426,7 +426,7 @@ function render() {
     const fx = pendingFx?.seq === state.seq && state.view ? pendingFx : null;
     const effects = fx ? plan(fx.prev, state.view, fx.events, ctxNow()) : [];
     const casts = effects.filter((f) => f.t === "cast");
-    if (casts.length && !fx.staged && !reduced()) {
+    if (casts.length && !fx.staged) {
       // A spell is shown first, over the position it was cast in; its effects
       // (damage, a death) play once it has been seen.
       const before = { ...state, view: { ...fx.prev, legal: [], awaiting: [] } };
