@@ -158,11 +158,10 @@ export function castCaption(f, ctx) {
 }
 
 /**
- * Show cast spells: the card, large, with who cast it. It is fixed in the middle of the window, not over the
- * battlefield, so it is seen wherever the page is scrolled (on a phone the player is often down at the hand). With
- * reduced motion it just stays put for the same time, without the movement.
+ * Show cast spells: the card, large, over the middle of the battlefield, with who cast it. Several at once sit side
+ * by side. With reduced motion it just stays put for the same time, without the movement.
  */
-function showCasts(casts, ctx) {
+function showCasts(casts, ctx, felt) {
   casts.forEach((f, i) => {
     const c = ctx.cards?.[f.card];
     if (!c) return;
@@ -171,7 +170,7 @@ function showCasts(casts, ctx) {
     el.setAttribute("role", "status");
     el.style.setProperty("--shift", `${(i - (casts.length - 1) / 2) * 150}px`); // several at once sit side by side
     el.append(cardEl(c), Object.assign(document.createElement("p"), { className: "caption", textContent: castCaption(f, ctx) }));
-    document.body.append(el);
+    felt?.append(el);
     const done = () => el.remove();
     if (reduced()) { setTimeout(done, CAST_MS); return; }
     const at = "translate(calc(-50% + var(--shift)), -50%)";
@@ -181,7 +180,7 @@ function showCasts(casts, ctx) {
 
 /** Play the effects on the freshly rendered scene in `root`. */
 export function applyEffects(root, fx, ctx) {
-  showCasts(fx.filter((f) => f.t === "cast"), ctx);
+  showCasts(fx.filter((f) => f.t === "cast"), ctx, root.querySelector(".felt"));
   if (!fx.length || reduced()) return;
   const q = (sel) => root.querySelector(sel);
   const tile = (seat, lane) => q(`.tile[data-seat="${seat}"][data-lane="${lane}"]`);

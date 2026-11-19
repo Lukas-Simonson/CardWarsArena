@@ -331,7 +331,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .tile .at.ghost { z-index: 4; pointer-events: none; }
 .fx-banner { position: absolute; left: 50%; top: 50%; z-index: 12; pointer-events: none; padding: 6px 40px 0; font-family: var(--big-font); font-size: 52px; white-space: nowrap; color: #fff; -webkit-text-stroke: 6px #16212b; paint-order: stroke fill; text-shadow: 0 5px 0 #16212b; border-radius: 18px; background: rgba(15,30,15,.55); }
 .fx-banner.mine { color: var(--gold); }
-.fx-cast { position: fixed; left: 50%; top: 50%; z-index: 120; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 10px; width: clamp(150px, 22vh, 220px); transform: translate(calc(-50% + var(--shift, 0px)), -50%); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
+.fx-cast { position: absolute; left: 50%; top: 50%; z-index: 12; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 10px; width: clamp(130px, 18vh, 200px); transform: translate(calc(-50% + var(--shift, 0px)), -50%); filter: drop-shadow(0 8px 14px rgba(0,0,0,.6)); }
 .fx-cast .caption { margin: 0; padding: 4px 16px; border-radius: 999px; background: #48207c; border: 2px solid #1f1033; color: #fff; font-family: var(--hand-font); font-size: 22px; line-height: 1.2; text-align: center; white-space: nowrap; filter: none; }
 @media (max-width: 900px) {
   .tile { height: 150px; --stat-gutter: 44px; } .lanes { gap: 6px; }
