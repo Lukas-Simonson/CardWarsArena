@@ -60,8 +60,26 @@ Both images are configured through environment variables, so they run on any hos
 | `CARDWARS_DISCORD_CLIENT_ID`, `CARDWARS_DISCORD_CLIENT_SECRET` | | The app's credentials at Discord. A provider without both is not offered. |
 | `CARDWARS_GITHUB_CLIENT_ID`, `CARDWARS_GITHUB_CLIENT_SECRET` | | The same for GitHub. |
 | `CARDWARS_FEEDBACK` | `-feedback` | `1` shows links to this project's bug, card-problem and feature forms and its GitHub repository under the home screen. Off by default, so a server of your own does not send reports to this project. |
+| `CARDWARS_STATS` | `-stats` | On by default; `0` turns off the shared totals behind `GET /api/stats` and the home screen's counter line. See [Statistics](#statistics). |
 
 The other flags (`-addr`, `-data`, `-origins`, `-bot-delay`, `-dev`) are described in [`server/docs/protocol.md`](server/docs/protocol.md).
+
+### Statistics
+
+The server counts a few shared totals for the whole site, for the line of numbers on the home screen: games started,
+completed and abandoned (and against the bot or a person), who won against the bot, cards played by type (and how often each
+card), Floops, Fights, damage dealt, Creatures destroyed, Hero abilities used, and games started and won per starter deck.
+They are counted from the game engine's own events, so a player cannot change them.
+
+What is **not** recorded: anything about a person. A counter is a name and a number. Nothing is tied to an account, a name,
+an address, a cookie or a room, signed-in players and guests count the same, no game is stored, and a deck a player built
+counts only as one "custom" bucket, never by its cards or owner. Games on a development server (`-dev`) are not counted.
+
+A game is *completed* when it reaches a winner. A player leaving, or the room timing out, before that makes it *abandoned*;
+a room still waiting for a second player is not a game, and a reconnect is not a new game.
+
+With `CARDWARS_DB` the totals are kept (written every few seconds and on shutdown, adding to what is stored); without it
+they live in memory and start again at zero on restart. `-stats=false` (or `CARDWARS_STATS=0`) turns it all off.
 
 **Web** (`cardwarsarena-web`, Caddy, listens on 80):
 

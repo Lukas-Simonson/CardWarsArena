@@ -236,3 +236,41 @@ func TestMigrationTwoKeepsExistingAccounts(t *testing.T) {
 		t.Errorf("after migrating: %+v, %v", got, err)
 	}
 }
+
+func TestStatsAddUpAndSurviveAReopen(t *testing.T) {
+	s, path := open(t)
+	if err := s.AddStats(ctx, map[string]int64{"floops": 5, "fights": 1}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.AddStats(ctx, map[string]int64{"floops": 2}); err != nil {
+		t.Fatal(err)
+	}
+	s.Close()
+	again, err := OpenSQLite(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer again.Close()
+	got, err := again.Stats(ctx)
+	if err != nil || got["floops"] != 7 || got["fights"] != 1 || len(got) != 2 {
+		t.Errorf("stats %v, %v", got, err)
+	}
+}
+
+func TestTheStatsTableHoldsOnlyNamesAndNumbers(t *testing.T) {
+	s, _ := open(t)
+	rows, err := s.db.Query(`SELECT name FROM pragma_table_info('stats')`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	var cols []string
+	for rows.Next() {
+		var n string
+		rows.Scan(&n)
+		cols = append(cols, n)
+	}
+	if !reflect.DeepEqual(cols, []string{"name", "value"}) {
+		t.Errorf("columns %v: nothing about a user, room or game belongs here", cols)
+	}
+}

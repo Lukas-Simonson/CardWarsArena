@@ -2,6 +2,7 @@ package server
 
 import (
 	"cardwars/internal/problem"
+	"cardwars/internal/stats"
 	"errors"
 	"fmt"
 	"math/rand/v2"
@@ -61,12 +62,14 @@ type Room struct {
 	seq        int
 	vsBot      bool
 	bot        bot.Bot
+	botName    string // which bot, for the stats
 	seed       uint64
 	closed     bool
 	botRunning bool
 	brng       *rand.Rand
 	touched    time.Time
 	onClose    func(*Room)
+	finished   bool // the game has been counted as completed or abandoned
 }
 
 func (r *Room) names() []string {
@@ -109,6 +112,7 @@ func (r *Room) startLocked() error {
 	}
 	r.g = g
 	r.brng = rand.New(rand.NewPCG(r.seed, 0xB07))
+	r.countStart()
 	return nil
 }
 
@@ -226,6 +230,7 @@ func (r *Room) act(token string, a engine.Action, seq *int) error {
 		return failBecause(ErrIllegal, err)
 	}
 	r.touched = time.Now()
+	r.countMove(events)
 	r.broadcastLocked(events)
 	r.kickBotLocked()
 	return nil
@@ -255,6 +260,7 @@ func (r *Room) close(reason, skipToken string) {
 		return
 	}
 	r.closed = true
+	r.countAbandoned()
 	for _, s := range r.seats {
 		if s != nil && s.sink != nil && !s.isBot && s.token != skipToken {
 			s.sink.Send(ServerMsg{Type: MsgRoomClosed, Reason: reason, Message: closedText[reason]})
@@ -306,6 +312,7 @@ func (r *Room) runBot() {
 			}
 			events, err := r.g.Apply(p, a)
 			if err == nil {
+				r.countMove(events)
 				r.broadcastLocked(events)
 				done = true
 			}
@@ -324,3 +331,68 @@ func (r *Room) runBot() {
 }
 
 func boolp(b bool) *bool { return &b }
+
+// ---- shared statistics: totals only, nothing about who played
+
+func botName(name string) string {
+	if name == "" {
+		return bot.Default
+	}
+	return name
+}
+
+func (r *Room) kind() string {
+	if r.vsBot {
+		return "bot"
+	}
+	return "person"
+}
+
+// deckBucket is how a seat's deck is counted: a starter deck by its Hero, anything a player built as "custom".
+func (s *seat) deckBucket() string { return stats.DeckBucket(s.deck.Set, s.deck.Hero, s.deck.Key()) }
+
+// countStart counts a game that has begun (both seats filled). A reconnect does not come through here.
+func (r *Room) countStart() {
+	c := r.srv.counters()
+	c.Add(stats.GamesStarted, 1)
+	c.Add(stats.GamesStarted+"."+r.kind(), 1)
+	for _, s := range r.seats {
+		if s != nil {
+			c.Add(stats.DeckStarted+"."+s.deckBucket(), 1)
+		}
+	}
+}
+
+// countMove counts what one move did, and the end of the game if it ended it. Called with the room locked.
+func (r *Room) countMove(events []engine.Event) {
+	c := r.srv.counters()
+	if c == nil {
+		return
+	}
+	stats.Events(c, r.g, r.srv.cat, events)
+	if r.g.State.Phase != engine.PhaseOver || r.finished {
+		return
+	}
+	r.finished = true
+	c.Add(stats.GamesCompleted, 1)
+	c.Add(stats.GamesCompleted+"."+r.kind(), 1)
+	w := r.seats[r.g.State.Winner]
+	c.Add(stats.DeckWon+"."+w.deckBucket(), 1)
+	if r.vsBot {
+		if w.isBot {
+			c.Add(stats.BotWins, 1)
+			c.Add(stats.BotWins+"."+r.botName, 1)
+		} else {
+			c.Add(stats.PlayerWins, 1)
+		}
+	}
+}
+
+// countAbandoned counts a started game that ends without a winner (a player left, or the room timed out).
+func (r *Room) countAbandoned() {
+	if r.g == nil || r.finished || r.g.State.Phase == engine.PhaseOver {
+		return
+	}
+	r.finished = true
+	r.srv.counters().Add(stats.GamesAbandoned, 1)
+}
