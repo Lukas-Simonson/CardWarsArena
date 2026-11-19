@@ -140,7 +140,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 
 /* ---------- players */
 .pbar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 12px 28px; }
-.shield { position: relative; width: 58px; height: 64px; flex: 0 0 auto; }
+.shield { position: relative; z-index: 3; width: 58px; height: 64px; flex: 0 0 auto; } /* above the avatar beside it: the shake gives the shield its own layer, and the damage number lives in it */
 .shield svg { width: 100%; height: 100%; display: block; }
 .shield span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-top: 4px; font-family: var(--big-font); font-size: 24px; -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; }
 .avatar { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-family: var(--big-font); font-size: 26px; padding-top: 4px; }
@@ -321,7 +321,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 /* ---------- animation helpers (the motion itself is in js/anim.js) */
 .fx-float { font-style: normal; position: absolute; left: 50%; top: 24%; z-index: 6; pointer-events: none; font-family: var(--big-font); font-size: 34px; color: #fff; -webkit-text-stroke: 5px #7a0f08; paint-order: stroke fill; text-shadow: 0 3px 0 #3b0d0a; }
 .fx-float.heal { -webkit-text-stroke-color: #1c5a24; text-shadow: 0 3px 0 #0e2d12; }
-.fx-float.side { left: calc(100% + 6px); top: 6px; font-size: 28px; }
+.fx-float.side { left: calc(100% + 6px); top: 4px; font-size: 38px; -webkit-text-stroke-width: 7px; } /* a player's HP wins games: bigger than a Creature's */
 .tile .at.ghost { z-index: 4; pointer-events: none; }
 .fx-banner { position: absolute; left: 50%; top: 50%; z-index: 12; pointer-events: none; padding: 6px 40px 0; font-family: var(--big-font); font-size: 52px; white-space: nowrap; color: #fff; -webkit-text-stroke: 6px #16212b; paint-order: stroke fill; text-shadow: 0 5px 0 #16212b; border-radius: 18px; background: rgba(15,30,15,.55); }
 .fx-banner.mine { color: var(--gold); }
