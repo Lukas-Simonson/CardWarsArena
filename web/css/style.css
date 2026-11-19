@@ -107,10 +107,6 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .deckbox { position: relative; display: flex; flex-direction: column; padding: 0; border: 3px solid #1f1a12; border-radius: 12px; box-shadow: inset 0 3px 0 rgba(255,255,255,.25), 0 6px 0 #1f1a12; transition: transform 120ms ease; font-family: var(--hand-font); color: var(--parch-ink); text-align: start; overflow: hidden; min-width: 0; }
 .deckbox[aria-pressed="true"] { box-shadow: 0 0 0 4px #ffd34d, 0 0 22px 8px rgba(255,211,77,.55), 0 8px 0 #1f1a12; transform: translateY(-6px); }
 .deckbox:disabled { filter: grayscale(.7); opacity: .75; }
-.deckcell { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.deckcell .deckbox { flex: 1; }
-.deckedit { min-height: 44px; padding: 0 14px; font-size: 18px; }
-.deckwhy { margin: -2px 2px 0; font-size: 15px; line-height: 1.25; color: #fff; text-shadow: 0 2px 0 #1f1a12; }
 @media (prefers-reduced-motion: reduce) { .deckbox { transition: none; } }
 .deckbox .lid { height: 22px; background: rgba(0,0,0,.22); border-bottom: 3px solid #1f1a12; }
 .deckbox .dbody { padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 10px; }
@@ -401,6 +397,17 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 /* ---------- deck builder (the "Deck builder" board of the Card Wars Web design) */
 .bwrap { max-width: 1400px; margin: 0 auto; padding: 16px 20px 48px; display: flex; flex-direction: column; gap: 18px; }
 .bhead { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.bchoose { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.bchoose p { margin: 0; }
+.bchoose > .btn-green { align-self: flex-start; min-height: 52px; padding: 4px 28px 0; font-size: 22px; }
+.bstart { max-width: 900px; }
+.deckrows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.deckrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 10px; background: rgba(0,0,0,.18); }
+.deckrow .deckinfo { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.deckrow .deckinfo b { font-weight: 400; font-size: 22px; overflow-wrap: anywhere; }
+.deckrow .deckinfo span { font-size: 16px; opacity: .85; }
+.deckrow .deckinfo .needs { color: var(--gold); opacity: 1; }
+.deckrow .btn-steel { flex: none; min-height: 44px; padding: 0 16px; font-size: 18px; }
 .bstate { margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: var(--gold); }
 .bhead h1 { margin: 0; font-size: 42px; color: var(--gold); }
 .bhead .tolobby { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; font-size: 19px; }

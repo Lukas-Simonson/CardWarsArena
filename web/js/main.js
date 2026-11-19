@@ -322,7 +322,7 @@ $("applyServer").onclick = () => applyServer($("server").value);
 $("server").addEventListener("keydown", (e) => { if (e.key === "Enter") applyServer($("server").value); });
 $("name").onchange = () => { if (!account.user) store("cw.name", $("name").value); showWho(); };
 $("name").oninput = showWho;
-$("build").onclick = () => openBuilder();
+$("build").onclick = openBuilder;
 $("bot").onchange = () => store("cw.bot", $("bot").value);
 
 // ---------- deck builder
@@ -336,8 +336,7 @@ const builder = createBuilder({
   onSaved: (list) => { myDecks = list; renderShelf(); },
 });
 
-/** Open the builder: blank, or with a saved deck (its id) or a copy of a starter ("starter:<Set Name>") loaded. */
-function openBuilder(value = "") { builder.open(value).then(render); render(); }
+function openBuilder() { builder.open().then(render); render(); }
 
 // ---------- account
 
@@ -470,15 +469,7 @@ function renderShelf() {
       h("div", { class: "lands", "aria-hidden": "true" }, b.lands.map((l) => h("i", { style: `background:${diamondColour(l)}` }))),
       h("div", { class: "parch plate" }, h("b", {}, b.name), h("span", {}, b.sub)),
       h("div", { class: "dfoot" }, h("span", {}, t("shelf.cards", { n: b.size })), b.value === selectedDeck && h("span", { class: "picked" }, t("shelf.selected")))));
-  // A signed-in player can edit a saved deck, or a copy of a starter, from right under its box.
-  const canEdit = account.show && !!account.user;
-  const cell = (b, editLabel, open) => h("div", { class: "deckcell" }, box(b),
-    b.why && h("p", { class: "deckwhy" }, t("shelf.needs", { why: b.why })),
-    canEdit && h("button", { type: "button", class: "btn-steel deckedit", "aria-label": t(editLabel.aria, { name: b.name }), onclick: () => openBuilder(open) }, t(editLabel.text)));
-  const edit = { text: "shelf.edit", aria: "shelf.edit_named" }, copy = { text: "shelf.copy_edit", aria: "shelf.copy_edit_named" };
-  $("shelf").replaceChildren(
-    ...boxes.starters.map((b) => cell(b, copy, `starter:${b.value}`)),
-    ...boxes.mine.map((b) => cell(b, edit, b.id)));
+  $("shelf").replaceChildren(...[...boxes.starters, ...boxes.mine].map(box));
   $("lobbyhint").textContent = !decks.length ? t("shelf.none") : account.show && !account.user ? t("shelf.sign_in") : "";
 }
 
