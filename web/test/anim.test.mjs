@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { plan, paceFor, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS } from "../js/anim.js";
+import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS } from "../js/anim.js";
 import { view, cards } from "./fixtures.mjs";
 
 const next = (mutate) => { const v = structuredClone(view()); mutate(v); return v; };
@@ -109,4 +109,20 @@ test("Creatures readied by a new turn stay turned until the turn banner shows", 
   const t2 = fx2.find((f) => f.t === "turn");
   assert.ok(t2.delay > 0);
   assert.ok(fx2.filter((f) => f.refresh).every((f) => f.delay === t2.delay));
+});
+
+test("a spell the opponent casts is planned and announced with who cast it, just as one of mine is", () => {
+  const events = [{ kind: "play", player: 1, card: 31, card_id: "corn-scepter" }];
+  const fx = plan(view(), view(), events, ctx);
+  assert.deepEqual(fx, [{ t: "cast", card: "corn-scepter", seat: 1 }]);
+  const c = { cards, view: view(), names: ["Finn", "Jake"] };
+  assert.equal(castCaption(fx[0], c), "Jake cast Corn Scepter");
+  assert.equal(castCaption({ t: "cast", card: "corn-scepter", seat: 0 }, c), "You cast Corn Scepter");
+  assert.equal(castCaption(fx[0], { ...c, names: [] }), "Seat 1 cast Corn Scepter"); // a seat with no name
+  assert.ok(paceFor(events, cards) >= CAST_MS, "and the next update waits for it");
+});
+
+test("two spells in one update are both planned, in order", () => {
+  const events = [{ kind: "play", player: 1, card: 31, card_id: "corn-scepter" }, { kind: "play", player: 1, card: 32, card_id: "corn-scepter" }];
+  assert.equal(plan(view(), view(), events, ctx).filter((f) => f.t === "cast").length, 2);
 });

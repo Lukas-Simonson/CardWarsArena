@@ -7,6 +7,7 @@
 // elements the renderer marks with data-seat / data-lane / data-uid.
 import { cardEl } from "./card.js";
 import { t } from "./i18n.js";
+import { cardName, seatName } from "./describe.js";
 
 const MAX_HP = 25;
 export const HIT_DELAY = 260;   // the blow lands this long after the lunge starts
@@ -150,8 +151,36 @@ export const bareTurnChange = (msg) => {
 
 export const reduced = () => !!globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+/** What a cast spell is announced with: "You cast Corn Scepter", "Bot cast Corn Scepter". */
+export function castCaption(f, ctx) {
+  const card = cardName(ctx, f.card);
+  return f.seat === ctx.view?.you ? t("anim.cast_you", { card }) : t("anim.cast_them", { who: seatName(ctx, f.seat), card });
+}
+
+/**
+ * Show cast spells: the card, large, over the middle of the battlefield, with who cast it. Several at once sit side
+ * by side. With reduced motion it just stays put for the same time, without the movement.
+ */
+function showCasts(casts, ctx, felt) {
+  casts.forEach((f, i) => {
+    const c = ctx.cards?.[f.card];
+    if (!c) return;
+    const el = document.createElement("div");
+    el.className = "fx-cast";
+    el.setAttribute("role", "status");
+    el.style.setProperty("--shift", `${(i - (casts.length - 1) / 2) * 150}px`); // several at once sit side by side
+    el.append(cardEl(c), Object.assign(document.createElement("p"), { className: "caption", textContent: castCaption(f, ctx) }));
+    felt?.append(el);
+    const done = () => el.remove();
+    if (reduced()) { setTimeout(done, CAST_MS); return; }
+    const at = "translate(calc(-50% + var(--shift)), -50%)";
+    el.animate([{ opacity: 0, transform: `${at} scale(.5) rotate(-8deg)` }, { opacity: 1, transform: `${at} scale(1) rotate(0)`, offset: 0.14 }, { opacity: 1, transform: `${at} scale(1)`, offset: 0.85 }, { opacity: 0, transform: "translate(calc(-50% + var(--shift)), -62%) scale(1.15)" }], { duration: CAST_MS, fill: "both", easing: "ease-out" }).onfinish = done;
+  });
+}
+
 /** Play the effects on the freshly rendered scene in `root`. */
 export function applyEffects(root, fx, ctx) {
+  showCasts(fx.filter((f) => f.t === "cast"), ctx, root.querySelector(".felt"));
   if (!fx.length || reduced()) return;
   const q = (sel) => root.querySelector(sel);
   const tile = (seat, lane) => q(`.tile[data-seat="${seat}"][data-lane="${lane}"]`);
@@ -240,15 +269,6 @@ export function applyEffects(root, fx, ctx) {
         el.className = `fx-banner ${f.mine ? "mine" : "theirs"}`;
         el.textContent = f.mine ? t("anim.your_turn") : t("game.their_turn", { who: ctx.names?.[f.seat] || t("player.opponent") });
         spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.6)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1.05)", offset: 0.2 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.75 }, { opacity: 0, transform: "translate(-50%, -50%) scale(1.15)" }], { duration: BANNER_MS, delay: f.delay });
-        break;
-      }
-      case "cast": {
-        const c = ctx.cards?.[f.card];
-        if (!c) break;
-        const el = document.createElement("div");
-        el.className = "fx-cast";
-        el.append(cardEl(c));
-        spawn(felt, el, [{ opacity: 0, transform: "translate(-50%, -50%) scale(.5) rotate(-8deg)" }, { opacity: 1, transform: "translate(-50%, -50%) scale(1) rotate(0)", offset: 0.14 }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: 0.85 }, { opacity: 0, transform: "translate(-50%, -62%) scale(1.15)" }], { duration: CAST_MS });
         break;
       }
     }
