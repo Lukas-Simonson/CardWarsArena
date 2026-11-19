@@ -4,6 +4,7 @@ package server
 
 import (
 	"cardwars/internal/problem"
+	"cardwars/internal/stats"
 	"context"
 	"encoding/json"
 	"log/slog"
@@ -53,7 +54,10 @@ type Config struct {
 	Store store.Store
 	// Feedback turns on the home screen's links to the project's feedback forms and repository.
 	Feedback bool
-	Logger   *slog.Logger
+	// Stats counts the shared totals behind /api/stats; nil turns them off. Games of a development server
+	// (AllowSeed or AllowUnmodelled) are never counted: they are not real matches.
+	Stats  *stats.Counters
+	Logger *slog.Logger
 }
 
 // Server is the HTTP handler and room registry.
@@ -135,6 +139,14 @@ func (s *Server) sweep(now time.Time) {
 	for _, r := range stale {
 		r.close(ReasonExpired, "")
 	}
+}
+
+// counters is where this server counts, or nil when stats are off or this is a development server.
+func (s *Server) counters() *stats.Counters {
+	if s.cfg.AllowSeed || s.cfg.AllowUnmodelled {
+		return nil
+	}
+	return s.cfg.Stats
 }
 
 func (s *Server) removeRoom(r *Room) {
@@ -248,7 +260,7 @@ func (s *Server) create(sink Sink, user *store.User, m ClientMsg) (*Room, string
 	for s.rooms[id] != nil {
 		id = newRoomCode()
 	}
-	r := &Room{id: id, srv: s, vsBot: m.VsBot, bot: opponent, seed: seed, touched: time.Now(), onClose: s.removeRoom}
+	r := &Room{id: id, srv: s, vsBot: m.VsBot, bot: opponent, botName: botName(m.Bot), seed: seed, touched: time.Now(), onClose: s.removeRoom}
 	host := &seat{name: cleanName(m.Name, "Player"), avatar: avatarOf(user), token: newToken(), deck: deck, sink: sink}
 	r.seats[0] = host
 	if m.VsBot {
@@ -284,6 +296,7 @@ func (s *Server) Handler() http.Handler {
 		json.NewEncoder(w).Encode(map[string]any{"default": bot.Default, "bots": bot.Names()})
 	})
 	mux.HandleFunc("GET /api/feedback", s.handleFeedback)
+	mux.HandleFunc("GET /api/stats", s.handleStats)
 	s.cfg.Auth.Routes(mux)
 	s.mountMyDecks(mux)
 	mux.HandleFunc("GET /ws", s.handleWS)

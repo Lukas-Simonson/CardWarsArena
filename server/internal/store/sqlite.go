@@ -280,3 +280,37 @@ func affected(res sql.Result, err error) error {
 func isUnique(err error) bool {
 	return err != nil && strings.Contains(err.Error(), "UNIQUE constraint failed")
 }
+
+// AddStats adds each delta to the stored total of that name (starting it at zero), all or nothing.
+func (s *SQLite) AddStats(ctx context.Context, delta map[string]int64) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	for name, n := range delta {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO stats (name, value) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET value = value + excluded.value`, name, n); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
+}
+
+// Stats is every stored total.
+func (s *SQLite) Stats(ctx context.Context) (map[string]int64, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT name, value FROM stats`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string]int64{}
+	for rows.Next() {
+		var name string
+		var v int64
+		if err := rows.Scan(&name, &v); err != nil {
+			return nil, err
+		}
+		out[name] = v
+	}
+	return out, rows.Err()
+}

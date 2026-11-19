@@ -15,6 +15,7 @@ import (
 
 	"cardwars/internal/auth"
 	"cardwars/internal/server"
+	"cardwars/internal/stats"
 	"cardwars/internal/store"
 )
 
@@ -28,6 +29,7 @@ func main() {
 		authOpt  = flag.String("auth", envOr("CARDWARS_AUTH", "none"), "who may sign in: none, or oauth (Discord and GitHub; needs -db and -public-url) [$CARDWARS_AUTH]")
 		public   = flag.String("public-url", os.Getenv("CARDWARS_PUBLIC_URL"), "where browsers reach this server, e.g. https://cards.example.com (for -auth oauth) [$CARDWARS_PUBLIC_URL]")
 		feedback = flag.Bool("feedback", envBool("CARDWARS_FEEDBACK"), "show links to the project's bug, card and feature forms and its repository on the home screen [$CARDWARS_FEEDBACK]")
+		statsOn  = flag.Bool("stats", envBoolOr("CARDWARS_STATS", true), "count shared, anonymous totals (games, cards played, ...) for GET /api/stats; kept across restarts when there is a -db [$CARDWARS_STATS]")
 		dev      = flag.Bool("dev", false, "development mode: clients may choose seeds and play unmodelled cards")
 	)
 	flag.Parse()
@@ -80,6 +82,20 @@ func main() {
 	if db != nil { // a nil *SQLite inside the interface would not be nil
 		cfg.Store = db
 	}
+	var counters *stats.Counters
+	if *statsOn {
+		var st stats.Store
+		if db != nil {
+			st = db
+		}
+		var err error
+		if counters, err = stats.New(st, log); err != nil {
+			log.Error("stats", "err", err)
+			os.Exit(1)
+		}
+		cfg.Stats = counters
+		go counters.Run(ctx, 5*time.Second)
+	}
 	srv, err := server.New(cfg)
 	if err != nil {
 		log.Error("start", "err", err)
@@ -99,6 +115,12 @@ func main() {
 		log.Error("serve", "err", err)
 		os.Exit(1)
 	}
+	// write the last few seconds of counting before the database closes
+	fctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := counters.Flush(fctx); err != nil {
+		log.Error("stats: final write", "err", err)
+	}
 }
 
 func envOr(name, fallback string) string {
@@ -106,6 +128,18 @@ func envOr(name, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+// envBoolOr is envBool, but a setting that is not set is fallback.
+func envBoolOr(name string, fallback bool) bool {
+	if os.Getenv(name) == "" {
+		return fallback
+	}
+	switch strings.ToLower(os.Getenv(name)) {
+	case "0", "false", "no", "off":
+		return false
+	}
+	return envBool(name)
 }
 
 // envBool reads a yes/no setting: 1, true, yes or on (any case) mean yes.
