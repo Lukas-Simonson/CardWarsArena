@@ -79,7 +79,7 @@ export function instruction(tokens, inline = false) {
       case "dest":
       case "lane": return msg("prompt.choose_lane");
       case "hand_card": return msg("prompt.choose_hand_card");
-      case "discard_card": return msg("prompt.choose_discard_card");
+      case "discard_card": return msg(new Set(tokens.map((t) => parseToken(t).player)).size > 1 ? "prompt.choose_discard_card_either" : "prompt.choose_discard_card");
       case "landscape": return msg("prompt.choose_landscape");
       case "building": return msg("prompt.choose_building");
     }

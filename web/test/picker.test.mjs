@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ActionPicker, sources, sourceKey, kindKey, slotsOf, tokenOfRef, parseToken, isGeneral, floopKinds, kindLabel } from "../js/picker.js";
+import { ActionPicker, discardSeats, sources, sourceKey, kindKey, slotsOf, tokenOfRef, parseToken, isGeneral, floopKinds, kindLabel } from "../js/picker.js";
 import { buildPrompt } from "../js/prompt.js";
 import { view, ctxFor } from "./fixtures.mjs";
 
@@ -372,4 +372,31 @@ test("heal-and-damage-several: each Creature is picked, then healed or damaged, 
   assert.deepEqual(p.options().modes.map((m) => m.token), ["mode:0", "mode:1"]);
   assert.ok(p.pick("mode:1"));
   assert.deepEqual(p.result().targets, [[c(1)], [c(2)]]);
+});
+
+// Blood Transfusion: remove a card from either player's discard pile, then heal a Creature.
+test("a card that takes from either discard pile shows both piles, and says so", () => {
+  const ctx = myTurn();
+  const lab = ["Remove from the game", "Heal"];
+  const act = (seat, uid, lane) => ({ kind: "play_card", card: 11, labels: lab, targets: [[{ kind: "discard_card", player: seat, card: uid }], [{ kind: "creature", player: 0, lane }]] });
+  const p = new ActionPicker([act(0, 5, 0), act(1, 7, 0), act(1, 8, 0)], ctx);
+  const o = p.options();
+  assert.deepEqual(o.tokens, ["discard_card:0:5", "discard_card:1:7", "discard_card:1:8"]);
+  assert.deepEqual(discardSeats(o.tokens, null, 0), [0, 1]); // mine first
+  assert.deepEqual(discardSeats(o.tokens, null, 1), [1, 0]);
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Remove from the game: choose a card from either discard pile for Corn Scepter");
+  assert.ok(p.pick("discard_card:1:7"));
+  assert.deepEqual(p.options().tokens, ["creature:0:0"]);
+  assert.deepEqual(discardSeats(p.options().tokens, null, 0), []); // the viewer has nothing more to show: it closes
+});
+
+test("a card that takes only from your own pile shows just that pile, and the one you opened is added", () => {
+  const ctx = myTurn();
+  const act = { kind: "play_card", card: 11, targets: [[{ kind: "discard_card", player: 0, card: 5 }]] };
+  const p = new ActionPicker([act], ctx);
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Choose a card from the discard pile for Corn Scepter");
+  assert.deepEqual(discardSeats(p.options().tokens, null, 0), [0]);
+  assert.deepEqual(discardSeats(p.options().tokens, 1, 0), [0, 1]);
+  assert.deepEqual(discardSeats([], 1, 0), [1]); // just looking at their pile
+  assert.deepEqual(discardSeats([], null, 0), []);
 });

@@ -77,6 +77,16 @@ export function modeLabel(a, token) {
   return plan ? (a.labels?.[plan.at[Number(token.slice(MODE.length))]] ?? "") : "";
 }
 
+/**
+ * Whose discard piles the pile viewer shows: every pile a card may be taken from right now (both, for a card that takes
+ * from either), plus the one the player opened with the Discard button. Mine comes first.
+ */
+export function discardSeats(tokens, opened, me) {
+  const seats = new Set([...tokens].map(parseToken).filter((p) => p.kind === "discard_card").map((p) => p.player));
+  if (opened != null) seats.add(opened);
+  return [...seats].sort((a, b) => (a === me ? -1 : b === me ? 1 : a - b));
+}
+
 /** Group the non-general legal actions by source key. */
 export function sources(legal) {
   const out = {};

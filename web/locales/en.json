@@ -452,6 +452,8 @@
  "prompt.choose_building": "Choose a Building",
  "prompt.choose_building_inline": "choose a Building",
  "prompt.choose_discard_card": "Choose a card from the discard pile",
+ "prompt.choose_discard_card_either": "Choose a card from either discard pile",
+ "prompt.choose_discard_card_either_inline": "choose a card from either discard pile",
  "prompt.choose_discard_card_inline": "choose a card from the discard pile",
  "prompt.choose_hand_card": "Choose a card from your hand",
  "prompt.choose_hand_card_inline": "choose a card from your hand",

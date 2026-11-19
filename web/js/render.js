@@ -10,7 +10,7 @@ import { cardEl } from "./card.js";
 import { cardName, describeRef, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide, labelText } from "./describe.js";
 import { t, fmtList, fmtNumber } from "./i18n.js";
 import { isMyDecision } from "./state.js";
-import { sources, parseToken } from "./picker.js";
+import { sources, parseToken, discardSeats } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
 
 const fmtJoin = (parts) => parts.join(t("tile.stats_sep"));
@@ -429,23 +429,30 @@ function overlay(m, on) {
         legal.filter((a) => a.kind === "keep_hand").map((a) => h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(a) }, t("mull.keep"))),
         legal.filter((a) => a.kind === "mulligan").map((a) => h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(a) }, t("mull.mulligan"))))));
   }
-  // The discard viewer: opened on request, or by a choice that needs a card from a pile.
-  const wanted = [...tokens].map(parseToken).find((t) => t.kind === "discard_card");
-  const seat = m.ui.discard ?? wanted?.player ?? null;
-  if (seat != null) {
-    const pile = v.players[seat].discard;
-    return h("div", { class: "veil pile" }, h("div", { class: "parch" },
-      h("h2", {}, t("pile.title", { who: seatName(ctx, seat), n: pile.length })),
-      pile.length === 0 ? h("p", {}, t("pile.empty")) :
-        h("div", { class: "pilegrid" }, pile.map((x) => {
-          const token = `discard_card:${seat}:${x.uid}`;
-          const pick = tokens.has(token);
-          return h("button", {
-            type: "button", class: pick ? "pick" : "", "aria-label": cardName(ctx, x.card),
-            onclick: () => (pick ? on.onToken(token) : on.onInspect(x.card)), onmouseenter: () => on.onInspect(x.card, true),
-          }, cardEl(ctx.cards[x.card]));
-        })),
-      h("div", { class: "row" }, h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: () => on.onDiscard(seat) }, t("common.close")))));
+  // The discard viewer: opened on request, or by a choice that needs a card from a pile. A card that may take from
+  // either player's pile shows both, so the choice is there to see without hunting for the other Discard button.
+  const seats = discardSeats(tokens, m.ui.discard, m.me);
+  if (seats.length) {
+    const pileOf = (seat) => {
+      const pile = v.players[seat].discard;
+      return h("section", { class: "pilebox", "aria-label": t("pile.title", { who: seatName(ctx, seat), n: pile.length }) },
+        h("h2", {}, t("pile.title", { who: seatName(ctx, seat), n: pile.length })),
+        pile.length === 0 ? h("p", {}, t("pile.empty")) :
+          h("div", { class: "pilegrid" }, pile.map((x) => {
+            const token = `discard_card:${seat}:${x.uid}`;
+            const pick = tokens.has(token);
+            return h("button", {
+              type: "button", class: pick ? "pick" : "", "aria-label": cardName(ctx, x.card),
+              onclick: () => (pick ? on.onToken(token) : on.onInspect(x.card)), onmouseenter: () => on.onInspect(x.card, true),
+            }, cardEl(ctx.cards[x.card]));
+          })));
+    };
+    return h("div", { class: "veil pile" }, h("div", { class: `parch${seats.length > 1 ? " twopiles" : ""}` },
+      h("div", { class: "piles" }, seats.map(pileOf)),
+      // Opened by hand: Close. Opened by the choice: nothing to close, the card is what is wanted, but it can be called off.
+      h("div", { class: "row" }, m.ui.discard != null
+        ? h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: () => on.onDiscard(null) }, t("common.close"))
+        : h("button", { type: "button", class: "btn-steel", style: "min-height:44px;font-size:19px", onclick: on.onCancel }, t("prompt.cancel")))));
   }
   return null;
 }

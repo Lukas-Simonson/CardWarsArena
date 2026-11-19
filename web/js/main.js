@@ -230,7 +230,11 @@ const on = {
   onHeroAbility(index) { select("hero", `activate:${index}`); },
   onThaw(lane) { select(`thaw:${lane}`, "thaw"); },
   onPending() { select("pending"); },
-  onToken(token) { if (!staging && ui.picker?.pick(token)) settle(); },
+  onToken(token) {
+    if (staging || !ui.picker?.pick(token)) return;
+    if (token.startsWith("discard_card:")) ui.discard = null; // the card is chosen: the pile viewer has done its job, whoever opened it
+    settle();
+  },
   onKind(kind) { select(ui.source, kind); },
   onSkip() { if (!staging && ui.picker?.skip()) settle(); },
   onConfirm() { const a = ui.picker?.confirm(); if (a) sendAction(a); },
