@@ -34,8 +34,6 @@ test("an unfinished deck is on the shelf but cannot be taken, and says why", () 
   const wip = shelf(presets, saved, cards).mine[1];
   assert.deepEqual([wip.name, wip.sub, wip.disabled], ["Untitled deck", "Unfinished", true]);
   assert.equal(wip.title, "Choose a Hero.; 1 card: a deck needs at least 40.");
-  assert.deepEqual([wip.why, wip.id], ["Choose a Hero.", "b2"]); // what it needs first, shown on the shelf, and the id to edit it by
-  assert.equal(shelf(presets, saved, cards).mine[0].why, "");
 });
 
 test("a starter deck says only who leads it, and has no subtitle without a Hero", () => {

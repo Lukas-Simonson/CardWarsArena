@@ -61,8 +61,6 @@ export function shelf(presets, saved, cards) {
         size: d.cards.length,
         disabled: !d.playable,
         title: d.playable ? landscapeTitle(lands) : problemTexts(d.problems, cards).join(t("targets.sep")),
-        why: d.playable ? "" : (problemTexts(d.problems, cards)[0] ?? ""), // what an unfinished deck needs first
-        id: d.id,
       };
     }),
   };

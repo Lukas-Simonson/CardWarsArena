@@ -13,7 +13,6 @@ import {
 } from "./deckmodel.js";
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 import { t, locale, cardText } from "./i18n.js";
-import { shelf } from "./decklist.js";
 import { errorText, apiError } from "./errors.js";
 import { labelText } from "./describe.js";
 
@@ -34,13 +33,14 @@ const CHEVRON = '<path d="M15 5 L8 12 L15 19" fill="none" stroke="#ffffff" strok
  * @param {()=>object[]} o.starters     the playable starter decks (GET /api/decks)
  * @param {()=>void} o.onClose          back to the lobby
  * @param {(decks:object[])=>void} o.onSaved   the player's decks changed: the new list
+ * @param {()=>string|null} o.remembered   the id of the saved deck last worked on, to open on
+ * @param {(id:string|null)=>void} o.remember  note the saved deck now being worked on (null: none)
  */
-export function createBuilder({ root, server, cards, starters, onClose, onSaved }) {
+export function createBuilder({ root, server, cards, starters, onClose, onSaved, remembered = () => null, remember = () => {} }) {
   let open = false;
   let myDecks = [];
   let deck = emptyDeck();
   let saved = null; // the deck as last saved; null for one not saved yet
-  let screen = "start"; // "start": which deck to work on; "edit": the builder itself
   let origin = null; // the name of the starter deck this unsaved deck is a copy of, if it is one
   let filters = { text: "", type: "", landscape: "", members: "", from: "" }; // members: "", "in" or "out" of this deck; from: another deck's value
   let busy = false;
@@ -66,7 +66,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   const failure = (r) => (apiError(r.data) ? errorText(apiError(r.data), cards()) : r.data?.error ?? t("builder.server_said", { status: r.status }));
 
   const dirty = () => changed(deck, saved);
-  const leaveOk = () => screen === "start" || !dirty() || confirm(t("builder.unsaved"));
+  const leaveOk = () => !dirty() || confirm(t("builder.unsaved"));
   const say = (text, error = false) => { note = { text, error }; paintDeck(); };
 
   // ---------- opening and choosing a deck
@@ -81,7 +81,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     deck = next;
     saved = savedAs;
     origin = copyOf;
-    screen = "edit";
+    if (next.id) remember(next.id);
     note = { text: "", error: false };
     ui.name.value = deck.name;
     ui.hero.value = deck.hero;
@@ -89,7 +89,6 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     filters = { ...filters, members: "", from: "" }; // another deck, so a fresh view of the pool
     ui.from.value = "";
     paintAll();
-    paintScreen();
   }
 
   const fromSaved = (d) => fromCards(d.cards, { id: d.id, name: d.name, hero: d.hero, landscapes: d.landscapes_chosen ? d.landscapes : null });
@@ -115,45 +114,6 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     load(value);
   }
 
-  // ---------- the start screen: which deck to work on
-
-  function paintScreen() {
-    ui.start.hidden = screen !== "start";
-    ui.editor.hidden = screen !== "edit";
-    if (screen === "start") paintStart();
-  }
-
-  /** Back to the choice of decks (asking first when there are unsaved changes). */
-  function toStart() {
-    if (!leaveOk()) return;
-    screen = "start";
-    paintScreen();
-  }
-
-  function paintStart() {
-    const boxes = shelf(starters(), myDecks, cards());
-    const row = (name, sub, button, onclick, note) => h("li", { class: "deckrow" },
-      h("div", { class: "deckinfo" }, h("b", {}, name), h("span", {}, sub), note && h("span", { class: "needs" }, note)),
-      h("button", { type: "button", class: "btn-steel", "aria-label": button.aria, onclick }, button.text));
-    ui.start.replaceChildren(
-      h("header", { class: "bhead" },
-        h("button", { type: "button", class: "btn-steel tolobby", onclick: close }, svg(CHEVRON, { viewBox: "0 0 24 24" }), t("builder.lobby")),
-        h("h1", { class: "h" }, t("builder.title"))),
-      h("section", { class: "steel bchoose", "aria-labelledby": "bnew-h" },
-        h("h2", { id: "bnew-h", class: "h" }, t("builder.start_new")),
-        h("p", { class: "ink" }, t("builder.start_new_text")),
-        h("button", { type: "button", class: "btn-green", onclick: () => show(emptyDeck(), null) }, t("builder.start_new_button"))),
-      h("section", { class: "steel bchoose", "aria-labelledby": "bmine-h" },
-        h("h2", { id: "bmine-h", class: "h" }, t("builder.my_decks")),
-        boxes.mine.length
-          ? h("ul", { class: "deckrows" }, boxes.mine.map((b) => row(b.name, b.sub, { text: t("builder.edit"), aria: t("builder.edit_named", { name: b.name }) }, () => load(b.id), b.why && t("builder.needs", { why: b.why }))))
-          : h("p", { class: "ink" }, t("builder.start_none"))),
-      h("section", { class: "steel bchoose", "aria-labelledby": "bstart-h" },
-        h("h2", { id: "bstart-h", class: "h" }, t("builder.start_from")),
-        h("p", { class: "ink" }, t("builder.start_from_text")),
-        h("ul", { class: "deckrows" }, boxes.starters.map((b) => row(b.name, b.sub, { text: t("builder.copy_edit"), aria: t("builder.copy_edit_named", { name: b.name }) }, () => load(`starter:${b.value}`))))));
-  }
-
   // ---------- saving
 
   /** A saved deck's copy is a new deck: it keeps the name only with "(copy)" added, so the two can be told apart. */
@@ -174,6 +134,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     }
     deck = fromSaved(r.data);
     saved = clone(deck);
+    remember(deck.id);
     await refresh();
     onSaved(myDecks);
     fillPicker();
@@ -193,10 +154,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     await refresh();
     onSaved(myDecks);
     fillPicker();
-    deck = emptyDeck();
-    saved = origin = null;
-    screen = "start";
-    paintScreen(); // the deck just deleted is gone: choose another
+    remember(null); // the deck just deleted is not the one to come back to
+    show(emptyDeck(), null);
   }
 
   // ---------- deck text: copy, download, import
@@ -298,7 +257,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.grid = h("div", { class: "cardgrid" });
     ui.poolCount = h("p", { class: "ink small", role: "status" });
 
-    ui.pick = h("select", { id: "bpick", class: "well", onchange: () => choose(ui.pick.value) });
+    ui.pick = h("select", { id: "bpick", class: "well", "aria-describedby": "bpick-hint", onchange: () => choose(ui.pick.value) });
     ui.name = h("input", { id: "bname", class: "well big", maxlength: "40", placeholder: t("deck.untitled"), autocomplete: "off", oninput: () => { deck = { ...deck, name: ui.name.value }; paintDeck(); } });
     ui.hero = h("select", { id: "bhero", class: "well", onchange: () => { deck = { ...deck, hero: ui.hero.value }; paintDeck(); } });
     ui.landSel = Array.from({ length: LANES }, (_, i) => {
@@ -328,11 +287,9 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.curveLabels = h("div", { class: "curvelabels" });
     ui.list = h("ul", { class: "cardlist" });
 
-    ui.start = h("div", { class: "bwrap bstart" });
-    ui.editor = h("div", { class: "bwrap" },
+    root.replaceChildren(h("div", { class: "bwrap" },
       h("header", { class: "bhead" },
         h("button", { type: "button", class: "btn-steel tolobby", onclick: close }, svg(CHEVRON, { viewBox: "0 0 24 24" }), t("builder.lobby")),
-        h("button", { type: "button", class: "btn-steel", onclick: toStart }, t("builder.all_decks")),
         ui.title),
       h("div", { class: "bcols" },
         h("section", { class: "bleft", "aria-labelledby": "bcards-h" },
@@ -346,6 +303,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
           h("section", { class: "steel bdeck" },
             h("h2", { id: "bdeck-h", class: "h" }, t("builder.this_deck")),
             ui.state,
+            h("p", { class: "ink small bhint", id: "bpick-hint" }, t("builder.pick_hint")),
             field("bpick", t("builder.deck"), ui.pick),
             field("bname", t("builder.deck_name"), ui.name),
             field("bhero", t("hero.tag"), ui.hero),
@@ -360,8 +318,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
             h("div", { class: "bshare", role: "group", "aria-label": t("builder.share") }, ui.copy, ui.download, ui.import),
             h("div", { class: "bmore" }, ui.del, ui.note)),
           h("section", { class: "parch bcurve", "aria-labelledby": "bcurve-h" }, h("h2", { id: "bcurve-h" }, t("builder.curve")), ui.curve, ui.curveLabels),
-          h("section", { class: "parch blist", "aria-labelledby": "blist-h" }, h("h2", { id: "blist-h" }, t("builder.list")), ui.list))));
-    root.replaceChildren(ui.start, ui.editor);
+          h("section", { class: "parch blist", "aria-labelledby": "blist-h" }, h("h2", { id: "blist-h" }, t("builder.list")), ui.list)))));
 
     ui.hero.append(h("option", { value: "" }, t("builder.choose_hero")), ...heroes(cards()).map((c) => h("option", { value: c.id }, c.name)));
     paintChips();
@@ -390,7 +347,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     fillFrom();
     const group = (label, opts) => { const g = h("optgroup", { label }); g.append(...opts); return g; };
     ui.pick.replaceChildren(h("option", { value: "" }, t("builder.new_deck")));
-    if (myDecks.length) ui.pick.append(group(t("builder.my_decks"), myDecks.map((d) => h("option", { value: d.id }, d.playable ? d.name : t("builder.unfinished_deck", { name: d.name })))));
+    if (myDecks.length) ui.pick.append(group(t("builder.edit_a_deck"), myDecks.map((d) => h("option", { value: d.id }, d.playable ? d.name : t("builder.unfinished_deck", { name: d.name })))));
     ui.pick.append(group(t("builder.start_from"), starters().map((d) => h("option", { value: `starter:${d.set} ${d.name}` }, t("builder.starter_option", { owner: cardText(d.owner_title || d.owner || d.name), name: cardText(d.title || d.name) })))));
   }
 
@@ -533,16 +490,17 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
 
   // ---------- opening and closing
 
-  /** @param {string} value  what to open: "" a blank deck, "starter:<Set Name>" a copy of a starter, else a saved deck's id */
-  async function openBuilder(value = "") {
+  /** Opens on the deck last worked on, if it is still there, else a blank one. */
+  async function openBuilder() {
     if (open) return;
     open = true;
     root.hidden = false;
     if (!ui.name) build();
     await refresh();
     fillPicker();
-    if (value) load(value);
-    else { deck = emptyDeck(); saved = origin = null; screen = "start"; paintScreen(); }
+    const last = remembered();
+    if (last && myDecks.some((d) => d.id === last)) load(last);
+    else show(emptyDeck(), null);
   }
 
   function close() {
