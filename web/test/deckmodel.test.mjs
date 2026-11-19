@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, landscapeTypes, landscapeRow, costCurve, problems, mix, heroes, pool, changed,
-  landscapesOf, chooseLandscape, autoLandscapes, unplayable, whyUnplayable,
+  landscapesOf, chooseLandscape, autoLandscapes, unplayable, whyUnplayable, deckState, saveRequest,
   MAX_COPIES, MAX_CARDS,
 } from "../js/deckmodel.js";
 
@@ -215,4 +215,25 @@ test("the card search finds a card by the name shown, the English name or its te
   assert.deepEqual(pool(cs, { text: "chiot" }).map((c) => c.id), ["chiot"]);
   assert.deepEqual(pool(cs, { text: "corn pup" }).map((c) => c.id), ["chiot"]);
   assert.deepEqual(pool(cs, { text: "draw" }).map((c) => c.id), ["other"]);
+});
+
+test("the builder says whether it holds a new deck, a saved one being edited, or an unsaved copy of a starter", () => {
+  assert.equal(deckState(emptyDeck()), "new");
+  assert.equal(deckState(fromCards(["pup"], { name: "Imported" })), "new");
+  assert.equal(deckState(fromCards(["pup"], { name: "Finn's deck" }), "Finn's Deck"), "copy");
+  assert.equal(deckState(fromCards(["pup"], { id: "a1", name: "Ponies" })), "editing");
+  assert.equal(deckState(fromCards(["pup"], { id: "a1", name: "Ponies" }), "Finn's Deck"), "editing"); // once saved it is its own deck
+});
+
+test("Save replaces a saved deck, while a new deck and Save as copy make new ones", () => {
+  const copyName = (n) => `${n} (copy)`;
+  const saved = fromCards(["pup"], { id: "a1", name: "Ponies" });
+  assert.deepEqual(saveRequest(saved, saved, false, copyName), { method: "PUT", id: "a1", name: "Ponies", copy: false });
+  assert.deepEqual(saveRequest(saved, saved, true, copyName), { method: "POST", id: null, name: "Ponies (copy)", copy: true });
+  // a copy given its own name keeps it
+  assert.deepEqual(saveRequest({ ...saved, name: "Ponies 2" }, saved, true, copyName), { method: "POST", id: null, name: "Ponies 2", copy: true });
+  // a deck not saved yet has nothing to copy: both buttons would just make it
+  const fresh = fromCards(["pup"], { name: "New" });
+  assert.deepEqual(saveRequest(fresh, null, false, copyName), { method: "POST", id: null, name: "New", copy: false });
+  assert.deepEqual(saveRequest(fresh, null, true, copyName), { method: "POST", id: null, name: "New", copy: false });
 });

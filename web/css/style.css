@@ -397,6 +397,8 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 /* ---------- deck builder (the "Deck builder" board of the Card Wars Web design) */
 .bwrap { max-width: 1400px; margin: 0 auto; padding: 16px 20px 48px; display: flex; flex-direction: column; gap: 18px; }
 .bhead { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.bhint { margin: 0 0 6px; line-height: 1.3; }
+.bstate { margin: 0 0 4px; font-size: 17px; line-height: 1.3; color: var(--gold); }
 .bhead h1 { margin: 0; font-size: 42px; color: var(--gold); }
 .bhead .tolobby { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; font-size: 19px; }
 .bhead .tolobby svg { width: 18px; height: 18px; }

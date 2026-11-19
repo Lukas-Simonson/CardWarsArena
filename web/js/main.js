@@ -334,6 +334,8 @@ const builder = createBuilder({
   starters: () => decks,
   onClose: () => render(),
   onSaved: (list) => { myDecks = list; renderShelf(); },
+  remembered: () => load("cw.builder.deck"),
+  remember: (id) => store("cw.builder.deck", id),
 });
 
 function openBuilder() { builder.open().then(render); render(); }
