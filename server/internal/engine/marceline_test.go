@@ -433,3 +433,48 @@ func TestRandomPlayoutsWithMarcelinesDeck(t *testing.T) {
 	}
 	t.Logf("cards removed from the game: %d", removed)
 }
+
+func TestBloodTransfusionSaysItMayTakeFromEitherPile(t *testing.T) {
+	g := marcGame(t)
+	g.put(0, 2, "wall-of-ears").Damage = 2
+	g.State.Players[0].Discard = append(g.State.Players[0].Discard, Instance{UID: 950, CardID: "drooling-dude", Owner: 0}) // only one pile has a card
+	uid := g.give(0, "blood-transfusion")
+	n := 0
+	for _, a := range g.LegalActions(0) {
+		if a.Kind == ActPlayCard && a.Card == uid {
+			n++
+			if !slices.Equal(a.Piles, []int{0, 1}) {
+				t.Errorf("piles %v", a.Piles)
+			}
+		}
+	}
+	if n == 0 {
+		t.Error("no plays listed")
+	}
+}
+
+// Every card of both piles is offered even when the choices (cards x Creatures) are many: a client can only pick what is listed.
+func TestBloodTransfusionListsCardsOfBothLargePiles(t *testing.T) {
+	g := marcGame(t)
+	for lane := 0; lane < 4; lane++ {
+		g.put(0, lane, "wall-of-ears")
+		g.put(1, lane, "wall-of-ears")
+	}
+	uid := 1000
+	for seat := 0; seat < 2; seat++ {
+		for i := 0; i < 20; i++ {
+			uid++
+			g.State.Players[seat].Discard = append(g.State.Players[seat].Discard, Instance{UID: uid, CardID: "drooling-dude", Owner: PlayerID(seat)})
+		}
+	}
+	card := g.give(0, "blood-transfusion")
+	seen := map[PlayerID]bool{}
+	for _, a := range g.LegalActions(0) {
+		if a.Kind == ActPlayCard && a.Card == card && len(a.Targets) > 0 && len(a.Targets[0]) == 1 {
+			seen[a.Targets[0][0].Player] = true
+		}
+	}
+	if !seen[0] || !seen[1] {
+		t.Errorf("piles offered: %v", seen)
+	}
+}

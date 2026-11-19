@@ -77,6 +77,18 @@ export function modeLabel(a, token) {
   return plan ? (a.labels?.[plan.at[Number(token.slice(MODE.length))]] ?? "") : "";
 }
 
+/**
+ * Whose discard piles the pile viewer shows: every pile a card may be taken from right now (both, for a card that takes
+ * from either, even when one is empty: the server lists them in `piles`), plus the one the player opened with the
+ * Discard button. Mine comes first.
+ */
+export function discardSeats(tokens, opened, me, piles = []) {
+  const wanted = [...tokens].map(parseToken).filter((p) => p.kind === "discard_card");
+  const seats = new Set([...wanted.map((p) => p.player), ...(wanted.length ? piles : [])]);
+  if (opened != null) seats.add(opened);
+  return [...seats].sort((a, b) => (a === me ? -1 : b === me ? 1 : a - b));
+}
+
 /** Group the non-general legal actions by source key. */
 export function sources(legal) {
   const out = {};
@@ -229,8 +241,9 @@ export class ActionPicker {
         list = [...new Set(list.map(creatureOf))].sort();
       }
     }
+    const piles = [...new Set(live.flatMap((a) => a.piles ?? []))];
     return {
-      tokens: list, modes, pairing, can_skip, optional: can_skip && this.cur.length === 0,
+      tokens: list, modes, pairing, piles, can_skip, optional: can_skip && this.cur.length === 0,
       skip_label: skip ? labelText(skip) : next ? t("skip.next", { label: labelText(next) }) : this.cur.length === 0 ? t("skip.none") : t("skip.done"),
     };
   }

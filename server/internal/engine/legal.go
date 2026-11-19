@@ -52,9 +52,10 @@ func (g *Game) LegalActions(p PlayerID) []Action {
 	return legal
 }
 
-// maxTargetCombos caps how many target choices LegalActions lists per card.
-// Clients choose targets interactively and are not limited by this.
-const maxTargetCombos = 128
+// maxTargetCombos caps how many target choices LegalActions lists per card. Clients choose from the list, so a
+// card whose choices run past it (Blood Transfusion: any card of either pile, then any Creature) would lose the last
+// ones, the opponent's pile among them; it is set above what a full game produces.
+const maxTargetCombos = 1024
 
 // spellActions proposes the plays of a Spell, one per target choice.
 func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
@@ -66,10 +67,17 @@ func (g *Game) spellActions(p PlayerID, in Instance, c *card.Card) []Action {
 	var out []Action
 	for _, cost := range g.costChoices(p, in) {
 		for _, targets := range choices {
-			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e), Groups: spellGroups(e)})
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e), Groups: spellGroups(e), Piles: spellPiles(e)})
 		}
 	}
 	return out
+}
+
+func spellPiles(e *card.Effect) []int {
+	if e == nil {
+		return nil
+	}
+	return pilesOf(e.Targets)
 }
 
 func spellGroups(e *card.Effect) []string {
@@ -125,7 +133,7 @@ func (g *Game) laneActions(p PlayerID, in Instance, lane int) []Action {
 	var out []Action
 	for _, cost := range costs {
 		for _, targets := range triggerChoices {
-			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e), Groups: spellGroups(e)})
+			out = append(out, Action{Kind: ActPlayCard, Card: in.UID, Lane: lane, CostTargets: cost, Targets: targets, Labels: spellLabels(e), SkipLabels: spellSkipLabels(e), Groups: spellGroups(e), Piles: spellPiles(e)})
 		}
 	}
 	return out
