@@ -182,3 +182,20 @@ export function changed(deck, saved) {
   return deck.name !== base.name || deck.hero !== base.hero || toCards(deck).join() !== toCards(base).join()
     || (deck.landscapes ?? []).join() !== (base.landscapes ?? []).join();
 }
+
+/**
+ * Which deck the builder is showing: "editing" a saved deck (it has an id), "copy" of a starter deck (`origin` names
+ * it; nothing is saved yet), or a "new" one (blank or imported, not saved yet).
+ */
+export const deckState = (deck, origin = null) => (deck.id ? "editing" : origin ? "copy" : "new");
+
+/**
+ * What pressing Save, or Save as copy, asks the server for. Saving a saved deck replaces it (PUT); a new deck, an
+ * unsaved copy, and Save as copy all make a new one (POST). A copy that kept its original's name gets `copyName` of it,
+ * so the two can be told apart.
+ */
+export function saveRequest(deck, saved, asCopy, copyName) {
+  const copy = asCopy && !!deck.id; // a deck with no id needs no copy: saving it already makes a new one
+  const name = copy && deck.name === saved?.name ? copyName(deck.name) : deck.name;
+  return copy || !deck.id ? { method: "POST", id: null, name, copy } : { method: "PUT", id: deck.id, name, copy };
+}

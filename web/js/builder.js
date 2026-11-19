@@ -39,6 +39,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   let myDecks = [];
   let deck = emptyDeck();
   let saved = null; // the deck as last saved; null for one not saved yet
+  let origin = null; // the name of the starter deck this unsaved deck is a copy of, if it is one
   let filters = { text: "", type: "", landscape: "", members: "", from: "" }; // members: "", "in" or "out" of this deck; from: another deck's value
   let busy = false;
   let note = { error: false, text: "" };
@@ -74,9 +75,10 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     return r.ok;
   }
 
-  function show(next, savedAs) {
+  function show(next, savedAs, copyOf = null) {
     deck = next;
     saved = savedAs;
+    origin = copyOf;
     note = { text: "", error: false };
     ui.name.value = deck.name;
     ui.hero.value = deck.hero;
@@ -89,26 +91,39 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
   const fromSaved = (d) => fromCards(d.cards, { id: d.id, name: d.name, hero: d.hero, landscapes: d.landscapes_chosen ? d.landscapes : null });
   const clone = (d) => ({ ...d, counts: { ...d.counts }, landscapes: d.landscapes && [...d.landscapes] });
 
-  function choose(value) {
-    if (!leaveOk()) { ui.pick.value = deck.id ?? ""; return; }
+  /** Load what the drop-down names: "" a blank deck, "starter:<Set Name>" a copy of a starter, else a saved deck's id. */
+  function load(value) {
     if (value.startsWith("starter:")) {
       const s = starters().find((d) => `starter:${d.set} ${d.name}` === value);
-      if (s) show(fromCards(s.cards, { name: `${s.owner || s.name}'s deck`, hero: s.hero }), null);
-      return;
+      if (s) {
+        show(fromCards(s.cards, { name: `${s.owner || s.name}'s deck`, hero: s.hero }), null, cardText(s.title || s.name));
+        ui.pick.value = value;
+        return;
+      }
     }
     const d = myDecks.find((x) => x.id === value);
     if (d) show(fromSaved(d), clone(fromSaved(d)));
     else show(emptyDeck(), null);
   }
 
+  function choose(value) {
+    if (!leaveOk()) { ui.pick.value = deck.id ?? ""; return; }
+    load(value);
+  }
+
   // ---------- saving
 
-  async function save(asDraft) {
+  /** A saved deck's copy is a new deck: it keeps the name only with "(copy)" added, so the two can be told apart. */
+  const copyName = (name) => t("builder.copy_name", { name: name || t("deck.untitled") }).slice(0, 40);
+
+  async function save(asDraft, asCopy = false) {
     if (busy) return;
+    const copy = asCopy && !!deck.id; // a new deck needs no copy: Save already makes one
     busy = true;
     paintDeck();
-    const body = { name: deck.name, hero: deck.hero, cards: toCards(deck), landscapes: deck.landscapes ?? [] };
-    const r = deck.id ? await api("PUT", `/${encodeURIComponent(deck.id)}`, body) : await api("POST", "", body);
+    const name = copy && deck.name === saved?.name ? copyName(deck.name) : deck.name;
+    const body = { name, hero: deck.hero, cards: toCards(deck), landscapes: deck.landscapes ?? [] };
+    const r = deck.id && !copy ? await api("PUT", `/${encodeURIComponent(deck.id)}`, body) : await api("POST", "", body);
     busy = false;
     if (!r.ok) {
       say(r.status === 401 ? t("builder.signed_out") : failure(r), true);
@@ -122,7 +137,8 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.name.value = deck.name;
     ui.pick.value = deck.id;
     paintAll();
-    say(t(r.data.playable ? "builder.saved_ready" : asDraft ? "builder.saved_draft" : "builder.saved_unplayable"));
+    origin = null;
+    say(copy ? t("builder.saved_copy", { name: deck.name }) : t(r.data.playable ? "builder.saved_ready" : asDraft ? "builder.saved_draft" : "builder.saved_unplayable"));
   }
 
   async function destroy() {
@@ -253,12 +269,15 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     ui.bar = h("div", { class: "barfill" });
     ui.checks = h("ul", { class: "checks" });
     ui.save = h("button", { type: "button", class: "btn-green", onclick: () => save(false) }, t("builder.save"));
+    ui.saveCopy = h("button", { type: "button", class: "btn-steel", onclick: () => save(true, true) }, t("builder.save_copy"));
     ui.draft = h("button", { type: "button", class: "btn-steel", onclick: () => save(true) }, t("builder.save_draft"));
     ui.del = h("button", { type: "button", class: "btn-steel danger", onclick: destroy }, t("builder.delete"));
     ui.copy = h("button", { type: "button", class: "btn-steel", onclick: copyList }, t("builder.copy"));
     ui.download = h("button", { type: "button", class: "btn-steel", onclick: download }, t("builder.download"));
     ui.import = h("button", { type: "button", class: "btn-steel", onclick: importList }, t("builder.import"));
     ui.note = h("p", { class: "note", role: "status" });
+    ui.title = h("h1", { class: "h" }, t("builder.title_new"));
+    ui.state = h("p", { class: "bstate", role: "status" });
     ui.curve = h("div", { class: "curve" });
     ui.curveLabels = h("div", { class: "curvelabels" });
     ui.list = h("ul", { class: "cardlist" });
@@ -266,7 +285,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
     root.replaceChildren(h("div", { class: "bwrap" },
       h("header", { class: "bhead" },
         h("button", { type: "button", class: "btn-steel tolobby", onclick: close }, svg(CHEVRON, { viewBox: "0 0 24 24" }), t("builder.lobby")),
-        h("h1", { class: "h" }, t("builder.title"))),
+        ui.title),
       h("div", { class: "bcols" },
         h("section", { class: "bleft", "aria-labelledby": "bcards-h" },
           h("div", { class: "steel bfilters" },
@@ -278,6 +297,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
         h("aside", { class: "bright", "aria-labelledby": "bdeck-h" },
           h("section", { class: "steel bdeck" },
             h("h2", { id: "bdeck-h", class: "h" }, t("builder.this_deck")),
+            ui.state,
             field("bpick", t("builder.deck"), ui.pick),
             field("bname", t("builder.deck_name"), ui.name),
             field("bhero", t("hero.tag"), ui.hero),
@@ -288,7 +308,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
               h("div", { class: "rowsplit" }, h("span", { class: "totalwrap" }, ui.count, h("span", { class: "of" }, t("builder.of_min", { min: MIN_CARDS }))), ui.countNote),
               h("div", { class: "bar" }, ui.bar)),
             ui.checks,
-            h("div", { class: "bactions" }, ui.save, ui.draft),
+            h("div", { class: "bactions" }, ui.save, ui.draft, ui.saveCopy),
             h("div", { class: "bshare", role: "group", "aria-label": t("builder.share") }, ui.copy, ui.download, ui.import),
             h("div", { class: "bmore" }, ui.del, ui.note)),
           h("section", { class: "parch bcurve", "aria-labelledby": "bcurve-h" }, h("h2", { id: "bcurve-h" }, t("builder.curve")), ui.curve, ui.curveLabels),
@@ -413,7 +433,13 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
 
     const edited = dirty();
     ui.save.disabled = busy || !legal || !edited;
-    ui.save.textContent = t(busy ? "builder.saving" : "builder.save");
+    ui.save.textContent = t(busy ? "builder.saving" : deck.id ? "builder.save_changes" : "builder.save");
+    ui.saveCopy.hidden = !deck.id;
+    ui.saveCopy.disabled = busy;
+    // Which deck this is, said in words: new, a saved deck being edited, or an unsaved copy of a starter.
+    const named = (deck.id && saved?.name) || deck.name || t("deck.untitled");
+    ui.title.textContent = deck.id ? t("builder.title_editing", { name: named }) : origin ? t("builder.title_copy", { name: origin }) : t("builder.title_new");
+    ui.state.textContent = deck.id ? t("builder.state_editing", { changed: edited ? "yes" : "no" }) : origin ? t("builder.state_copy", { name: origin }) : t("builder.state_new");
     ui.draft.disabled = busy || !edited;
     ui.del.hidden = !deck.id;
     ui.copy.disabled = ui.download.disabled = total(deck) === 0 && !deck.hero && !deck.name.trim();
@@ -458,14 +484,15 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved 
 
   // ---------- opening and closing
 
-  async function openBuilder() {
+  /** @param {string} value  what to open: "" a blank deck, "starter:<Set Name>" a copy of a starter, else a saved deck's id */
+  async function openBuilder(value = "") {
     if (open) return;
     open = true;
     root.hidden = false;
     if (!ui.name) build();
     await refresh();
     fillPicker();
-    show(emptyDeck(), null);
+    load(value);
   }
 
   function close() {
