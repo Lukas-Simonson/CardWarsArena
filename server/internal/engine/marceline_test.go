@@ -433,3 +433,22 @@ func TestRandomPlayoutsWithMarcelinesDeck(t *testing.T) {
 	}
 	t.Logf("cards removed from the game: %d", removed)
 }
+
+func TestBloodTransfusionSaysItMayTakeFromEitherPile(t *testing.T) {
+	g := marcGame(t)
+	g.put(0, 2, "wall-of-ears").Damage = 2
+	g.State.Players[0].Discard = append(g.State.Players[0].Discard, Instance{UID: 950, CardID: "drooling-dude", Owner: 0}) // only one pile has a card
+	uid := g.give(0, "blood-transfusion")
+	n := 0
+	for _, a := range g.LegalActions(0) {
+		if a.Kind == ActPlayCard && a.Card == uid {
+			n++
+			if !slices.Equal(a.Piles, []int{0, 1}) {
+				t.Errorf("piles %v", a.Piles)
+			}
+		}
+	}
+	if n == 0 {
+		t.Error("no plays listed")
+	}
+}

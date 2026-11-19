@@ -51,6 +51,9 @@ type Action struct {
 	// them ("mode": heal one Creature or damage one), or "" for a slot of its own. A client may ask for the target first
 	// and then which of the group's slots it goes in. Display only.
 	Groups []string `json:"groups,omitempty"`
+	// Piles is sent with a legal action that takes a card from a discard pile of either player's choosing: the seats
+	// whose piles it may take from, so a client can show both even when one is empty. Display only.
+	Piles []int `json:"piles,omitempty"`
 }
 
 // TargetRef names one chosen target. Kind is the TargetSpec "what":

@@ -400,3 +400,13 @@ test("a card that takes only from your own pile shows just that pile, and the on
   assert.deepEqual(discardSeats([], 1, 0), [1]); // just looking at their pile
   assert.deepEqual(discardSeats([], null, 0), []);
 });
+
+test("the server's piles show a pile that has nothing to take as well, while a card is being chosen from a pile", () => {
+  const ctx = myTurn();
+  const act = { kind: "play_card", card: 11, piles: [0, 1], labels: ["Remove from the game"], targets: [[{ kind: "discard_card", player: 0, card: 5 }]] };
+  const p = new ActionPicker([act], ctx);
+  const o = p.options();
+  assert.deepEqual(o.piles, [0, 1]);
+  assert.deepEqual(discardSeats(o.tokens, null, 0, o.piles), [0, 1]); // theirs is empty but allowed: shown, saying so
+  assert.deepEqual(discardSeats([], null, 0, o.piles), []); // no pile is wanted at the moment: nothing opens
+});

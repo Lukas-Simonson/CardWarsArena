@@ -431,7 +431,7 @@ function overlay(m, on) {
   }
   // The discard viewer: opened on request, or by a choice that needs a card from a pile. A card that may take from
   // either player's pile shows both, so the choice is there to see without hunting for the other Discard button.
-  const seats = discardSeats(tokens, m.ui.discard, m.me);
+  const seats = discardSeats(tokens, m.ui.discard, m.me, m.ui.picker?.options().piles);
   if (seats.length) {
     const pileOf = (seat) => {
       const pile = v.players[seat].discard;

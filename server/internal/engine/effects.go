@@ -166,6 +166,17 @@ func skipLabelsOf(specs []card.TargetSpec) []string {
 	return out
 }
 
+// pilesOf is the Piles of an action choosing for specs: both seats when a discard_card slot is open to either
+// player's pile, else nil.
+func pilesOf(specs []card.TargetSpec) []int {
+	for _, s := range specs {
+		if s.What == "discard_card" && (s.Side == "" || s.Side == "any") {
+			return []int{0, 1}
+		}
+	}
+	return nil
+}
+
 // groupsOf is the Groups of an action choosing for specs (a spec's Group, or its Together), or nil when none is.
 func groupsOf(specs []card.TargetSpec) []string {
 	var out []string
