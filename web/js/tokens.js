@@ -3,7 +3,7 @@
 // tokens, is a line here, its message in the catalogue, and a colour in the style sheet.
 export const TOKEN_KINDS = [
   { kind: "attack", icon: "⚔", img: "img/token-attack.webp", under: "atk", title: "token.attack" },
-  { kind: "burn", icon: "🔥", under: "def", title: "token.burn" },
+  { kind: "burn", icon: "🔥", img: "img/token-burn.webp", under: "def", title: "token.burn" },
 ];
 
 /** The chips to draw for a Creature's tokens: only kinds it has some of, in the usual order, ignoring kinds this client does not know. */
