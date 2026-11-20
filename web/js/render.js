@@ -591,12 +591,12 @@ function logParts(line, names, on) {
   return out;
 }
 
-/** The tokens on a Creature: for each kind a row of pips and the count, hung under the ATK badge (attack tokens) or the DEF badge (burn). */
+/** The tokens on a Creature: a round token for each kind, under the ATK badge (attack tokens) or the DEF badge (burn), with a count above one. */
 function tokenRow(tokens) {
   return tokenChips(tokens).map((k) =>
-    h("div", { class: `ttoken ${k.kind} under-${k.under}`, title: t(k.title, { n: k.n }), "aria-label": t(k.title, { n: k.n }) },
-      h("span", { class: "pips", "aria-hidden": "true" }, Array.from({ length: k.pips }, () => h("i", {}))),
-      h("b", { "aria-hidden": "true" }, k.label)));
+    h("span", { class: `ttoken ${k.kind} under-${k.under}`, title: t(k.title, { n: k.n }), "aria-label": t(k.title, { n: k.n }) },
+      k.img ? h("img", { src: k.img, alt: "", "aria-hidden": "true", draggable: "false" }) : h("i", { "aria-hidden": "true" }, k.icon),
+      k.n > 1 && h("b", {}, k.n)));
 }
 
 /** Attack and Defense left, big and beside the card (not rotating with it). */
