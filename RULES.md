@@ -226,3 +226,80 @@ And with that, you're ready for battle! You can play with your new deck against 
 - **Target:** Some Spells and abilities want you to choose a Creature, Building, Landscape, or other component to affect. The component you choose to affect is your target. If your card does not have a target, you may always use it, even if you can't perform the function on your card. If you card has a target, you must target something—even your own **card**—unless the card says otherwise. If an ability asks you to target something and there are no choices that fulfill the requirements, you cannot use that ability or Spell.
 - **Replace:** The only time you can replace one of your Creatures or Buildings is when a new Creature or Building is entering play. When. you replace one of your Creatures with another Creature in the same Lane, it leaves play and is discarded (not destroyed).
 - **Whump:** When you play a Creature with Whump, its cost is temporarily reduced by the cost of the Creature it replaces. If you cannot pay the adjusted cost of a Creature with Whump, you may not play it. Once the Creature with Whump is played, its cost reverts to its original value.
+
+## Card Clarifications
+
+- **Abdominal Snowman:** This gets the +3 ATK bonus while attacking your opponent. If it Fights a Creature, it does not get the ATK bonus.
+- **Abracadaniel:** You do not have to pay any cost or additional costs for the Rainbow card you play this way.
+- **Apple Pieclops:** Point to each of your Creatures (including this one) once, in any order, and choose “heal 1 damage,” “deal 1 damage,” or neither. You do not have to choose the same thing for each Creature you control. Healing a Creature with no damage on it has no effect.
+- **Ban-She Princess:** They may remove frozen tokens. HP tokens (damage) are on Creatures, not on Landscapes.
+- **Ban-She Queen:** They may remove frozen tokens. HP tokens (damage) are on Creatures, not on Landscapes.
+- **Blood Transfusion:** A card that is removed from the game is placed into the box or somewhere away from the playing area. It can no longer be interacted with and is not part of anyone’s discard pile until the game is over. Then it is returned to the deck where it came from.
+- **Bog Bum:** The easiest way to have a Creature leave play while ready is to replace it.
+- **Bog Frog Bomb:** The easiest way to have a Creature leave play while ready is to replace it.
+- **Bone Wand:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Bouncing Zebracorn:** Facedown Landscapes have no type.
+- **Brief Power:** A Useless Swamp Creature is a card with the useless swamp icon in the upper-right corner, not just any Creature that happens to be on a Useless Swamp.
+- **Burly Lumberjack:** If this card leaves play, the additional Buildings remain in play.
+- **Business Dog:** It triggers its own game text.
+- **Cave of Solitude:** If you choose to pay the cost, your Creature will be protected by the Cave of Solitude until the start of your next turn. Spells and abilities that don’t use the word “target” can still hit a Creature that is protected. If your Creature in this Lane isn’t Flooped, it will still Fight. You can choose whether or not to discard a card at the start of future turns for as long as the Cave of Solitude is in play.
+- **Celestial Fortress:** If an opposing Creature with 2 or fewer DEF enters this Lane, it is immediately destroyed. This is not damage and cannot be healed.
+- **Cool Dog:** While Cool Dog lives, your opponent cannot Fight your Creatures in the Lanes adjacent to Cool Dog’s Lane. Cool Dog may still be attacked. Your opponent’s Creatures can still Floop; if they can’t Fight or Floop, these Creatures end the turn in the ready position.
+- **Cold Soldier:** This gets the +3 ATK bonus while attacking your opponent. If it Fights a Creature, it does not get the ATK bonus.
+- **Corn Lord:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Cross Pollination:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Cross Pollination:** If you have 4 Cornfield Landscapes, you only control 1 type of Landscape. Alternate artwork does not count; only the name on the Landscape matters. Facedown Landscapes have no name, so you get no bonus for them.
+- **Crystal Palace:** The Creature you target doesn’t have to be in the same Lane as this Building.
+- **Deforestation:** You do not pay any action costs on the Building, but you do have to pay any additional costs.
+- **Druid of the Cob:** A Flooped Creature is a Creature in the Flooped position at the bottom of a Landscape. A Creature with a Floop ability that Fights is an exhausted Creature.
+- **Dr. Death:** To pay the cost of using its ability, the good Doctor can either destroy itself or another Creature your control.
+- **Fairy Shepherd:** The +2 DEF lasts only while this Creature is in play. It does not heal a Creature. If, for example, a Creature has 7 damage on it and 7 printed DEF when an adjacent Fairy Shepherd leaves play, the 7 DEF Creature is immediately destroyed. However, if you replaced the Fairy Shepherd with another Fairy Shepherd (or any Creature that could give +DEF to adjacent Creatures), the damaged Creature would remain alive.
+- **Fancy Zebracorn:** Facedown Landscapes have no type.
+- **Farmhouse:** While it counts as a Cornfield for the purposes of counting your Landscapes, you cannot play Creatures onto it.
+- **Field Reaper:** When an opposing Creature moves to your side of the board, it does not ready until the start of your next turn. If both of your Landscapes adjacent to Field Reaper have Creatures, the opposing Creature in the Reaper’s Lane does not move. If no other Creature is in the Lane, the Field Reaper will move to an adjacent empty Lane, if possible.
+- **Glorious Gramophone:** The 2 cards you discard may be any cards in your hand, not just from among the 4 cards you drew.
+- **Gray Eyebat:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Green Candy:** You may target a Creature you control or an opposing Creature.
+- **Ice-olation Cell:** A Creature that cannot attack remains in the ready position. Abilities include Flooping and any other ability that has a “Cost >>> Effect.” If a card simply has text, but no cost to pay to use the ability, the ability remains active.
+- **Icy Intruder:** You may target your own Landscape or an opponent’s Landscape.
+- **Impossible Possum:** When it is discarded, it does not matter whether it was in your deck, in your hand, or in play. You must decide whether or not to discard a card from your hand the moment Impossible Possum goes into your discard pile.
+- **Kernel Queen:** A Flooped Creature is a Creature in the Flooped position at the bottom of a Landscape. A Creature with a Floop ability that Fights is an exhausted Creature.
+- **Learning Center:** This card does not gain the name of the Buildings that it copies. So if an Oil Refinery is in an adjacent Lane, Learning Center grants +2 DEF to the Creature on its Landscape, but it does not count as an Oil Refinery itself.
+- **Magenapping:** You can steal an opponent’s Creature with this card. You become the controller, but they are still the owner. You cannot play this Spell if you do not have an empty Landscape.
+- **Mantle Masher:** You may flip an opponent’s Landscape or one of your own. 
+- **Ms. Mummy:** When Ms. Mummy returns to your hand, remove all damage from it.
+- **Ms. Mummy:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Musical Chair:** The (up to) 2 Landscapes do not need to be different types from the ones replaced. When swapped, the Creatures on them remain. The swapped Landscapes come into play face up with no frozen tokens.
+- **Nice Ice Baby:** This gets the +3 ATK bonus while attacking your opponent. If it Fights a Creature, it does not get the ATK bonus.
+- **Ol' Corn Eye:** Facedown Landscapes have no type.
+- **Parrotroopers:** When you play a Parrotrooper, it enters play onto one of your empty Landscapes. It may also replace a Creature you control. Now you must immediately move it to an empty Landscape—yours or an opponent’s. If there are no empty Landscapes, the Parrotrooper remains where it entered play. Whoever controls the Parrotrooper is the one affected by its negative ability.
+- **Parrotmilitary Outpost:** All Creatures in this Lane have their ATK values reduced by 1, not to −1. Their ATK value cannot go below 0. This reduction happens to both attacking and defending Creatures.
+- **Peach Djinni:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Pentaid:** If a Creature does not have at least 5 damage on it, this card will not heal it.
+- **Pied Piper:** The Flooped Creature you control attacks just as if it were in Pied Piper’s Lane. It deals damage to the Creature across from Pied Piper and also takes damage from the Creature it attacks. The Flooped Creature does not actually change Lanes, however, so it only gains benefits from Buildings on its own Landscape. It remains a Flooped Creature.
+- **Prismo:** If, for example, your Landscapes are SandyLands, Useless Swamp, Cornfield, and Nicelands, then none of your Landscapes match. Landscapes with different art but the same name do not count.
+- **Rebounding Zebracorn:** Facedown Landscapes have no type.
+- **Rock ‘n Roller:** You may flip an opponent’s Landscape or one of your own.
+- **Sandmagus:** Other Creatures that enter play after returning Sandmagus to hand also receive the +1 ATK this turn.
+- **Shark:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Sinkhole:** You may target your own Landscape or an opponent’s Landscape.
+- **Ska-pion:** If your opponent has one of your Parrotroopers in play, this card becomes cost 0 to play.
+- **Snake Eye Ring:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Snow Bunny:** The Landscape you target does not have to be in the Snow Bunny’s former Lane.
+- **Snow Way:** You may freeze your own Landscapes if you wish, but you are subject to the same rules for removing them.
+- **Spell Warp:** The 2 Creatures you swap change Lanes simultaneously.
+- **Struzann Djinn:** Creatures that Flooped during your turn still count as Flooped Creatures during your opponent’s turn. Be sure to keep your Flooped Creatures near the back of the Landscape so you can tell the difference between Creatures who Flooped and ones who Fight.
+- **Subliminal Strength:** This only counts the Spells you have already played this turn.
+- **Tapped Out:** This only counts currently exhausted Creatures. Flooped Creatures are exhausted, as well as any Creature that did not ready at the start of your turn.
+- **The Dog:** A Building that loses its abilities is considered to have no game text, but it still has a cost, Landscape type, and card type.
+- **Tired Wombat:** If there are no empty Landscapes, it remains where it is
+- **Tornado Wall of Fire:** Note that the +3 ATK bonus applies while attacking or defending in place of the Pied Piper.
+- **Travelin’ Skeleton:** Both of your Creatures swap at the same time.
+- **Unempty Coffin:** A Creature’s cost cannot be reduced below 0.
+- **Vampire Lord:** If it has 1 DEF remaining and it takes 1 damage and deals 1 damage during a Fight, it lives that round.
+- **Wall of Sand:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Woad Talisman:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+- **Volcano:** There must be a Building in play to be able to play this card. A facedown Landscape does not have a Landscape type, but Creatures and Buildings may still be placed there. If you flip over a Landscape that you have only two of, you now only have one of that type. You won’t be able to play any more cards of that Landscape type with a 2 action cost. Fortunately, you can discard those cards to some of your Useless Swamp Creatures.
+- **Woadic Weirdo:** The card you reveal becomes a Rainbow card temporarily, so you do not need the required Landscape types to play it
+- **ZaZo's Magic Seeds:** Remember that Rainbow Creatures do not count as Cornfield, Useless Swamp, SandyLands, or Blue Plains Creatures.
+
