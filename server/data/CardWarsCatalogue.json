@@ -34,6 +34,24 @@
     "type" : "Spell"
   },
   {
+    "ability" : "FLOOP >>> Reduce the cost of the next Creature you play by 1.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+      "feat" : "Gobble"
+    },
+    "faction" : "Cornfield",
+    "image" : "Adored Cobnoblin.png",
+    "name" : "Adored Cobnoblin",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "While Albino Eyebat has exactly 2 damage on it, it has +2 ATK.",
     "attack" : 2,
     "cost" : 1,
@@ -192,6 +210,22 @@
       "Fionna Vs Cake (Cake)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Once per turn, when your Creature in this Lane leaves play, draw 1 card.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Ascension Silo.png",
+    "name" : "Ascension Silo",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "FLOOP >>> Heal or deal 1 damage to your Creature in this Lane.",
@@ -759,6 +793,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Heal 3 damage from target Creature. If that Creature still has damage on it, gain 1 action.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Champion's Emblem.png",
+    "name" : "Champion's Emblem",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "All Creatures in this Lane lose their Landscape type and become Rainbow Creatures.",
     "cost" : 1,
     "extras" : {
@@ -775,6 +825,24 @@
     "type" : "Building"
   },
   {
+    "ability" : "FLOOP >>> Remove 1 or 2 non-damage tokens from target Creature. Then, place that many attack tokens on target friendly Creature.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 4,
+    "extras" : {
+      "feat" : "Gobble"
+    },
+    "faction" : "Cornfield",
+    "image" : "Cherished Cobnoblin.png",
+    "name" : "Cherished Cobnoblin",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "At the start of your turn, deal 3 damage to each opponent who has no cards in hand.",
     "attack" : 1,
     "cost" : 1,
@@ -789,6 +857,24 @@
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Chivalrous Armourdillo enters play, you may heal 3 damage from another Creature. If that Creature still has damage on it, draw a card.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Chivalrous Armourdillo.png",
+    "name" : "Chivalrous Armourdillo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
     },
     "type" : "Creature"
   },
@@ -971,6 +1057,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Courageous Armourdillo defeats an opposing Creature, you heal 2 HP and deal 2 damage to target opponent.",
+    "attack" : 4,
+    "cost" : 3,
+    "defense" : 11,
+    "extras" : {
+      "feat" : "Whump"
+    },
+    "faction" : "NiceLands",
+    "image" : "Courageous Armourdillo.png",
+    "name" : "Courageous Armourdillo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "",
     "attack" : 1,
     "cost" : 0,
@@ -1087,6 +1191,24 @@
     "quantity" : 1,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Place an attack token on target friendly Creature.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Darling Cobnoblin.png",
+    "name" : "Darling Cobnoblin",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
     },
     "type" : "Creature"
   },
@@ -1303,6 +1425,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Eloquent Armourdillo replaces a Creature, put an attack token on it.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Eloquent Armourdillo.png",
+    "name" : "Eloquent Armourdillo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP >>> Draw a card for each of your Flooped Creatures (including this one).",
     "attack" : 1,
     "cost" : 2,
@@ -1511,6 +1651,20 @@
       "Lemongrab Vs Gunter (Gunter)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Once per turn, when you replace a Creature, the next Creature with cost 1 you play this turn is free.",
+    "extras" : {
+
+    },
+    "image" : "Fern.png",
+    "name" : "Fern",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Hero"
   },
   {
     "ability" : "FLOOP >>> Draw a card, then discard a card. If you discard a Rainbow card this way, gain 1 action.",
@@ -1935,6 +2089,42 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Gallant Armourdillo replaces a Creature, play the top card of your deck for free.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Gallant Armourdillo.png",
+    "name" : "Gallant Armourdillo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When an opposing Creature attacks, you may choose to have it attack Genteel Armourdillo instead.",
+    "attack" : 3,
+    "cost" : 3,
+    "defense" : 14,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Genteel Armourdillo.png",
+    "name" : "Genteel Armourdillo",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+4 ATK if both Landscapes in this Lane are frozen.",
     "attack" : 2,
     "cost" : 1,
@@ -1999,6 +2189,24 @@
     "quantity" : 2,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When an opposing Creature attacks, you may choose to have it attack Gracious Armourdillo instead.",
+    "attack" : 4,
+    "cost" : 4,
+    "defense" : 16,
+    "extras" : {
+      "feat" : "Whump"
+    },
+    "faction" : "NiceLands",
+    "image" : "Gracious Armourdillo.png",
+    "name" : "Gracious Armourdillo",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
     },
     "type" : "Creature"
   },
@@ -2225,6 +2433,22 @@
       "Fionna Vs Cake (Cake)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "When friendly Creatures deal damage this turn, heal that much damage from them.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Herbal Hurlers.png",
+    "name" : "Herbal Hurlers",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "Discard a card >>> Herculeye has +4 ATK this turn. (Limit: Once per furn.)",
@@ -2595,6 +2819,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "When Kangaroo Bat damages an opponent, put an attack token on Kangaroo Bat.",
+    "attack" : 2,
+    "cost" : 0,
+    "defense" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Kangaroo Bat.png",
+    "name" : "Kangaroo Bat",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+1 ATK for each Flooped Creature you control.",
     "attack" : 1,
     "cost" : 1,
@@ -2611,6 +2853,22 @@
       "Fionna Vs Cake (Cake)" : 1
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "Deal damage to target Creature equal to the damage on one of your Creatures.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Kernel Renewal.png",
+    "name" : "Kernel Renewal",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "If you return 2 or more Creatures to your hand from play or your discard pile during your turn, heal 2 HP.",
@@ -2673,6 +2931,22 @@
       "Lemongrab Vs Gunter (Lemongrab)" : 1
     },
     "type" : "Hero"
+  },
+  {
+    "ability" : "At the start of your turn, heal 1 damage from friendly Creatures in this Lane.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Lifeward Tower.png",
+    "name" : "Lifeward Tower",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Building"
   },
   {
     "ability" : "Each of your Creatures in a Lane with a Building you control has +2 ATK this turn.",
@@ -2887,6 +3161,22 @@
     "quantity" : 1,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "At the start of your turn, you may remove 1 non-damage token from a friendly Creature or a Landscape you control.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Mossglen Retreat.png",
+    "name" : "Mossglen Retreat",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
     },
     "type" : "Building"
   },
@@ -3290,6 +3580,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Your other Creatures with Whump cost 1 less to play.",
+    "attack" : 4,
+    "cost" : 4,
+    "defense" : 13,
+    "extras" : {
+      "feat" : "Whump"
+    },
+    "faction" : "NiceLands",
+    "image" : "Polished Armourdillo.png",
+    "name" : "Polished Armourdillo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "",
     "attack" : 1,
     "cost" : 0,
@@ -3322,6 +3630,24 @@
     "quantity" : 2,
     "sets" : {
       "Fionna Vs Cake (Cake)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Either heal 2 damage or remove 1 non-damage token from target friendly Creature.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+      "feat" : "Gobble"
+    },
+    "faction" : "Cornfield",
+    "image" : "Precious Cobnablin.png",
+    "name" : "Precious Cobnablin",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
     },
     "type" : "Creature"
   },
@@ -3460,6 +3786,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Target friendly Creature has +2 ATK this turn. If that Creature defeats another Creature this turn, draw a card.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "Cornfield",
+    "image" : "Ragepop Totem.png",
+    "name" : "Ragepop Totem",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "At the start of your turn, you heal 1 hit point for each different Landscape type you control. (Can't go over 25)",
     "attack" : 1,
     "cost" : 1,
@@ -3530,6 +3872,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "If you played a Creature with cost 2 or greater this turn, you may play Refined Armourdillo for free.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "NiceLands",
+    "image" : "Refined Armourdillo.png",
+    "name" : "Refined Armourdillo",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP >>> Draw a card for each frozen Landscape.",
     "attack" : 4,
     "cost" : 2,
@@ -3544,6 +3904,40 @@
     "quantity" : 2,
     "sets" : {
       "Ice King Vs Marceline (Ice King)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When you play a Creature in this Lane, you may return a Spell of lesser cost in your discard pile to your hand.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Resonant Spellhold.png",
+    "name" : "Resonant Spellhold",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "If Rhinoceros is the first card you played this turn, put an attack token on it.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Rhinoceros.png",
+    "name" : "Rhinoceros",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
     },
     "type" : "Creature"
   },
@@ -3610,6 +4004,22 @@
     "quantity" : 2,
     "sets" : {
       "Lemongrab Vs Gunter (Lemongrab)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Destroy target Creature. Its owner heals 5 HP.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Sacred Scythe.png",
+    "name" : "Sacred Scythe",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
     },
     "type" : "Spell"
   },
@@ -4598,6 +5008,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "FLOOP >>> Draw a card.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+      "feat" : "Gobble"
+    },
+    "faction" : "Cornfield",
+    "image" : "Treasured Cobnoblin.png",
+    "name" : "Treasured Cobnoblin",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "FLOOP >>> Return a random Creature from your discard pile to your hand.",
     "attack" : 2,
     "cost" : 2,
@@ -4664,6 +5092,24 @@
     "quantity" : 2,
     "sets" : {
       "Ice King Vs Marceline (Marceline)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Whump When Valiant Armourdillo is played from your hand, destroy an opposing Creature in its Lane.",
+    "attack" : 6,
+    "cost" : 5,
+    "defense" : 14,
+    "extras" : {
+      "feat" : "Whump"
+    },
+    "faction" : "NiceLands",
+    "image" : "Valiant Armourdillo.png",
+    "name" : "Valiant Armourdillo",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (Fern)" : 1
     },
     "type" : "Creature"
   },
