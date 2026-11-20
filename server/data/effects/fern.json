@@ -1,0 +1,144 @@
+{
+  "adored-cobnoblin": [
+    {"kind": "floop", "do": [{"do": "discount_next_creature", "amount": {"n": 1}}]}
+  ],
+  "cherished-cobnoblin": [
+    {"kind": "floop",
+     "targets": [
+       {"what": "creature", "tokens": true, "optional": true, "group": "mode", "label": "Remove 1 token from"},
+       {"what": "creature", "tokens": true, "optional": true, "group": "mode", "label": "Remove 2 tokens from"},
+       {"what": "creature", "side": "you", "label": "Place them on"}
+     ],
+     "do": [
+       {"do": "move_tokens", "slot": 0, "slot2": 2, "amount": {"n": 1}},
+       {"do": "move_tokens", "slot": 1, "slot2": 2, "amount": {"n": 2}}
+     ]}
+  ],
+  "chivalrous-armourdillo": [
+    {"kind": "trigger", "on": "enter_play",
+     "targets": [{"what": "creature", "not_self": true, "optional": true, "label": "Heal 3 damage from", "skip_label": "Don't heal a Creature"}],
+     "do": [
+       {"do": "heal_creature", "slot": 0, "amount": {"n": 3}},
+       {"do": "draw", "amount": {"n": 1}, "if_damaged": 0}
+     ]}
+  ],
+  "courageous-armourdillo": [
+    {"kind": "trigger", "on": "defeats",
+     "do": [
+       {"do": "heal_hero", "who": "you", "amount": {"n": 2}},
+       {"do": "damage_hero", "who": "opponent", "amount": {"n": 2}}
+     ]}
+  ],
+  "darling-cobnoblin": [
+    {"kind": "floop",
+     "targets": [{"what": "creature", "side": "you", "label": "Place an attack token on"}],
+     "do": [{"do": "add_tokens", "slot": 0, "amount": {"n": 1}}]}
+  ],
+  "eloquent-armourdillo": [
+    {"kind": "trigger", "on": "enter_play",
+     "do": [{"do": "add_tokens", "self": true, "amount": {"n": 1}, "if": {"replaced": true}}]}
+  ],
+  "gallant-armourdillo": [
+    {"kind": "trigger", "on": "enter_play",
+     "do": [{"do": "play_top", "if": {"replaced": true}}]}
+  ],
+  "genteel-armourdillo": [
+    {"kind": "static", "restrict": "redirect_attacks"}
+  ],
+  "gracious-armourdillo": [
+    {"kind": "static", "restrict": "redirect_attacks"}
+  ],
+  "kangaroo-bat": [
+    {"kind": "trigger", "on": "deals_hero_damage",
+     "do": [{"do": "add_tokens", "self": true, "amount": {"n": 1}}]}
+  ],
+  "polished-armourdillo": [
+    {"kind": "static", "restrict": "whump_discount"}
+  ],
+  "precious-cobnablin": [
+    {"kind": "floop",
+     "targets": [
+       {"what": "creature", "side": "you", "optional": true, "group": "mode", "label": "Heal 2 damage from"},
+       {"what": "creature", "side": "you", "tokens": true, "optional": true, "group": "mode", "label": "Remove a token from"}
+     ],
+     "do": [
+       {"do": "heal_creature", "slot": 0, "amount": {"n": 2}},
+       {"do": "remove_tokens", "slot": 1, "amount": {"n": 1}}
+     ]}
+  ],
+  "refined-armourdillo": [
+    {"kind": "cost_mod", "reduce": {"n": 1}, "actions_only": true, "if": {"played_creature_cost": {"min": 2}}}
+  ],
+  "rhinoceros": [
+    {"kind": "trigger", "on": "enter_play",
+     "do": [{"do": "add_tokens", "self": true, "amount": {"n": 1}, "if": {"cards_played": {"max": 1}}}]}
+  ],
+  "treasured-cobnoblin": [
+    {"kind": "floop", "do": [{"do": "draw", "amount": {"n": 1}}]}
+  ],
+  "valiant-armourdillo": [
+    {"kind": "trigger", "on": "enter_play",
+     "do": [{"do": "destroy_creature", "all": {"rel": "lane_foe"}, "if": {"from_hand": true}}]}
+  ],
+  "ascension-silo": [
+    {"kind": "trigger", "on": "lane_creature_leaves", "once_per_turn": true,
+     "do": [{"do": "draw", "amount": {"n": 1}}]}
+  ],
+  "lifeward-tower": [
+    {"kind": "trigger", "on": "turn_start",
+     "do": [{"do": "heal_creature", "all": {"rel": "lane_ally"}, "amount": {"n": 1}}]}
+  ],
+  "mossglen-retreat": [
+    {"kind": "trigger", "on": "turn_start",
+     "do": [{"do": "may",
+             "targets": [
+               {"what": "creature", "side": "you", "tokens": true, "optional": true, "group": "mode", "label": "Remove a token from"},
+               {"what": "landscape", "side": "you", "frozen": true, "optional": true, "group": "mode", "label": "Remove the frozen token from"}
+             ],
+             "then": [
+               {"do": "remove_tokens", "slot": 0, "amount": {"n": 1}},
+               {"do": "thaw", "slot": 1}
+             ]}]}
+  ],
+  "resonant-spellhold": [
+    {"kind": "trigger", "on": "creature_enters", "watch": {"in_lane": true, "your_turn": true},
+     "targets": [{"what": "discard_card", "side": "you", "card_type": "spell", "cost_below": "entering", "optional": true,
+                  "label": "Return to your hand", "skip_label": "Don't return a Spell"}],
+     "do": [{"do": "return_from_discard", "slot": 0}]}
+  ],
+  "champion-s-emblem": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "label": "Heal 3 damage from"}],
+     "do": [
+       {"do": "heal_creature", "slot": 0, "amount": {"n": 3}},
+       {"do": "gain_actions", "amount": {"n": 1}, "if_damaged": 0}
+     ]}
+  ],
+  "herbal-hurlers": [
+    {"kind": "spell", "do": [{"do": "lifesteal"}]}
+  ],
+  "kernel-renewal": [
+    {"kind": "spell",
+     "targets": [
+       {"what": "creature", "label": "Damage"},
+       {"what": "creature", "side": "you", "label": "Damage equal to the damage on"}
+     ],
+     "do": [{"do": "damage_creature", "slot": 0, "amount": {"n": 1, "per": {"of": "damage", "slot": 1}}}]}
+  ],
+  "ragepop-totem": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "side": "you", "label": "+2 ATK this turn"}],
+     "do": [
+       {"do": "mod_creature", "slot": 0, "stat": "atk", "amount": {"n": 2}},
+       {"do": "rage", "slot": 0}
+     ]}
+  ],
+  "sacred-scythe": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "label": "Destroy"}],
+     "do": [
+       {"do": "destroy_creature", "slot": 0},
+       {"do": "heal_hero", "who": "destroyed_owner", "amount": {"n": 5}}
+     ]}
+  ]
+}

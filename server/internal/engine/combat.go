@@ -77,7 +77,7 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	if g.State.Choice != nil {
 		return ev
 	}
-	return append(ev, g.fight(p, a.Lane, a.Lane)...)
+	return append(ev, g.startFight(p, a.Lane, a.Lane)...)
 }
 
 // fight resolves a Fight in lane between the Creature of p in fromLane, which
@@ -98,6 +98,7 @@ func (g *Game) fight(p PlayerID, lane, fromLane int) []Event {
 			ctx := effCtx{p: p, at: from, hasSrc: true, creature: att}
 			ev = append(ev, g.fire(card.OnHeroDamage, ctx, g.effectsOf(att), nil)...)
 			ev = append(ev, g.fire(card.OnDealsDamage, ctx, g.effectsOf(att), nil)...)
+			ev = append(ev, g.lifesteal(from, dmg)...)
 		}
 	} else {
 		// Both Creatures deal damage to each other simultaneously.
@@ -126,7 +127,16 @@ func (g *Game) fight(p PlayerID, lane, fromLane int) []Event {
 				ctx := effCtx{p: d.at.P, at: d.at, hasSrc: true, creature: d.dealer}
 				ev = append(ev, g.fire(card.OnDealsDamage, ctx, g.effectsOf(d.dealer), nil)...)
 				ev = append(ev, g.fire(card.OnDealsCreatureDamage, ctx, g.effectsOf(d.dealer), nil)...)
+				ev = append(ev, g.lifesteal(d.at, d.dealt)...)
 			}
+		}
+		// A Creature whose damage has destroyed the one it fought has defeated it (even if it dies as well).
+		attDead, defDead := g.defeated(from), g.defeated(defAt)
+		if toDef > 0 && defDead {
+			ev = append(ev, g.defeats(from)...)
+		}
+		if toAtt > 0 && attDead {
+			ev = append(ev, g.defeats(defAt)...)
 		}
 	}
 
@@ -207,6 +217,8 @@ func (g *Game) endTurn(p PlayerID) []Event {
 	}
 	g.State.Entered = [2][NumLanes]int{}
 	g.State.CreatureDiscount = 0
+	g.State.FreeCost, g.State.FreeCostSet = 0, false
+	g.State.Lifesteal = [2]bool{}
 	g.State.NoCombatDamage = [2]bool{}
 	for i := range g.State.Players {
 		for lane := range g.State.Players[i].Lanes {
@@ -216,6 +228,10 @@ func (g *Game) endTurn(p PlayerID) []Event {
 				c.TempATK, c.TempDEF, c.ChangedLanes, c.Replaced, c.Rainbow = 0, 0, false, false, false
 				c.Silenced, c.Lent = false, ""
 				c.Fired = nil
+				c.Rage = false
+			}
+			for _, b := range l.buildings() {
+				b.Fired = nil
 			}
 		}
 	}
