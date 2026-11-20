@@ -85,7 +85,7 @@ func TestGobbleStacksGrowAndGoTogether(t *testing.T) {
 	g := fernGame(t)
 	g.put(0, 0, "treasured-cobnoblin") // 1/4
 	g.State.ActionsLeft = 9
-	g.playAt(t, "precious-cobnablin", 0) // 2/3 with Gobble
+	g.playAt(t, "precious-cobnoblin", 0) // 2/3 with Gobble
 	g.playAt(t, "adored-cobnoblin", 0)   // 1/4 with Gobble
 	cr := g.State.Players[0].Lanes[0].Creature
 	if len(cr.Gobbled) != 2 || g.atk(pos{0, 0}) != 1+2+1 || g.def(pos{0, 0}) != 4+3+4 {
@@ -255,9 +255,9 @@ func TestCherishedCobnoblinMovesOneOrTwoTokens(t *testing.T) {
 	}
 }
 
-func TestPreciousCobnablinHealsOrRemovesAToken(t *testing.T) {
+func TestPreciousCobnoblinHealsOrRemovesAToken(t *testing.T) {
 	g := fernGame(t)
-	g.put(0, 0, "precious-cobnablin")
+	g.put(0, 0, "precious-cobnoblin")
 	friend := g.put(0, 1, "wall-of-ears")
 	friend.Damage, friend.Tokens = 3, 2
 	g.floopAt(t, 0, []TargetRef{creatureRef(0, 1)})

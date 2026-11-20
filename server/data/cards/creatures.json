@@ -2441,8 +2441,8 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Popcorn%20Butteredfly.webp"
   },
   {
-    "id": "precious-cobnablin",
-    "name": "Precious Cobnablin",
+    "id": "precious-cobnoblin",
+    "name": "Precious Cobnoblin",
     "type": "creature",
     "landscape": "cornfield",
     "cost": 1,
@@ -2457,7 +2457,7 @@
         "copies": 2
       }
     ],
-    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Precious%20Cobnablin.webp"
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Precious%20Cobnoblin.webp"
   },
   {
     "id": "psionic-architect",

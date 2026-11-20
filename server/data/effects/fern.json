@@ -55,7 +55,7 @@
   "polished-armourdillo": [
     {"kind": "static", "restrict": "whump_discount"}
   ],
-  "precious-cobnablin": [
+  "precious-cobnoblin": [
     {"kind": "floop",
      "targets": [
        {"what": "creature", "side": "you", "optional": true, "group": "mode", "label": "Heal 2 damage from"},
