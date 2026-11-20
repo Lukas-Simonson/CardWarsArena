@@ -121,6 +121,7 @@ function chooseText(ctx, a) {
     case "search": return t("choose.search", { card: instName(ctx, a.card) });
     case "rebound": return a.card ? t("choose.rebound_return", { card: instName(ctx, a.card), name: card }) : t("choose.rebound_leave", { name: card });
     case "redirect": return a.card ? t("choose.redirect_other", { card: instName(ctx, a.card) }) : t("choose.redirect_same", { name: card });
+    case "defend": return a.card ? t("choose.defend_take", { card: instName(ctx, a.card) }) : t("choose.defend_no");
     case "move_damage": return t("choose.move_damage", { n: a.card });
     case "camel": return a.card ? t("choose.camel_put", { card: instName(ctx, ch.revealed?.[0]?.uid), name: card }) : t("choose.camel_let_go", { card: instName(ctx, ch.revealed?.[0]?.uid) });
     case "landscape": return t("choose.landscape", { lane: laneNo(ch.lane), type: landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1]) });

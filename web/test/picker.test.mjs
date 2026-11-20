@@ -410,3 +410,20 @@ test("the server's piles show a pile that has nothing to take as well, while a c
   assert.deepEqual(discardSeats(o.tokens, null, 0, o.piles), [0, 1]); // theirs is empty but allowed: shown, saying so
   assert.deepEqual(discardSeats([], null, 0, o.piles), []); // no pile is wanted at the moment: nothing opens
 });
+
+// Cherished Cobnoblin: remove 1 or 2 tokens from a Creature (a group of two slots), then pick the Creature that gets them.
+test("a group followed by another slot: the Creature and the amount, then where the tokens go", () => {
+  const ctx = myTurn();
+  const c = (player, lane) => ({ kind: "creature", player, lane });
+  const labels = ["Remove 1 token from", "Remove 2 tokens from", "Place them on"], groups = ["mode", "mode", ""];
+  const act = (one, two, to) => ({ kind: "floop", lane: 0, targets: [one.map((l) => c(1, l)), two.map((l) => c(1, l)), [c(0, to)]], labels, groups });
+  const all = [act([0], [], 1), act([], [0], 1), act([0], [], 2), act([], [0], 2)];
+  const p = new ActionPicker(all, ctx);
+  assert.deepEqual(p.options().tokens, ["creature:1:0"]);
+  assert.ok(p.pick("creature:1:0"));
+  assert.deepEqual(p.options().modes.map((m) => m.label), ["Remove 1 token from", "Remove 2 tokens from"]);
+  assert.ok(p.pick("mode:1"));
+  assert.deepEqual(p.options().tokens, ["creature:0:1", "creature:0:2"]);
+  assert.ok(p.pick("creature:0:2"));
+  assert.deepEqual(p.result().targets, [[], [c(1, 0)], [c(0, 2)]]);
+});

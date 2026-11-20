@@ -229,7 +229,7 @@ function tile(m, seat, i, on) {
     if (c) on.onInspect(c.card);
   };
   const label = t("tile.label", { mine: mine ? "yes" : "no", lane: i + 1, down: lane.face_down ? "yes" : "no", type: landscapeName(lane.landscape), frozen: lane.frozen ? "yes" : "no", empty: c ? "no" : "yes", card: c ? cardName(ctx, c.card) : "" });
-  const stats = c && [c.types && c.types.map(landscapeName).join(t("tile.types_sep")), c.protected && t("tile.protected"), c.stolen && t("tile.stolen"), c.silenced && (c.lent ? t("tile.lent", { name: cardName(ctx, c.lent) }) : t("tile.silenced")), c.under?.length > 0 && t("tile.under", { n: c.under.length })].filter(Boolean);
+  const stats = c && [c.types && c.types.map(landscapeName).join(t("tile.types_sep")), c.protected && t("tile.protected"), c.stolen && t("tile.stolen"), c.silenced && (c.lent ? t("tile.lent", { name: cardName(ctx, c.lent) }) : t("tile.silenced")), c.under?.length > 0 && t("tile.under", { n: c.under.length }), c.tokens > 0 && t("tile.tokens", { n: c.tokens }), c.gobbled?.length > 0 && t("tile.gobbled", { n: c.gobbled.length })].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
     "data-seat": seat, "data-lane": i,
@@ -340,6 +340,17 @@ function choiceModal(m, on) {
         return action && cardButton(inst, action);
       })),
       stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(stay) }, t("modal.redirect_same", { name: by }))));
+  } else if (ch.kind === "defend") {
+    const stay = choose.find((a) => !a.card);
+    const attacker = v.players[ch.move_side]?.lanes?.[ch.lane]?.creature;
+    title = t("modal.defend_title", { name: by });
+    text = t("modal.defend_text", { name: by, attacker: attacker ? cardName(ctx, attacker.card) : "?" });
+    body = h("div", {},
+      h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
+        const action = choose.find((a) => a.card === inst.uid);
+        return action && cardButton(inst, action);
+      })),
+      stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(stay) }, t("modal.defend_none"))));
   } else if (ch.kind === "move_damage") {
     title = by;
     text = t("modal.move_damage_text", { n: ch.count });

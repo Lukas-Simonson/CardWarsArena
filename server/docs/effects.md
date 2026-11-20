@@ -361,8 +361,8 @@ do not repeat it.
 - **Attack tokens** (`Creature.Tokens`): +1 ATK each, until the Creature leaves play. Ops `add_tokens` (`self`, `slot`,
   `entering` or `all`), `remove_tokens` (up to `amount`) and `move_tokens` (`slot` to `slot2`: it moves as many as were
   taken off, up to `amount`). A **TargetSpec** `tokens` picks Creatures with tokens on them, and `not_self` leaves out the
-  card itself ("another Creature"). The only other non-damage token a Creature can hold is none: burn tokens are not in
-  the game, so "non-damage tokens" are attack tokens, and the one a Landscape can hold is the frozen token.
+  card itself ("another Creature"). Burn tokens are not in the game, so a Creature's "non-damage tokens" are
+  its attack tokens, and the only token a Landscape holds is the frozen one.
 - **Triggers.** `defeats` fires on a Creature whose damage in a Fight destroyed the Creature it fought, before either
   is removed, so a Creature that dies in the same Fight still counts (Courageous Armourdillo). `lane_creature_leaves`
   fires on a Building when its controller's Creature in its Lane leaves play by any means, and a Building's
