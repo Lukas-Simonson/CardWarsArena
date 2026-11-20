@@ -596,7 +596,9 @@ function tokenRow(tokens) {
   const chips = tokenChips(tokens);
   if (!chips.length) return null;
   return h("div", { class: "ttokens" }, chips.map((k) =>
-    h("span", { class: `ttoken ${k.kind}`, title: t(k.title, { n: k.n }), "aria-label": t(k.title, { n: k.n }) }, h("i", { "aria-hidden": "true" }, k.icon), k.n)));
+    h("span", { class: `ttoken ${k.kind}`, title: t(k.title, { n: k.n }), "aria-label": t(k.title, { n: k.n }) },
+      k.img ? h("img", { src: k.img, alt: "", "aria-hidden": "true", draggable: "false" }) : h("i", { "aria-hidden": "true" }, k.icon),
+      k.n > 1 && h("b", {}, k.n))));
 }
 
 /** Attack and Defense left, big and beside the card (not rotating with it). */
