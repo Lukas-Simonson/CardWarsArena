@@ -166,7 +166,7 @@ A player:
                              "protected":false,"stolen":false,"silenced":false,"lent":"","changed_lanes":false,
                              "types":["rainbow"],            // only when its Landscape types are not its card's own
                              "under":[ {"uid":12,"card":"fancy-zebracorn","owner":0} ] },  // only with cards under it (Carmel Camel)
-                             "tokens":2, "gobbled":[ {"uid":14,"card":"adored-cobnoblin","owner":0} ] },  // attack tokens, and the Gobble Creatures it replaced
+                             "tokens":{"attack":2}, "gobbled":[ {"uid":14,"card":"adored-cobnoblin","owner":0} ] },  // tokens on it by kind (only "attack" so far), and the Gobble Creatures it replaced
                "building": { "uid":8,"card":"blood-fortress","owner":0,"status":"ready" },
                "extra": [ { "uid":9,"card":"farmhouse","owner":0,"status":"ready" } ] } ] }  // 4 lanes; extra only with Burly Lumberjack
 ```

@@ -610,7 +610,6 @@
  "tile.stolen": "stolen",
  "tile.types_sep": " / ",
  "tile.gobbled": "{n} gobbled",
- "tile.tokens": "{n, plural, one {# attack token} other {# attack tokens}}",
  "tile.under": "{n} under",
  "type.building": "Building",
  "type.creature": "Creature",
@@ -628,5 +627,7 @@
  "label.remove_2_tokens_from": "Remove 2 tokens from",
  "label.remove_a_token_from": "Remove a token from",
  "label.remove_the_frozen_token_from": "Remove the frozen token from",
- "label.return_to_your_hand": "Return to your hand"
+ "label.return_to_your_hand": "Return to your hand",
+ "token.attack": "{n, plural, one {# attack token} other {# attack tokens}}",
+ "token.burn": "{n, plural, one {# burn token} other {# burn tokens}}"
 }

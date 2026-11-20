@@ -2,6 +2,7 @@
 // update (the scene is small) and reports clicks through `on`. Which cards may
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
+import { tokenChips } from "./tokens.js";
 import { APP_NAME } from "./brand.js";
 import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
@@ -229,7 +230,7 @@ function tile(m, seat, i, on) {
     if (c) on.onInspect(c.card);
   };
   const label = t("tile.label", { mine: mine ? "yes" : "no", lane: i + 1, down: lane.face_down ? "yes" : "no", type: landscapeName(lane.landscape), frozen: lane.frozen ? "yes" : "no", empty: c ? "no" : "yes", card: c ? cardName(ctx, c.card) : "" });
-  const stats = c && [c.types && c.types.map(landscapeName).join(t("tile.types_sep")), c.protected && t("tile.protected"), c.stolen && t("tile.stolen"), c.silenced && (c.lent ? t("tile.lent", { name: cardName(ctx, c.lent) }) : t("tile.silenced")), c.under?.length > 0 && t("tile.under", { n: c.under.length }), c.tokens > 0 && t("tile.tokens", { n: c.tokens }), c.gobbled?.length > 0 && t("tile.gobbled", { n: c.gobbled.length })].filter(Boolean);
+  const stats = c && [c.types && c.types.map(landscapeName).join(t("tile.types_sep")), c.protected && t("tile.protected"), c.stolen && t("tile.stolen"), c.silenced && (c.lent ? t("tile.lent", { name: cardName(ctx, c.lent) }) : t("tile.silenced")), c.under?.length > 0 && t("tile.under", { n: c.under.length }), c.gobbled?.length > 0 && t("tile.gobbled", { n: c.gobbled.length })].filter(Boolean);
   return h("button", {
     type: "button", class: classes.join(" "), "data-land": lane.face_down ? "" : lane.landscape, "aria-label": label,
     "data-seat": seat, "data-lane": i,
@@ -239,6 +240,7 @@ function tile(m, seat, i, on) {
     lane.frozen && h("div", { class: "ice", "aria-hidden": "true" }, h("span", {}, "❄")),
     c && h("div", { class: `at ${c.status === "ready" ? "" : c.status}` }, cardEl(ctx.cards[c.card])),
     c && tileStats(ctx.cards[c.card], c),
+    c && tokenRow(c.tokens),
     c && c.status !== "ready" && h("span", { class: "stat" }, t(c.status === "fought" ? "lane.fought" : "tile.flooped")),
     c && stats.length > 0 && c.status === "ready" && h("span", { class: "stat" }, fmtJoin(stats)));
 }
@@ -587,6 +589,14 @@ function logParts(line, names, on) {
   }
   if (at < line.length) out.push(line.slice(at));
   return out;
+}
+
+/** The tokens on a Creature as a column of chips under its ATK: an icon and a count for each kind it has. */
+function tokenRow(tokens) {
+  const chips = tokenChips(tokens);
+  if (!chips.length) return null;
+  return h("div", { class: "ttokens" }, chips.map((k) =>
+    h("span", { class: `ttoken ${k.kind}`, title: t(k.title, { n: k.n }), "aria-label": t(k.title, { n: k.n }) }, h("i", { "aria-hidden": "true" }, k.icon), k.n)));
 }
 
 /** Attack and Defense left, big and beside the card (not rotating with it). */
