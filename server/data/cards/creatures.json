@@ -18,6 +18,25 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Abdominal%20Snowman.webp"
   },
   {
+    "id": "adored-cobnoblin",
+    "name": "Adored Cobnoblin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Reduce the cost of the next Creature you play by 1.",
+    "feat": "gobble",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Adored%20Cobnoblin.webp"
+  },
+  {
     "id": "albino-eyebat",
     "name": "Albino Eyebat",
     "type": "creature",
@@ -433,6 +452,25 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Carmel%20Camel.webp"
   },
   {
+    "id": "cherished-cobnoblin",
+    "name": "Cherished Cobnoblin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 2,
+    "attack": 3,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Remove 1 or 2 non-damage tokens from target Creature. Then, place that many attack tokens on target friendly Creature.",
+    "feat": "gobble",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cherished%20Cobnoblin.webp"
+  },
+  {
     "id": "chest-burster",
     "name": "Chest Burster",
     "type": "creature",
@@ -449,6 +487,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Chest%20Burster.webp"
+  },
+  {
+    "id": "chivalrous-armourdillo",
+    "name": "Chivalrous Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6,
+    "text": "When Chivalrous Armourdillo enters play, you may heal 3 damage from another Creature. If that Creature still has damage on it, draw a card.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Chivalrous%20Armourdillo.webp"
   },
   {
     "id": "cold-soldier",
@@ -613,6 +669,25 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cottonpult.webp"
   },
   {
+    "id": "courageous-armourdillo",
+    "name": "Courageous Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 3,
+    "attack": 4,
+    "defense": 11,
+    "text": "When Courageous Armourdillo defeats an opposing Creature, you heal 2 HP and deal 2 damage to target opponent.",
+    "feat": "whump",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Courageous%20Armourdillo.webp"
+  },
+  {
     "id": "cow",
     "name": "Cow",
     "type": "creature",
@@ -683,6 +758,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Dark%20Angel.webp"
+  },
+  {
+    "id": "darling-cobnoblin",
+    "name": "Darling Cobnoblin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 3,
+    "text": "FLOOP \u003e\u003e\u003e Place an attack token on target friendly Creature.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Darling%20Cobnoblin.webp"
   },
   {
     "id": "dogboy",
@@ -863,6 +956,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Earth%20Mover.webp"
+  },
+  {
+    "id": "eloquent-armourdillo",
+    "name": "Eloquent Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 2,
+    "defense": 8,
+    "text": "When Eloquent Armourdillo replaces a Creature, put an attack token on it.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Eloquent%20Armourdillo.webp"
   },
   {
     "id": "embarrassing-bard",
@@ -1262,6 +1373,42 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Future%20Scholar.webp"
   },
   {
+    "id": "gallant-armourdillo",
+    "name": "Gallant Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9,
+    "text": "When Gallant Armourdillo replaces a Creature, play the top card of your deck for free.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Gallant%20Armourdillo.webp"
+  },
+  {
+    "id": "genteel-armourdillo",
+    "name": "Genteel Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 3,
+    "attack": 3,
+    "defense": 14,
+    "text": "When an opposing Creature attacks, you may choose to have it attack Genteel Armourdillo instead.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Genteel%20Armourdillo.webp"
+  },
+  {
     "id": "glacier-racer",
     "name": "Glacier Racer",
     "type": "creature",
@@ -1296,6 +1443,25 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Goat.webp"
+  },
+  {
+    "id": "gracious-armourdillo",
+    "name": "Gracious Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 4,
+    "attack": 4,
+    "defense": 16,
+    "text": "When an opposing Creature attacks, you may choose to have it attack Gracious Armourdillo instead.",
+    "feat": "whump",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Gracious%20Armourdillo.webp"
   },
   {
     "id": "grand-mummy",
@@ -1783,6 +1949,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Jinxed%20Parrotrooper.webp"
   },
   {
+    "id": "kangaroo-bat",
+    "name": "Kangaroo Bat",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 2,
+    "defense": 1,
+    "text": "When Kangaroo Bat damages an opponent, put an attack token on Kangaroo Bat.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Kangaroo%20Bat.webp"
+  },
+  {
     "id": "kernel-queen",
     "name": "Kernel Queen",
     "type": "creature",
@@ -2202,6 +2386,25 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pink%20Merwitch.webp"
   },
   {
+    "id": "polished-armourdillo",
+    "name": "Polished Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 4,
+    "attack": 4,
+    "defense": 13,
+    "text": "Your other Creatures with Whump cost 1 less to play.",
+    "feat": "whump",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Polished%20Armourdillo.webp"
+  },
+  {
     "id": "pony",
     "name": "Pony",
     "type": "creature",
@@ -2236,6 +2439,25 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Popcorn%20Butteredfly.webp"
+  },
+  {
+    "id": "precious-cobnoblin",
+    "name": "Precious Cobnoblin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 3,
+    "text": "FLOOP \u003e\u003e\u003e Either heal 2 damage or remove 1 non-damage token from target friendly Creature.",
+    "feat": "gobble",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Precious%20Cobnoblin.webp"
   },
   {
     "id": "psionic-architect",
@@ -2364,6 +2586,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Red%20Eyeling.webp"
   },
   {
+    "id": "refined-armourdillo",
+    "name": "Refined Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "attack": 3,
+    "defense": 6,
+    "text": "If you played a Creature with cost 2 or greater this turn, you may play Refined Armourdillo for free.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Refined%20Armourdillo.webp"
+  },
+  {
     "id": "reign-deer",
     "name": "Reign Deer",
     "type": "creature",
@@ -2380,6 +2620,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Reign%20Deer.webp"
+  },
+  {
+    "id": "rhinoceros",
+    "name": "Rhinoceros",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 3,
+    "defense": 3,
+    "text": "If Rhinoceros is the first card you played this turn, put an attack token on it.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rhinoceros.webp"
   },
   {
     "id": "rock-n-roller",
@@ -3031,6 +3289,25 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Travelin%20Skeleton.webp"
   },
   {
+    "id": "treasured-cobnoblin",
+    "name": "Treasured Cobnoblin",
+    "type": "creature",
+    "landscape": "cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "FLOOP \u003e\u003e\u003e Draw a card.",
+    "feat": "gobble",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Treasured%20Cobnoblin.webp"
+  },
+  {
     "id": "tree-of-undeath",
     "name": "Tree of Undeath",
     "type": "creature",
@@ -3083,6 +3360,25 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Unicyclops.webp"
+  },
+  {
+    "id": "valiant-armourdillo",
+    "name": "Valiant Armourdillo",
+    "type": "creature",
+    "landscape": "nice_lands",
+    "cost": 5,
+    "attack": 6,
+    "defense": 14,
+    "text": "Whump When Valiant Armourdillo is played from your hand, destroy an opposing Creature in its Lane.",
+    "feat": "whump",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Valiant%20Armourdillo.webp"
   },
   {
     "id": "vampire-lord",

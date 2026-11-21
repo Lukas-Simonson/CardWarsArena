@@ -166,6 +166,7 @@ A player:
                              "protected":false,"stolen":false,"silenced":false,"lent":"","changed_lanes":false,
                              "types":["rainbow"],            // only when its Landscape types are not its card's own
                              "under":[ {"uid":12,"card":"fancy-zebracorn","owner":0} ] },  // only with cards under it (Carmel Camel)
+                             "tokens":{"attack":2}, "gobbled":[ {"uid":14,"card":"adored-cobnoblin","owner":0} ] },  // tokens on it by kind (only "attack" so far), and the Gobble Creatures it replaced
                "building": { "uid":8,"card":"blood-fortress","owner":0,"status":"ready" },
                "extra": [ { "uid":9,"card":"farmhouse","owner":0,"status":"ready" } ] } ] }  // 4 lanes; extra only with Burly Lumberjack
 ```
@@ -225,6 +226,7 @@ every other action is refused (`illegal_action`) until they answer.
 | `redirect` | the Creature that attacked may be replaced by one of your Flooped Creatures, `revealed` (Pied Piper); the Fight waits for the answer | `choose` with `card` = the Flooped Creature's uid, or `choose` with no `card` to fight with the attacker |
 | `move_damage` | move damage between two of your Creatures; `count` is the most you may move (Friendship Bracelet) | `choose` with `card` = how much, 1 to `count` |
 | `move` | the Creature in your Lane `lane` (omitted for Lane 0) must move at the start of your turn to an empty Landscape on seat `move_side`'s side (omitted for seat 0, like any zero), one of `lanes` (Drained Cleric, Tired Wombat, Woadic Ring Leader) | `choose` with `lane` = one of `lanes` |
+| `defend` | a Creature of yours in `revealed` may take the Fight that a Creature of seat `move_side`'s in `lane` has just started (Genteel and Gracious Armourdillo); `other` is the Lane it is attacking from | `choose` with `card` = your Creature's uid, or `choose` with no `card` to let the Fight go where it was going |
 | `camel` | the Creature in `revealed` is leaving play; you may put it underneath your Camel instead of letting it go to your hand (`count` 1) or discard pile (`count` 0) (Carmel Camel). `lane` is the Lane it left, on seat `move_side`'s side | `choose` with `card` = the Camel's uid, or `choose` with no `card` to let it go |
 | `landscape` | pick the type your Landscape in `lane` becomes until the start of your next turn (Silo of Freedom) | `choose` with `card` = 1 + the type's index in `cornfield, blue_plains, useless_swamp, nice_lands, sandy_lands, icy_lands` |
 | `target` | a trigger of the card chose a target for you (Crystal Palace, Frozen Fish): `targets` lists the legal ones, `label` says what for, and `optional` that you may choose none. `lane` is the card's Lane, on seat `move_side`'s side | `choose` with `targets` = `[[ref]]` for one of the listed refs, or `choose` with no `targets` when `optional` |
@@ -248,7 +250,7 @@ same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
+`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`, or underneath the Creature that replaced it when it has Gobble) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Running

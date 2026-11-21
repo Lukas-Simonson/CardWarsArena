@@ -7,6 +7,10 @@
     {"kind": "trigger", "on": "building_played",
      "do": [{"do": "heal_creature", "all": {"rel": "your", "with_building": true}, "amount": {"n": 2}}]}
   ],
+  "fern": [
+    {"kind": "trigger", "on": "replaces", "once_per_turn": true,
+     "do": [{"do": "free_next_creature", "cost": 1}]}
+  ],
   "finn": [
     {"kind": "static", "grant": {"to": {"rel": "your", "damage": {"max": 0}},
      "ability": {"kind": "floop", "targets": [{"what": "creature"}], "do": [{"do": "damage_creature", "slot": 0, "amount": {"n": 1}}]}}}

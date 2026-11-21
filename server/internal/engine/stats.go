@@ -63,12 +63,20 @@ func (g *Game) creatureAt(at pos) *Creature { return g.State.Players[at.P].Lanes
 // Every read of a stat goes through here.
 func (g *Game) atk(at pos) int {
 	c := g.creatureAt(at)
-	return max(0, baseStat(g.Card(c.Instance).Attack)+c.TempATK+c.PermATK+g.staticMod("atk", at))
+	n := baseStat(g.Card(c.Instance).Attack) + c.TempATK + c.PermATK + c.Tokens
+	for _, in := range c.Gobbled {
+		n += baseStat(g.Card(in).Attack)
+	}
+	return max(0, n+g.staticMod("atk", at))
 }
 
 func (g *Game) def(at pos) int {
 	c := g.creatureAt(at)
-	return max(0, baseStat(g.Card(c.Instance).Defense)+c.TempDEF+c.PermDEF+g.staticMod("def", at))
+	n := baseStat(g.Card(c.Instance).Defense) + c.TempDEF + c.PermDEF
+	for _, in := range c.Gobbled {
+		n += baseStat(g.Card(in).Defense)
+	}
+	return max(0, n+g.staticMod("def", at))
 }
 
 func baseStat(v *int) int {
@@ -412,6 +420,25 @@ func (g *Game) cond(c card.Cond, s source) bool {
 		if !c.OtherCreatures.Has(n) {
 			return false
 		}
+	}
+	if c.CardsPlayed != nil && (s.P != st.Active || !c.CardsPlayed.Has(len(st.Played))) {
+		return false
+	}
+	if c.PlayedCreatureCost != nil {
+		found := false
+		if s.P == st.Active {
+			for _, pc := range st.Played {
+				if cd := g.cat[pc.CardID]; cd != nil && cd.Type == card.Creature && c.PlayedCreatureCost.Has(baseStat(cd.Cost)) {
+					found = true
+				}
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	if c.FromHand != nil && g.fromHand != *c.FromHand {
+		return false
 	}
 	if c.EmptyLanes != nil && !c.EmptyLanes.Has(g.count(card.Count{Of: "empty_lanes"}, s)) {
 		return false

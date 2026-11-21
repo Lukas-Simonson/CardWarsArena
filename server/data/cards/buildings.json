@@ -1,5 +1,21 @@
 [
   {
+    "id": "ascension-silo",
+    "name": "Ascension Silo",
+    "type": "building",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Once per turn, when your Creature in this Lane leaves play, draw 1 card.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ascension%20Silo.webp"
+  },
+  {
     "id": "auto-plucker",
     "name": "Auto-Plucker",
     "type": "building",
@@ -307,6 +323,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Learning%20Center.webp"
   },
   {
+    "id": "lifeward-tower",
+    "name": "Lifeward Tower",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 0,
+    "text": "At the start of your turn, heal 1 damage from friendly Creatures in this Lane.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Lifeward%20Tower.webp"
+  },
+  {
     "id": "lunchpad",
     "name": "Lunchpad",
     "type": "building",
@@ -337,6 +369,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mausoleum.webp"
+  },
+  {
+    "id": "mossglen-retreat",
+    "name": "Mossglen Retreat",
+    "type": "building",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "At the start of your turn, you may remove 1 non-damage token from a friendly Creature or a Landscape you control.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Mossglen%20Retreat.webp"
   },
   {
     "id": "night-tower",
@@ -417,6 +465,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pyramidia.webp"
+  },
+  {
+    "id": "resonant-spellhold",
+    "name": "Resonant Spellhold",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "When you play a Creature in this Lane, you may return a Spell of lesser cost in your discard pile to your hand.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Resonant%20Spellhold.webp"
   },
   {
     "id": "sand-sphinx",
