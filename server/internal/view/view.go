@@ -26,6 +26,9 @@ type Creature struct {
 	ChangedLanes bool   `json:"changed_lanes,omitempty"`
 	// Under are the cards underneath it (Carmel Camel).
 	Under []engine.Instance `json:"under,omitempty"`
+	// Tokens are the attack tokens on it, and Gobbled the Gobble Creatures it replaced, which lie underneath it.
+	Tokens  map[string]int    `json:"tokens,omitempty"`
+	Gobbled []engine.Instance `json:"gobbled,omitempty"`
 	// Types, when set, are the Landscape types it has now instead of its card's own.
 	Types []card.Landscape `json:"types,omitempty"`
 }
@@ -190,6 +193,8 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 					Lent:         c.Lent,
 					ChangedLanes: c.ChangedLanes,
 					Under:        append([]engine.Instance(nil), c.Under...),
+					Tokens:       tokensOf(c),
+					Gobbled:      append([]engine.Instance(nil), c.Gobbled...),
 				}
 				if types := g.CreatureTypes(p, i); len(types) != 1 || types[0] != g.Card(c.Instance).Landscape {
 					lv.Creature.Types = types
@@ -274,5 +279,14 @@ func preloadHints(st *engine.State, viewer engine.PlayerID) []string {
 		out = append(out, id)
 	}
 	sort.Strings(out)
+	return out
+}
+
+// tokensOf lists the tokens on a Creature by kind ("attack"; burn tokens will join it), leaving out kinds it has none of.
+func tokensOf(c *engine.Creature) map[string]int {
+	var out map[string]int
+	if c.Tokens > 0 {
+		out = map[string]int{"attack": c.Tokens}
+	}
 	return out
 }

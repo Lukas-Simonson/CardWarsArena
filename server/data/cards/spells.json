@@ -165,6 +165,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cerebral%20Bloodstorm.webp"
   },
   {
+    "id": "champion-s-emblem",
+    "name": "Champion's Emblem",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "Heal 3 damage from target Creature. If that Creature still has damage on it, gain 1 action.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Champion%27s%20Emblem.webp"
+  },
+  {
     "id": "corn-scepter",
     "name": "Corn Scepter",
     "type": "spell",
@@ -469,6 +485,38 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Harvest%20Moon.webp"
   },
   {
+    "id": "herbal-hurlers",
+    "name": "Herbal Hurlers",
+    "type": "spell",
+    "landscape": "nice_lands",
+    "cost": 1,
+    "text": "When friendly Creatures deal damage this turn, heal that much damage from them.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Herbal%20Hurlers.webp"
+  },
+  {
+    "id": "kernel-renewal",
+    "name": "Kernel Renewal",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 1,
+    "text": "Deal damage to target Creature equal to the damage on one of your Creatures.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Kernel%20Renewal.webp"
+  },
+  {
     "id": "log-rhythm",
     "name": "Log Rhythm",
     "type": "spell",
@@ -613,6 +661,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Quick%20Pick%20Me%20Up.webp"
   },
   {
+    "id": "ragepop-totem",
+    "name": "Ragepop Totem",
+    "type": "spell",
+    "landscape": "cornfield",
+    "cost": 0,
+    "text": "Target friendly Creature has +2 ATK this turn. If that Creature defeats another Creature this turn, draw a card.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Ragepop%20Totem.webp"
+  },
+  {
     "id": "reclaim-landscape",
     "name": "Reclaim Landscape",
     "type": "spell",
@@ -675,6 +739,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Rock%20Out%21.webp"
+  },
+  {
+    "id": "sacred-scythe",
+    "name": "Sacred Scythe",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "Destroy target Creature. Its owner heals 5 HP.",
+    "printings": [
+      {
+        "deck": "Fern's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Sacred%20Scythe.webp"
   },
   {
     "id": "singing-sword",

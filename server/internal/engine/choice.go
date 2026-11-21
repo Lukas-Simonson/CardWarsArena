@@ -88,6 +88,16 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 		if a.Card != 0 && g.handIndex(p, a.Card) < 0 {
 			return ErrNoSuchCard
 		}
+	case ChoiceDefend:
+		if a.Card == 0 {
+			return nil
+		}
+		for _, in := range ch.Revealed {
+			if in.UID == a.Card {
+				return nil
+			}
+		}
+		return ErrNoSuchCard
 	case ChoiceRedirect:
 		if a.Card == 0 {
 			return nil
@@ -186,7 +196,9 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 				lane = l
 			}
 		}
-		ev = g.fight(p, ch.Lane, lane)
+		ev = g.startFight(p, ch.Lane, lane)
+	case ChoiceDefend:
+		ev = g.answerDefend(p, ch, a.Card)
 	case ChoiceMoveDamage:
 		ev = g.moveDamage(p, ch.Lane, ch.Other, a.Card)
 	case ChoiceMove:
@@ -263,6 +275,11 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})
 		}
 		out = append(out, Action{Kind: ActChoose}) // the Creature that attacked fights
+	case ChoiceDefend:
+		for _, in := range ch.Revealed {
+			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+		out = append(out, Action{Kind: ActChoose}) // it fights where it was going to
 	case ChoiceMoveDamage:
 		for n := 1; n <= ch.Count; n++ {
 			out = append(out, Action{Kind: ActChoose, Card: n})

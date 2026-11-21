@@ -18,6 +18,7 @@ type effCtx struct {
 	card     string    // the source card's id when it is not a Creature (a Spell, Building or Hero)
 	hero     bool      // the source is its controller's Hero
 	attacker *Creature // for attacks_hero triggers: the Creature that was Activated to Fight
+	building *Building // the source, when it is a Building whose once-per-turn triggers are counted
 }
 
 // cardID is the id of the card using the effect.
@@ -67,6 +68,10 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 					(spec.Cost != nil && (cd.Cost == nil || *cd.Cost != *spec.Cost)) {
 					continue
 				}
+				if spec.CostBelow == "entering" && (c.entering == nil || g.creatureAt(*c.entering) == nil ||
+					baseStat(cd.Cost) >= baseStat(g.Card(g.creatureAt(*c.entering).Instance).Cost)) {
+					continue
+				}
 				out = append(out, TargetRef{Kind: spec.What, Player: p, Card: in.UID})
 			}
 		}
@@ -98,7 +103,8 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 					ok = (spec.Landscape == "" || g.isType(pos{p, lane}, spec.Landscape)) &&
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
 						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0) &&
-						(spec.Frozen == nil || l.Frozen == *spec.Frozen) && (spec.Damage == nil || spec.Damage.Has(cr.Damage))
+						(spec.Frozen == nil || l.Frozen == *spec.Frozen) && (spec.Damage == nil || spec.Damage.Has(cr.Damage)) &&
+						(!spec.Tokens || cr.Tokens > 0) && !(spec.NotSelf && cr == c.creature)
 				}
 			case "building":
 				ok = l.Building != nil
@@ -349,6 +355,8 @@ func subsets(items []TargetRef, size int) [][]TargetRef {
 
 func (g *Game) whoList(who string, p PlayerID) []PlayerID {
 	switch who {
+	case "destroyed_owner":
+		return g.destroyedOwners
 	case "opponent":
 		return []PlayerID{p.Opp()}
 	case "each":
@@ -423,9 +431,20 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 			continue
 		}
+		if op.IfDamaged != nil && !g.slotDamaged(op.IfDamaged, given) {
+			continue
+		}
 		amt := 0
 		if op.Amount != nil {
 			amt = g.value(*op.Amount, s)
+			if per := op.Amount.Per; per != nil && per.Slot != nil {
+				amt = 0 // counted from the Creature chosen in that slot
+				if refs := slotRefs(per.Slot, given); len(refs) == 1 {
+					if cr := g.creatureAt(pos{refs[0].Player, refs[0].Lane}); cr != nil {
+						amt = g.value(*op.Amount, source{pos: pos{refs[0].Player, refs[0].Lane}, creature: cr})
+					}
+				}
+			}
 		}
 		switch op.Do {
 		case "draw":
@@ -507,10 +526,11 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				}
 			}
 		case "destroy_creature":
-			g.destroyed = 0
+			g.destroyed, g.destroyedOwners = 0, nil
 			for _, at := range g.creaturesFor(op, c, given) {
-				if g.creatureAt(at) != nil {
+				if cr := g.creatureAt(at); cr != nil {
 					g.destroyed++
+					g.destroyedOwners = append(g.destroyedOwners, cr.Owner)
 				}
 				ev = append(ev, g.destroyAt(at)...)
 			}
@@ -610,9 +630,33 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		case "may":
 			if c.creature != nil {
 				c.creature.Offered = append(c.creature.Offered, Offer{Targets: op.Targets, Then: op.Then})
+			} else if c.building != nil {
+				c.building.Offered = append(c.building.Offered, Offer{Targets: op.Targets, Then: op.Then})
 			}
 		case "discount_next_creature":
 			g.State.CreatureDiscount += amt
+		case "free_next_creature":
+			g.State.FreeCost, g.State.FreeCostSet = *op.Cost, true
+		case "add_tokens":
+			for _, at := range g.creaturesFor(op, c, given) {
+				g.addTokens(at, amt)
+			}
+		case "remove_tokens":
+			for _, at := range g.creaturesFor(op, c, given) {
+				g.removeTokens(at, amt)
+			}
+		case "move_tokens":
+			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
+			if len(from) == 1 && len(to) == 1 {
+				n := g.removeTokens(pos{from[0].Player, from[0].Lane}, amt)
+				g.addTokens(pos{to[0].Player, to[0].Lane}, n)
+			}
+		case "lifesteal":
+			g.State.Lifesteal[c.p] = true
+		case "rage":
+			for _, at := range g.creaturesFor(op, c, given) {
+				g.creatureAt(at).Rage = true
+			}
 		case "borrow_creature":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
 			if len(from) == 1 && len(to) == 1 && from[0].Player != c.p && to[0].Player == c.p {
@@ -679,6 +723,8 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 			}
 		case "steal_play":
 			ev = append(ev, g.stealPlay(c)...)
+		case "play_top":
+			ev = append(ev, g.playTop(c.p)...)
 		case "copy_floop":
 			ev = append(ev, g.copyFloop(c)...)
 		case "gain_actions":
@@ -977,10 +1023,11 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 		return nil
 	}
 	l.Creature = nil
-	// Whatever was put underneath it is discarded.
+	// Whatever was put underneath it is discarded (the Camel's), or goes where it goes (Gobble's).
 	for _, in := range cr.Under {
 		g.State.Players[in.Owner].Discard = append(g.State.Players[in.Owner].Discard, in)
 	}
+	g.gobbledOut(cr, to)
 	// A Camel of its owner's may take it instead; the owner is asked once it has gone.
 	camels := g.camelLanes(cr)
 	var ev []Event
@@ -989,6 +1036,7 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 	}
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
 	ev = append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
+	ev = append(ev, g.fireLaneLeave(at)...)
 	if len(camels) > 0 {
 		hand := 0
 		if to == toHand {
@@ -1091,4 +1139,14 @@ func (g *Game) stealPlay(c effCtx) []Event {
 		ev = append(ev, Event{Kind: EvDiscard, Player: in.Owner, Card: in.UID})
 	}
 	return ev
+}
+
+// slotDamaged reports whether a Creature chosen in a slot still has damage on it ("if it still has damage").
+func (g *Game) slotDamaged(slot *int, given [][]TargetRef) bool {
+	for _, r := range slotRefs(slot, given) {
+		if cr := g.creatureAt(pos{r.Player, r.Lane}); cr != nil && cr.Damage > 0 {
+			return true
+		}
+	}
+	return false
 }

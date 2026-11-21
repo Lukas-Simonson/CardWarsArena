@@ -43,8 +43,12 @@ type Game struct {
 	milledSpells int // how many Spells the last mill discarded (Skeletal Hand)
 	heroDamage   int // damage a Creature just dealt to a player (Snakemint)
 	destroyed    int // how many Creatures the last destroy_creature op destroyed (Cute Overload)
-	bouncedCost  int // the cost of the Creatures the last bounce op returned (Quick Pick Me Up)
-	removedCost  int // the cost of the card the last remove_card op took out of the game (Blood Transfusion)
+	// destroyedOwners are the owners of the Creatures the last destroy_creature op destroyed (Sacred Scythe).
+	destroyedOwners []PlayerID
+	// fromHand is set while a card played from its controller's hand is entering play (Valiant Armourdillo).
+	fromHand    bool
+	bouncedCost int // the cost of the Creatures the last bounce op returned (Quick Pick Me Up)
+	removedCost int // the cost of the card the last remove_card op took out of the game (Blood Transfusion)
 }
 
 // NewGame validates the decks, shuffles, deals opening hands and returns a
@@ -133,10 +137,13 @@ func (g *Game) Clone() *Game {
 				v.Offered = append([]Offer(nil), cr.Offered...)
 				v.Under = append([]Instance(nil), cr.Under...)
 				v.Flipped = append([]Spot(nil), cr.Flipped...)
+				v.Gobbled = append([]Instance(nil), cr.Gobbled...)
 				dst.Lanes[i].Creature = &v
 			}
 			if b := src.Lanes[i].Building; b != nil {
 				v := *b
+				v.Fired = append([]int(nil), b.Fired...)
+				v.Offered = append([]Offer(nil), b.Offered...)
 				dst.Lanes[i].Building = &v
 			}
 			dst.Lanes[i].Extra = nil
@@ -161,6 +168,7 @@ func (g *Game) Clone() *Game {
 		c.State.Queue[i].Targets = append([]TargetRef(nil), c.State.Queue[i].Targets...)
 		c.State.Queue[i].Options = append([]int(nil), c.State.Queue[i].Options...)
 	}
+	c.destroyedOwners = append([]PlayerID(nil), g.destroyedOwners...)
 	c.State.Played = append([]PlayedCard(nil), g.State.Played...)
 	c.State.RainbowHand = append([]int(nil), g.State.RainbowHand...)
 	return &c

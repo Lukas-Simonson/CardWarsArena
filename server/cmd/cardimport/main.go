@@ -164,11 +164,19 @@ func convert(raws []rawCard, imageBase string) ([]card.Card, *Report) {
 		seen[c.ID] = r.Name
 		for key, val := range r.Extras {
 			text, isText := val.(string)
-			if key != "Clarification" || !isText {
+			switch {
+			case key == "Clarification" && isText:
+				c.Clarification = strings.TrimSpace(text)
+			case key == "feat" && isText:
+				switch f := card.Feat(strings.ToLower(strings.TrimSpace(text))); f {
+				case card.Gobble, card.Whump:
+					c.Feat = f
+				default:
+					rep.Problems = append(rep.Problems, fmt.Sprintf("%s: unknown feat %q (want Gobble or Whump)", r.Name, text))
+				}
+			default:
 				rep.Problems = append(rep.Problems, fmt.Sprintf("%s: has an extra %q, which the importer does not read", r.Name, key))
-				continue
 			}
-			c.Clarification = strings.TrimSpace(text)
 		}
 
 		if r.Faction != "" {

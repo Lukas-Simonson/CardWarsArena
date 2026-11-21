@@ -85,6 +85,13 @@ type Creature struct {
 	// Fired lists the once-per-turn triggers and the uses of limited
 	// abilities this turn, by the index of the effect.
 	Fired []int `json:"fired,omitempty"`
+	// Tokens are the attack tokens on it: +1 ATK each, until it leaves play.
+	Tokens int `json:"tokens,omitempty"`
+	// Gobbled are the Gobble Creatures it replaced, underneath it: it has their ATK and DEF as well as its own, and
+	// they go wherever it goes when it leaves play.
+	Gobbled []Instance `json:"gobbled,omitempty"`
+	// Rage means that if it defeats a Creature in a Fight this turn, its controller draws a card (Ragepop Totem).
+	Rage bool `json:"rage,omitempty"`
 }
 
 // Spot is one Landscape: a side of the board and a Lane.
@@ -97,6 +104,10 @@ type Spot struct {
 type Building struct {
 	Instance
 	Status Status `json:"status"`
+	// Fired lists the once-per-turn triggers it has used this turn, by the index of the effect.
+	Fired []int `json:"fired,omitempty"`
+	// Offered holds the optional abilities its triggers offer right now (Mossglen Retreat).
+	Offered []Offer `json:"offered,omitempty"`
 }
 
 // Lane is one player's half of a Lane: a Landscape plus what sits on it.
@@ -170,6 +181,12 @@ type State struct {
 	// Returned counts the Creatures each player returned to their hand this
 	// turn, from play or from their discard pile (Lady Rainicorn).
 	Returned [2]int `json:"returned,omitempty"`
+	// Lifesteal[p] means that when p's Creatures deal damage this turn, they heal that much (Herbal Hurlers).
+	Lifesteal [2]bool `json:"lifesteal,omitempty"`
+	// FreeCost, when FreeCostSet, is the cost of the next Creature the active player plays that is free this turn
+	// (Fern: the next Creature with cost 1).
+	FreeCost    int  `json:"free_cost,omitempty"`
+	FreeCostSet bool `json:"free_cost_set,omitempty"`
 	// RainbowHand holds the UIDs of hand cards that are Rainbow cards until the
 	// end of the turn (Woadic Weirdo).
 	RainbowHand []int `json:"rainbow_hand,omitempty"`
@@ -213,6 +230,9 @@ const (
 	ChoiceRansom = "ransom"
 	// amount: pick one of Options; the ops in Do then run with it (The Big Hen House). Card is the number.
 	ChoiceAmount = "amount"
+	// defend: Player's Creature, Revealed, may take the Fight a Creature of MoveSide's in Lane has just started
+	// (Genteel Armourdillo); answered with the Creature's UID, or with Card 0 to let it fight where it was going to.
+	ChoiceDefend = "defend"
 )
 
 // PlayedCard is a card played this turn, as it was when it was played.

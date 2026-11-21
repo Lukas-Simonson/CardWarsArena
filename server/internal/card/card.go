@@ -41,6 +41,16 @@ const (
 	AbilityIgnition     AbilityKind = "ignition"
 )
 
+// Feat is a keyword printed on a Creature that changes how it is played.
+type Feat string
+
+const (
+	// Gobble: when it is replaced it goes underneath the Creature that replaced it and adds its ATK, DEF and tokens.
+	Gobble Feat = "gobble"
+	// Whump: it costs less to play by the cost of the Creature it replaces.
+	Whump Feat = "whump"
+)
+
 // Printing records one product a card appears in.
 type Printing struct {
 	Deck   string `json:"deck,omitempty"`   // deck within the set, e.g. "Finn's Deck"
@@ -63,9 +73,11 @@ type Card struct {
 	Text      string      `json:"text,omitempty"`
 	Notes     string      `json:"notes,omitempty"` // flavour text
 	// Clarification is the official ruling printed with the card, if any.
-	Clarification string     `json:"clarification,omitempty"`
-	Printings     []Printing `json:"printings,omitempty"`
-	ImageURL      string     `json:"image_url,omitempty"`
+	Clarification string `json:"clarification,omitempty"`
+	// Feat is the keyword a Creature is printed with: "gobble" or "whump" (see the Feat constants).
+	Feat      Feat       `json:"feat,omitempty"`
+	Printings []Printing `json:"printings,omitempty"`
+	ImageURL  string     `json:"image_url,omitempty"`
 
 	// Effects and Modeled come from data/effects, not from the card files.
 	// Modeled means someone has written down this card's rules (possibly none).

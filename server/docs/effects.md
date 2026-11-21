@@ -318,7 +318,7 @@ a card that is not removed is not healed for. Blood Bath's and Bums Away!'s "tar
 being only one. Cards removed from the game stay out for good and show in the log. The Big Hen House heals you
 even when it has no Creature to hurt.
 
-All twelve preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's, Ice King's and Marceline's) are fully modelled.
+All thirteen preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's, Ice King's, Marceline's and Fern's) are fully modelled.
 
 - Spazzy Cola gives +1 ATK to the Creatures in play when it is played, not to ones that enter later this turn.
 - A "frozen Landscape" count (Icy Commando, Floating Ice Palace) counts the tokens on both sides of the board.
@@ -344,3 +344,49 @@ not apply to it. Its source position is Lane -1.
 - **`grant`** (a static effect, Heroes only) `{to, ability}` gives a `floop` or `activate` ability to the
   Creatures its Selector picks, while it picks them (Finn). A Creature that already has a Floop ability of
   its own keeps using that one, and a Silenced Creature loses the granted ability too.
+
+## Gobble, Whump, attack tokens and Fern's deck
+
+A card's `feat` (`gobble` or `whump`, from the catalogue's extras) is a keyword the engine plays itself; the effect files
+do not repeat it.
+
+- **Gobble.** When a Creature with Gobble is replaced it is not discarded and does not leave play: it goes underneath
+  the Creature that replaced it (`Creature.Gobbled`), which gets the Gobble Creature's printed ATK and DEF, its attack
+  tokens and its damage. Only the top card's rules apply. A stack that is replaced by a Gobble Creature, or by any
+  Creature, is gobbled whole. When the top Creature leaves play every card underneath goes with it, to the same place
+  (discard pile, or hand if it is returned). Nothing under it triggers.
+- **Whump.** A Creature with Whump costs less, in Actions and in Landscapes, by the cost of the Creature it replaces,
+  and 1 less for each Creature you control with the `whump_discount` restriction (Polished Armourdillo). It only
+  costs less while it is being played.
+- **Attack tokens** (`Creature.Tokens`): +1 ATK each, until the Creature leaves play. Ops `add_tokens` (`self`, `slot`,
+  `entering` or `all`), `remove_tokens` (up to `amount`) and `move_tokens` (`slot` to `slot2`: it moves as many as were
+  taken off, up to `amount`). A **TargetSpec** `tokens` picks Creatures with tokens on them, and `not_self` leaves out the
+  card itself ("another Creature"). Burn tokens are not in the game, so a Creature's "non-damage tokens" are
+  its attack tokens, and the only token a Landscape holds is the frozen one.
+- **Triggers.** `defeats` fires on a Creature whose damage in a Fight destroyed the Creature it fought, before either
+  is removed, so a Creature that dies in the same Fight still counts (Courageous Armourdillo). `lane_creature_leaves`
+  fires on a Building when its controller's Creature in its Lane leaves play by any means, and a Building's
+  `once_per_turn` is counted on the Building (Ascension Silo). A `creature_enters` trigger may have one target slot, and
+  a Watch `in_lane` limits it to a Creature entering the Building's own Lane (Resonant Spellhold). A discard-pile
+  target with `cost_below: "entering"` is a card that costs less than the Creature that entered.
+- **Conditions.** `cards_played` (a range, counting the card being played: Rhinoceros is the first), `played_creature_cost`
+  (a Creature with a cost in that range was played this turn: Refined Armourdillo), `from_hand` (the card was played from
+  its controller's hand, not from a deck or an opponent's hand: Valiant Armourdillo). An op's `if_damaged` slot runs it only
+  if the Creature chosen there still has damage, and a Count `slot` counts from the Creature chosen in that slot
+  (Kernel Renewal).
+- **Ops.** `free_next_creature` with a `cost` makes the next Creature of that cost free this turn, though its Landscapes
+  are still needed (Fern, once a turn when you replace a Creature). `lifesteal` makes your Creatures heal what they deal
+  this turn (Herbal Hurlers): in Fights, before damage settles, as with Vampire Lord. `rage` marks a Creature to draw a
+  card when it defeats one this turn (Ragepop Totem). `play_top` plays the top card of your deck for free, choosing its
+  Lane and targets like Silo of Truth's card; a card that cannot be played anywhere stays on the deck (Gallant
+  Armourdillo). `who: "destroyed_owner"` is the owner of what the last `destroy_creature` destroyed (Sacred Scythe).
+- **Defending.** A static `redirect_attacks` lets its controller, when an opposing Creature is Activated to Fight, have
+  it fight that Creature instead (Genteel and Gracious Armourdillo). A `defend` Choice goes to the defender when any
+  Creature of theirs could take the Fight, after Pied Piper's choice if there is one.
+- **Building offers.** A Building's `may` works like a Creature's: a free ability until its controller does anything
+  else (Mossglen Retreat, which offers once at the start of the turn).
+
+Rulings: "Free" is not "costs 0 Landscapes" (as in RULES.md), so Fern's free Creature still needs its Landscape. Herbal
+Hurlers also heal damage dealt to the opposing player. Healing from Herbal Hurlers happens before a Creature is
+destroyed, so a Creature that deals as much as it takes survives. A Creature played for free from the deck (Gallant) is
+not counted as played this turn, and Valiant Armourdillo's rule needs a card played from the hand.

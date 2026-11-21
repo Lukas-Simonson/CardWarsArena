@@ -56,6 +56,7 @@ type Watch struct {
 	Landscape Landscape `json:"landscape,omitempty"` // the entering card's own type
 	Other     bool      `json:"other,omitempty"`     // not the watcher itself
 	YourTurn  bool      `json:"your_turn,omitempty"` // only during the controller's turn
+	InLane    bool      `json:"in_lane,omitempty"`   // only a Creature entering the card's own Lane (Resonant Spellhold)
 }
 
 // EffectKind says when an Effect applies.
@@ -115,6 +116,11 @@ const (
 	// OnOpponentDiscards fires on a Creature or Building when a card is discarded from the hand of its
 	// controller's opponent (Man-Witch, Funeral Home).
 	OnOpponentDiscards = "opponent_discards"
+	// OnDefeats fires on a Creature whose damage in a Fight has destroyed the Creature it fought (Courageous Armourdillo).
+	OnDefeats = "defeats"
+	// OnLaneCreatureLeaves fires on a Building when its controller's Creature in its Lane leaves play, however
+	// it does (Ascension Silo).
+	OnLaneCreatureLeaves = "lane_creature_leaves"
 )
 
 // Restrictions (Effect.Restrict).
@@ -146,6 +152,10 @@ const (
 	RestrictCollectLeaving = "collect_leaving"
 	// Creatures on frozen Landscapes in the Lane, on both sides, cannot Fight or use abilities (Ice-olation Cell).
 	RestrictFrozenInert = "frozen_lane_inert"
+	// When an opposing Creature attacks, its opponent may have it attack this Creature instead (Genteel Armourdillo).
+	RestrictRedirectAttacks = "redirect_attacks"
+	// Your other Creatures with Whump cost 1 less to play (Polished Armourdillo).
+	RestrictWhumpDiscount = "whump_discount"
 )
 
 var validRestricts = map[string]bool{
@@ -153,6 +163,7 @@ var validRestricts = map[string]bool{
 	RestrictAlsoRainbow: true, RestrictLaneNoFloop: true, RestrictExtraBuildings: true,
 	RestrictSilenceOpposingBuildings: true, RestrictCountsAsLandscape: true, RestrictCopyAdjacentBuildings: true,
 	RestrictNoReady: true, RestrictPlayOnFrozen: true, RestrictCannotBeReplaced: true, RestrictCollectLeaving: true, RestrictFrozenInert: true,
+	RestrictRedirectAttacks: true, RestrictWhumpDiscount: true,
 }
 
 // Mod adjusts the ATK or DEF of every creature matching To. The stat
@@ -177,8 +188,10 @@ type Count struct {
 	Card string `json:"card,omitempty"` // creatures: only this card
 	// FromTarget counts from the point of view of each chosen Creature
 	// instead of the card (Zazo's Magic Seeds).
-	FromTarget bool   `json:"from_target,omitempty"`
-	Scope      string `json:"scope,omitempty"` // "you" (default), "opponent" or "any"
+	FromTarget bool `json:"from_target,omitempty"`
+	// Slot counts from the Creature chosen in that slot instead of the card (Kernel Renewal: its damage).
+	Slot  *int   `json:"slot,omitempty"`
+	Scope string `json:"scope,omitempty"` // "you" (default), "opponent" or "any"
 	// Words, for played_titled: a played card counts if its name has one of them.
 	Words    []string  `json:"words,omitempty"`
 	Type     Landscape `json:"type,omitempty"`
@@ -239,6 +252,13 @@ type Cond struct {
 	EmptyLanes *Range `json:"empty_lanes,omitempty"`
 	// OwnedAbroad is whether an opponent controls a Creature its controller owns (Ska-pion).
 	OwnedAbroad *bool `json:"owned_abroad,omitempty"`
+	// CardsPlayed bounds how many cards its controller has played this turn, the one being played included
+	// (Rhinoceros: the first).
+	CardsPlayed *Range `json:"cards_played,omitempty"`
+	// PlayedCreatureCost: its controller has played a Creature this turn whose cost is in this range (Refined Armourdillo).
+	PlayedCreatureCost *Range `json:"played_creature_cost,omitempty"`
+	// FromHand is whether the card was played from its controller's hand, not from a deck or the other player's hand.
+	FromHand *bool `json:"from_hand,omitempty"`
 }
 
 // PlayedCond bounds how many cards of a Landscape type you played this turn.
@@ -272,8 +292,13 @@ type TargetSpec struct {
 	Exhausted    bool      `json:"exhausted,omitempty"` // creatures: only exhausted ones (Flooped or Fought)
 	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
 	Owned        bool      `json:"owned,omitempty"`     // creatures: only ones the player owns, wherever they are (Drop Zone)
-	Optional     bool      `json:"optional,omitempty"`
-	Count        *Value    `json:"count,omitempty"` // up to this many distinct targets
+	Tokens       bool      `json:"tokens,omitempty"`    // creatures: only ones with attack tokens on them
+	NotSelf      bool      `json:"not_self,omitempty"`  // creatures: not the card itself ("another Creature")
+	// CostBelow, on a discard_card, limits it to cards that cost less than the Creature that entered play
+	// ("entering"; Resonant Spellhold).
+	CostBelow string `json:"cost_below,omitempty"`
+	Optional  bool   `json:"optional,omitempty"`
+	Count     *Value `json:"count,omitempty"` // up to this many distinct targets
 	// Other leaves out the card's own Lane. LaneOf limits the choice to the
 	// Lane of what was chosen for that earlier slot (Volcano). Specs sharing a
 	// Group need exactly one target between them (Green Candy: heal or damage).
@@ -304,7 +329,7 @@ type Op struct {
 	Slot   *int        `json:"slot,omitempty"`  // target slot acted on
 	Slot2  *int        `json:"slot2,omitempty"` // second slot (destination lane etc.)
 	All    *Selector   `json:"all,omitempty"`   // act on every matching creature instead
-	Who    string      `json:"who,omitempty"`   // you, opponent, each; target (discard_choice): the players chosen in Slot
+	Who    string      `json:"who,omitempty"`   // you, opponent, each; target (discard_choice): the players chosen in Slot; destroyed_owner: the owners of what the last destroy_creature destroyed
 	Stat   string      `json:"stat,omitempty"`
 	Face   string      `json:"face,omitempty"` // up, down
 	Amount *Value      `json:"amount,omitempty"`
@@ -330,6 +355,8 @@ type Op struct {
 	Frozen *bool `json:"frozen,omitempty"`
 	// Attacker acts on the Creature that was just Activated to Fight (the Hero's attacks_hero trigger).
 	Attacker bool `json:"attacker,omitempty"`
+	// IfDamaged runs the op only when the Creature chosen in that slot still has damage on it (Champion's Emblem).
+	IfDamaged *int `json:"if_damaged,omitempty"`
 	// Cost, on discard_cost, is the cost of the card each player must discard (0), and on may_discard the least
 	// cost of the card that may be discarded; unset, any card will do.
 	Cost *int `json:"cost,omitempty"`
@@ -362,7 +389,7 @@ var validOps = map[string]struct{ slots int }{
 	"draw": {0}, "damage_creature": {0}, "damage_hero": {0}, "mod_creature": {0},
 	"move_creature": {2}, "move_building": {2}, "flip_landscape": {1},
 	"ready_creature": {1}, "bounce": {1}, "destroy_building": {1},
-	"gain_actions": {0}, "copy_floop": {0}, "steal_play": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
+	"gain_actions": {0}, "copy_floop": {0}, "steal_play": {0}, "play_top": {0}, "return_from_discard": {0}, "put_on_deck": {1}, "discard": {1},
 	"destroy_creature": {0}, "mill": {0}, "discount_next_creature": {0},
 	"borrow_creature": {2}, "ogre_gas": {0}, "discard_choice": {0}, "may": {0},
 	"heal_creature": {0}, "heal_hero": {0}, "swap_creatures": {1}, "protect": {0},
@@ -370,6 +397,7 @@ var validOps = map[string]struct{ slots int }{
 	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
 	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
 	"freeze": {0}, "thaw": {0}, "move_self": {0}, "retype_landscape": {0},
+	"add_tokens": {0}, "remove_tokens": {1}, "move_tokens": {2}, "lifesteal": {0}, "rage": {1}, "free_next_creature": {0},
 	"discard_random": {0}, "discard_cost": {0}, "may_discard": {0}, "move_all_damage": {1}, "remove_card": {1},
 }
 
@@ -421,7 +449,11 @@ func (e *Effect) Validate(t Type) error {
 			if t != Building {
 				return fmt.Errorf("landscape_frozen triggers belong to buildings")
 			}
-		case OnDealsCreatureDamage, OnOpponentDiscards:
+		case OnDealsCreatureDamage, OnOpponentDiscards, OnDefeats:
+		case OnLaneCreatureLeaves:
+			if t != Building {
+				return fmt.Errorf("lane_creature_leaves triggers belong to buildings")
+			}
 		case OnReplaces, OnBuildingPlayed, OnReturns, OnAttacksHero:
 			if t != Hero {
 				return fmt.Errorf("%s triggers belong to heroes", e.On)
@@ -432,8 +464,8 @@ func (e *Effect) Validate(t Type) error {
 		if t != Creature && t != Building && t != Hero {
 			return fmt.Errorf("triggers belong to creatures, buildings and heroes")
 		}
-		if len(e.Targets) > 0 && e.On != OnEnterPlay && e.On != OnLandscapeFrozen && e.On != OnDealsCreatureDamage {
-			return fmt.Errorf("only enter_play, landscape_frozen and deals_creature_damage triggers can have targets")
+		if len(e.Targets) > 0 && e.On != OnEnterPlay && e.On != OnLandscapeFrozen && e.On != OnDealsCreatureDamage && e.On != OnCreatureEnters {
+			return fmt.Errorf("only enter_play, creature_enters, landscape_frozen and deals_creature_damage triggers can have targets")
 		}
 	case KindFloop:
 		if t != Creature && t != Building {
@@ -533,6 +565,12 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 			if err := op.Amount.validate(); err != nil {
 				return fmt.Errorf("op %d: %w", i, err)
 			}
+			if per := op.Amount.Per; per != nil && per.Slot != nil && (*per.Slot < 0 || *per.Slot >= len(specs)) {
+				return fmt.Errorf("op %d (%s): count slot %d out of range", i, op.Do, *per.Slot)
+			}
+		}
+		if op.IfDamaged != nil && (*op.IfDamaged < 0 || *op.IfDamaged >= len(specs)) {
+			return fmt.Errorf("op %d (%s): if_damaged slot %d out of range", i, op.Do, *op.IfDamaged)
 		}
 		if op.Until != "" && (op.Until != "your_next_turn" || op.Do != "flip_landscape") {
 			return fmt.Errorf("op %d (%s): until is your_next_turn, on flip_landscape", i, op.Do)
@@ -554,8 +592,8 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 		if len(op.Options) > 0 && (len(op.Options) < 2 || op.Amount != nil || op.Slot != nil || op.Slot2 != nil) {
 			return fmt.Errorf("op %d (%s): options are two or more numbers, instead of an amount and without slots", i, op.Do)
 		}
-		if op.Cost != nil && op.Do != "discard_cost" && op.Do != "may_discard" {
-			return fmt.Errorf("op %d (%s): cost belongs to discard_cost and may_discard", i, op.Do)
+		if op.Cost != nil && op.Do != "discard_cost" && op.Do != "may_discard" && op.Do != "free_next_creature" {
+			return fmt.Errorf("op %d (%s): cost belongs to discard_cost, may_discard and free_next_creature", i, op.Do)
 		}
 		if op.Do == "move_self" {
 			if op.To != "empty_own" || (op.ElseTo != "" && op.ElseTo != "empty_opponent") {

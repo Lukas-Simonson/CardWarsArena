@@ -14,9 +14,15 @@ func (g *Game) fire(on string, ctx effCtx, effects []card.Effect, given [][]Targ
 	if (on == card.OnEnterPlay || on == card.OnLeavePlay) && ctx.creature != nil && g.blocksTriggers(ctx.at.P, ctx.at.Lane) {
 		return nil
 	}
-	for _, e := range effects {
+	for i, e := range effects {
 		if e.Kind != card.KindTrigger || e.On != on {
 			continue
+		}
+		if e.OncePerTurn && ctx.building != nil {
+			if slices.Contains(ctx.building.Fired, i) {
+				continue
+			}
+			ctx.building.Fired = append(ctx.building.Fired, i)
 		}
 		if len(e.Targets) > 0 && on != card.OnEnterPlay && given == nil {
 			ev = append(ev, g.askTrigger(e, ctx)...) // the controller chooses when it fires
@@ -47,7 +53,7 @@ func (g *Game) fireStart(p PlayerID, on string) []Event {
 			items = append(items, item{g.effectsOf(l.Creature), effCtx{p: p, at: pos{p, i}, hasSrc: true, creature: l.Creature}})
 		}
 		for _, b := range l.buildings() {
-			items = append(items, item{g.buildingEffects(pos{p, i}, b), effCtx{p: p, at: pos{p, i}, hasSrc: true, card: b.CardID}})
+			items = append(items, item{g.buildingEffects(pos{p, i}, b), effCtx{p: p, at: pos{p, i}, hasSrc: true, card: b.CardID, building: b}})
 		}
 	}
 	// The Hero's triggers come first (Lemongrab at the start of the Fight Phase).
@@ -73,7 +79,7 @@ func (g *Game) fireWatchers(p PlayerID, lane int) []Event {
 			ev = append(ev, g.watch(g.effectsOf(l.Creature), effCtx{p: p, at: at, hasSrc: true, creature: l.Creature, entering: &pos{p, lane}}, ent)...)
 		}
 		for _, b := range l.buildings() {
-			ev = append(ev, g.watch(g.buildingEffects(at, b), effCtx{p: p, at: at, hasSrc: true, entering: &pos{p, lane}}, ent)...)
+			ev = append(ev, g.watch(g.buildingEffects(at, b), effCtx{p: p, at: at, hasSrc: true, card: b.CardID, building: b, entering: &pos{p, lane}}, ent)...)
 		}
 	}
 	return ev
@@ -88,7 +94,8 @@ func (g *Game) watch(effects []card.Effect, ctx effCtx, ent *Creature) []Event {
 		if w := e.Watch; w != nil {
 			if (w.Landscape != "" && !g.isType(*ctx.entering, w.Landscape)) ||
 				(w.Other && ctx.creature == ent) ||
-				(w.YourTurn && g.State.Active != ctx.p) {
+				(w.YourTurn && g.State.Active != ctx.p) ||
+				(w.InLane && ctx.at.Lane != ctx.entering.Lane) {
 				continue
 			}
 		}
@@ -97,6 +104,10 @@ func (g *Game) watch(effects []card.Effect, ctx effCtx, ent *Creature) []Event {
 				continue
 			}
 			ctx.creature.Fired = append(ctx.creature.Fired, i)
+		}
+		if len(e.Targets) > 0 {
+			ev = append(ev, g.askTrigger(e, ctx)...) // Resonant Spellhold asks which Spell to return
+			continue
 		}
 		ev = append(ev, g.runOps(e.Do, ctx, nil)...)
 	}

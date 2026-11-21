@@ -49,8 +49,12 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 			return abilitySource{}, ErrNoAbility
 		}
 		ctx.card = l.Building.CardID
+		ctx.building = l.Building
 		effects := g.buildingEffects(ctx.at, l.Building)
-		return abilitySource{ctx: ctx, effects: effects, status: &l.Building.Status, real: countActivates(effects)}, nil
+		src := abilitySource{ctx: ctx, effects: effects, status: &l.Building.Status, real: countActivates(effects), fired: &l.Building.Fired}
+		// Offers are free activated abilities after the Building's own (Mossglen Retreat).
+		src.effects = append(append([]card.Effect(nil), effects...), offerEffects(l.Building.Offered)...)
+		return src, nil
 	}
 	return abilitySource{}, ErrNoAbility
 }
@@ -88,6 +92,9 @@ func (g *Game) clearOffers() {
 		for i := range g.State.Players[p].Lanes {
 			if c := g.State.Players[p].Lanes[i].Creature; c != nil {
 				c.Offered = nil
+			}
+			if b := g.State.Players[p].Lanes[i].Building; b != nil {
+				b.Offered = nil
 			}
 		}
 	}
@@ -186,9 +193,12 @@ func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	}
 	if a.Kind == ActActivate && a.Index >= src.real {
 		// An Offer is used up, but the Creature's other Offers stay.
-		cr := src.ctx.creature
 		i := a.Index - src.real
-		cr.Offered = append(append([]Offer(nil), cr.Offered[:i]...), cr.Offered[i+1:]...)
+		if cr := src.ctx.creature; cr != nil {
+			cr.Offered = append(append([]Offer(nil), cr.Offered[:i]...), cr.Offered[i+1:]...)
+		} else if b := src.ctx.building; b != nil {
+			b.Offered = append(append([]Offer(nil), b.Offered[:i]...), b.Offered[i+1:]...)
+		}
 	}
 	g.State.ActionsLeft -= e.Cost // a Floop may cost Actions too (Spirit Tower)
 	var uid int

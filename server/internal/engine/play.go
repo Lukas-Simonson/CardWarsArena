@@ -63,7 +63,22 @@ func (g *Game) costFor(p PlayerID, c *card.Card, lane int) (actions, lands int) 
 			actions -= g.State.Players[p].Lanes[lane].ReplaceDiscount
 		}
 	}
-	return max(actions, 0), max(lands, 0)
+	if c.Type == card.Creature && c.Feat == card.Whump {
+		// Whump: it costs less by the cost of the Creature it replaces, and 1 less for each Polished Armourdillo.
+		if lane >= 0 && lane < NumLanes {
+			if old := g.State.Players[p].Lanes[lane].Creature; old != nil {
+				r := baseStat(g.Card(old.Instance).Cost)
+				actions, lands = actions-r, lands-r
+			}
+		}
+		n := g.whumpDiscount(p)
+		actions, lands = actions-n, lands-n
+	}
+	actions, lands = max(actions, 0), max(lands, 0)
+	if c.Type == card.Creature && p == g.State.Active && g.State.FreeCostSet && *c.Cost == g.State.FreeCost {
+		actions = 0 // Fern: free, though the Landscapes are still needed
+	}
+	return actions, lands
 }
 
 // canAfford checks the Action cost and the Landscape requirement. The cost is
@@ -212,12 +227,25 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 		return append(ev, g.fireHero(p, card.OnBuildingPlayed)...)
 	}
 	replaced := lane.Creature != nil
+	var gobbled *Creature
 	if old := lane.Creature; old != nil {
-		// Replaced Creatures go to their owner's discard; damage is dropped.
 		ev = append(ev, Event{Kind: EvReplace, Player: p, Card: old.UID, Lane: laneIdx})
-		ev = append(ev, g.removeCreature(pos{p, laneIdx}, toDiscard)...)
+		if g.Card(old.Instance).Feat == card.Gobble {
+			// Gobble: it goes underneath the Creature that replaces it instead of to the discard pile.
+			gobbled = old
+			lane.Creature = nil
+		} else {
+			// Replaced Creatures go to their owner's discard; damage is dropped.
+			ev = append(ev, g.removeCreature(pos{p, laneIdx}, toDiscard)...)
+		}
 	}
 	lane.Creature = &Creature{Instance: in, Status: Ready, Replaced: replaced}
+	if gobbled != nil {
+		cr := lane.Creature
+		cr.Gobbled = append(append(cr.Gobbled, gobbled.Gobbled...), gobbled.Instance)
+		cr.Tokens, cr.Damage = gobbled.Tokens, gobbled.Damage
+		ev = append(ev, Event{Kind: EvUnder, Player: p, Card: gobbled.UID, Lane: laneIdx})
+	}
 	if replaced && g.State.Active == p {
 		ev = append(ev, g.fireHero(p, card.OnReplaces)...)
 	}
@@ -249,7 +277,12 @@ func (g *Game) doPlay(p PlayerID, a Action) []Event {
 	if c.Type == card.Creature {
 		g.State.CreatureDiscount = 0 // the discount is for the next Creature played
 		g.State.Players[p].Lanes[a.Lane].ReplaceDiscount = 0
+		if g.State.FreeCostSet && c.Cost != nil && *c.Cost == g.State.FreeCost {
+			g.State.FreeCostSet = false // Fern's free Creature has been played
+		}
 	}
+	g.fromHand = true
+	defer func() { g.fromHand = false }()
 	var costEv []Event
 	if ce := costEffect(c); ce != nil {
 		costEv = g.runOps(ce.Do, effCtx{p: p, playing: a.Card}, a.CostTargets)
