@@ -112,6 +112,8 @@ function playerBar(m, seat, on) {
       h("div", { class: "h" }, mine ? t("player.name_you", { who: seatName(ctx, seat) }) : seatName(ctx, seat)),
       h("div", { class: "sub" }, t("player.in_hand", { n: mine ? p.hand?.length ?? 0 : p.hand_count }))),
     heroChip(m, seat, on),
+    p.burn > 0 && h("span", { class: "pburn", title: t("token.burn", { n: p.burn }), "aria-label": t("token.burn", { n: p.burn }) },
+      h("img", { src: "img/token-burn.webp", alt: "", "aria-hidden": "true", draggable: "false" }), p.burn > 1 && h("b", {}, p.burn)),
     backs && h("div", { class: "backs", "aria-hidden": "true" }, backs),
     !mine && h("div", { class: "counts" }, h("span", { class: "well", style: "padding:2px 10px;border-radius:999px" }, t("player.deck", { n: p.deck_count })), pile(t("player.discard"), p.discard.length, true)),
     h("div", { class: "well hpbar", "data-seat": seat, "aria-hidden": "true" }, h("div", { style: `width:${hpw}%` })));

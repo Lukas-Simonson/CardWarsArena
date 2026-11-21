@@ -269,6 +269,11 @@ func (u *ui) event(me engine.PlayerID, e engine.Event) string {
 		return fmt.Sprintf("%s takes %d damage", name(), e.Amount)
 	case engine.EvHPLoss:
 		return fmt.Sprintf("%s loses %d HP", u.who(e.Player), e.Amount)
+	case engine.EvBurn:
+		if e.Card == 0 {
+			return fmt.Sprintf("%s gets a burn token", u.who(e.Player))
+		}
+		return fmt.Sprintf("%s gets a burn token", name())
 	case engine.EvHPGain:
 		return fmt.Sprintf("%s heals %d HP", u.who(e.Player), e.Amount)
 	case engine.EvHeal:

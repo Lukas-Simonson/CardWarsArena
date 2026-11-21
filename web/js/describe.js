@@ -198,6 +198,7 @@ export function describeEvent(ctx, e) {
     case "move": return t("event.move", p);
     case "remove": return t("event.remove", p);
     case "under": return t("event.under", p);
+    case "burn": return t(e.card ? "event.burn_card" : "event.burn_player", p);
     case "retype": return t("event.retype", { ...p, type: landscapeName(LANDSCAPE_ORDER[(e.amount ?? 1) - 1]) });
     case "flip": return t("event.flip", p);
     case "freeze": return t("event.freeze", p);
