@@ -104,7 +104,7 @@ func (g *Game) candidates(spec card.TargetSpec, c effCtx, given [][]TargetRef) [
 						(spec.Flooped == nil || (cr.Status == Flooped) == *spec.Flooped) &&
 						(!spec.Ready || cr.Status == Ready) && (!spec.Exhausted || cr.Status != Ready) && (!spec.Damaged || cr.Damage > 0) &&
 						(spec.Frozen == nil || l.Frozen == *spec.Frozen) && (spec.Damage == nil || spec.Damage.Has(cr.Damage)) &&
-						(!spec.Tokens || cr.Tokens > 0) && !(spec.NotSelf && cr == c.creature)
+						(!spec.Tokens || cr.Tokens > 0) && !(spec.NotSelf && cr == c.creature) && (!spec.Burning || cr.Burn > 0)
 				}
 			case "building":
 				ok = l.Building != nil
@@ -387,6 +387,12 @@ func (g *Game) creaturesFor(op card.Op, c effCtx, given [][]TargetRef) []pos {
 		}
 		return out
 	}
+	if op.Victim {
+		if g.victim != nil && g.creatureAt(*g.victim) != nil {
+			out = append(out, *g.victim)
+		}
+		return out
+	}
 	if op.All != nil {
 		for p := range g.State.Players {
 			for lane := range g.State.Players[p].Lanes {
@@ -400,8 +406,14 @@ func (g *Game) creaturesFor(op card.Op, c effCtx, given [][]TargetRef) []pos {
 	}
 	if op.Slot != nil && *op.Slot < len(given) {
 		for _, r := range given[*op.Slot] {
-			if g.creatureAt(pos{r.Player, r.Lane}) != nil && (op.Frozen == nil || g.frozen(pos{r.Player, r.Lane}) == *op.Frozen) {
-				out = append(out, pos{r.Player, r.Lane})
+			places := []pos{{r.Player, r.Lane}}
+			if r.Kind == "lane" {
+				places = []pos{{0, r.Lane}, {1, r.Lane}} // a Lane is both its Landscapes
+			}
+			for _, at := range places {
+				if g.creatureAt(at) != nil && (op.Frozen == nil || g.frozen(at) == *op.Frozen) {
+					out = append(out, at)
+				}
 			}
 		}
 	}
@@ -434,6 +446,12 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		if op.IfDamaged != nil && !g.slotDamaged(op.IfDamaged, given) {
 			continue
 		}
+		if op.IfNotBurning != nil && g.slotBurning(op.IfNotBurning, given) {
+			continue
+		}
+		if op.IfLethal != nil && !g.slotLethal(op.IfLethal, given) {
+			continue
+		}
 		amt := 0
 		if op.Amount != nil {
 			amt = g.value(*op.Amount, s)
@@ -449,8 +467,13 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 		switch op.Do {
 		case "draw":
 			for _, p := range g.whoList(op.Who, c.p) {
+				g.drawnCost = 0
 				for _, in := range g.draw(p, amt) {
 					ev = append(ev, Event{Kind: EvDraw, Player: p, Card: in.UID})
+					if op.Reveal {
+						g.drawnCost = baseStat(g.Card(in).Cost)
+						ev = append(ev, Event{Kind: EvReveal, Player: p, Card: in.UID})
+					}
 				}
 			}
 		case "damage_hero":
@@ -651,6 +674,31 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				n := g.removeTokens(pos{from[0].Player, from[0].Lane}, amt)
 				g.addTokens(pos{to[0].Player, to[0].Lane}, n)
 			}
+		case "burn":
+			n := max(amt, 1)
+			if op.Amount != nil && amt == 0 {
+				n = 0
+			}
+			if op.Who != "" {
+				for _, p := range g.whoList(op.Who, c.p) {
+					ev = append(ev, g.burnPlayer(p, n)...)
+				}
+				break
+			}
+			for _, at := range g.creaturesFor(op, c, given) {
+				k := n
+				if op.PerOwn {
+					k = n * g.creatureAt(at).Burn
+				}
+				ev = append(ev, g.burnCreature(at, c.p, k)...)
+			}
+		case "remove_burn":
+			for _, at := range g.creaturesFor(op, c, given) {
+				cr := g.creatureAt(at)
+				cr.Burn -= min(max(amt, 1), cr.Burn)
+			}
+		case "attack_hero":
+			g.attackHero()
 		case "lifesteal":
 			g.State.Lifesteal[c.p] = true
 		case "rage":
@@ -1037,6 +1085,7 @@ func (g *Game) removeCreature(at pos, to destination) []Event {
 	ctx := effCtx{p: at.P, at: at, hasSrc: true, creature: cr}
 	ev = append(ev, g.fire(card.OnLeavePlay, ctx, g.effectsOf(cr), nil)...)
 	ev = append(ev, g.fireLaneLeave(at)...)
+	ev = append(ev, g.fireFoeLeaves(cr, at.P)...)
 	if len(camels) > 0 {
 		hand := 0
 		if to == toHand {
@@ -1145,6 +1194,26 @@ func (g *Game) stealPlay(c effCtx) []Event {
 func (g *Game) slotDamaged(slot *int, given [][]TargetRef) bool {
 	for _, r := range slotRefs(slot, given) {
 		if cr := g.creatureAt(pos{r.Player, r.Lane}); cr != nil && cr.Damage > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// slotBurning reports whether a Creature chosen in a slot is burning.
+func (g *Game) slotBurning(slot *int, given [][]TargetRef) bool {
+	for _, r := range slotRefs(slot, given) {
+		if cr := g.creatureAt(pos{r.Player, r.Lane}); cr != nil && cr.Burn > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// slotLethal reports whether the damage on a Creature chosen in a slot has destroyed it (it has not been removed yet).
+func (g *Game) slotLethal(slot *int, given [][]TargetRef) bool {
+	for _, r := range slotRefs(slot, given) {
+		if g.defeated(pos{r.Player, r.Lane}) {
 			return true
 		}
 	}

@@ -196,7 +196,9 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 				lane = l
 			}
 		}
-		ev = g.startFight(p, ch.Lane, lane)
+		if at := g.State.Attacking; at != nil {
+			at.From = lane // the Fight goes on, once nothing else is being asked, with the Creature picked
+		}
 	case ChoiceDefend:
 		ev = g.answerDefend(p, ch, a.Card)
 	case ChoiceMoveDamage:
@@ -228,7 +230,7 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 		}
 	}
 	g.closeChoice()
-	return ev
+	return append(ev, g.continueAttack()...)
 }
 
 // choiceActions lists every way p can answer the open Choice.

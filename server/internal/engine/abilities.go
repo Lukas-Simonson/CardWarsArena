@@ -1,6 +1,10 @@
 package engine
 
-import "cardwars/internal/card"
+import (
+	"slices"
+
+	"cardwars/internal/card"
+)
 
 // abilitySource resolves the card an ability action refers to.
 type abilitySource struct {
@@ -13,6 +17,8 @@ type abilitySource struct {
 	own int
 	// fired records the uses of limited abilities this turn; nil for Buildings.
 	fired *[]int
+	// used records the abilities that may be used only once and have been: for the game (a Hero's), or while the card is in play.
+	used *[]int
 }
 
 func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
@@ -21,7 +27,7 @@ func (g *Game) abilitySource(p PlayerID, a Action) (abilitySource, error) {
 		if len(effects) == 0 {
 			return abilitySource{}, ErrNoAbility
 		}
-		return abilitySource{ctx: g.heroCtx(p), effects: effects, real: countActivates(effects), fired: &g.State.Players[p].HeroFired}, nil
+		return abilitySource{ctx: g.heroCtx(p), effects: effects, real: countActivates(effects), fired: &g.State.Players[p].HeroFired, used: &g.State.Players[p].HeroUsed}, nil
 	}
 	if a.Lane < 0 || a.Lane >= NumLanes {
 		return abilitySource{}, ErrBadLane
@@ -151,7 +157,7 @@ func (g *Game) validateAbility(p PlayerID, a Action) error {
 	if src.ctx.creature != nil && g.inertAt(src.ctx.at) {
 		return ErrInert
 	}
-	if !usesLeft(src.fired, e, idx) {
+	if !usesLeft(src.fired, e, idx) || (e.Once && src.used != nil && slices.Contains(*src.used, idx)) {
 		return ErrLimit
 	}
 	if e.If != nil && !g.cond(*e.If, src.ctx.source()) {
@@ -185,6 +191,9 @@ func (g *Game) doAbility(p PlayerID, a Action) []Event {
 	e, idx := abilityEffect(src.effects, a)
 	if e.Limit > 0 && src.fired != nil {
 		*src.fired = append(*src.fired, idx)
+	}
+	if e.Once && src.used != nil {
+		*src.used = append(*src.used, idx)
 	}
 	kind := EvActivate
 	if a.Kind == ActFloop {

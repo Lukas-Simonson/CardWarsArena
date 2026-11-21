@@ -1,0 +1,136 @@
+{
+  "broils-coils": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "label": "Deal 3 damage to"}],
+     "do": [
+       {"do": "damage_creature", "slot": 0, "amount": {"n": 3}},
+       {"do": "gain_actions", "amount": {"n": 1}, "if_lethal": 0}
+     ]}
+  ],
+  "cozy-kiln": [
+    {"kind": "trigger", "on": "foe_burning_leaves",
+     "do": [{"do": "burn", "who": "opponent"}]}
+  ],
+  "fire-dog": [
+    {"kind": "trigger", "on": "enter_play",
+     "targets": [{"what": "creature", "optional": true, "label": "Deal damage to", "skip_label": "Don't deal damage"}],
+     "do": [{"do": "damage_creature", "slot": 0, "amount": {"n": 1, "per": {"of": "burn_tokens", "scope": "any"}}}]}
+  ],
+  "flameingo-blazeling": [
+    {"kind": "trigger", "on": "deals_creature_damage",
+     "do": [{"do": "burn", "victim": true, "if": {"victim_burning": false}}]}
+  ],
+  "flameingo-burnwarden": [
+    {"kind": "activate",
+     "targets": [{"what": "creature", "side": "opponent", "burning": true, "label": "Remove a burn token from"}],
+     "do": [
+       {"do": "remove_burn", "slot": 0},
+       {"do": "damage_hero", "who": "opponent", "amount": {"n": 1}}
+     ]}
+  ],
+  "flameingo-captain": [
+    {"kind": "trigger", "on": "deals_hero_damage",
+     "do": [{"do": "burn", "who": "opponent"}]}
+  ],
+  "flameingo-fireplume-chief": [
+    {"kind": "cost_mod", "reduce": {"n": 1, "per": {"of": "burn_tokens", "scope": "any"}}},
+    {"kind": "trigger", "on": "deals_creature_damage",
+     "do": [{"do": "burn", "victim": true}]}
+  ],
+  "flameingo-flameweaver": [
+    {"kind": "floop",
+     "targets": [{"what": "lane", "label": "Burn each Creature in"}],
+     "do": [{"do": "burn", "slot": 0}]}
+  ],
+  "flameingo-heat-eater": [
+    {"kind": "trigger", "on": "you_burn", "once_per_turn": true,
+     "do": [{"do": "draw", "amount": {"n": 1}}]}
+  ],
+  "flameingo-hotshot": [
+    {"kind": "trigger", "on": "attacks", "if": {"lane_foe_burning": true},
+     "targets": [{"what": "creature", "not_self": true, "optional": true, "label": "Deal 2 damage to", "skip_label": "Don't deal damage"}],
+     "do": [
+       {"do": "damage_creature", "slot": 0, "amount": {"n": 2}},
+       {"do": "burn", "slot": 0, "if_not_burning": 0}
+     ]}
+  ],
+  "flameingo-ignisbeak": [
+    {"kind": "trigger", "on": "attacks", "if": {"lane_foe_burning": true},
+     "do": [{"do": "attack_hero"}]}
+  ],
+  "furious-phoenix": [
+    {"kind": "static",
+     "mods": [{"stat": "atk", "to": {"rel": "self"}, "amount": {"n": 1, "per": {"of": "burn_tokens", "scope": "any"}}}]}
+  ],
+  "giant-red-salamander": [],
+  "hampire-pig-of-the-night": [
+    {"kind": "trigger", "on": "attacks",
+     "do": [{"do": "heal_hero", "who": "you", "amount": {"n": 1, "per": {"of": "attack"}}}]}
+  ],
+  "heat-leapers": [
+    {"kind": "trigger", "on": "you_burn",
+     "do": [{"do": "add_tokens", "self": true, "amount": {"n": 1}}]}
+  ],
+  "hot-huts": [
+    {"kind": "trigger", "on": "you_burn",
+     "do": [{"do": "damage_creature", "victim": true, "amount": {"n": 1}, "if": {"victim_side": "opponent"}}]}
+  ],
+  "hot-shot": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "label": "Burn"}],
+     "do": [
+       {"do": "burn", "slot": 0},
+       {"do": "damage_creature", "slot": 0, "amount": {"n": 1}}
+     ]}
+  ],
+  "hot-wheel": [
+    {"kind": "activate", "cost": 1,
+     "targets": [{"what": "creature", "in_lane": true, "label": "Burn"}],
+     "do": [
+       {"do": "draw", "amount": {"n": 1}, "reveal": true},
+       {"do": "burn", "slot": 0, "amount": {"n": 1, "per": {"of": "drawn_cost"}}}
+     ]}
+  ],
+  "kangaroo-cat": [
+    {"kind": "trigger", "on": "deals_hero_damage", "once": true,
+     "do": [{"do": "add_tokens", "self": true, "amount": {"n": 1}}]}
+  ],
+  "molten-potion": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "label": "Burn"}],
+     "do": [
+       {"do": "burn", "slot": 0},
+       {"do": "damage_creature", "all": {"rel": "opposing", "burning": true}, "amount": {"n": 2}}
+     ]}
+  ],
+  "pyrovent-fortress": [
+    {"kind": "floop",
+     "targets": [{"what": "creature", "burning": true, "label": "Remove a burn token from"}],
+     "do": [
+       {"do": "remove_burn", "slot": 0},
+       {"do": "damage_creature", "slot": 0, "amount": {"n": 3}}
+     ]}
+  ],
+  "scorchcrawler": [
+    {"kind": "trigger", "on": "foe_burning_leaves",
+     "targets": [{"what": "creature", "optional": true, "label": "Burn", "skip_label": "Don't burn a Creature"}],
+     "do": [{"do": "burn", "slot": 0, "amount": {"n": 1, "per": {"of": "left_burn"}}}]}
+  ],
+  "scorchstone-gateway": [
+    {"kind": "floop", "cost": 1,
+     "targets": [{"what": "creature", "in_lane": true, "label": "Burn"}],
+     "do": [{"do": "burn", "slot": 0}]}
+  ],
+  "titanbane-amulet": [
+    {"kind": "spell",
+     "targets": [{"what": "creature", "label": "Destroy"}],
+     "do": [
+       {"do": "damage_hero", "who": "you", "amount": {"n": 1, "per": {"of": "attack", "slot": 0}}},
+       {"do": "destroy_creature", "slot": 0}
+     ]}
+  ],
+  "volcanic-vitality": [
+    {"kind": "spell",
+     "do": [{"do": "burn", "all": {"rel": "opposing"}, "per_own": true, "amount": {"n": 1}}]}
+  ]
+}

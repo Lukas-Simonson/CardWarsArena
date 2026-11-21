@@ -243,7 +243,7 @@ func (g *Game) place(p PlayerID, in Instance, laneIdx int) []Event {
 	if gobbled != nil {
 		cr := lane.Creature
 		cr.Gobbled = append(append(cr.Gobbled, gobbled.Gobbled...), gobbled.Instance)
-		cr.Tokens, cr.Damage = gobbled.Tokens, gobbled.Damage
+		cr.Tokens, cr.Burn, cr.Damage = gobbled.Tokens, gobbled.Burn, gobbled.Damage
 		ev = append(ev, Event{Kind: EvUnder, Player: p, Card: gobbled.UID, Lane: laneIdx})
 	}
 	if replaced && g.State.Active == p {

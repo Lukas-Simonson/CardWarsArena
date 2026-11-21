@@ -170,6 +170,9 @@ func (g *Game) selects(sel card.Selector, s source, target pos, t *Creature) boo
 	if sel.Frozen != nil && g.State.Players[target.P].Lanes[target.Lane].Frozen != *sel.Frozen {
 		return false
 	}
+	if sel.Burning != nil && (t.Burn > 0) != *sel.Burning {
+		return false
+	}
 	return true
 }
 
@@ -337,6 +340,17 @@ func (g *Game) count(c card.Count, s source) int {
 			return 0
 		}
 		return baseStat(g.Card(s.creature.Instance).Attack)
+	case "burn_tokens":
+		return g.burnTokens(players)
+	case "attack":
+		if s.creature == nil {
+			return 0
+		}
+		return g.atk(s.pos)
+	case "drawn_cost":
+		return g.drawnCost
+	case "left_burn":
+		return g.State.LeftBurn
 	case "milled_cost":
 		return g.milledCost
 	case "milled_spells":
@@ -418,6 +432,24 @@ func (g *Game) cond(c card.Cond, s source) bool {
 			}
 		}
 		if !c.OtherCreatures.Has(n) {
+			return false
+		}
+	}
+	if c.VictimBurning != nil && (st == nil || g.victim == nil || g.creatureAt(*g.victim) == nil || (g.creatureAt(*g.victim).Burn > 0) != *c.VictimBurning) {
+		return false
+	}
+	switch c.VictimSide {
+	case "":
+	case "you", "opponent":
+		if g.victim == nil || (g.victim.P == s.P) != (c.VictimSide == "you") {
+			return false
+		}
+	default:
+		return false
+	}
+	if c.LaneFoeBurning != nil && s.Lane >= 0 {
+		foe := st.Players[s.P.Opp()].Lanes[s.Lane].Creature
+		if (foe != nil && foe.Burn > 0) != *c.LaneFoeBurning {
 			return false
 		}
 	}

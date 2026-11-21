@@ -317,3 +317,49 @@ func TestHeuristicPlaysFernsDeck(t *testing.T) {
 	}
 	t.Logf("decisions asked: %v", asked)
 }
+
+// Whole games with Flame Princess's deck, which burns Creatures and players, asks about attacks, and hits the
+// player instead of a Creature, finish with the bots answering every decision it asks.
+func TestHeuristicPlaysFlamePrincessesDeck(t *testing.T) {
+	cat := starterGame(t, 1).Catalog()
+	games := 12
+	if testing.Short() {
+		games = 6
+	}
+	asked := map[string]int{}
+	for seed := uint64(1); seed <= uint64(games); seed++ {
+		ls := [4]card.Landscape{card.LavaFlats, card.LavaFlats, card.Cornfield, card.Cornfield}
+		g, err := engine.NewGame(cat, engine.Config{Seed: seed, First: engine.PlayerID(seed % 2)}, [2]engine.DeckSpec{
+			{Landscapes: ls, Cards: cat.Deck("Flame Princess Vs Fern", "FP's Deck"), Hero: "flame-princess"},
+			{Landscapes: ls, Cards: cat.Deck("Flame Princess Vs Fern", "FP's Deck"), Hero: "flame-princess"},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		rng := rand.New(rand.NewPCG(seed, 9))
+		for n := 0; g.State.Phase != engine.PhaseOver; n++ {
+			if n > 20000 {
+				t.Fatalf("seed %d: the game did not finish", seed)
+			}
+			if ch := g.State.Choice; ch != nil {
+				asked[ch.Kind]++
+			}
+			acted := false
+			for _, p := range []engine.PlayerID{g.State.Active, g.State.Active.Opp()} {
+				a, ok := Heuristic{}.Choose(g, p, rng)
+				if !ok {
+					continue
+				}
+				if _, err := g.Apply(p, a); err != nil {
+					t.Fatalf("illegal action %s: %v", a, err)
+				}
+				acted = true
+				break
+			}
+			if !acted {
+				t.Fatalf("seed %d: nobody can act", seed)
+			}
+		}
+	}
+	t.Logf("decisions asked: %v", asked)
+}
