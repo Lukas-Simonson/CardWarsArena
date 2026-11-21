@@ -7,8 +7,8 @@ func TestLoadDirAndStarterDeck(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(cat) != 319 {
-		t.Errorf("catalog has %d cards, want 319", len(cat))
+	if len(cat) != 345 {
+		t.Errorf("catalog has %d cards, want 345", len(cat))
 	}
 	pig, ok := cat["the-pig"]
 	if !ok || pig.Landscape != Rainbow || pig.Cost == nil || *pig.Cost != 1 {

@@ -1193,6 +1193,168 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Field%20Stalker.webp"
   },
   {
+    "id": "fire-dog",
+    "name": "Fire Dog",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 0,
+    "attack": 1,
+    "defense": 6,
+    "text": "When Fire Dog enters play, you may deal damage to target Creature equal to the number of burn tokens on all Creatures.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Fire%20Dog.webp"
+  },
+  {
+    "id": "flameingo-blazeling",
+    "name": "Flameingo Blazeling",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 0,
+    "attack": 1,
+    "defense": 6,
+    "text": "When Flameingo Blazeling damages a Creature, burn that Creature if it wasn't burning.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Blazeling.webp"
+  },
+  {
+    "id": "flameingo-burnwarden",
+    "name": "Flameingo Burnwarden",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "attack": 2,
+    "defense": 9,
+    "text": "Remove a burn token from an opposing Creature \u003e\u003e\u003e Deal 1 damage to target opponent.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Burnwarden.webp"
+  },
+  {
+    "id": "flameingo-captain",
+    "name": "Flameingo Captain",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 2,
+    "attack": 3,
+    "defense": 11,
+    "text": "When Flameingo Captain damages an opponent, burn them. (At the start of their turn, they take 1 damage for each burn token.)",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Captain.webp"
+  },
+  {
+    "id": "flameingo-fireplume-chief",
+    "name": "Flameingo Fireplume Chief",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 4,
+    "attack": 4,
+    "defense": 10,
+    "text": "Flameingo Fireplume Chief costs 1 less for each burn token on Creatures. When Fireplume Chief damages a Creature, burn it.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Fireplume%20Chief.webp"
+  },
+  {
+    "id": "flameingo-flameweaver",
+    "name": "Flameingo Flameweaver",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "attack": 2,
+    "defense": 8,
+    "text": "FLOOP \u003e\u003e\u003e Burn each Creature in target Lane.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Flameweaver.webp"
+  },
+  {
+    "id": "flameingo-heat-eater",
+    "name": "Flameingo Heat Eater",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 2,
+    "attack": 1,
+    "defense": 9,
+    "text": "The first time you burn a Creature each turn, draw a card.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Heat%20Eater.webp"
+  },
+  {
+    "id": "flameingo-hotshot",
+    "name": "Flameingo Hotshot",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "attack": 2,
+    "defense": 8,
+    "text": "When Flameingo Hotshot attacks a burning Creature, you may deal 2 damage to another Creature. If that other Creature is not burning, burn it.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Hotshot.webp"
+  },
+  {
+    "id": "flameingo-ignisbeak",
+    "name": "Flameingo Ignisbeak",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 2,
+    "attack": 3,
+    "defense": 10,
+    "text": "When Flameingo Ignisbeak attacks, if an opposing Creature in this Lane is burning, Flameingo Ignisbeak targets your opponent instead of the opposing Creature.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Flameingo%20Ignisbeak.webp"
+  },
+  {
     "id": "fly-swatter",
     "name": "Fly Swatter",
     "type": "creature",
@@ -1337,6 +1499,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Furious%20Hen.webp"
   },
   {
+    "id": "furious-phoenix",
+    "name": "Furious Phoenix",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8,
+    "text": "Furious Phoenix has +1 ATK for each burn token on Creatures.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Furious%20Phoenix.webp"
+  },
+  {
     "id": "furious-rooster",
     "name": "Furious Rooster",
     "type": "creature",
@@ -1407,6 +1587,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Genteel%20Armourdillo.webp"
+  },
+  {
+    "id": "giant-red-salamander",
+    "name": "Giant Red Salamander",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "attack": 4,
+    "defense": 3,
+    "notes": "A walking furnace with an attitude.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Giant%20Red%20Salamander.webp"
   },
   {
     "id": "glacier-racer",
@@ -1572,6 +1770,24 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Green%20Merman.webp"
   },
   {
+    "id": "hampire-pig-of-the-night",
+    "name": "Hampire, Pig of the Night",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 1,
+    "attack": 3,
+    "defense": 1,
+    "text": "When Hampire attacks, you heal HP equal to its ATK.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hampire%2C%20Pig%20of%20the%20Night.webp"
+  },
+  {
     "id": "headphone-jerk",
     "name": "Headphone Jerk",
     "type": "creature",
@@ -1588,6 +1804,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Headphone%20Jerk.webp"
+  },
+  {
+    "id": "heat-leapers",
+    "name": "Heat Leapers",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10,
+    "text": "When you burn a Creature, put an attack token on Heat Leapers.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Heat%20Leapers.webp"
   },
   {
     "id": "heavenly-gazer",
@@ -1660,6 +1894,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hot%20Eyebat.webp"
+  },
+  {
+    "id": "hot-wheel",
+    "name": "Hot Wheel",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 2,
+    "attack": 1,
+    "defense": 12,
+    "text": "Pay 1 action \u003e\u003e\u003e Draw 1 card and reveal it. Then, burn a Creature in Hot Wheel's Lane as many times as the cost of the revealed card.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hot%20Wheel.webp"
   },
   {
     "id": "hunkclops",
@@ -1965,6 +2217,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Kangaroo%20Bat.webp"
+  },
+  {
+    "id": "kangaroo-cat",
+    "name": "Kangaroo Cat",
+    "type": "creature",
+    "landscape": "rainbow",
+    "cost": 0,
+    "attack": 2,
+    "defense": 3,
+    "text": "The first time Kangaroo Cat damages an opponent, put an attack token on Kangaroo Cat.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Kangaroo%20Cat.webp"
   },
   {
     "id": "kernel-queen",
@@ -2800,6 +3070,24 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/SandWitch.webp"
+  },
+  {
+    "id": "scorchcrawler",
+    "name": "Scorchcrawler",
+    "type": "creature",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4,
+    "text": "When an opposing burning Creature leaves play, you may burn target Creature once for each burn token on the Creature that left play.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Scorchcrawler.webp"
   },
   {
     "id": "shark",

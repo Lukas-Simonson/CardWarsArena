@@ -41,7 +41,7 @@ func (u *ui) side(me, p engine.PlayerID) string {
 
 var landscapeNames = map[card.Landscape]string{
 	card.Cornfield: "Cornfield", card.BluePlains: "Blue Plains", card.UselessSwamp: "Useless Swamp",
-	card.NiceLands: "Nice Lands", card.SandyLands: "Sandy Lands", card.IcyLands: "Icy Lands", card.Rainbow: "Rainbow",
+	card.NiceLands: "Nice Lands", card.SandyLands: "Sandy Lands", card.IcyLands: "Icy Lands", card.LavaFlats: "Lava Flats", card.Rainbow: "Rainbow",
 }
 
 func landscapeName(l card.Landscape) string {

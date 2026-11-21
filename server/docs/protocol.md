@@ -270,7 +270,7 @@ A saved deck is `{id, name, hero, cards, landscapes, landscapes_chosen, created,
 `cards` has one id per copy, the way the game takes a deck. `landscapes` are the four Landscapes it is played
 with, one for each Lane in order (`[]` when the cards do not say), and `landscapes_chosen` says whether the
 player picked them. To choose, send `landscapes` with exactly four of `cornfield`, `blue_plains`,
-`useless_swamp`, `nice_lands`, `sandy_lands`, `icy_lands`; leave it out (or send `[]`) to let the cards decide,
+`useless_swamp`, `nice_lands`, `sandy_lands`, `icy_lands`, `lava_flats`; leave it out (or send `[]`) to let the cards decide,
 as the starter decks do. A card whose Landscape is not among the four can be hard or impossible to play (it
 needs as many face-up Landscapes of its type as it costs), but that does not stop the deck being played; the
 client warns about it. Saving accepts work in progress: only a deck that makes no sense is refused

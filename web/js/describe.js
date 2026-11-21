@@ -15,7 +15,7 @@ import { t, has } from "./i18n.js";
 export const LANDSCAPE_NAMES = new Proxy({}, { get: (_, l) => (typeof l === "string" && has(`landscape.${l}`) ? t(`landscape.${l}`) : undefined) });
 
 /** The Landscape types in the order the server numbers them (a "landscape" choice's `card` is 1 + the index). */
-export const LANDSCAPE_ORDER = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands"];
+export const LANDSCAPE_ORDER = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands", "lava_flats"];
 
 export const landscapeName = (l) => (l && has(`landscape.${l}`) ? t(`landscape.${l}`) : l ?? "");
 

@@ -236,6 +236,7 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 [data-land="sandy_lands"]   { --tile: #f0c673; }
 [data-land="nice_lands"]    { --tile: #f5b3d0; }
 [data-land="icy_lands"]     { --tile: #bfe6f2; }
+[data-land="lava_flats"]    { --tile: #f2a27a; }
 [data-land="rainbow"]       { --tile: linear-gradient(135deg, #f6b3a8, #f9e3a0, #b8e0a0, #a8cdf0, #cdb3ee); }
 .tile[data-land] { background: var(--tile); }
 .tile.down[data-land] { background: repeating-linear-gradient(180deg, #6b4a2b 0 22px, #3a2614 22px 25px); }

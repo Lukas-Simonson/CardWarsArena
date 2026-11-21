@@ -128,6 +128,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Brief%20Power.webp"
   },
   {
+    "id": "broils-coils",
+    "name": "Broils Coils",
+    "type": "spell",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "text": "Deal 3 damage to target Creature. If a Creature is destroyed this way, gain 1 action.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Broils%20Coils.webp"
+  },
+  {
     "id": "bums-away",
     "name": "Bums Away!",
     "type": "spell",
@@ -501,6 +517,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Herbal%20Hurlers.webp"
   },
   {
+    "id": "hot-shot",
+    "name": "Hot Shot",
+    "type": "spell",
+    "landscape": "lava_flats",
+    "cost": 0,
+    "text": "Burn target Creature and then deal 1 additional damage to it.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hot%20Shot.webp"
+  },
+  {
     "id": "kernel-renewal",
     "name": "Kernel Renewal",
     "type": "spell",
@@ -563,6 +595,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Magic%20Ring%20Ding.webp"
+  },
+  {
+    "id": "molten-potion",
+    "name": "Molten Potion",
+    "type": "spell",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "text": "Burn target Creature. Deal 2 damage to each opposing burning Creature.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Molten%20Potion.webp"
   },
   {
     "id": "ogre-gas",
@@ -943,6 +991,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Teleport.webp"
   },
   {
+    "id": "titanbane-amulet",
+    "name": "Titanbane Amulet",
+    "type": "spell",
+    "landscape": "rainbow",
+    "cost": 2,
+    "text": "Destroy target Creature and lose HP equal to its ATK.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Titanbane%20Amulet.webp"
+  },
+  {
     "id": "toilet-of-doom",
     "name": "Toilet Of Doom",
     "type": "spell",
@@ -1005,6 +1069,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Void%20Thimble.webp"
+  },
+  {
+    "id": "volcanic-vitality",
+    "name": "Volcanic Vitality",
+    "type": "spell",
+    "landscape": "lava_flats",
+    "cost": 2,
+    "text": "Burn each opposing Creature once for each burn token they have on them.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Volcanic%20Vitality.webp"
   },
   {
     "id": "volcano",
