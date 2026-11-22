@@ -2,6 +2,9 @@ package engine
 
 import "cardwars/internal/card"
 
+// CauseBurn is the Cause of the damage burning does at the start of a turn.
+const CauseBurn = "burn"
+
 // Burn tokens (Flame Princess's deck). Putting a burn token on a Creature or a player ("burning" it) deals 1
 // damage at once, and each burn token on it deals 1 more at the start of its controller's turn. The tokens stay
 // until they are removed or the Creature leaves play.
@@ -45,13 +48,13 @@ func (g *Game) burnDamage(p PlayerID) []Event {
 		at := pos{p, lane}
 		if cr := g.creatureAt(at); cr != nil && cr.Burn > 0 {
 			if dealt := g.hurt(at, cr.Burn); dealt > 0 {
-				ev = append(ev, Event{Kind: EvDamage, Player: p, Card: cr.UID, Lane: lane, Amount: dealt})
+				ev = append(ev, Event{Kind: EvDamage, Player: p, Card: cr.UID, Lane: lane, Amount: dealt, Cause: CauseBurn})
 			}
 		}
 	}
 	if pl := &g.State.Players[p]; pl.Burn > 0 {
 		pl.HP -= pl.Burn
-		ev = append(ev, Event{Kind: EvHPLoss, Player: p, Amount: pl.Burn})
+		ev = append(ev, Event{Kind: EvHPLoss, Player: p, Amount: pl.Burn, Cause: CauseBurn})
 	}
 	return ev
 }

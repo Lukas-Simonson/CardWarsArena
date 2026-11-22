@@ -243,7 +243,7 @@ query is planned.
 
 ## Events
 
-`events[]` entries are `{ "kind", "player", "card"?, "card_id"?, "lane"?, "amount"? }`.
+`events[]` entries are `{ "kind", "player", "card"?, "card_id"?, "lane"?, "amount"?, "cause"? }`. `cause` is `"burn"` on the `damage` and `hp_loss` events of the damage burning does at the start of a turn (they follow that turn's `turn_start`).
 `card` is the instance uid and `card_id` names it, so you can describe a card you
 never see in a view (a Creature that entered play and returned to a hand in the
 same action). An opponent's `draw` has neither.

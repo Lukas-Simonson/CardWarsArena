@@ -390,3 +390,24 @@ func TestBroilsCoilsAndTitanbaneAmulet(t *testing.T) {
 		t.Errorf("HP %d", g.State.Players[0].HP)
 	}
 }
+
+func TestBurnDamageAtTheStartOfATurnSaysItIsBurning(t *testing.T) {
+	g := flameGame(t)
+	foe := g.put(1, 0, "wall-of-ears")
+	g.burnCreature(pos{1, 0}, 0, 1)
+	g.burnPlayer(1, 1)
+	_ = foe
+	var causes []string
+	for _, e := range g.burnDamage(1) {
+		causes = append(causes, string(e.Kind)+":"+e.Cause)
+	}
+	if len(causes) != 2 || causes[0] != "damage:burn" || causes[1] != "hp_loss:burn" {
+		t.Errorf("events %v", causes)
+	}
+	// What the token did when it was put on is the effect's damage, not burning's.
+	for _, e := range g.burnCreature(pos{1, 0}, 0, 1) {
+		if e.Cause != "" {
+			t.Errorf("%v has cause %q", e.Kind, e.Cause)
+		}
+	}
+}

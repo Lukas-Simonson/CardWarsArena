@@ -327,6 +327,8 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 
 /* ---------- animation helpers (the motion itself is in js/anim.js) */
 .fx-float { font-style: normal; position: absolute; left: 50%; top: 24%; z-index: 6; pointer-events: none; font-family: var(--big-font); font-size: 34px; color: #fff; -webkit-text-stroke: 5px #7a0f08; paint-order: stroke fill; text-shadow: 0 3px 0 #3b0d0a; }
+.fx-float.burn { -webkit-text-stroke-color: #8a3a00; color: #ffd9a0; text-shadow: 0 3px 0 #4a1d00; }
+.fx-float.burn::before { content: "🔥"; font-size: .7em; margin-inline-end: 2px; }
 .fx-float.heal { -webkit-text-stroke-color: #1c5a24; text-shadow: 0 3px 0 #0e2d12; }
 .fx-float.side { left: calc(100% + 6px); top: 4px; font-size: 38px; -webkit-text-stroke-width: 7px; } /* a player's HP wins games: bigger than a Creature's */
 .tile .at.ghost { z-index: 4; pointer-events: none; }

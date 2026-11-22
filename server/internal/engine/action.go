@@ -130,6 +130,9 @@ type Event struct {
 	Card   int       `json:"card,omitempty"` // UID
 	Lane   int       `json:"lane,omitempty"`
 	Amount int       `json:"amount,omitempty"`
+	// Cause says what a damage or HP loss came from when that is not a Fight or a card's effect: "burn" for the
+	// damage burning does at the start of a turn.
+	Cause string `json:"cause,omitempty"`
 }
 
 // Rule violations returned by Apply. Each is a *problem.Problem: its code is stable and the client words it.

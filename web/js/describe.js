@@ -189,8 +189,8 @@ export function describeEvent(ctx, e) {
     case "play": return t("event.play", p);
     case "replace": return t("event.replace", p);
     case "attack": return t("event.attack", p);
-    case "damage": return t("event.damage", p);
-    case "hp_loss": return t("event.hp_loss", p);
+    case "damage": return t(e.cause === "burn" ? "event.damage_burn" : "event.damage", p);
+    case "hp_loss": return t(e.cause === "burn" ? "event.hp_loss_burn" : "event.hp_loss", p);
     case "hp_gain": return t("event.hp_gain", p);
     case "heal": return t("event.heal", p);
     case "die": return t("event.die", p);
