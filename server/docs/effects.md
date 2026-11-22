@@ -213,6 +213,34 @@ Creature (`Creature.offered`): a free `activate` ability, listed after the card'
 card, end the main phase, use another ability), so a "you may" at the start of your turn shows up
 on the card, like a Floop, instead of interrupting every turn. Using one leaves the others.
 
+## Adding a question
+
+A card that must stop and ask the player something mid-effect needs no client code. The client draws whatever
+`view.question` says (see `protocol.md`, "Questions"), by the interaction guide's rules (`web/docs/interactions.md`). To add
+one:
+
+1. **Open a Choice.** Add a kind constant in `state.go` and call `g.ask(Choice{Player, Kind, Card: c.cardID(), ...})` from the
+   op. Only the player in `Choice.Player` can answer; `Do` holds ops that wait for the answer.
+2. **Say what is legal and what it does** in `choice.go`: the kind's case in `validateChoice` (what an answer must be, or
+   `ErrBadTarget`) and in `doChoice` (what the answer does). These are the rules; a question is only their description.
+3. **Describe it** in `describeChoice` (`question.go`): the sentence as `key("question.<name>", params...)`, where it is
+   answered (`AnswerBoard` clicks an option's `ref`, `AnswerHand` a hand card, `AnswerCards` a pop-up, `AnswerButtons` its
+   `label`s), and one option per legal answer, each paired with the `Action` it stands for. A way out is `q.Skip`; an option
+   that costs the player something has `Role: "danger"`; `Result` says what an option does, where it is known
+   (`describeOps` does it for a ransom's effect).
+4. **Add the sentence** to `web/locales/en.json` under the key you used (and `result.*` for results). `npm run i18n`
+   fails on a key the engine sends that the catalogue does not have, and on one nobody sends.
+5. **Test it.** Add a row to the table in `question_test.go` (its answer surface, the number of options, whether it has a
+   skip), and answer it through the real option ids as `TestLegalAnswersAreOnlyTheirOptions` (`view_test.go`) does. Nothing needs adding in
+   `web/js`: `fromQuestion` sorts the options by their `ref`, `card` or `label`.
+6. **Update the docs:** the key's row in the table in `protocol.md`, and the row in `web/docs/interaction-audit.md`.
+
+Worked example, Impossible Possum (`rebound`): its trigger calls `g.ask(Choice{..., Kind: ChoiceRebound, ...})`
+(`effects.go`); `validateChoice` accepts a hand card or none; `doChoice` discards the card and returns the Creature, or leaves it;
+`describeChoice` words it `question.rebound`, answered in the hand (`AnswerHand`, one option per hand card), with the
+neutral skip "Don't return {name}" (`question.leave_it`). The client shows the bar and highlights the hand without knowing it
+is a rebound.
+
 ## Pending free plays
 
 Silo of Truth takes a random card from the opponent's hand. Because the card is

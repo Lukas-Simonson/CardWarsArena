@@ -28,26 +28,28 @@ the fixes come from: each deviation has an ID (D1, D2...) and the phase of the
 
 ## 1. The engine's mid-effect choices (each was a branch of `choiceModal`, now deleted)
 
+The `answer` column is what the engine's question says today (`board`, `hand`, `cards` or `buttons`); the client draws every row from it, with no code per kind. To add a row, see [Adding a question](../../server/docs/effects.md#adding-a-question).
+
 Each row is one hand-built pop-up in `web/js/render.js`. "Should be" is where [the guide](interactions.md#where-a-question-is-asked)
 puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those of the guide.
 
-| Kind | What it asks | Shown today as | Should be | What else is wrong | Fixed in |
-|---|---|---|---|---|---|
-| `discard` | Pick N cards from your hand to discard | **Done (2b):** the bar says "Discard 2 cards from your hand: click a card" and counts down; the hand glows | **W2**: click the hand | none | 2b, done |
-| `ransom` | Discard a card of at least a cost, **or** take the effect | **Done (2b):** the bar (sentence + red "Take {name}'s effect"); click the hand | **W2 + W3** | A5: it does not say what that effect is ("Take 5 damage"): the server would have to describe it (phase 3, D3) | 2b, done; wording done in 2c |
-| `upkeep` | Discard N cards, **or** destroy the asking Creature | **Done (2b):** the bar (sentence + red "Destroy {name}"); click the hand | **W2 + W3** | none | 2b, done |
-| `rebound` | Discard a card to return the Creature, **or** not | **Done (2b):** the bar (sentence + steel "Leave it"); click the hand | **W2 + W3** | V1 (D2): now "Don't return {name}" | 2b and 2c, done |
-| `reveal` | Pick one of the revealed cards (the rest are discarded) | **Done (2a):** the shared card pop-up, with the asking card as its head | **W4**: stays a pop-up (the cards are not on the table) | none | 2a, done |
-| `search` | Pick a Building from the deck | **Done (2c):** the shared card pop-up | **W4**; the Lane is chosen next, as `place` | none | 2c, done |
-| `place` | Pick the Lane for the Building just chosen (Deforestation) | **Added after 2c:** a click on your board (the Lanes glow), with the sentence on the bar and the Building shown | **W1** | none | done: the Lane used to be chosen *before* the card, as a target of the spell |
-| `redirect` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | **Done (2d):** a click on the Creature on the board; "Don't redirect the attack" in the bar (neutral, no red) | **W1** | none | 2d, done |
-| `defend` | Pick a Creature of yours to take an attack, **or** let it go on | **Done (2d):** a click on the Creature; "Don't take the Fight" in the bar | **W1** | none | 2d, done |
-| `move_damage` | Pick how much damage to move between two Creatures | **Done (2c):** the bar: "Move how much damage from A to B?", one button per amount, each showing both Creatures' damage after | **W3** | none | 2c, done |
-| `move` | Pick the empty Landscape a Creature moves to | **Done (2d):** a click on the empty Landscape (the opponent's glow when it must go there) | **W1** | none | 2d, done |
-| `camel` | Put the leaving Creature under your Camel, **or** let it go | **Done (2c):** the bar: the Camel and the leaving card shown, "Put it under {name}" and "Don't put it under {name}" | **W3** | none | 2c, done |
-| `landscape` | Pick the Landscape type your Lane becomes | **Done (2c):** the types as buttons in the bar | **W3** | none | 2c, done |
-| `target` | Pick what a trigger acts on (a Creature, Landscape or pile card), optionally | **Done (2d):** a click on the board (the pile viewer opens for a pile card), worded as the board prompt is, and skipped in the card's own `skip_label` | **W1** | none | 2d, done |
-| `amount` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | **Done (2a, 2c):** the bar; the engine sends a `unit`, so the buttons say "1 damage", "2 damage" | **W3** | none | 2c, done |
+| Kind | `answer` | What it asks | Shown today as | Should be | What else is wrong | Fixed in |
+|---|---|---|---|---|---|---|
+| `discard` | `hand` | Pick N cards from your hand to discard | **Done (2b):** the bar says "Discard 2 cards from your hand: click a card" and counts down; the hand glows | **W2**: click the hand | none | 2b, done |
+| `ransom` | `hand` | Discard a card of at least a cost, **or** take the effect | **Done (2b):** the bar (sentence + red "Take {name}'s effect"); click the hand | **W2 + W3** | A5: it does not say what that effect is ("Take 5 damage"): the server would have to describe it (phase 3, D3) | 2b, done; wording done in 2c |
+| `upkeep` | `hand` | Discard N cards, **or** destroy the asking Creature | **Done (2b):** the bar (sentence + red "Destroy {name}"); click the hand | **W2 + W3** | none | 2b, done |
+| `rebound` | `hand` | Discard a card to return the Creature, **or** not | **Done (2b):** the bar (sentence + steel "Leave it"); click the hand | **W2 + W3** | V1 (D2): now "Don't return {name}" | 2b and 2c, done |
+| `reveal` | `cards` | Pick one of the revealed cards (the rest are discarded) | **Done (2a):** the shared card pop-up, with the asking card as its head | **W4**: stays a pop-up (the cards are not on the table) | none | 2a, done |
+| `search` | `cards` | Pick a Building from the deck | **Done (2c):** the shared card pop-up | **W4**; the Lane is chosen next, as `place` | none | 2c, done |
+| `place` | `board` | Pick the Lane for the Building just chosen (Deforestation) | **Added after 2c:** a click on your board (the Lanes glow), with the sentence on the bar and the Building shown | **W1** | none | done: the Lane used to be chosen *before* the card, as a target of the spell |
+| `redirect` | `board` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | **Done (2d):** a click on the Creature on the board; "Don't redirect the attack" in the bar (neutral, no red) | **W1** | none | 2d, done |
+| `defend` | `board` | Pick a Creature of yours to take an attack, **or** let it go on | **Done (2d):** a click on the Creature; "Don't take the Fight" in the bar | **W1** | none | 2d, done |
+| `move_damage` | `buttons` | Pick how much damage to move between two Creatures | **Done (2c):** the bar: "Move how much damage from A to B?", one button per amount, each showing both Creatures' damage after | **W3** | none | 2c, done |
+| `move` | `board` | Pick the empty Landscape a Creature moves to | **Done (2d):** a click on the empty Landscape (the opponent's glow when it must go there) | **W1** | none | 2d, done |
+| `camel` | `buttons` | Put the leaving Creature under your Camel, **or** let it go | **Done (2c):** the bar: the Camel and the leaving card shown, "Put it under {name}" and "Don't put it under {name}" | **W3** | none | 2c, done |
+| `landscape` | `buttons` | Pick the Landscape type your Lane becomes | **Done (2c):** the types as buttons in the bar | **W3** | none | 2c, done |
+| `target` | `board` | Pick what a trigger acts on (a Creature, Landscape or pile card), optionally | **Done (2d):** a click on the board (the pile viewer opens for a pile card), worded as the board prompt is, and skipped in the card's own `skip_label` | **W1** | none | 2d, done |
+| `amount` | `buttons` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | **Done (2a, 2c):** the bar; the engine sends a `unit`, so the buttons say "1 damage", "2 damage" | **W3** | none | 2c, done |
 
 Which cards ask each kind (from the card data):
 
