@@ -91,7 +91,7 @@ export async function serverKeys(dir = join(WEB, "..", "server", "internal", "en
   for (const f of (await files(dir, [".go"])).filter((f) => !f.endsWith("_test.go"))) {
     const code = await readFile(f, "utf8");
     // every string that is a question message (a key can sit in a variable before it is sent)
-    for (const m of code.matchAll(/"((?:question|skip)\.[a-z0-9_.]+)"/g)) found.add(m[1]);
+    for (const m of code.matchAll(/"((?:question|skip|result)\.[a-z0-9_.]+)"/g)) found.add(m[1]);
   }
   return [...found].sort();
 }
