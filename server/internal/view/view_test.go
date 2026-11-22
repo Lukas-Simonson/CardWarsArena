@@ -294,17 +294,22 @@ func TestChoiceIsVisibleToBothButOnlyOfferedToTheDecider(t *testing.T) {
 	}
 	mine, theirs := Build(g, 0), Build(g, 1)
 	for _, v := range []View{mine, theirs} {
-		if v.Choice == nil || v.Choice.Kind != "reveal" || v.Choice.Player != 0 || len(v.Choice.Revealed) != 3 {
-			t.Fatalf("choice = %+v", v.Choice)
+		if v.Question == nil || v.Question.Text.Key != "question.reveal" || v.Question.Player != 0 {
+			t.Fatalf("question = %+v", v.Question)
 		}
 		if len(v.Awaiting) != 1 || v.Awaiting[0] != 0 {
 			t.Errorf("awaiting %v", v.Awaiting)
 		}
 	}
+	// the revealed cards are the decider's to see; the other player is not sent them
+	if len(mine.Question.Options) != 3 || len(theirs.Question.Options) != 0 {
+		t.Errorf("options: %d for the decider, %d for the other", len(mine.Question.Options), len(theirs.Question.Options))
+	}
 	if len(mine.Legal) != 3 || len(theirs.Legal) != 0 {
 		t.Errorf("legal: %d for the decider, %d for the other", len(mine.Legal), len(theirs.Legal))
 	}
-	for _, in := range mine.Choice.Revealed {
+	for _, o := range mine.Question.Options {
+		in := *o.Card
 		if got := FilterEvents(g, 1, []engine.Event{{Kind: engine.EvDiscard, Card: in.UID}})[0].CardID; got != in.CardID {
 			t.Errorf("revealed cards are named in events: %q", got)
 		}
@@ -336,19 +341,21 @@ func TestHeroesAreVisibleToBothSeats(t *testing.T) {
 	}
 }
 
-// Everything a client needs to word a choice has to be in the view: the numbers of an amount are of a unit, the damage
-// of move_damage goes to the Creature in Other, and an optional target says what choosing nothing does.
-func TestAChoiceCarriesEverythingItIsWordedFrom(t *testing.T) {
+// An answer to a question is its option and nothing else on the wire: the client is not told what the engine takes.
+func TestLegalAnswersAreOnlyTheirOptions(t *testing.T) {
 	g := newGame(t, 1)
-	g.State.Choice = &engine.Choice{Player: 0, Kind: engine.ChoiceAmount, Card: "the-big-hen-house", Options: []int{1, 2}, Unit: "damage",
-		Lane: 1, Other: 3, Optional: true, Label: "Freeze", SkipLabel: "Don't freeze a Landscape"}
-	b, err := json.Marshal(Build(g, 0).Choice)
+	g.State.Choice = &engine.Choice{Player: 0, Kind: engine.ChoiceAmount, Card: "the-big-hen-house", Options: []int{1, 2}, Unit: "damage"}
+	b, err := json.Marshal(Build(g, 0).Legal)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{`"unit":"damage"`, `"other":3`, `"skip_label":"Don't freeze a Landscape"`, `"lane":1`, `"options":[1,2]`} {
-		if !strings.Contains(string(b), want) {
-			t.Errorf("%s is missing from %s", want, b)
+	if string(b) != `[{"kind":"choose","option":0},{"kind":"choose","option":1}]` {
+		t.Errorf("legal answers: %s", b)
+	}
+	q, _ := json.Marshal(Build(g, 0).Question)
+	for _, want := range []string{`"unit":"damage"`, `"key":"question.amount"`, `"id":1`} {
+		if !strings.Contains(string(q), want) {
+			t.Errorf("%s is missing from %s", want, q)
 		}
 	}
 }

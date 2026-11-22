@@ -375,6 +375,11 @@ func TestIllegalActionIsRejectedAndChangesNothing(t *testing.T) {
 	b.expectError(ErrIllegal)
 	b.send(ClientMsg{Type: MsgAction, Action: &engine.Action{Kind: "teleport_me_to_victory"}})
 	b.expectError(ErrIllegal)
+	// An answer to a question names its option; the engine's own fields are not taken over the wire.
+	b.send(ClientMsg{Type: MsgAction, Action: &engine.Action{Kind: engine.ActChoose, Card: 5}})
+	if m := b.expect(MsgError); m.Code != ErrIllegal || m.Reason != "option_required" {
+		t.Errorf("code %q reason %q, want illegal and option_required", m.Code, m.Reason)
+	}
 	if after := stateJSON(h.srv.room(a.room)); after != before {
 		t.Error("a rejected action changed the game")
 	}

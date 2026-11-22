@@ -445,7 +445,7 @@ function render() {
     game.classList.toggle("acts-again", actSeq === state.seq);
     actSeq = state.seq;
     renderGame(game, { state, cards, ui: { ...ui, modalAgain: modalSeq === state.seq } }, on);
-    if (state.view?.choice) {
+    if (state.view?.question) {
       modalSeq = state.seq;
       if (!game.querySelector(".modal")?.contains(document.activeElement)) game.querySelector(".modalopt")?.focus();
     }

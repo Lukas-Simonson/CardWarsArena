@@ -3,7 +3,7 @@
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
 import { tokenChips } from "./tokens.js";
-import { fromPrompt, fromChoice, fromMulligan, run, SURFACE } from "./question.js";
+import { fromPrompt, fromQuestion, fromMulligan, run, SURFACE } from "./question.js";
 import { questionBar, questionPopup } from "./questionui.js";
 import { APP_NAME } from "./brand.js";
 import { isCrowded, fanPose } from "./handlayout.js";
@@ -46,7 +46,7 @@ export function renderGame(root, model, on) {
   const srcs = myDecision ? sources(legal) : {};
   const picker = ui.picker;
   // A mid-effect choice that is on the shared question is asked on the bar or in a pop-up (see question.js).
-  const asked = fromChoice(ctx, v.choice, legal, myDecision) ?? fromMulligan(ctx, legal, myDecision);
+  const asked = fromQuestion(ctx, v.question, myDecision) ?? fromMulligan(ctx, legal, myDecision);
   // The board objects such a question can be answered with are highlighted like targets, and a click runs their answer.
   const boardPicks = asked?.boardPicks ?? {};
   const tokens = new Set([...(picker && !ui.awaitingKind ? picker.options().tokens : []), ...Object.keys(boardPicks)]);
@@ -225,7 +225,6 @@ function tile(m, seat, i, on) {
 
   const pickToken = [
     ...(mine && srcCard && srcCard.type !== "building" ? [`dest:${i}`] : []),
-    ...(mine ? [`place:${i}`] : []),
     `creature:${seat}:${i}`, `lane:${seat}:${i}`, `landscape:${seat}:${i}`,
   ].find((t) => has(m, t));
   const selectable = mine && srcs[key];
@@ -262,7 +261,9 @@ function buildingStrip(m, seat, i, on) {
   const b = ctx.view.players[seat].lanes[i].building;
   const extra = ctx.view.players[seat].lanes[i].extra ?? [];
   const key = `lane:${i}:building`;
-  const pickToken = [...(mine && srcCard?.type === "building" ? [`dest:${i}`] : []), ...(mine ? [`place:${i}`] : []), `building:${seat}:${i}`].find((t) => has(m, t));
+  // a question that asks for a Lane (Deforestation's) is answered on its Building slot as well as its Landscape
+  const laneToken = `lane:${seat}:${i}`;
+  const pickToken = [...(mine && srcCard?.type === "building" ? [`dest:${i}`] : []), ...(m.asked?.boardPicks?.[laneToken] ? [laneToken] : []), `building:${seat}:${i}`].find((t) => has(m, t));
   const selectable = mine && srcs[key];
   const classes = ["strip", mine ? "mine" : "theirs", b ? "" : "empty"];
   if (pickToken) classes.push("pick", mine ? "" : "foe");

@@ -118,7 +118,7 @@ in the player's language. An `error` has
   `wrong_phase`, `not_your_turn`, `already_decided`, `no_mulligan`, `unknown_action`, `no_such_card`, `bad_lane`,
   `no_actions`, `landscapes`, `flooped`, `deck_empty`, `no_attacker`, `first_turn`, `not_playable`, `cannot_attack`,
   `no_target`, `not_ready`, `no_ability`, `pending`, `no_pending`, `bad_target`, `condition`, `choice`, `no_choice`,
-  `limit`, `no_floop`, `frozen`, `not_frozen`, `no_replace`, `inert`. For `bad_request` it is `not_text`,
+  `limit`, `option_required`, `no_floop`, `frozen`, `not_frozen`, `no_replace`, `inert`. For `bad_request` it is `not_text`,
   `invalid_json` (`detail`), `action_required`, `unknown_message_type` (`type`), `unknown_bot` (`name`, `bots`). For
   `unknown_deck` it is `no_deck_matches` (`query`), `deck_ambiguous` (`query`, `decks`), `deck_not_found`,
   `sign_in_required` or `no_bot_deck`; for `deck_not_playable`, `problems` lists the deck's problems (see below).
@@ -145,7 +145,7 @@ them: `choose_hero`, `deck_too_small` (`n`, `min`), `choose_landscapes_rainbow`,
   "preload": ["cool-dog", "the-pig"],   // card ids whose art to fetch early (see "Hidden information")
   "awaiting": [0],                       // seats that must decide now (both, during mulligan)
   "pending": {"uid":9,"card":"cool-dog","owner":1},  // Silo of Truth: must be played first
-  "choice": {"player":1,"kind":"discard","card":"abraca-amadeus","count":2},  // see "Choices"
+  "question": {"player":1,"card":"abraca-amadeus","text":{"key":"question.discard","params":{"n":2}},"answer":"hand","options":[…]},  // see "Questions"
   "legal": [ …actions… ],                // only when you are in `awaiting`
   "players": [ { …seat 0… }, { …seat 1… } ]
 }
@@ -203,50 +203,18 @@ An action is `{ "kind": …, "card"?, "lane"?, "source"?, "index"?, "cost_target
 | `attack` | fight | `lane` |
 | `play_pending` | after Silo of Truth | `lane`, `targets` |
 | `thaw` | main | `lane` (one of your frozen Landscapes), `card` (the hand uid to discard): removes its frozen token for no Actions |
-| `choose` | while a `choice` is open | see "Choices" |
+| `choose` | while a `question` is open | `option`: the `id` of one of its options (or of its `skip`); nothing else is taken. See "Questions" |
 
 `targets` is a list of target slots (an empty optional slot is `[]`, never `null`), each a list of references
 `{"kind":"creature|building|landscape|lane|discard_card|hand_card|player","player":0,"lane":1,"card":0}`
 (`player` = whose side, `lane` for board things, `card` = uid for card piles).
 
-### Choices
-
-Some cards stop the game until a player decides, and that player need not be
-the active one. `view.choice` (sent to both seats) says who (`player`), what kind,
-and which card asked (`card`). The decider is the only seat in `awaiting`, and
-every other action is refused (`illegal_action`) until they answer.
-
-| `kind` | question | answer |
-|---|---|---|
-| `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump); with `only_cost`, only a card of that cost (Fly Swatter) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
-| `upkeep` | discard `count` cards from your hand, or destroy the card that asks (Steakchop) | `choose` with `card` = a hand uid, or `choose` with no `card` to destroy it. After the first discard it becomes a `discard` choice |
-| `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
-| `search` | the Buildings in your deck, `revealed` (only the decider is sent them): pick one to take (Deforestation); a `place` choice follows | `choose` with `card` = the revealed uid |
-| `place` | the Building just taken from the deck is `revealed[0]` (only the decider is sent it); pick the Lane to put it into play in, `lanes`. The deck is shuffled | `choose` with `lane` |
-| `rebound` | discard a card from your hand to return the card that asks from your discard pile to your hand (Impossible Possum) | `choose` with `card` = a hand uid, or `choose` with no `card` to leave it |
-| `redirect` | the Creature that attacked may be replaced by one of your Flooped Creatures, `revealed` (Pied Piper); the Fight waits for the answer | `choose` with `card` = the Flooped Creature's uid, or `choose` with no `card` to fight with the attacker |
-| `move_damage` | move damage between two of your Creatures; `count` is the most you may move (Friendship Bracelet) | `choose` with `card` = how much, 1 to `count` |
-| `move` | the Creature in your Lane `lane` (omitted for Lane 0) must move at the start of your turn to an empty Landscape on seat `move_side`'s side (omitted for seat 0, like any zero), one of `lanes` (Drained Cleric, Tired Wombat, Woadic Ring Leader) | `choose` with `lane` = one of `lanes` |
-| `defend` | a Creature of yours in `revealed` may take the Fight that a Creature of seat `move_side`'s in `lane` has just started (Genteel and Gracious Armourdillo); `other` is the Lane it is attacking from | `choose` with `card` = your Creature's uid, or `choose` with no `card` to let the Fight go where it was going |
-| `camel` | the Creature in `revealed` is leaving play; you may put it underneath your Camel instead of letting it go to your hand (`count` 1) or discard pile (`count` 0) (Carmel Camel). `lane` is the Lane it left, on seat `move_side`'s side | `choose` with `card` = the Camel's uid, or `choose` with no `card` to let it go |
-| `landscape` | pick the type your Landscape in `lane` becomes until the start of your next turn (Silo of Freedom) | `choose` with `card` = 1 + the type's index in `cornfield, blue_plains, useless_swamp, nice_lands, sandy_lands, icy_lands` |
-| `target` | a trigger of the card chose a target for you (Crystal Palace, Frozen Fish): `targets` lists the legal ones, `label` says what for, `optional` that you may choose none, and `skip_label` what choosing none does in the card's words ("Don't freeze a Landscape"). `lane` is the card's Lane, on seat `move_side`'s side | `choose` with `targets` = `[[ref]]` for one of the listed refs, or `choose` with no `targets` when `optional` |
-| `ransom` | you may discard a card (of cost `min_cost` or more) or take what the card that asks says: it happens to you if you do not (Blood Bath, Bums Away!) | `choose` with `card` = a card in your hand, or `choose` with no `card` to take it |
-| `amount` | pick how much: `options` are the numbers, and `unit` says what they are of (`damage` or `heal`: The Big Hen House) | `choose` with `card` = one of the numbers |
-
-As always, send one of the objects in `view.legal`.
-
-**Limit:** `legal` lists at most 128 target choices per card, so a card with a very
-wide choice (Patchy the Pumpkin with many Creatures) may offer only some of its
-legal plays. The server still *accepts* any legal choice, so a client may
-construct such a play from the same shape; a server-side "list all targets"
-query is planned.
-
 ### Questions
 
-Every open choice is also described as a `question` in the view (beside `choice`, which is read until clients move to
-`question`; the kind-specific fields of `choice` and the old answers are removed in a later step). A client needs no code
-for each kind of choice: it draws a question.
+Some cards stop the game until a player decides, and that player need not be the active one. The open choice is
+`view.question` (sent to both seats; only the decider gets its options): who must answer (`player`), the card that asked
+(`card`), and the question itself. The decider is the only seat in `awaiting`, and every other action is refused
+(`illegal_action`) until they answer. There is no kind of choice to know: a client draws a question.
 
 ```jsonc
 "question": {
@@ -273,15 +241,16 @@ for each kind of choice: it draws a question.
   on the table), or `buttons` (press the options' `label`).
 - **An option** has an `id`, one of `ref`, `card` or `label`, a `role` (`danger` when it costs the player something), and a
   `result` (a message saying what it does, where that is known: moving damage says both Creatures' damage after).
-- **Answering is always `{ "kind": "choose", "option": id }`**, with the `id` of an option or of the `skip`. Each legal `choose`
-  also carries the old fields (`card`, `lane`, `targets`), which are still accepted, with its `option`; legal answers are in
-  option order.
+- **Answering is always `{ "kind": "choose", "option": id }`**, with the `id` of an option or of the `skip`. A `choose` with
+  no `option` is refused (`illegal_action`, reason `option_required`): the engine's own fields for an answer (`card`, `lane`,
+  `targets`) are not sent in `legal` and are not taken over the wire. The `legal` list has one `{ "kind": "choose", "option": id }`
+  for each option, in order.
 - **Hidden information:** only the player who must answer is sent the options, the subject and `left`; the other player's
   `question` says who asks and what (`player`, `card`, `text`, `answer`), with an empty `options`.
 
 The message keys and their parameters (the sentences are in `web/locales/en.json`):
 
-| `text.key` | Params | Asked by (kind) |
+| `text.key` | Params | Asked by |
 |---|---|---|
 | `question.discard` | `n` | discard cards from your hand (`discard`; `left` is `n`) |
 | `question.ransom` | `min` | discard a card or take the effect (`ransom`) |
@@ -297,6 +266,14 @@ The message keys and their parameters (the sentences are in `web/locales/en.json
 | `question.target` | `label`, `optional`, `what` | a trigger's target (`what` is the first option's kind) |
 | `question.amount` | `options` | how much; options are labelled `question.amount_n` with `n` and `unit` |
 
+As always, send one of the objects in `view.legal`.
+
+**Limit:** `legal` lists at most 128 target choices per card, so a card with a very
+wide choice (Patchy the Pumpkin with many Creatures) may offer only some of its
+legal plays. The server still *accepts* any legal choice, so a client may
+construct such a play from the same shape; a server-side "list all targets"
+query is planned.
+
 ## Events
 
 `events[]` entries are `{ "kind", "player", "card"?, "card_id"?, "lane"?, "amount"?, "cause"? }`. `cause` is `"burn"` on the `damage` and `hp_loss` events of the damage burning does at the start of a turn (they follow that turn's `turn_start`).
@@ -306,7 +283,7 @@ same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `burn` (a burn token went onto the Creature `card` in `lane`, or onto the player `player` when `card` is 0), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`, or underneath the Creature that replaced it when it has Gobble) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
+`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `burn` (a burn token went onto the Creature `card` in `lane`, or onto the player `player` when `card` is 0), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`, or underneath the Creature that replaced it when it has Gobble) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `question.landscape` question). Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Statistics

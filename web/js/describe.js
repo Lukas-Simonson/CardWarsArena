@@ -110,30 +110,36 @@ function actionText(ctx, a) {
   }
 }
 
-function chooseText(ctx, a) {
-  const v = ctx.view;
-  const ch = v.choice;
-  const card = ch ? cardName(ctx, ch.card) : "";
-  switch (ch?.kind) {
-    case "upkeep": return a.card ? t("choose.discard", { card: instName(ctx, a.card) }) : t("choose.upkeep_destroy", { name: card });
-    case "discard": return t("choose.discard", { card: instName(ctx, a.card) });
-    case "reveal": return t("choose.reveal", { card: instName(ctx, a.card) });
-    case "search": return t("choose.search", { card: instName(ctx, a.card) });
-    case "rebound": return a.card ? t("choose.rebound_return", { card: instName(ctx, a.card), name: card }) : t("choose.rebound_leave", { name: card });
-    case "redirect": return a.card ? t("choose.redirect_other", { card: instName(ctx, a.card) }) : t("choose.redirect_same", { name: card });
-    case "defend": return a.card ? t("choose.defend_take", { card: instName(ctx, a.card) }) : t("choose.defend_no");
-    case "move_damage": return t("choose.move_damage", { n: a.card });
-    case "camel": return a.card ? t("choose.camel_put", { card: instName(ctx, ch.revealed?.[0]?.uid), name: card }) : t("choose.camel_let_go", { card: instName(ctx, ch.revealed?.[0]?.uid) });
-    case "landscape": return t("choose.landscape", { lane: laneNo(ch.lane), type: landscapeName(LANDSCAPE_ORDER[(a.card ?? 1) - 1]) });
-    case "target":
-      return a.targets?.[0]?.length
-        ? withTargets(ctx, t("choose.target", { name: card, label: ch.label ? labelText(ch.label) : t("choose.target_default") }), "target", a.targets)
-        : t("choose.target_none", { name: card });
-    case "ransom": return a.card ? t("choose.ransom_pay", { card: instName(ctx, a.card), name: card }) : t("choose.ransom_take", { name: card });
-    case "amount": return t("choose.amount", { name: card, n: a.card });
-    case "move": return t("choose.move", { name: card, lane: laneNo(a.lane), theirs: movesToTheirSide(ch, v.you) ? "yes" : "no" });
-    default: return t("choose.default");
+/**
+ * Words a message from the server: a catalogue key with parameters, or a card's own label text. A parameter named
+ * `x_card` is a card id and is worded as that card's name as `x`; `name` is the card that asked and `subject` the card
+ * the question is about; a boolean is "yes" or "no" (the catalogue selects on it).
+ */
+export function words(ctx, msg, q = null) {
+  if (!msg) return "";
+  if (!msg.key) return labelText(msg.text ?? "");
+  const params = {};
+  for (const [k, v] of Object.entries(msg.params ?? {})) {
+    if (k.endsWith("_card")) params[k.slice(0, -5)] = cardName(ctx, v);
+    else if (typeof v === "boolean") params[k] = v ? "yes" : "no";
+    else if (k === "label") params.label = labelText(v);
+    else params[k] = v;
   }
+  params.hasLabel = msg.params?.label ? "yes" : "no";
+  if (q?.card) params.name = cardName(ctx, q.card);
+  if (q?.subject) params.subject = cardName(ctx, q.subject.card);
+  return t(msg.key, params);
+}
+
+/** A legal answer to the open question, as the option it names ("Discard The Pig", "Lane 2", "Don't freeze a Landscape"). */
+function chooseText(ctx, a) {
+  const q = ctx.view.question;
+  const o = [...(q?.options ?? []), ...(q?.skip ? [q.skip] : [])].find((x) => x.id === a.option);
+  if (!o) return t("choose.default");
+  if (o.ref) return describeRef(ctx, o.ref);
+  if (o.card) return cardName(ctx, o.card.card);
+  const text = words(ctx, o.label, q);
+  return o.result ? t("choose.with_result", { text, result: words(ctx, o.result, q) }) : text;
 }
 
 /**
@@ -172,7 +178,6 @@ export const isKnownAction = (ctx, a) => actionText(ctx, a) !== null;
  * Does a "move" choice send the Creature to the opponent's side? The server leaves `move_side` out when it is
  * seat 0 (it is a zero), so a missing value means seat 0, not "somewhere else".
  */
-export const movesToTheirSide = (choice, you) => (choice?.move_side ?? 0) !== you;
 
 /** One line for the game log, as seen by this seat. */
 export function describeEvent(ctx, e) {

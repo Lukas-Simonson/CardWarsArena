@@ -152,15 +152,15 @@ test("prompt: asks which kind first", () => {
 // ---- choices (the modal)
 
 test("choose answers a Choice and belongs to no card on the board", () => {
-  assert.ok(isGeneral({ kind: "choose", card: 12 }));
-  assert.deepEqual(sources([{ kind: "choose", card: 12 }]), {});
+  assert.ok(isGeneral({ kind: "choose", option: 3 }));
+  assert.deepEqual(sources([{ kind: "choose", option: 3 }]), {});
 });
 
 test("prompt: a Choice tells the decider to use the dialog and everyone else to wait", () => {
-  const choice = { player: 0, kind: "discard", card: "corn-scepter", count: 2 };
-  const mine = ctxFor(view({ choice, legal: [{ kind: "choose", card: 10 }] }));
+  const question = { player: 0, card: "corn-scepter", text: { key: "question.discard", params: { n: 2 } }, answer: "hand", options: [] };
+  const mine = ctxFor(view({ question, legal: [{ kind: "choose", option: 0 }] }));
   assert.match(buildPrompt(mine, true, "", null, false).text, /Corn Scepter: make your choice in the dialog/);
-  const theirs = ctxFor(view({ choice: { ...choice, player: 1 }, awaiting: [1] }));
+  const theirs = ctxFor(view({ question: { ...question, player: 1 }, awaiting: [1] }));
   assert.match(buildPrompt(theirs, false, "", null, false).text, /Waiting for Jake to decide \(Corn Scepter\)/);
 });
 

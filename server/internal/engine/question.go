@@ -187,12 +187,13 @@ func (g *Game) describeChoice(ch *Choice) (Question, []Action) {
 			option(Action{Kind: ActChoose, Card: i + 1}, Option{Label: key("landscape." + string(ls))})
 		}
 	case ChoiceTarget:
-		params := []any{"optional", ch.Optional}
+		what := "target" // what the first option is, for "Choose a Landscape"; "target" when it is none of those
+		if len(ch.Targets) > 0 {
+			what = ch.Targets[0].Kind
+		}
+		params := []any{"optional", ch.Optional, "what", what}
 		if ch.Label != "" {
 			params = append(params, "label", ch.Label)
-		}
-		if len(ch.Targets) > 0 {
-			params = append(params, "what", ch.Targets[0].Kind)
 		}
 		q.Text, q.Answer = *key("question.target", params...), AnswerBoard
 		for _, r := range ch.Targets {

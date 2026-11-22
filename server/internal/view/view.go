@@ -69,35 +69,6 @@ type Player struct {
 	Mulliganed  bool                  `json:"mulliganed"`
 }
 
-// Choice is a decision some player must make before the game goes on. Both
-// seats see it (an opponent's discard is public), and Revealed cards are shown
-// to both.
-type Choice struct {
-	Player   int               `json:"player"` // who decides
-	Kind     string            `json:"kind"`   // discard, reveal or may
-	Card     string            `json:"card"`   // the card that asks
-	Count    int               `json:"count,omitempty"`
-	Revealed []engine.Instance `json:"revealed,omitempty"`
-	// move: the Creature in Lane (on the deciding player's side) may go to any of Lanes on seat MoveSide. move_damage:
-	// the damage leaves the Creature in Lane and goes to the one in Other.
-	Lane     int   `json:"lane,omitempty"`
-	Other    int   `json:"other,omitempty"`
-	Lanes    []int `json:"lanes,omitempty"`
-	MoveSide int   `json:"move_side,omitempty"`
-	// target: what may be chosen, and whether the player may choose nothing.
-	Targets  []engine.TargetRef `json:"targets,omitempty"`
-	Optional bool               `json:"optional,omitempty"`
-	Label    string             `json:"label,omitempty"`
-	// SkipLabel is what choosing nothing does, in the card's words ("Don't freeze a Landscape"), when it has some.
-	SkipLabel string `json:"skip_label,omitempty"`
-	// discard: only cards of cost OnlyCost; ransom: only cards of at least MinCost; amount: pick from Options, which
-	// are numbers of Unit ("damage" or "heal").
-	OnlyCost *int   `json:"only_cost,omitempty"`
-	MinCost  *int   `json:"min_cost,omitempty"`
-	Options  []int  `json:"options,omitempty"`
-	Unit     string `json:"unit,omitempty"`
-}
-
 // View is a complete picture of the game for one viewer.
 type View struct {
 	You            int              `json:"you"`
@@ -112,10 +83,9 @@ type View struct {
 	Awaiting       []int            `json:"awaiting"`
 	Players        [2]Player        `json:"players"` // indexed by seat
 	Pending        *engine.Instance `json:"pending,omitempty"`
-	Choice         *Choice          `json:"choice,omitempty"`
-	// Question is the open choice described in generic terms (see engine.Question): who asked, the words as a key
-	// and parameters, where it is answered and the options. The player who must answer gets the options; the other
-	// player sees only who asks and what. It is sent beside Choice until clients stop reading Choice.
+	// Question is the open choice, described in generic terms (see engine.Question): who asked, the words as a key and
+	// parameters, where it is answered and the options. The player who must answer gets the options; the other
+	// player sees only who asks and what. It is answered with {choose, option: id}.
 	Question *engine.Question `json:"question,omitempty"`
 	// Preload names cards whose art the client may fetch ahead of time: the
 	// opponent's hand and the viewer's next draws, mixed together and sorted so
@@ -164,13 +134,6 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 			q.Options, q.Skip, q.Subject, q.Left = []engine.Option{}, nil, nil, 0 // what is in a decision is for the decider
 		}
 		v.Question = q
-		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...),
-			Lane: ch.Lane, Other: ch.Other, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
-			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label, SkipLabel: ch.SkipLabel,
-			OnlyCost: ch.OnlyCost, MinCost: ch.MinCost, Options: append([]int(nil), ch.Options...), Unit: ch.Unit}
-		if (ch.Kind == engine.ChoiceSearch || ch.Kind == engine.ChoicePlace) && ch.Player != viewer {
-			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
-		}
 	}
 	for p := engine.PlayerID(0); p < 2; p++ {
 		src := &st.Players[p]
@@ -234,6 +197,11 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 // noNullSlots makes every target slot a real (possibly empty) list. Go encodes
 // a nil slice as null, which clients should never have to special-case.
 func noNullSlots(a engine.Action) engine.Action {
+	if a.Kind == engine.ActChoose {
+		// An answer to a question is its option and nothing else: the client does not need to know how the engine
+		// takes it (the card, lane or targets it stands for).
+		return engine.Action{Kind: engine.ActChoose, Option: a.Option}
+	}
 	fix := func(slots [][]engine.TargetRef) [][]engine.TargetRef {
 		if slots == nil {
 			return nil

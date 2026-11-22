@@ -225,6 +225,9 @@ func (r *Room) act(token string, a engine.Action, seq *int) error {
 	if seq != nil && *seq != r.seq {
 		return fail(ErrStale, fmt.Sprintf("the game has moved on (now at seq %d)", r.seq), "seq", r.seq)
 	}
+	if a.Kind == engine.ActChoose && a.Option == nil {
+		return failBecause(ErrIllegal, problem.New("option_required", "answer a question with the id of one of its options"))
+	}
 	events, err := r.g.Apply(engine.PlayerID(i), a)
 	if err != nil {
 		return failBecause(ErrIllegal, err)
