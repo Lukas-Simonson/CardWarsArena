@@ -2,8 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   describeAction, describeEvent, describeRef, isKnownAction, actionMatches, filterActions,
-  handSelection, laneSelection, sameSelection, instName, landscapeName, movesToTheirSide,
-} from "../js/describe.js";
+  handSelection, laneSelection, sameSelection, instName, landscapeName, } from "../js/describe.js";
 import { ctxFor, view } from "./fixtures.mjs";
 
 const ctx = ctxFor();
@@ -161,51 +160,30 @@ test("selections compare by value", () => {
   assert.ok(!sameSelection(null, handSelection(1)));
 });
 
-test("actions that answer a Choice are described", async () => {
+// An answer is {choose, option: id}: it reads as the option it names, from the view's question.
+test("an answer to a question reads as its option", async () => {
   const { describeAction, isKnownAction } = await import("../js/describe.js");
   const { view, ctxFor } = await import("./fixtures.mjs");
-  const reveal = ctxFor(view({ choice: { player: 0, kind: "reveal", card: "corn-scepter", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
-  assert.equal(describeAction(reveal, { kind: "choose", card: 40 }), "Put The Pig on the bottom of your deck");
-  const upkeep = ctxFor(view({ choice: { player: 0, kind: "upkeep", card: "the-pig", count: 2 } }));
-  assert.equal(describeAction(upkeep, { kind: "choose" }), "Destroy The Pig");
-  assert.equal(describeAction(upkeep, { kind: "choose", card: 10 }), "Discard Cool Dog");
-  const discard = ctxFor(view({ choice: { player: 0, kind: "discard", card: "corn-scepter", count: 1 } }));
-  assert.equal(describeAction(discard, { kind: "choose", card: 10 }), "Discard Cool Dog");
-  const search = ctxFor(view({ choice: { player: 0, kind: "search", card: "corn-scepter", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
-  assert.equal(describeAction(search, { kind: "choose", card: 40 }), "Put The Pig into play from your deck");
-  const rebound = ctxFor(view({ choice: { player: 0, kind: "rebound", card: "the-pig" } }));
-  assert.equal(describeAction(rebound, { kind: "choose" }), "Leave The Pig in the discard pile");
-  assert.equal(describeAction(rebound, { kind: "choose", card: 10 }), "Discard Cool Dog to return The Pig to your hand");
-  const redirect = ctxFor(view({ choice: { player: 0, kind: "redirect", card: "the-pig" } }));
-  assert.equal(describeAction(redirect, { kind: "choose" }), "The Pig fights");
-  assert.equal(describeAction(redirect, { kind: "choose", card: 10 }), "Cool Dog fights instead");
-  // `move_side` is left out for seat 0: a Creature moving on seat 0's own side must not read as the opponent's.
-  assert.equal(movesToTheirSide({ kind: "move" }, 0), false);
-  assert.equal(movesToTheirSide({ kind: "move", move_side: 1 }, 1), false);
-  assert.equal(movesToTheirSide({ kind: "move", move_side: 1 }, 0), true);
-  assert.equal(movesToTheirSide({ kind: "move" }, 1), true);
-  const own = ctxFor(view({ you: 0, choice: { player: 0, kind: "move", card: "the-pig", lane: 0, lanes: [1, 2] } })); // move_side omitted: seat 0
-  assert.equal(describeAction(own, { kind: "choose", lane: 1 }), "Move The Pig to lane 2");
-  const theirs = ctxFor(view({ you: 0, choice: { player: 0, kind: "move", card: "the-pig", lane: 0, lanes: [1, 2], move_side: 1 } }));
-  assert.equal(describeAction(theirs, { kind: "choose", lane: 1 }), "Move The Pig to lane 2 on the opponent's side");
-  const move = ctxFor(view({ choice: { player: 0, kind: "move_damage", card: "the-pig", count: 3 } }));
-  assert.equal(describeAction(move, { kind: "choose", card: 2 }), "Move 2 damage");
-  const camel = ctxFor(view({ choice: { player: 0, kind: "camel", card: "cool-dog", revealed: [{ uid: 40, card: "the-pig", owner: 0 }] } }), { known: { 40: "the-pig" } });
-  assert.equal(describeAction(camel, { kind: "choose", card: 9 }), "Put The Pig under Cool Dog");
-  assert.equal(describeAction(camel, { kind: "choose" }), "Let The Pig go");
-  const silo = ctxFor(view({ choice: { player: 0, kind: "landscape", card: "silo-of-freedom", lane: 2 } }));
-  assert.equal(describeAction(silo, { kind: "choose", card: 4 }), "Make your lane 3 Landscape Nice Lands");
-  const target = ctxFor(view({ choice: { player: 0, kind: "target", card: "cool-dog", label: "Freeze", optional: true } }));
-  assert.match(describeAction(target, { kind: "choose", targets: [[{ kind: "landscape", player: 1, lane: 2 }]] }), /^Cool Dog: Freeze {2}\[target: .*landscape \(opp's, lane 3\)\]$/);
-  assert.equal(describeAction(target, { kind: "choose" }), "Cool Dog: choose nothing");
-  assert.equal(isKnownAction(target, { kind: "choose" }), true);
-  const ransom = ctxFor(view({ choice: { player: 0, kind: "ransom", card: "cool-dog", min_cost: 2 } }));
-  assert.equal(describeAction(ransom, { kind: "choose", card: 10 }), "Discard Cool Dog to avoid what Cool Dog says");
-  assert.equal(describeAction(ransom, { kind: "choose" }), "Take what Cool Dog says instead");
-  const amount = ctxFor(view({ choice: { player: 0, kind: "amount", card: "cool-dog", options: [1, 2] } }));
-  assert.equal(describeAction(amount, { kind: "choose", card: 2 }), "Cool Dog: 2");
-  for (const c of [ransom, amount]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
-  for (const c of [search, rebound, redirect, move, camel, silo]) assert.equal(isKnownAction(c, { kind: "choose", card: 1 }), true);
+  const msg = (key, params) => ({ key, ...(params && { params }) });
+  const ask = (q, extra = {}) => ctxFor(view({ question: { player: 0, card: "the-pig", answer: "buttons", text: msg("question.x"), options: [], ...q } }), extra);
+  const answer = (id) => ({ kind: "choose", option: id });
+  // a card to pick in a pop-up
+  const reveal = ask({ answer: "cards", options: [{ id: 0, card: { uid: 40, card: "the-pig", owner: 0 } }, { id: 1, card: { uid: 41, card: "cool-dog", owner: 0 } }] });
+  assert.equal(describeAction(reveal, answer(1)), "Cool Dog");
+  // a card of the hand, and a board object
+  const hand = ask({ answer: "hand", options: [{ id: 0, ref: { kind: "hand_card", player: 0, card: 10 } }], skip: { id: 1, label: msg("question.leave_it") } });
+  assert.equal(describeAction(hand, answer(0)), "Cool Dog");
+  assert.equal(describeAction(hand, answer(1)), "Don't return The Pig");
+  const board = ask({ answer: "board", options: [{ id: 0, ref: { kind: "landscape", player: 1, lane: 2 } }], skip: { id: 1, label: { text: "Don't freeze a Landscape" } } });
+  assert.match(describeAction(board, answer(0)), /landscape \(opp's, lane 3\)/);
+  assert.equal(describeAction(board, answer(1)), "Don't freeze a Landscape");
+  // a button, with or without what it does
+  const amount = ask({ options: [{ id: 0, label: msg("question.amount_n", { n: 1, unit: "damage" }) }, { id: 1, label: msg("question.amount_n", { n: 2, unit: "damage" }) }] });
+  assert.equal(describeAction(amount, answer(1)), "2 damage");
+  const move = ask({ options: [{ id: 0, label: msg("question.move_n", { n: 2 }), result: msg("question.move_result", { from_card: "the-pig", a1: 4, a2: 2, to_card: "cool-dog", b1: 1, b2: 3 }) }] });
+  assert.equal(describeAction(move, answer(0)), "Move 2 (The Pig 4 → 2, Cool Dog 1 → 3)");
+  for (const c of [reveal, hand, board, amount, move]) assert.equal(isKnownAction(c, answer(0)), true);
+  assert.equal(describeAction(amount, answer(9)), "Choose", "an option that is not in the question");
 });
 
 test("showing a card in hand reads in the log", () => {
@@ -228,8 +206,4 @@ test("freezing and thawing, and the new actions, read in plain words", () => {
   assert.match(describeEvent(ctx, { kind: "freeze", player: 0, lane: 1 }), /lane 2 Landscape is frozen/);
   assert.match(describeEvent(ctx, { kind: "thaw", player: 0, lane: 1 }), /lane 2 Landscape thaws/);
   assert.match(describeAction(ctx, { kind: "thaw", lane: 3, card: 10 }), /remove the frozen token from your lane 4 Landscape/);
-  const move = { ...ctx.view, choice: { player: 0, kind: "move", card: "pup", lane: 0, lanes: [1, 2], move_side: 0 } };
-  assert.match(describeAction({ ...ctx, view: move }, { kind: "choose", lane: 2 }), /to lane 3$/);
-  const theirs = { ...move, choice: { ...move.choice, move_side: 1 } };
-  assert.match(describeAction({ ...ctx, view: theirs }, { kind: "choose", lane: 2 }), /to lane 3 on the opponent's side/);
 });

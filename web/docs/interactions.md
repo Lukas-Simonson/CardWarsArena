@@ -43,7 +43,7 @@ are about to add a new pop-up, a new button colour or a new word for "skip", sto
 ## Where a question is asked
 
 A card asks for things in two moments: **up front**, as it is played or used (its *targets*, chosen together with the
-action), and **mid-effect**, when the engine stops to ask (a *choice*: `State.Choice` in the engine, `choice` in the
+action), and **mid-effect**, when the engine stops to ask (a *question*: `State.Choice` in the engine, `question` in the
 view). The rules below apply to both.
 
 - **W1. A question that names a board object is answered by clicking the board.** The board objects are: a card in play
@@ -184,6 +184,7 @@ Decisions, who made them, when, and why. Add a line for each change to this guid
 | 2026-11-21 | **Work is tracked by one sub-issue per phase under #88** (#107 guide and audit, #108 components, #109 self-describing choices, #110 gallery, tests and checklist), each with its own small pull requests and a design note on the issue before it starts. | Each phase can be reviewed on its own. |
 | 2026-11-21 | **An option's result is shown where the client already knows it** (damage, heal, move, cost), not everywhere (A5). | Computing every result in the server is large; most of the benefit is in the cheap cases. |
 | 2026-11-21 | **When the engine describes questions generically (phase 3), the old choice kinds are replaced outright in the same release.** | The client and server ship together and the protocol has no stability promise. Keeping both invites drift. |
+| 2026-11-22 | **3b: the client draws the server's `question`; `choose` takes only `option`.** | The 15-way branch in the client and the `choice` view fields are gone. A new question needs no client code: its options carry a `ref`, `card` or `label`, and the surface follows from `answer`. A `choose` with no `option` is refused (`option_required`). |
 | 2026-11-21 | **The words for skip, cancel, confirm, done and close, and the button roles, are those in V and B above.** Proposed in the first draft of this guide, to be confirmed in review. | They match how the game already uses most of them; the audit lists the exceptions. |
 
 ## Checklist for a new or changed interaction
@@ -214,11 +215,11 @@ For orientation; this is also where a rule is enforced.
 | The legal actions become clicks | `web/js/picker.js` | `ActionPicker` turns the server's legal actions into tokens (`lane:2:creature`, `discard_card:1:42`, `creature:0:1\|mode:0`), remembers the selection, and says what to ask next. Pure; tested in `web/test/picker.test.mjs`. |
 | What the prompt bar says | `web/js/prompt.js` | `buildPrompt` words the guidance, Skip, Cancel and Confirm from the picker. Pure. |
 | Words for actions and cards | `web/js/describe.js` | `describeAction`, `summaryText`, `slotFilled`, `describeRef`: the sentences. |
-| The question | `web/js/question.js` | **The shared question model** (source, sentence, options, skip, cancel, confirm, surface), `ROLE_CLASS` (the one place a button role gets its class), `boardPicks` and `handPicks` on a question (the board objects and hand cards that answer it when clicked), `CHOICE_SURFACE` (which surface each engine choice kind uses; a kind not listed is still a hand-built pop-up), and `fromPrompt` / `fromChoice`, which make a question from the board prompt or an engine choice. Pure; tested in `web/test/question.test.mjs`. |
+| The question | `web/js/question.js` | **The shared question model** (source, sentence, options, skip, cancel, confirm, surface), `ROLE_CLASS` (the one place a button role gets its class), `boardPicks` and `handPicks` on a question (the board objects and hand cards that answer it when clicked), and `fromPrompt` / `fromQuestion` / `fromMulligan`, which make a question from the board prompt, the server's `question` (every option sorted by its `ref`, `card` or `label`, so there is no code per kind of choice) or the opening hand. `describe.js` has `words`, which words a message key and its parameters. Pure; tested in `web/test/question.test.mjs`. |
 | Drawing a question | `web/js/questionui.js` | `questionBar` (the bar above the hand) and `questionPopup` (a pop-up of cards): the same parts in the same order, 44 px buttons, one spacing variable. |
-| The board and its prompt bar | `web/js/render.js` | The battlefield, the hand, `promptBar` (draws the board prompt or a short choice through `questionBar`), and the pop-up of a choice that needs one (`questionPopup`); there is no hand-built pop-up left, since every engine choice is drawn from its question (see `CHOICE_SURFACE`). |
+| The board and its prompt bar | `web/js/render.js` | The battlefield, the hand, `promptBar` (draws the board prompt or the server's question through `questionBar`), and the pop-up of a question answered with cards (`questionPopup`). |
 | The pile viewer | `web/js/render.js` (`pileModal`) | Both discard piles when the card may take from either. |
 | Button and modal styles | `web/css/style.css` | `btn-*`, `.modal*`, `.chip`, and the shared question (`.qbar`, `.qopts`, `.qsource`, `.qopt`, `--btn-gap`). |
 | The strings | `web/locales/en.json` | Every sentence; checked by `npm run i18n`. |
-| The engine's questions | `server/internal/engine/choice.go`, `server/docs/effects.md` | The choice kinds, and how a card's effect becomes a question (targets, `group`, `optional`, `requires`, `skip_label`, `together`). |
-| The wire format | `server/docs/protocol.md` | The `choice` in the view and the legal actions that answer it. |
+| The engine's questions | `server/internal/engine/choice.go`, `server/docs/effects.md` | How a card's effect becomes a question (targets, `group`, `optional`, `requires`, `skip_label`, `together`). |
+| The wire format | `server/docs/protocol.md` | The `question` in the view and the `choose` actions that answer it. |

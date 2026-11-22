@@ -82,9 +82,26 @@ export async function usage() {
   return { keys: [...keys].filter(Boolean), prefixes: [...prefixes], literals: [...literals] };
 }
 
+/**
+ * The message keys the server sends in a question (engine/question.go: "question.discard", "skip.none"):
+ * the client words them from the catalogue, so they count as used, and each must have a message.
+ */
+export async function serverKeys(dir = join(WEB, "..", "server", "internal", "engine")) {
+  const found = new Set();
+  for (const f of (await files(dir, [".go"])).filter((f) => !f.endsWith("_test.go"))) {
+    const code = await readFile(f, "utf8");
+    // every string that is a question message (a key can sit in a variable before it is sent)
+    for (const m of code.matchAll(/"((?:question|skip)\.[a-z0-9_.]+)"/g)) found.add(m[1]);
+  }
+  return [...found].sort();
+}
+
 /** Keys the code asks for that English lacks, and English keys nothing refers to. */
 export async function keyUse(en) {
-  const { keys, prefixes, literals } = await usage();
+  const usedByCode = await usage();
+  const sent = await serverKeys();
+  const { prefixes, literals } = usedByCode;
+  const keys = [...usedByCode.keys, ...sent];
   const used = new Set([...keys, ...literals, ...[...keys, ...literals].map((k) => `${k}_inline`)]); // "x" also has an "x_inline" form (the prompts)
   const undefinedKeys = keys.filter((k) => !(k in en)).sort();
   const unused = Object.keys(en).filter((k) => !used.has(k) && !prefixes.some((p) => k.startsWith(p)) && !k.startsWith("label.")).sort();

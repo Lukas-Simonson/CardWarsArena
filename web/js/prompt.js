@@ -18,10 +18,10 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
   const v = ctx.view;
   if (!v) return out;
   if (v.over) return { ...out, text: t("prompt.game_over") };
-  if (v.choice) {
-    const by = cardName(ctx, v.choice.card);
+  if (v.question) {
+    const by = cardName(ctx, v.question.card);
     if (myDecision) return { ...out, text: t("prompt.choice_mine", { name: by }) };
-    return { ...out, text: t("prompt.choice_theirs", { who: seatName(ctx, v.choice.player), name: by }) };
+    return { ...out, text: t("prompt.choice_theirs", { who: seatName(ctx, v.question.player), name: by }) };
   }
   if (!myDecision) {
     const who = fmtList(v.awaiting.map((s) => (s === v.you ? t("prompt.you") : seatName(ctx, s))));

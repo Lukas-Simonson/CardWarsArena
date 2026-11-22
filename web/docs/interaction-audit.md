@@ -51,7 +51,7 @@ puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those o
 
 Which cards ask each kind (from the card data):
 
-| Choice kind | Cards that ask it |
+| Kind of question (the engine's name for it; the client draws all of them the same way) | Cards that ask it |
 |---|---|
 | `discard` | Abraca Amadeus, Bone Wand, Drained Cleric, Fiddling Ferret, Frosty Frolic, Glorious Gramophone, Jinxed Parrotrooper, Mace Stump, Night Tower, Skeletal Hand, Unicyclops |
 | `ransom` | Blood Bath, Bums Away! |

@@ -39,7 +39,8 @@ export function learnCards(known, view) {
     }
   }
   add(view.pending);
-  (view.choice?.revealed ?? []).forEach(add);
+  (view.question?.options ?? []).forEach((o) => o.card && add(o.card)); // the cards a question shows
+  add(view.question?.subject);
   return out;
 }
 

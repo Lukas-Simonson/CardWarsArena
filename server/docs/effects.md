@@ -198,7 +198,9 @@ respect that, so a silenced Husker Knight is a 0/0 and dies.
 Most targets are chosen up front, with the action. A few cards need a decision
 from a player *during* resolution, and possibly from the other player. They open a
 **Choice** (`State.Choice`; further ones wait in `State.Queue`), which stops the game
-until it is answered, with `choose` actions from the player who decides:
+until it is answered, with `choose` actions from the player who decides. The engine describes every Choice as a
+**question** (`question.go`: words as a message key and params, and options with a `ref`, `card` or `label`), which is what
+the view sends and what a player answers with `{choose, option}`; see `protocol.md`, "Questions". The kinds:
 
 - `discard_choice` (`who`, `amount`): that player picks the cards to discard from their hand.
   If they would discard their whole hand there is nothing to choose, and it just happens.

@@ -65,7 +65,7 @@ async function playOne(n) {
     const v = state.view;
     if (!v || v.over || !(v.awaiting.includes(v.you) && v.legal.length)) return;
     const a = chooseByClicking(v, { view: v, cards, names: state.names, known: state.known }, n);
-    if (v.choice) choicesAnswered++;
+    if (v.question) choicesAnswered++;
     conn.send({ type: "action", action: a, seq: state.seq });
   };
   const conn = new Connection({
