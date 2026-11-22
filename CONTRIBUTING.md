@@ -96,6 +96,9 @@ the code; `npm test` fails on text that looks hard-coded. When a server change a
   `web/locales/en.json` through `t()`, never written into the code (see Translating). Logic that can be pure (reducers,
   planning, text) goes in its own module with a test in `web/test`. The look follows the project's design (wood, felt
   and steel, Luckiest Guy and Patrick Hand), so match what is there.
+- **Card interactions:** how a card asks the player something (a board click or a pop-up, the wording, the button
+  colours) is decided in [`web/docs/interactions.md`](web/docs/interactions.md). Follow its checklist when a card adds or
+  changes a question, and update [the audit](web/docs/interaction-audit.md).
 
 ### Card data
 
