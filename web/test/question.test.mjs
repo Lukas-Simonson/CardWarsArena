@@ -161,5 +161,18 @@ test("the mulligan is two buttons on the bar: Keep (commit) and Mulligan (a plai
 });
 
 test("every choice kind on the bar or the pop-up is listed, so a new one has to be placed", () => {
-  assert.deepEqual(Object.keys(CHOICE_SURFACE).sort(), ["amount", "camel", "discard", "landscape", "move_damage", "ransom", "rebound", "reveal", "search", "upkeep"]);
+  assert.deepEqual(Object.keys(CHOICE_SURFACE).sort(), ["amount", "camel", "discard", "landscape", "move_damage", "place", "ransom", "rebound", "reveal", "search", "upkeep"]);
+});
+
+// A Lane is a board object (W1): Deforestation's second step is a click on the board, with the sentence on the bar.
+test("choosing the Lane for a searched Building is a click on the board, one pick for each lane", () => {
+  const legal = [0, 1, 2, 3].map((lane) => ({ kind: "choose", lane }));
+  const q = fromChoice(ctx, { kind: "place", card: "cool-dog", player: 0, lanes: [0, 1, 2, 3], revealed: [{ uid: 5, card: "blood-fortress", owner: 0 }] }, legal, true);
+  assert.equal(q.surface, "bar");
+  assert.equal(q.source.name, "Cool Dog");
+  assert.equal(q.subject.name, "Blood Fortress", "the Building being placed is shown");
+  assert.match(q.text, /Blood Fortress/);
+  assert.deepEqual(q.options, [], "nothing to press: the lanes are the answer");
+  assert.deepEqual(Object.keys(q.boardPicks), ["place:0", "place:1", "place:2", "place:3"]);
+  assert.deepEqual(q.boardPicks["place:2"], { type: "action", action: legal[2] });
 });

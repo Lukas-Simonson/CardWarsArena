@@ -625,9 +625,7 @@ func (g *Game) runOps(ops []card.Op, c effCtx, given [][]TargetRef) []Event {
 				}
 			}
 		case "search_building":
-			if refs := slotRefs(op.Slot, given); len(refs) == 1 {
-				g.searchBuilding(c.p, refs[0].Lane, c)
-			}
+			g.searchBuilding(c.p, c)
 		case "move_damage":
 			from, to := slotRefs(op.Slot, given), slotRefs(op.Slot2, given)
 			if len(from) == 1 && len(to) == 1 && from[0].Player == c.p && to[0].Player == c.p {
@@ -869,7 +867,7 @@ func (g *Game) inDiscard(p PlayerID, uid int) (Instance, bool) {
 
 // searchBuilding (Deforestation) lets p pick a Building from their deck to put
 // into play in a Lane. The deck is shuffled afterwards, even if there was none.
-func (g *Game) searchBuilding(p PlayerID, lane int, c effCtx) {
+func (g *Game) searchBuilding(p PlayerID, c effCtx) {
 	pl := &g.State.Players[p]
 	var found []Instance
 	for _, in := range pl.Deck {
@@ -881,7 +879,7 @@ func (g *Game) searchBuilding(p PlayerID, lane int, c effCtx) {
 		g.shuffle(pl.Deck)
 		return
 	}
-	g.ask(Choice{Player: p, Kind: ChoiceSearch, Card: c.cardID(), Lane: lane, Revealed: found})
+	g.ask(Choice{Player: p, Kind: ChoiceSearch, Card: c.cardID(), Revealed: found})
 }
 
 // startMoveDamage (Friendship Bracelet) moves damage from p's Creature in

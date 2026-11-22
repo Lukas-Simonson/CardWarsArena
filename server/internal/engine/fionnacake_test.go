@@ -366,9 +366,10 @@ func TestDeforestationExhaustsACreatureAndSearchesForABuilding(t *testing.T) {
 	pl.Deck = append(pl.Deck, g.newInstance("oil-refinery", 1), g.newInstance("farmhouse", 1))
 	uid := g.give(1, "deforestation")
 	deck := len(pl.Deck)
-	// A Creature must be exhausted to pay for it.
-	g.mustFail(t, 1, Action{Kind: ActPlayCard, Card: uid, Targets: [][]TargetRef{{laneRef(1, 2)}}}, ErrBadTarget)
-	g.must(t, 1, Action{Kind: ActPlayCard, Card: uid, CostTargets: [][]TargetRef{{crRef(1, 0)}}, Targets: [][]TargetRef{{laneRef(1, 2)}}})
+	// A Creature must be exhausted to pay for it, and the Lane is not chosen yet: the card comes first.
+	g.mustFail(t, 1, Action{Kind: ActPlayCard, Card: uid}, ErrBadTarget)
+	g.mustFail(t, 1, Action{Kind: ActPlayCard, Card: uid, CostTargets: [][]TargetRef{{crRef(1, 0)}}, Targets: [][]TargetRef{{laneRef(1, 2)}}}, ErrBadTarget)
+	g.must(t, 1, Action{Kind: ActPlayCard, Card: uid, CostTargets: [][]TargetRef{{crRef(1, 0)}}})
 	if pony.Status != Flooped {
 		t.Errorf("Pony is %s", pony.Status)
 	}
@@ -384,11 +385,44 @@ func TestDeforestationExhaustsACreatureAndSearchesForABuilding(t *testing.T) {
 	pick := ch.Revealed[0]
 	g.mustFail(t, 1, Action{Kind: ActChoose, Card: 9999}, ErrNoSuchCard)
 	g.must(t, 1, Action{Kind: ActChoose, Card: pick.UID})
+	// Then the Lane: the Building waits, out of the deck, while it is chosen.
+	ch = g.State.Choice
+	if ch == nil || ch.Kind != ChoicePlace || len(ch.Revealed) != 1 || ch.Revealed[0].UID != pick.UID || len(ch.Lanes) != NumLanes {
+		t.Fatalf("after picking the card the game should ask for a Lane: %+v", ch)
+	}
+	if len(pl.Deck) != deck-1 {
+		t.Errorf("deck %d (was %d): the Building left it", len(pl.Deck), deck)
+	}
+	if len(g.LegalActions(1)) != NumLanes {
+		t.Errorf("legal actions %v", g.LegalActions(1))
+	}
+	g.mustFail(t, 1, Action{Kind: ActChoose, Lane: 9}, ErrBadLane)
+	g.must(t, 1, Action{Kind: ActChoose, Lane: 2})
 	if b := pl.Lanes[2].Building; b == nil || b.UID != pick.UID {
 		t.Errorf("Lane 2 has %v", pl.Lanes[2].Building)
 	}
-	if len(pl.Deck) != deck-1 || g.State.Choice != nil {
-		t.Errorf("deck %d (was %d)", len(pl.Deck), deck)
+	if g.State.Choice != nil {
+		t.Errorf("choice still open: %+v", g.State.Choice)
+	}
+}
+
+func TestDeforestationLaneMayHoldABuildingAlready(t *testing.T) {
+	g := fcGame(t)
+	g.State.ActionsLeft = 2
+	g.put(1, 0, "pony")
+	g.State.Players[1].Deck = append(g.State.Players[1].Deck, g.newInstance("oil-refinery", 1))
+	old := g.building(1, 3, "farmhouse")
+	uid := g.give(1, "deforestation")
+	g.must(t, 1, Action{Kind: ActPlayCard, Card: uid, CostTargets: [][]TargetRef{{crRef(1, 0)}}})
+	for _, in := range g.State.Choice.Revealed {
+		if in.CardID == "oil-refinery" {
+			g.must(t, 1, Action{Kind: ActChoose, Card: in.UID})
+			break
+		}
+	}
+	g.must(t, 1, Action{Kind: ActChoose, Lane: 3})
+	if b := g.State.Players[1].Lanes[3].Building; b == nil || b == old || b.CardID != "oil-refinery" {
+		t.Errorf("Lane 3 has %v", g.State.Players[1].Lanes[3].Building)
 	}
 }
 
@@ -399,7 +433,7 @@ func TestDeforestationWithNoBuildingLeftInTheDeckJustShuffles(t *testing.T) {
 	pl := &g.State.Players[1]
 	pl.Deck = slicesDeleteBuildings(g, pl.Deck)
 	uid := g.give(1, "deforestation")
-	g.must(t, 1, Action{Kind: ActPlayCard, Card: uid, CostTargets: [][]TargetRef{{crRef(1, 0)}}, Targets: [][]TargetRef{{laneRef(1, 2)}}})
+	g.must(t, 1, Action{Kind: ActPlayCard, Card: uid, CostTargets: [][]TargetRef{{crRef(1, 0)}}})
 	if g.State.Choice != nil || pl.Lanes[2].Building != nil {
 		t.Errorf("choice %+v building %v", g.State.Choice, pl.Lanes[2].Building)
 	}

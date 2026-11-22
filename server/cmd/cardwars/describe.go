@@ -156,7 +156,9 @@ func (u *ui) action(me engine.PlayerID, a engine.Action) string {
 		case engine.ChoiceReveal:
 			return "Put " + u.instName(a.Card) + " on the bottom of the deck"
 		case engine.ChoiceSearch:
-			return "Put " + u.instName(a.Card) + " into play from the deck"
+			return "Take " + u.instName(a.Card) + " from the deck"
+		case engine.ChoicePlace:
+			return fmt.Sprintf("Put %s into play in lane %d", u.instName(ch.Revealed[0].UID), a.Lane+1)
 		case engine.ChoiceRebound:
 			if a.Card == 0 {
 				return "Leave " + u.g.Catalog()[ch.Card].Name + " in the discard pile"

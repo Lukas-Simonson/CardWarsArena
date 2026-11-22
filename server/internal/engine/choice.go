@@ -84,6 +84,10 @@ func (g *Game) validateChoice(p PlayerID, a Action) error {
 			}
 		}
 		return ErrNoSuchCard
+	case ChoicePlace:
+		if !slices.Contains(ch.Lanes, a.Lane) {
+			return ErrBadLane
+		}
 	case ChoiceRebound:
 		if a.Card != 0 && g.handIndex(p, a.Card) < 0 {
 			return ErrNoSuchCard
@@ -168,15 +172,18 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 			return ev // more to discard: the same Choice stays open
 		}
 	case ChoiceSearch:
+		// The Building is taken out of the deck, then its Lane is chosen (ChoicePlace), and the deck is shuffled.
 		pl := &g.State.Players[p]
 		for i, in := range pl.Deck {
 			if in.UID == a.Card {
 				pl.Deck = append(pl.Deck[:i:i], pl.Deck[i+1:]...)
-				ev = g.putBuilding(p, in, ch.Lane)
+				g.ask(Choice{Player: p, Kind: ChoicePlace, Card: ch.Card, Revealed: []Instance{in}, Lanes: []int{0, 1, 2, 3}})
 				break
 			}
 		}
 		g.shuffle(pl.Deck)
+	case ChoicePlace:
+		ev = g.putBuilding(p, ch.Revealed[0], a.Lane)
 	case ChoiceRebound:
 		if a.Card == 0 {
 			break
@@ -266,6 +273,10 @@ func (g *Game) choiceActions(p PlayerID) []Action {
 	case ChoiceReveal, ChoiceSearch:
 		for _, in := range ch.Revealed {
 			out = append(out, Action{Kind: ActChoose, Card: in.UID})
+		}
+	case ChoicePlace:
+		for _, lane := range ch.Lanes {
+			out = append(out, Action{Kind: ActChoose, Lane: lane})
 		}
 	case ChoiceRebound:
 		for _, in := range g.State.Players[p].Hand {

@@ -45,11 +45,14 @@ export function renderGame(root, model, on) {
   const myDecision = isMyDecision(state);
   const srcs = myDecision ? sources(legal) : {};
   const picker = ui.picker;
-  const tokens = new Set(picker && !ui.awaitingKind ? picker.options().tokens : []);
-  const prompt = buildPrompt(ctx, myDecision, ui.source, picker, ui.awaitingKind);
-  const srcCard = sourceCard(ctx, ui.source);
   // A mid-effect choice that is on the shared question is asked on the bar or in a pop-up (see question.js).
   const asked = fromChoice(ctx, v.choice, legal, myDecision) ?? fromMulligan(ctx, legal, myDecision);
+  // The board objects such a question can be answered with are highlighted like targets, and a click runs their answer.
+  const boardPicks = asked?.boardPicks ?? {};
+  const tokens = new Set([...(picker && !ui.awaitingKind ? picker.options().tokens : []), ...Object.keys(boardPicks)]);
+  if (Object.keys(boardPicks).length) on = { ...on, onToken: (token) => (boardPicks[token] ? run(boardPicks[token], on) : on.onToken(token)) };
+  const prompt = buildPrompt(ctx, myDecision, ui.source, picker, ui.awaitingKind);
+  const srcCard = sourceCard(ctx, ui.source);
   const model2 = { ctx, me, opp, legal, myDecision, srcs, tokens, ui, srcCard, prompt, asked };
 
   root.replaceChildren(h("div", { class: "table" },
@@ -217,6 +220,7 @@ function tile(m, seat, i, on) {
 
   const pickToken = [
     ...(mine && srcCard && srcCard.type !== "building" ? [`dest:${i}`] : []),
+    ...(mine ? [`place:${i}`] : []),
     `creature:${seat}:${i}`, `lane:${seat}:${i}`, `landscape:${seat}:${i}`,
   ].find((t) => has(m, t));
   const selectable = mine && srcs[key];
@@ -253,7 +257,7 @@ function buildingStrip(m, seat, i, on) {
   const b = ctx.view.players[seat].lanes[i].building;
   const extra = ctx.view.players[seat].lanes[i].extra ?? [];
   const key = `lane:${i}:building`;
-  const pickToken = [...(mine && srcCard?.type === "building" ? [`dest:${i}`] : []), `building:${seat}:${i}`].find((t) => has(m, t));
+  const pickToken = [...(mine && srcCard?.type === "building" ? [`dest:${i}`] : []), ...(mine ? [`place:${i}`] : []), `building:${seat}:${i}`].find((t) => has(m, t));
   const selectable = mine && srcs[key];
   const classes = ["strip", mine ? "mine" : "theirs", b ? "" : "empty"];
   if (pickToken) classes.push("pick", mine ? "" : "foe");

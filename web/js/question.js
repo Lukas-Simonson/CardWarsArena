@@ -10,6 +10,8 @@
 //     cancel: { label, act } | null,     V2: back out of the whole card (the board prompt only)
 //     confirm: { label, act } | null,    A6, V3
 //     subject: card | null,              a second card the question is about (the card leaving play, for a Camel)
+//     boardPicks: { token: act },        W1: the board objects that answer the question when clicked (`place:2` is the Lane
+//                                        2 of mine); the board highlights them
 //     handPicks: { uid: act },           W2: the cards in the hand that answer the question when clicked
 //     surface: "bar" | "popup" }         W3, W4
 //
@@ -35,6 +37,8 @@ export const CHOICE_SURFACE = {
   // Short decisions that are not about a thing on the table are buttons in the bar (W3); a search of the deck shows
   // cards that are not on the table (W4).
   move_damage: SURFACE.bar, camel: SURFACE.bar, landscape: SURFACE.bar, search: SURFACE.popup,
+  // A Lane is a board object: it is a click on the board, with the sentence on the bar (W1).
+  place: SURFACE.bar,
 };
 
 /** Do what an option's `act` says, with the handlers `on`. */
@@ -77,7 +81,7 @@ export function fromPrompt(prompt, card) {
 export function fromChoice(ctx, choice, legal, mine) {
   if (!choice || !mine || !CHOICE_SURFACE[choice.kind] || ctx.view?.over) return null;
   const answers = legal.filter((a) => a.kind === "choose");
-  const base = { source: source(ctx, choice.card), skip: null, cancel: null, confirm: null, handPicks: {}, subject: null, surface: CHOICE_SURFACE[choice.kind] };
+  const base = { source: source(ctx, choice.card), skip: null, cancel: null, confirm: null, handPicks: {}, boardPicks: {}, subject: null, surface: CHOICE_SURFACE[choice.kind] };
   const name = cardName(ctx, choice.card);
   const act = (a) => ({ type: "action", action: a });
   // Each card of the hand that answers (an answer with a card), and the answer that has none (decline or take it).
@@ -102,6 +106,14 @@ export function fromChoice(ctx, choice, legal, mine) {
           return action ? [{ label: cardName(ctx, inst.card), role: "choice", card: ctx.cards?.[inst.card] ?? { id: inst.card, name: inst.card }, act: act(action) }] : [];
         }),
       };
+    case "place": { // Deforestation, after the card is chosen: the Lane to put the Building in (W1: click your board)
+      const building = choice.revealed?.[0];
+      return {
+        ...base, subject: building ? ctx.cards?.[building.card] ?? { id: building.card, name: building.card } : null,
+        text: t("question.place", { name: building ? cardName(ctx, building.card) : "" }),
+        options: [], boardPicks: Object.fromEntries(answers.filter((a) => a.lane != null).map((a) => [`place:${a.lane}`, act(a)])),
+      };
+    }
     case "move_damage": { // Friendship Bracelet: how much damage to move between two of your Creatures, with the result of each
       const mine = ctx.view.players[ctx.view.you].lanes;
       const from = mine[choice.lane]?.creature, to = mine[choice.other]?.creature;
@@ -148,7 +160,7 @@ export function fromMulligan(ctx, legal, mine) {
   const keep = legal.find((a) => a.kind === "keep_hand"), mulligan = legal.find((a) => a.kind === "mulligan");
   if (!keep) return null;
   return {
-    source: null, subject: null, text: t("prompt.mulligan"), handPicks: {}, skip: null, cancel: null, confirm: null, surface: SURFACE.bar,
+    source: null, subject: null, text: t("prompt.mulligan"), handPicks: {}, boardPicks: {}, skip: null, cancel: null, confirm: null, surface: SURFACE.bar,
     options: [
       { label: t("mull.keep"), role: "commit", act: { type: "action", action: keep } },
       ...(mulligan ? [{ label: t("mull.mulligan"), role: "choice", act: { type: "action", action: mulligan } }] : []),
