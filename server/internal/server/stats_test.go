@@ -137,9 +137,12 @@ func TestStatsEndpointAndNothingPersonalInIt(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer res.Body.Close()
-	var got statsAnswer
-	if res.StatusCode != 200 || json.NewDecoder(res.Body).Decode(&got) != nil || got.Counts["games_completed"] != 1 || got.Kept {
+	var got stats.Report
+	if res.StatusCode != 200 || json.NewDecoder(res.Body).Decode(&got) != nil || got.V != stats.Version || got.Games.Completed.Total != 1 || got.Games.Completed.Bot != 1 || got.Kept {
 		t.Fatalf("GET /api/stats: %d %+v", res.StatusCode, got)
+	}
+	if len(got.Cards.Played) == 0 {
+		t.Error("no per-card counts in the answer")
 	}
 	// every name is a kind of thing counted, never a person, a room or a game
 	for k := range c.Totals() {

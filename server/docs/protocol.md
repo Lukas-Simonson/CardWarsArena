@@ -23,7 +23,7 @@ Plain HTTP endpoints:
 | path | |
 |---|---|
 | `GET /api/bots` | `{"default":"heuristic","bots":["heuristic","random"]}`: the bots `create` may ask for |
-| `GET /api/stats` | `{"kept":true,"counts":{"games_completed":120,"cards_played.creature":2411,…}}`: shared totals for the whole site, nothing per player. `kept` says whether they survive a restart (the server has a database). A name is a kind of thing counted (`games_started`, `games_started.bot`, `games_completed`, `games_abandoned`, `bot_wins`, `bot_wins.<bot>`, `player_wins`, `cards_played.<type>`, `card_played.<card id>`, `floops`, `fights`, `damage_dealt`, `creatures_destroyed`, `hero_abilities`, `deck_started.<hero or custom>`, `deck_won.<hero or custom>`); a name that has not happened yet is absent. Public, read-only, cached for 5 s. `404` (`stats_off`) when the server runs with `-stats=false`. Games on a `-dev` server are not counted |
+| `GET /api/stats` | shared totals for the whole site, nothing per player: see [Statistics](#statistics). Public, read-only, cached for 5 s. `404` (`stats_off`) when the server runs with `-stats=false` |
 | `GET /api/feedback` | `{"enabled":true,"links":[{"id":"bug","label":"Report a bug","url":"https://…"}]}`: the links the home screen shows. `enabled` is false, and `links` empty, unless the server runs with `-feedback` |
 | `GET /api/decks` | decks: `set`, `name`, `owner`, `size`, `cards` (ids, one per copy), `landscapes`, `hero` (card id), `playable`. `?lang=<tag>` adds `title`, `owner_title` and `set_title` in that language where the card data has them; `name` and `set` stay English and are the deck's identity |
 | `GET /api/cards` | every card: printed fields (`id`, `name`, `type`, `landscape`, `cost`, `attack`, `defense`, `text`, `image_url`) and `modeled`. `?lang=<tag>` gives `name`, `text`, `notes`, `clarification` and `image_url` in that language where the card data has them (`fr-CA` falls back to `fr`, then English), with `name_en` when the name differs. The answer has `Content-Language`. See [localization.md](localization.md) |
@@ -252,6 +252,42 @@ Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
 `discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `burn` (a burn token went onto the Creature `card` in `lane`, or onto the player `player` when `card` is 0), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`, or underneath the Creature that replaced it when it has Gobble) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
 animation and the game log only: the view is always authoritative.
+
+## Statistics
+
+`GET /api/stats` answers with the shared totals, grouped by topic. Nothing in it is about a person, a room or a game, and
+games on a `-dev` server are not counted. The totals have a fixed shape (a counter that has not happened yet is `0`);
+what grows with the game (per bot, per deck, per card) lists only what has happened. `v` is the version of the shape.
+
+```jsonc
+{
+  "v": 2,
+  "kept": true,                                  // whether the totals survive a restart (the server has a database)
+  "games": {
+    "started":   { "total": 140, "bot": 90, "person": 50 },
+    "completed": { "total": 120, "bot": 80, "person": 40 },   // reached a winner
+    "abandoned": 20                              // a player left, or the room closed, before a winner
+  },
+  "results": {
+    "player_wins": 75,                           // games against the bot that the player won
+    "bot_wins": { "total": 45, "by_bot": { "heuristic": 31, "random": 14 } }
+  },
+  "plays": {
+    "cards": { "total": 3800, "by_type": { "creature": 2411, "spell": 900, "building": 489 } },
+    "floops": 903, "fights": 1500, "hero_abilities": 210
+  },
+  "combat": { "damage_dealt": 21000, "creatures_destroyed": 2300 },   // damage to Creatures and to players
+  "decks": { "finn": { "started": 40, "won": 14 }, "custom": { "started": 22, "won": 10 } },   // by the starter deck's Hero
+  "cards": { "played": { "corn-dog": 87, "blue-candy": 64 } }   // how often each card was played, by id
+}
+```
+
+`cards` grows with the card pool, so it lists only the cards that have been played. The database keeps the counters under flat names such as
+`cards_played.creature`; the answer is built from them in `internal/stats/report.go`, which is also the one place a new stat
+is added to the grouping (after its counter name in `events.go`).
+
+Version 1 (a flat `counts` map of those dotted names, which only the home screen's footer line read, and that line is gone)
+is no longer served; there is no promise of a stable format between versions.
 
 ## Running
 
