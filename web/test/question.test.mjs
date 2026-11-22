@@ -61,6 +61,45 @@ test("a choice that is not mine, is over, or is not on the shared question yet a
   const choice = { kind: "amount", card: "cool-dog", player: 0, options: [1, 2] };
   assert.equal(fromChoice(ctx, choice, [], false), null);
   assert.equal(fromChoice({ ...ctx, view: { ...ctx.view, over: true } }, choice, [], true), null);
-  assert.equal(fromChoice(ctx, { kind: "discard", card: "cool-dog" }, [], true), null, "still a hand-built pop-up (audit: 2b)");
+  assert.equal(fromChoice(ctx, { kind: "camel", card: "cool-dog" }, [], true), null, "still a hand-built pop-up (audit: 2c)");
   assert.equal(fromChoice(ctx, null, [], true), null);
+});
+
+// Cards from your own hand are a click on the hand (W2), with the sentence and any decline on the bar.
+const handChoice = (kind, extra = {}) => ({ kind, card: "cool-dog", player: 0, ...extra });
+const hand = [{ kind: "choose", card: 10 }, { kind: "choose", card: 11 }];
+
+test("a discard is asked on the bar and answered by clicking the hand, and says how many are left", () => {
+  const q = fromChoice(ctx, handChoice("discard", { count: 2 }), hand, true);
+  assert.equal(q.surface, "bar");
+  assert.deepEqual(Object.keys(q.handPicks).sort(), ["10", "11"]);
+  assert.deepEqual(q.handPicks[11], { type: "action", action: hand[1] });
+  assert.deepEqual(q.options, [], "nothing else to press: the cards are the answer");
+  assert.match(q.text, /2 cards/);
+  assert.match(fromChoice(ctx, handChoice("discard", { count: 1 }), hand, true).text, /1 card\b/, "and one fewer after each pick");
+});
+
+test("ransom and upkeep put the other answer in a red button, and rebound in a neutral one", () => {
+  const none = { kind: "choose" };
+  const ransom = fromChoice(ctx, handChoice("ransom", { min_cost: 2 }), [...hand, none], true);
+  assert.equal(ransom.options.length, 1);
+  assert.equal(ransom.options[0].role, "danger");
+  assert.deepEqual(ransom.options[0].act, { type: "action", action: none });
+  assert.match(ransom.text, /cost 2 or more/);
+  assert.match(fromChoice(ctx, handChoice("ransom", { min_cost: 0 }), [...hand, none], true).text, /click a card in your hand/i);
+  const upkeep = fromChoice(ctx, handChoice("upkeep", { count: 2 }), [...hand, none], true);
+  assert.equal(upkeep.options[0].role, "danger");
+  assert.match(upkeep.options[0].label, /Destroy Cool Dog/);
+  const rebound = fromChoice(ctx, handChoice("rebound"), [...hand, none], true);
+  assert.deepEqual([rebound.options.length, rebound.skip.act.action], [0, none]);
+  assert.equal(Object.keys(rebound.handPicks).length, 2, "the cards are picks, the answer without a card is not");
+});
+
+test("with no answer that has no card, there is no decline button", () => {
+  assert.equal(fromChoice(ctx, handChoice("ransom"), hand, true).options.length, 0);
+  assert.equal(fromChoice(ctx, handChoice("rebound"), hand, true).skip, null);
+});
+
+test("the four hand choices are on the bar, never a pop-up (W2)", () => {
+  for (const kind of ["discard", "ransom", "upkeep", "rebound"]) assert.equal(CHOICE_SURFACE[kind], "bar", kind);
 });

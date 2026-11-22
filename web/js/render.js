@@ -3,7 +3,7 @@
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
 import { tokenChips } from "./tokens.js";
-import { fromPrompt, fromChoice, SURFACE } from "./question.js";
+import { fromPrompt, fromChoice, run, SURFACE } from "./question.js";
 import { questionBar, questionPopup } from "./questionui.js";
 import { APP_NAME } from "./brand.js";
 import { isCrowded, fanPose } from "./handlayout.js";
@@ -305,30 +305,13 @@ function choiceModal(m, on) {
       cardEl(c ?? { id: inst.card, name: inst.card }), h("span", { class: "cap" }, c?.name ?? inst.card));
   };
   let title, text, body;
-  if (ch.kind === "discard") {
-    title = t("modal.discard_title", { n: ch.count });
-    text = t("modal.discard_text", { name: by });
-    body = h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
-      const action = choose.find((a) => a.card === inst.uid);
-      return action && cardButton(inst, action);
-    }));
-  } else if (ch.kind === "search") {
+  if (ch.kind === "search") {
     title = by;
     text = t("modal.search_text");
     body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
-  } else if (ch.kind === "rebound") {
-    const keep = choose.find((a) => !a.card);
-    title = t("modal.rebound_title", { name: by });
-    text = t("modal.rebound_text", { name: by });
-    body = h("div", {},
-      h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
-        const action = choose.find((a) => a.card === inst.uid);
-        return action && cardButton(inst, action);
-      })),
-      keep && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(keep) }, t("modal.leave_it"))));
   } else if (ch.kind === "redirect") {
     const stay = choose.find((a) => !a.card);
     title = t("modal.redirect_title", { name: by });
@@ -385,26 +368,6 @@ function choiceModal(m, on) {
       h("div", { class: "modalrow modalrow2" }, choose.filter((a) => a.targets?.[0]?.length).map((a) =>
         h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, describeRef(ctx, a.targets[0][0])))),
       none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, t("modal.choose_nothing"))));
-  } else if (ch.kind === "ransom") {
-    const decline = choose.find((a) => !a.card);
-    title = t("modal.ransom_title", { name: by });
-    text = t("modal.ransom_text", { name: by, min: ch.min_cost ?? 0 });
-    body = h("div", {},
-      h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
-        const action = choose.find((a) => a.card === inst.uid);
-        return action && cardButton(inst, action);
-      })),
-      decline && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(decline) }, t("modal.take_it"))));
-  } else if (ch.kind === "upkeep") {
-    const destroy = choose.find((a) => !a.card);
-    title = t("modal.upkeep_title", { name: by });
-    text = t("modal.upkeep_text", { n: ch.count, name: by });
-    body = h("div", {},
-      h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
-        const action = choose.find((a) => a.card === inst.uid);
-        return action && cardButton(inst, action);
-      })),
-      destroy && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(destroy) }, t("modal.destroy", { name: by }))));
   } else {
     return null;
   }
@@ -478,7 +441,7 @@ function overlay(m, on) {
 // ---------- hand and actions
 
 function handSection(m, on) {
-  const { ctx, me, srcs, ui, tokens, legal, myDecision } = m;
+  const { ctx, me, srcs, ui, tokens, legal, myDecision, asked } = m;
   const v = ctx.view, p = v.players[me];
   const hand = p.hand ?? [];
   const n = hand.length;
@@ -487,7 +450,8 @@ function handSection(m, on) {
     const card = ctx.cards[inst.card];
     const key = `hand:${inst.uid}`;
     const token = `hand_card:${inst.uid}`;
-    const pick = tokens.has(token);
+    const handPick = asked?.handPicks?.[inst.uid]; // a card the mid-effect question lets me click (W2)
+    const pick = tokens.has(token) || !!handPick;
     const playable = !!srcs[key];
     const sel = ui.source === key;
     const pose = fanPose(k, n);
@@ -496,7 +460,7 @@ function handSection(m, on) {
     return h("button", {
       type: "button", class: cls, style: `transform:${xf}`, "data-uid": inst.uid, "aria-pressed": sel ? "true" : "false",
       "aria-label": t("hand.card_label", { name: card?.name ?? inst.card, cost: card?.cost ?? "?", playable: playable ? "yes" : "no" }),
-      onclick: () => (pick ? on.onToken(token) : playable ? on.onHand(inst.uid, inst.card) : on.onInspect(inst.card)),
+      onclick: () => (handPick ? run(handPick, on) : pick ? on.onToken(token) : playable ? on.onHand(inst.uid, inst.card) : on.onInspect(inst.card)),
       onmouseenter: () => on.onInspect(inst.card, true),
     }, cardEl(card));
   });

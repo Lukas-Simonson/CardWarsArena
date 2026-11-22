@@ -9,6 +9,7 @@
 //     skip: { label, act } | null,       A4: the last option, always neutral
 //     cancel: { label, act } | null,     V2: back out of the whole card (the board prompt only)
 //     confirm: { label, act } | null,    A6, V3
+//     handPicks: { uid: act },           W2: the cards in the hand that answer the question when clicked
 //     surface: "bar" | "popup" }         W3, W4
 //
 // `act` says what pressing does; run() turns it into a call on the handlers `on` that main.js gives the renderer.
@@ -26,7 +27,11 @@ export const SURFACE = { bar: "bar", popup: "popup" };
  * A new kind must be added here, with a reason from the guide: W3 for a short decision, W4 only for cards that are not
  * on the table.
  */
-export const CHOICE_SURFACE = { amount: SURFACE.bar, reveal: SURFACE.popup };
+export const CHOICE_SURFACE = {
+  amount: SURFACE.bar, reveal: SURFACE.popup,
+  // Cards from your own hand are a click on the hand, with the sentence and any decline on the bar (W2).
+  discard: SURFACE.bar, ransom: SURFACE.bar, upkeep: SURFACE.bar, rebound: SURFACE.bar,
+};
 
 /** Do what an option's `act` says, with the handlers `on`. */
 export function run(act, on) {
@@ -68,7 +73,12 @@ export function fromPrompt(prompt, card) {
 export function fromChoice(ctx, choice, legal, mine) {
   if (!choice || !mine || !CHOICE_SURFACE[choice.kind] || ctx.view?.over) return null;
   const answers = legal.filter((a) => a.kind === "choose");
-  const base = { source: source(ctx, choice.card), skip: null, cancel: null, confirm: null, surface: CHOICE_SURFACE[choice.kind] };
+  const base = { source: source(ctx, choice.card), skip: null, cancel: null, confirm: null, handPicks: {}, surface: CHOICE_SURFACE[choice.kind] };
+  const name = cardName(ctx, choice.card);
+  const act = (a) => ({ type: "action", action: a });
+  // Each card of the hand that answers (an answer with a card), and the answer that has none (decline or take it).
+  const handPicks = Object.fromEntries(answers.filter((a) => a.card).map((a) => [a.card, act(a)]));
+  const noCard = answers.find((a) => !a.card);
   switch (choice.kind) {
     case "amount": // The Big Hen House: how much damage (W3)
       return { ...base, text: t("question.amount", { options: (choice.options ?? []).map(String) }), options: answers.map((a) => ({ label: String(a.card), role: "choice", act: { type: "action", action: a } })) };
@@ -80,6 +90,14 @@ export function fromChoice(ctx, choice, legal, mine) {
           return action ? [{ label: cardName(ctx, inst.card), role: "choice", card: ctx.cards?.[inst.card] ?? { id: inst.card, name: inst.card }, act: { type: "action", action } }] : [];
         }),
       };
+    case "discard": // pick N cards of your hand to discard (the count goes down as they are chosen)
+      return { ...base, text: t("question.discard", { n: choice.count ?? 1 }), options: [], handPicks };
+    case "ransom": // discard a card of at least a cost, or take what the card says (Blood Bath, Bums Away!)
+      return { ...base, text: t("question.ransom", { min: choice.min_cost ?? 0 }), handPicks, options: noCard ? [{ label: t("question.take_it"), role: "danger", act: act(noCard) }] : [] };
+    case "upkeep": // Steakchop: discard cards, or destroy it
+      return { ...base, text: t("question.upkeep", { n: choice.count ?? 1, name }), handPicks, options: noCard ? [{ label: t("question.destroy", { name }), role: "danger", act: act(noCard) }] : [] };
+    case "rebound": // Impossible Possum: discard a card to return it, or leave it in the discard pile
+      return { ...base, text: t("question.rebound", { name }), handPicks, skip: noCard ? { label: t("question.leave_it"), act: act(noCard) } : null, options: [] };
   }
   return null;
 }
