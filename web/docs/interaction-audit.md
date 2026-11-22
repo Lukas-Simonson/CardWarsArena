@@ -16,7 +16,7 @@ the fixes come from: each deviation has an ID (D1, D2...) and the phase of the
 - **117** card interactions choose something (targets chosen up front or by a trigger), in **44** different shapes.
   The board-click flow handles all of them except the five cards whose trigger asks mid-effect (see D6).
 - **14** kinds of mid-effect engine choice, each a hand-built pop-up in `choiceModal` (#88 counted thirteen; `defend` was
-  added since). **By the guide only 2 of the 14 should be pop-ups** (`reveal` and `search`, which show cards that are not
+  added since). **By the guide only 2 of the 14 should be pop-ups** (as of step 2a, `amount` is on the bar and `reveal` on the shared card pop-up; the board prompt bar also shows the asking card) (`reveal` and `search`, which show cards that are not
   on the table). Four are board clicks, four are a click on your hand, and four are buttons in the bar (see section 1).
 - **Buttons** in `render.js`: purple 13, steel 13, red 5, green 4, ice 1, with no stated rule until
   [the guide](interactions.md#button-roles).
@@ -35,7 +35,7 @@ puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those o
 | `ransom` | Discard a card of at least a cost, **or** take the effect | Pop-up: hand cards + red "Take it" | **W2 + W3**: click the hand, or the red button in the bar | A5: "Take it" does not say what is taken, "Take 5 damage" (D3) | 2b |
 | `upkeep` | Discard N cards, **or** destroy the asking Creature | Pop-up: hand cards + red "Destroy {name}" | **W2 + W3**: click the hand, or the red button in the bar | A1 | 2b |
 | `rebound` | Discard a card to return the Creature, **or** not | Pop-up: hand cards + steel "Leave it" | **W2 + W3**: click the hand, or "Don't return {name}" in the bar | V1: "Leave it" is retired (D2) | 2b |
-| `reveal` | Pick one of the revealed cards (the rest are discarded) | Pop-up: the cards | **W4**: stays a pop-up (the cards are not on the table) | A1 | 2b |
+| `reveal` | Pick one of the revealed cards (the rest are discarded) | **Done (2a):** the shared card pop-up, with the asking card as its head | **W4**: stays a pop-up (the cards are not on the table) | none | 2a, done |
 | `search` | Pick a Building from the deck | Pop-up: the cards | **W4**: stays a pop-up | A1 | 2b |
 | `redirect` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | Pop-up: cards + red "{name} fights" | **W1**: click the Creature on the board; "Don't redirect" in the bar | B4: red is used for "stay put", not a cost (D5); V1 (D2) | 2d |
 | `defend` | Pick a Creature of yours to take an attack, **or** let it go on | Pop-up: cards + steel "Let it fight where it is going" | **W1**: click the Creature on the board; "Don't take the Fight" in the bar | V1 (D2) | 2d |
@@ -44,7 +44,7 @@ puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those o
 | `camel` | Put the leaving Creature under your Camel, **or** let it go | Pop-up: the card + purple "Put it under {name}" + steel "Let it go" | **W3**: two buttons in the bar, with the leaving card shown at the start of the line | V1: "Let it go" is retired, "Don't put it under {name}" (D2) | 2c |
 | `landscape` | Pick the Landscape type your Lane becomes | Pop-up: type buttons | **W3**: the types as buttons in the bar (seven, wrapping) | A1: no card shown (D1) | 2c |
 | `target` | Pick what a trigger acts on (a Creature, Landscape or pile card), optionally | Pop-up: one button per target ("Lane 2 Creature...") + steel "Choose nothing" | **W1**: click the target on the board (a pile card: the pile viewer, W7) | V1: the card's `skip_label` should be used (D2) | 2d |
-| `amount` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | Pop-up: number buttons | **W3**: buttons in the bar: "1 damage", "2 damage" | A5: bare numbers (D3) | 2c |
+| `amount` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | **Moved to the bar (2a)**, with the asking card shown | **W3**: buttons in the bar | A5: still bare numbers; "1 damage", "2 damage" needs the unit from the server (D3) | 2a done; wording 2c |
 
 Which cards ask each kind (from the card data):
 
@@ -146,7 +146,7 @@ Each is a candidate for a small issue, in the phase that fixes it.
 
 | ID | Rule | The problem | Where | Phase |
 |---|---|---|---|---|
-| **D1** | A1 | A pop-up shows the name of the card that asked as text, never the card | `choiceModal`: every branch | 2a (the shared question shows it, in the bar and in the pop-up) |
+| **D1** | A1 | A pop-up shows the name of the card that asked as text, never the card | `choiceModal`: every branch | 2a for the board prompt bar, `amount` and `reveal` (done); the rest as each moves |
 | **D2** | V1 | Skip and decline words: "None", "Choose nothing", "Leave it", "Let it go", "{name} fights", "Let it fight where it is going", "Take it instead" | `choiceModal`, `prompt.js`, `locales/en.json` | 2c |
 | **D3** | A5 | Options that are bare numbers or verbs and do not say their result ("1", "Take it") | `amount`, `move_damage`, `ransom` | 2c |
 | **D4** | W1 | Board objects chosen in a pop-up instead of on the board | `redirect`, `defend`, `move`, `target` | 2d |
@@ -156,7 +156,7 @@ Each is a candidate for a small issue, in the phase that fixes it.
 | **D8** | F | An offer (`may`) lapses when the player does something else, and nothing says so | the card's ability buttons | 2d |
 | **D9** | B5 | Thaw is the only `btn-ice` and has its own flow | the Landscape's thaw button | 2d |
 | **D10** | V5/B3 | "Close" is green in the practice dialog and steel in the pile viewer | `main.js`, `render.js` | 2c |
-| **D11** | B7 | Spacing differs between pop-ups (`.modalrow` and `.modalrow2`, per-pop-up margins) | `style.css` | 2a |
+| **D11** | B7 | Spacing differs between pop-ups (`.modalrow` and `.modalrow2`, per-pop-up margins) | `style.css` | 2a added `--btn-gap` and uses it in the shared question; the rest as each pop-up moves |
 | **D12** | W3 | Short decisions asked in a pop-up instead of the bar: `amount`, `move_damage`, `camel`, `landscape`, and the mulligan | `choiceModal`, `overlay` | 2c |
 | **D13** | W2 | Cards from your hand chosen in a pop-up that hides the table: `discard`, `ransom`, `upkeep`, `rebound` | `choiceModal` | 2b |
 

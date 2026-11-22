@@ -3,6 +3,8 @@
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
 import { tokenChips } from "./tokens.js";
+import { fromPrompt, fromChoice, SURFACE } from "./question.js";
+import { questionBar, questionPopup } from "./questionui.js";
 import { APP_NAME } from "./brand.js";
 import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
@@ -46,7 +48,9 @@ export function renderGame(root, model, on) {
   const tokens = new Set(picker && !ui.awaitingKind ? picker.options().tokens : []);
   const prompt = buildPrompt(ctx, myDecision, ui.source, picker, ui.awaitingKind);
   const srcCard = sourceCard(ctx, ui.source);
-  const model2 = { ctx, me, opp, legal, myDecision, srcs, tokens, ui, srcCard, prompt };
+  // A mid-effect choice that is on the shared question is asked on the bar or in a pop-up (see question.js).
+  const asked = fromChoice(ctx, v.choice, legal, myDecision);
+  const model2 = { ctx, me, opp, legal, myDecision, srcs, tokens, ui, srcCard, prompt, asked };
 
   root.replaceChildren(h("div", { class: "table" },
     topbar(model2, on),
@@ -137,14 +141,10 @@ function heroChip(m, seat, on) {
     abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": t("ability.use_named", { name }), onclick: () => on.onHeroAbility(n) }, t("ability.use"))));
 }
 
-function promptBar({ prompt, myDecision, ctx }, on) {
-  const kids = [h("span", {}, prompt.text)];
-  for (const [key, label] of prompt.kinds) kids.push(h("button", { type: "button", class: "btn-purple", onclick: () => on.onKind(key) }, label));
-  for (const [token, label] of prompt.modes) kids.push(h("button", { type: "button", class: "btn-purple", onclick: () => on.onToken(token) }, label));
-  if (prompt.confirm) kids.push(h("button", { type: "button", class: "btn-green", onclick: on.onConfirm }, prompt.confirm));
-  if (prompt.skip) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onSkip }, prompt.skip));
-  if (prompt.cancel) kids.push(h("button", { type: "button", class: "btn-steel", onclick: on.onCancel }, t("prompt.cancel")));
-  return h("div", { role: "status", class: `well prompt ${myDecision && !ctx.view.over ? "you" : ""}` }, kids);
+/** The bar above the hand: the board prompt, or a mid-effect choice that is a short decision (W3), as one question. */
+function promptBar({ prompt, myDecision, ctx, asked, srcCard }, on) {
+  const q = asked?.surface === SURFACE.bar ? asked : fromPrompt(prompt, srcCard);
+  return questionBar(q, on, { you: myDecision && !ctx.view.over });
 }
 
 // ---------- battlefield
@@ -291,10 +291,12 @@ function buildingStrip(m, seat, i, on) {
  * answered, so it has no way to be dismissed.
  */
 function choiceModal(m, on) {
-  const { ctx, me, myDecision, legal, ui } = m;
+  const { ctx, me, myDecision, legal, ui, asked } = m;
   const v = ctx.view;
   const ch = v.choice;
   if (!ch || ch.player !== me || !myDecision || v.over) return null;
+  if (asked?.surface === SURFACE.popup) return questionPopup(asked, on, { again: ui.modalAgain });
+  if (asked) return null; // on the bar
   const by = cardName(ctx, ch.card);
   const choose = legal.filter((a) => a.kind === "choose");
   const cardButton = (inst, action) => {
@@ -307,13 +309,6 @@ function choiceModal(m, on) {
     title = t("modal.discard_title", { n: ch.count });
     text = t("modal.discard_text", { name: by });
     body = h("div", { class: "modalcards" }, (v.players[me].hand ?? []).map((inst) => {
-      const action = choose.find((a) => a.card === inst.uid);
-      return action && cardButton(inst, action);
-    }));
-  } else if (ch.kind === "reveal") {
-    title = by;
-    text = t("modal.reveal_text");
-    body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
       const action = choose.find((a) => a.card === inst.uid);
       return action && cardButton(inst, action);
     }));
@@ -400,11 +395,6 @@ function choiceModal(m, on) {
         return action && cardButton(inst, action);
       })),
       decline && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(decline) }, t("modal.take_it"))));
-  } else if (ch.kind === "amount") {
-    title = by;
-    text = t("modal.amount_text", { options: ch.options.map(String) });
-    body = h("div", { class: "modalrow" }, choose.map((a) =>
-      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "upkeep") {
     const destroy = choose.find((a) => !a.card);
     title = t("modal.upkeep_title", { name: by });
