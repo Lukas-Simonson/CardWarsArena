@@ -16,7 +16,7 @@ the fixes come from: each deviation has an ID (D1, D2...) and the phase of the
 - **117** card interactions choose something (targets chosen up front or by a trigger), in **44** different shapes.
   The board-click flow handles all of them except the five cards whose trigger asks mid-effect (see D6).
 - **14** kinds of mid-effect engine choice, each a hand-built pop-up in `choiceModal` (#88 counted thirteen; `defend` was
-  added since). **By the guide only 2 of the 14 should be pop-ups** (as of step 2a, `amount` is on the bar and `reveal` on the shared card pop-up; the board prompt bar also shows the asking card) (`reveal` and `search`, which show cards that are not
+  added since). **By the guide only 2 of the 14 should be pop-ups** (as of step 2b: `amount`, `discard`, `ransom`, `upkeep` and `rebound` are on the bar and `reveal` on the shared card pop-up; the board prompt bar also shows the asking card) (`reveal` and `search`, which show cards that are not
   on the table). Four are board clicks, four are a click on your hand, and four are buttons in the bar (see section 1).
 - **Buttons** in `render.js`: purple 13, steel 13, red 5, green 4, ice 1, with no stated rule until
   [the guide](interactions.md#button-roles).
@@ -31,10 +31,10 @@ puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those o
 
 | Kind | What it asks | Shown today as | Should be | What else is wrong | Fixed in |
 |---|---|---|---|---|---|
-| `discard` | Pick N cards from your hand to discard | Pop-up: your hand as cards | **W2**: click the hand; the bar says "Discard 2 cards" and counts down | A1: no card shown (D1) | 2b |
-| `ransom` | Discard a card of at least a cost, **or** take the effect | Pop-up: hand cards + red "Take it" | **W2 + W3**: click the hand, or the red button in the bar | A5: "Take it" does not say what is taken, "Take 5 damage" (D3) | 2b |
-| `upkeep` | Discard N cards, **or** destroy the asking Creature | Pop-up: hand cards + red "Destroy {name}" | **W2 + W3**: click the hand, or the red button in the bar | A1 | 2b |
-| `rebound` | Discard a card to return the Creature, **or** not | Pop-up: hand cards + steel "Leave it" | **W2 + W3**: click the hand, or "Don't return {name}" in the bar | V1: "Leave it" is retired (D2) | 2b |
+| `discard` | Pick N cards from your hand to discard | **Done (2b):** the bar says "Discard 2 cards from your hand: click a card" and counts down; the hand glows | **W2**: click the hand | none | 2b, done |
+| `ransom` | Discard a card of at least a cost, **or** take the effect | **Done (2b):** the bar (sentence + red "Take it instead"); click the hand | **W2 + W3** | A5: "Take it instead" does not say what is taken, "Take 5 damage" (D3) | 2b, done; wording 2c |
+| `upkeep` | Discard N cards, **or** destroy the asking Creature | **Done (2b):** the bar (sentence + red "Destroy {name}"); click the hand | **W2 + W3** | none | 2b, done |
+| `rebound` | Discard a card to return the Creature, **or** not | **Done (2b):** the bar (sentence + steel "Leave it"); click the hand | **W2 + W3** | V1: "Leave it" is a retired word, should be "Don't return {name}" (D2) | 2b, done; wording 2c |
 | `reveal` | Pick one of the revealed cards (the rest are discarded) | **Done (2a):** the shared card pop-up, with the asking card as its head | **W4**: stays a pop-up (the cards are not on the table) | none | 2a, done |
 | `search` | Pick a Building from the deck | Pop-up: the cards | **W4**: stays a pop-up | A1 | 2b |
 | `redirect` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | Pop-up: cards + red "{name} fights" | **W1**: click the Creature on the board; "Don't redirect" in the bar | B4: red is used for "stay put", not a cost (D5); V1 (D2) | 2d |
@@ -158,7 +158,7 @@ Each is a candidate for a small issue, in the phase that fixes it.
 | **D10** | V5/B3 | "Close" is green in the practice dialog and steel in the pile viewer | `main.js`, `render.js` | 2c |
 | **D11** | B7 | Spacing differs between pop-ups (`.modalrow` and `.modalrow2`, per-pop-up margins) | `style.css` | 2a added `--btn-gap` and uses it in the shared question; the rest as each pop-up moves |
 | **D12** | W3 | Short decisions asked in a pop-up instead of the bar: `amount`, `move_damage`, `camel`, `landscape`, and the mulligan | `choiceModal`, `overlay` | 2c |
-| **D13** | W2 | Cards from your hand chosen in a pop-up that hides the table: `discard`, `ransom`, `upkeep`, `rebound` | `choiceModal` | 2b |
+| **D13** | W2 | Cards from your hand chosen in a pop-up that hides the table: `discard`, `ransom`, `upkeep`, `rebound` | `choiceModal` | **2b, done:** all four are a click on the hand, with the sentence and any decline on the bar |
 
 Already filed and folded into the phases: **#79** (Reclaim Landscape's chained skips, done), **#85** (Blood
 Transfusion's piles, done), **#87** (The Big Hen House's pop-up has no card context and touching buttons: D1, D11, D12),
@@ -168,8 +168,7 @@ Transfusion's piles, done), **#87** (The Big Hen House's pop-up has no card cont
 
 Left for the phase that needs it (each is a note on its issue before work starts):
 
-- **How the bar shows progress on a multi-card pick** ("Discard 2 cards", then "1 more"), and how a pick is undone in the
-  hand before it is final (2b).
+- ~~How the bar shows progress on a multi-card pick, and how a pick is undone in the hand~~ (decided in 2b: the sentence counts down, "Discard 2 cards" then "Discard 1 card"; a click answers at once, since a mid-effect choice cannot be cancelled, F3).
 - **What the bar looks like with the source card at its start on a phone**, where the bar is narrow (2a). The risk the
   guide accepts: a bar with several buttons wraps to two lines.
 - **Which choice kinds show a result on their options** (A5): the audit suggests `amount`, `move_damage`, `ransom` and
