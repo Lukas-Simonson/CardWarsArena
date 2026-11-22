@@ -280,6 +280,9 @@ func TestTheBigHenHouseHurtsYourCreatureByOneOrTwoAndHealsYou(t *testing.T) {
 	g.State.Players[0].HP = 20
 	startOfTurn(t, g, 0)
 	ch := g.State.Choice
+	if ch != nil && ch.Unit != "damage" {
+		t.Errorf("unit %q: the options should say they are damage", ch.Unit)
+	}
 	if ch == nil || ch.Kind != ChoiceAmount || !slices.Equal(ch.Options, []int{1, 2}) || ch.Player != 0 {
 		t.Fatalf("choice %+v", ch)
 	}

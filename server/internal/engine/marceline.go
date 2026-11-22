@@ -103,8 +103,15 @@ func (g *Game) askAmount(ops []card.Op, c effCtx) {
 	if c.creature != nil {
 		uid = c.creature.UID
 	}
+	unit := ""
+	switch ops[0].Do {
+	case "damage_creature", "damage_hero":
+		unit = "damage"
+	case "heal_creature", "heal_hero":
+		unit = "heal"
+	}
 	g.ask(Choice{Player: c.p, Kind: ChoiceAmount, Card: c.cardID(), Lane: c.at.Lane, MoveSide: c.at.P, SourceUID: uid,
-		Options: ops[0].Options, Do: ops, hasSrc: c.hasSrc})
+		Options: ops[0].Options, Unit: unit, Do: ops, hasSrc: c.hasSrc})
 }
 
 // answerAmount runs the waiting ops with the number picked.

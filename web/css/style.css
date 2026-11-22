@@ -518,7 +518,7 @@ button.qsource:focus-visible { outline: 3px solid #ffe07a; outline-offset: 2px; 
 .qtext { min-width: 0; }
 .qopts { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--btn-gap); }
 .qopt { min-height: 44px; min-width: 44px; }
-.qresult { display: block; font-size: .7em; opacity: .85; }
+.qresult { display: block; font-family: var(--hand-font); font-size: 14px; text-transform: none; letter-spacing: 0; opacity: .9; }
 .qhead { display: flex; align-items: center; gap: var(--btn-gap); }
 .qhead .qsource { width: 56px; }
 .qpopup .modalrow { gap: var(--btn-gap); flex-wrap: wrap; }

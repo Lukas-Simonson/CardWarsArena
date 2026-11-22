@@ -53,7 +53,9 @@ view). The rules below apply to both.
   cards"). Your hand is already on screen; nothing needs a pop-up to show it.
 - **W3. A short decision that is not about a thing on the table is buttons in the bar.** An amount ("1 damage" or
   "2 damage"), a yes or no, a type (a Landscape type). Up to about eight short buttons, which wrap. A decision about
-  *how many* with more choices than that is a stepper (a number with − and +) in the bar, not a pop-up.
+  *how many* with more choices than that would be a stepper (a number with − and +) in the bar, not a pop-up; no
+  card needs one yet (the longest list is Friendship Bracelet moving up to 16 damage, 16 buttons that wrap), so none is
+  built.
 - **W4. A pop-up is only for cards the player must see and cannot see on the table:** the cards a card revealed, a search
   of a deck, a set of cards to choose among. It shows the cards (A3) and nothing the bar could carry.
 - **W5. A question that mixes these asks the board part first, then the rest.** One decision never uses two surfaces at once.
@@ -177,6 +179,7 @@ Decisions, who made them, when, and why. Add a line for each change to this guid
 |---|---|---|
 | 2026-11-21 | **A question that names a board object is answered on the board; anything else is a pop-up; a mixed question asks the board part first, then the pop-up** (the first draft's W1-W3; superseded in part by the next row). | Choosing among things on the table is quicker by pointing than from a pop-up that hides the table. A non-board decision has nothing to point at. |
 | 2026-11-21 | **The bar above the hand is the default surface; a pop-up is only for showing cards that are not on the table** (W2-W4, revised from the first draft, which sent every non-board decision to a pop-up). A card from your hand is a click on the hand; a short decision (an amount, a yes or no, a type) is buttons in the bar. | The maintainer wants pop-ups used sparingly. The decisions that were pop-ups are one sentence and a few buttons, which fit the bar; and a pop-up hides the table. |
+| 2026-11-21 | **Wording and colours settled in step 2c:** a decline that names what it does not do ("Don't return {name}", "Don't put it under {name}"); the fallback for an optional board step with no label of its own is "Skip" (not "None"); a real alternative with a cost is a red option, named by the effect ("Take {name}'s effect"); **the mulligan is Keep (green) and Mulligan (a plain choice, not red)** on the bar, with no overlay; Close is neutral steel everywhere. | These are V1, V6, B2 to B4 applied. The overlay said what the bar already said. |
 | 2026-11-21 | **Work is tracked by one sub-issue per phase under #88** (#107 guide and audit, #108 components, #109 self-describing choices, #110 gallery, tests and checklist), each with its own small pull requests and a design note on the issue before it starts. | Each phase can be reviewed on its own. |
 | 2026-11-21 | **An option's result is shown where the client already knows it** (damage, heal, move, cost), not everywhere (A5). | Computing every result in the server is large; most of the benefit is in the cheap cases. |
 | 2026-11-21 | **When the engine describes questions generically (phase 3), the old choice kinds are replaced outright in the same release.** | The client and server ship together and the protocol has no stability promise. Keeping both invites drift. |

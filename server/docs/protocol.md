@@ -231,7 +231,7 @@ every other action is refused (`illegal_action`) until they answer.
 | `landscape` | pick the type your Landscape in `lane` becomes until the start of your next turn (Silo of Freedom) | `choose` with `card` = 1 + the type's index in `cornfield, blue_plains, useless_swamp, nice_lands, sandy_lands, icy_lands` |
 | `target` | a trigger of the card chose a target for you (Crystal Palace, Frozen Fish): `targets` lists the legal ones, `label` says what for, and `optional` that you may choose none. `lane` is the card's Lane, on seat `move_side`'s side | `choose` with `targets` = `[[ref]]` for one of the listed refs, or `choose` with no `targets` when `optional` |
 | `ransom` | you may discard a card (of cost `min_cost` or more) or take what the card that asks says: it happens to you if you do not (Blood Bath, Bums Away!) | `choose` with `card` = a card in your hand, or `choose` with no `card` to take it |
-| `amount` | pick how much: `options` are the numbers (The Big Hen House) | `choose` with `card` = one of the numbers |
+| `amount` | pick how much: `options` are the numbers, and `unit` says what they are of (`damage` or `heal`: The Big Hen House) | `choose` with `card` = one of the numbers |
 
 As always, send one of the objects in `view.legal`.
 

@@ -202,7 +202,7 @@ async function copyLog(button) {
     box.value = text;
     const dlg = h("dialog", { class: "modal parch deckdialog", "aria-label": t("log.dialog_title") },
       h("h2", {}, t("log.dialog_title")), h("p", {}, t("log.dialog_text")), box,
-      h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-green modalopt", onclick: () => dlg.close() }, t("common.close"))));
+      h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => dlg.close() }, t("common.close"))));
     dlg.addEventListener("close", () => dlg.remove());
     dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
     document.body.append(dlg);

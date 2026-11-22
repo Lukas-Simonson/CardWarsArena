@@ -30,6 +30,7 @@
      "adjacent_lane": true,
      "frozen": true,
      "optional": true,
+     "skip_label": "Don't remove a token",
      "label": "Remove the token from"
     }
    ],
@@ -52,6 +53,7 @@
      "adjacent_lane": true,
      "frozen": true,
      "optional": true,
+     "skip_label": "Don't remove a token",
      "label": "Remove the token from"
     }
    ],

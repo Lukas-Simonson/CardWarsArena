@@ -50,13 +50,13 @@ test("a choice-free Spell waits for confirm()", () => {
   assert.deepEqual(p.confirm(), { kind: "play_card", card: 11 });
 });
 
-test("targets narrow the actions and an optional slot offers None", () => {
+test("targets narrow the actions and an optional slot offers Skip", () => {
   const ctx = ctxFor();
   const a = [play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [[creatureRef(1, 2)]]), play(11, 0, [[]])];
   const p = new ActionPicker(a, ctx);
   assert.deepEqual(p.options().tokens, ["creature:1:0", "creature:1:2"]);
   assert.ok(p.options().can_skip);
-  assert.equal(p.options().skip_label, "None");
+  assert.equal(p.options().skip_label, "Skip");
   assert.ok(p.skip());
   assert.deepEqual(p.result(), a[2]);
 });
@@ -138,7 +138,7 @@ test("prompt: choosing a lane, a target, and confirming", () => {
   const targets = new ActionPicker([play(11, 0, [[creatureRef(1, 0)]]), play(11, 0, [[]])], ctx);
   const p3 = buildPrompt(ctx, true, "hand:11", targets, false);
   assert.equal(p3.text, "Choose a target for Corn Scepter (optional)");
-  assert.equal(p3.skip, "None");
+  assert.equal(p3.skip, "Skip");
 });
 
 test("prompt: asks which kind first", () => {
@@ -179,7 +179,7 @@ test("the picker says what each choice is for", async () => {
   q.pick("creature:0:1");
   assert.equal(q.options().skip_label, "Next: Deal 1 damage to");
   q.skip();
-  assert.equal(q.options().skip_label, "None", "the last step just ends");
+  assert.equal(q.options().skip_label, "Skip", "the last step just ends");
 });
 
 test("prompt: a labelled choice says what it is for", () => {

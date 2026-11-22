@@ -3,7 +3,7 @@
 // be clicked comes from the picker (js/picker.js); nothing here knows a card's
 // rules.
 import { tokenChips } from "./tokens.js";
-import { fromPrompt, fromChoice, run, SURFACE } from "./question.js";
+import { fromPrompt, fromChoice, fromMulligan, run, SURFACE } from "./question.js";
 import { questionBar, questionPopup } from "./questionui.js";
 import { APP_NAME } from "./brand.js";
 import { isCrowded, fanPose } from "./handlayout.js";
@@ -49,7 +49,7 @@ export function renderGame(root, model, on) {
   const prompt = buildPrompt(ctx, myDecision, ui.source, picker, ui.awaitingKind);
   const srcCard = sourceCard(ctx, ui.source);
   // A mid-effect choice that is on the shared question is asked on the bar or in a pop-up (see question.js).
-  const asked = fromChoice(ctx, v.choice, legal, myDecision);
+  const asked = fromChoice(ctx, v.choice, legal, myDecision) ?? fromMulligan(ctx, legal, myDecision);
   const model2 = { ctx, me, opp, legal, myDecision, srcs, tokens, ui, srcCard, prompt, asked };
 
   root.replaceChildren(h("div", { class: "table" },
@@ -305,14 +305,7 @@ function choiceModal(m, on) {
       cardEl(c ?? { id: inst.card, name: inst.card }), h("span", { class: "cap" }, c?.name ?? inst.card));
   };
   let title, text, body;
-  if (ch.kind === "search") {
-    title = by;
-    text = t("modal.search_text");
-    body = h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
-      const action = choose.find((a) => a.card === inst.uid);
-      return action && cardButton(inst, action);
-    }));
-  } else if (ch.kind === "redirect") {
+  if (ch.kind === "redirect") {
     const stay = choose.find((a) => !a.card);
     title = t("modal.redirect_title", { name: by });
     text = t("modal.redirect_text", { name: by });
@@ -333,33 +326,12 @@ function choiceModal(m, on) {
         return action && cardButton(inst, action);
       })),
       stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(stay) }, t("modal.defend_none"))));
-  } else if (ch.kind === "move_damage") {
-    title = by;
-    text = t("modal.move_damage_text", { n: ch.count });
-    body = h("div", { class: "modalrow" }, choose.map((a) =>
-      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, String(a.card))));
   } else if (ch.kind === "move") {
     const theirs = movesToTheirSide(ch, v.you);
     title = t("modal.move_title", { name: by });
     text = t(theirs ? "modal.move_theirs" : "modal.move_mine", { name: by });
     body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
       h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, t("modal.lane_n", { lane: (a.lane ?? 0) + 1 }))));
-  } else if (ch.kind === "camel") {
-    const gone = ch.revealed?.[0];
-    const put = choose.find((a) => a.card);
-    const let_go = choose.find((a) => !a.card);
-    title = t("modal.camel_title", { name: by });
-    text = t("modal.camel_text", { card: cardName(ctx, gone?.card), name: by });
-    body = h("div", {},
-      gone && h("div", { class: "modalcards" }, h("div", { class: "modalopt cardopt" }, cardEl(ctx.cards[gone.card] ?? { id: gone.card, name: gone.card }), h("span", { class: "cap" }, cardName(ctx, gone.card)))),
-      h("div", { class: "modalrow" },
-        put && h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(put) }, t("modal.camel_put", { name: by })),
-        let_go && h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(let_go) }, t("modal.let_go"))));
-  } else if (ch.kind === "landscape") {
-    title = by;
-    text = t("modal.landscape_text", { lane: ch.lane + 1 });
-    body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
-      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, landscapeName(LANDSCAPE_ORDER[a.card - 1]))));
   } else if (ch.kind === "target") {
     const none = choose.find((a) => !a.targets?.[0]?.length);
     title = t("modal.target_title", { name: by, label: ch.label ? labelText(ch.label) : t("modal.target_default") });
@@ -426,14 +398,6 @@ function overlay(m, on) {
       h("h2", {}, won ? t("over.you_win") : t("over.they_win", { who: seatName(ctx, v.winner) })),
       h("p", {}, t(won ? "over.you_text" : "over.they_text")),
       h("div", { class: "row" }, h("button", { type: "button", class: "btn-green", onclick: on.onLeave }, t("over.back")))));
-  }
-  if (v.phase === "mulligan" && myDecision) {
-    return h("div", { class: "veil" }, h("div", { class: "parch" },
-      h("h2", {}, t("mull.title")),
-      h("p", {}, t("mull.text")),
-      h("div", { class: "row" },
-        legal.filter((a) => a.kind === "keep_hand").map((a) => h("button", { type: "button", class: "btn-green", onclick: () => on.onAction(a) }, t("mull.keep"))),
-        legal.filter((a) => a.kind === "mulligan").map((a) => h("button", { type: "button", class: "btn-red", onclick: () => on.onAction(a) }, t("mull.mulligan"))))));
   }
   return null;
 }
