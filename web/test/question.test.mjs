@@ -230,3 +230,13 @@ test("a pile card is a board pick too, so the pile viewer opens for it", () => {
   const q = fromChoice(ctx, { kind: "target", card: "cool-dog", optional: true }, legal, true);
   assert.deepEqual(Object.keys(q.boardPicks), ["discard_card:0:13"]);
 });
+
+// The server leaves out what is zero, so the choice of lane 0 is a choose with no lane at all.
+test("lane 0 is a choice too, though the server sends it with no lane", () => {
+  const legal = [{ kind: "choose" }, { kind: "choose", lane: 2 }, { kind: "choose", lane: 3 }]; // lanes 0, 2 and 3
+  const move = fromChoice(ctx, { kind: "move", card: "cool-dog", lanes: [0, 2, 3], move_side: 1 }, legal, true);
+  assert.deepEqual(Object.keys(move.boardPicks).sort(), ["landscape:1:0", "landscape:1:2", "landscape:1:3"]);
+  assert.deepEqual(move.boardPicks["landscape:1:0"], { type: "action", action: legal[0] });
+  const place = fromChoice(ctx, { kind: "place", card: "cool-dog", lanes: [0, 1, 2, 3], revealed: [{ uid: 5, card: "blood-fortress", owner: 0 }] }, [{ kind: "choose" }, ...[1, 2, 3].map((lane) => ({ kind: "choose", lane }))], true);
+  assert.deepEqual(Object.keys(place.boardPicks).sort(), ["place:0", "place:1", "place:2", "place:3"]);
+});

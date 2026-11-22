@@ -114,7 +114,7 @@ export function fromChoice(ctx, choice, legal, mine) {
       return {
         ...base, subject: building ? ctx.cards?.[building.card] ?? { id: building.card, name: building.card } : null,
         text: t("question.place", { name: building ? cardName(ctx, building.card) : "" }),
-        options: [], boardPicks: Object.fromEntries(answers.filter((a) => a.lane != null).map((a) => [`place:${a.lane}`, act(a)])),
+        options: [], boardPicks: Object.fromEntries(answers.map((a) => [`place:${a.lane ?? 0}`, act(a)])), // every answer is a lane; the server leaves lane 0 out
       };
     }
     case "redirect": // Pied Piper: a Flooped Creature of yours fights in the attacker's place (W1: click it)
@@ -136,7 +136,7 @@ export function fromChoice(ctx, choice, legal, mine) {
       return {
         ...base, options: [],
         text: t(movesToTheirSide(choice, ctx.view.you) ? "question.move_theirs" : "question.move_mine", { name }),
-        boardPicks: Object.fromEntries(answers.filter((a) => a.lane != null).map((a) => [`landscape:${side}:${a.lane}`, act(a)])),
+        boardPicks: Object.fromEntries(answers.map((a) => [`landscape:${side}:${a.lane ?? 0}`, act(a)])), // every answer is a lane; the server leaves lane 0 out
       };
     }
     case "target": { // a trigger's target: the legal ones are clicked on the board, and the card words what choosing none does
