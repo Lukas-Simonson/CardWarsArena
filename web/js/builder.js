@@ -256,13 +256,12 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
     ui.atkChips = h("div", { role: "group", "aria-label": t("builder.filter_atk"), class: "chips" });
     ui.defChips = h("div", { role: "group", "aria-label": t("builder.filter_def"), class: "chips" });
     ui.statNote = h("p", { class: "ink small", role: "status" });
-    ui.statClear = h("button", { type: "button", class: "btn-steel small", onclick: () => { filters = { ...filters, cost: [], atk: [], def: [] }; paintStats(); paintPool(); } }, t("builder.clear_stats"));
     ui.more = h("details", { class: "bmorefilters" },
       h("summary", {}),
       h("div", { class: "field" }, h("span", { class: "ink lead" }, t("builder.filter_cost")), ui.costChips),
       h("div", { class: "field" }, h("span", { class: "ink lead" }, t("builder.filter_atk")), ui.atkChips),
       h("div", { class: "field" }, h("span", { class: "ink lead" }, t("builder.filter_def")), ui.defChips),
-      ui.statNote, ui.statClear);
+      ui.statNote);
     ui.fromClear = h("button", { type: "button", class: "btn-steel small", onclick: () => { ui.from.value = ""; filters = { ...filters, from: "" }; paintPool(); } }, t("builder.clear"));
     ui.fromRow = h("div", { class: "field fromrow" }, h("label", { for: "bfrom", class: "ink" }, t("builder.cards_from")), h("div", { class: "fromsel" }, ui.from, ui.fromClear));
     ui.grid = h("div", { class: "cardgrid" });
@@ -427,7 +426,6 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
     ui.more.querySelector("summary").textContent = active ? t("builder.more_filters_on", { n: active }) : t("builder.more_filters");
     if (active) ui.more.open = true;
     ui.statNote.textContent = filters.atk.length || filters.def.length ? t("builder.creatures_only") : "";
-    ui.statClear.hidden = !active;
     paintCurve();
   }
 

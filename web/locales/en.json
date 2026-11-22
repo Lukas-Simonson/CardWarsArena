@@ -642,7 +642,6 @@
  "builder.any_value": "Any",
  "builder.more_filters": "More filters",
  "builder.more_filters_on": "More filters ({n} on)",
- "builder.clear_stats": "Clear cost, ATK and DEF",
  "builder.creatures_only": "ATK and DEF only apply to Creatures, so only Creatures are shown.",
  "builder.bucket_plus": "{n}+",
  "builder.bucket_range": "{a}–{b}",
