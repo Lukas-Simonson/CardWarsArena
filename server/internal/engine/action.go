@@ -33,6 +33,9 @@ type Action struct {
 	// activated abilities.
 	Source string `json:"source,omitempty"`
 	Index  int    `json:"index,omitempty"`
+	// Offer is sent with a legal activated ability that is an offer ("you may" at the start of the turn): it lapses as
+	// soon as the player does anything else. Display only.
+	Offer bool `json:"offer,omitempty"`
 	// Via is sent with a legal Floop that was granted to the card, not printed on it ("hero"). Display only.
 	Via string `json:"via,omitempty"`
 	// CostTargets holds the choices for the card's additional cost, such as

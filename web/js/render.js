@@ -10,8 +10,8 @@ import { isCrowded, fanPose } from "./handlayout.js";
 import { h, svg } from "./dom.js";
 import { avatarEl } from "./avatar.js";
 import { cardEl } from "./card.js";
-import { cardName, describeRef, landscapeName, LANDSCAPE_ORDER, seatName, movesToTheirSide, labelText } from "./describe.js";
-import { t, fmtList, fmtNumber } from "./i18n.js";
+import { cardName, landscapeName, seatName } from "./describe.js";
+import { t, fmtNumber } from "./i18n.js";
 import { isMyDecision } from "./state.js";
 import { sources, parseToken, discardSeats } from "./picker.js";
 import { buildPrompt } from "./prompt.js";
@@ -64,7 +64,7 @@ export function renderGame(root, model, on) {
         handSection(model2, on),
         logPanel(state, ctx, on)),
       h("div", { class: "side" }, playerBar(model2, opp, on), playerBar(model2, me, on), detailPanel(ctx, ui.inspect), feedbackPanel(ui.feedback))),
-    choiceModal(model2, on),
+    asked?.surface === SURFACE.popup ? questionPopup(asked, on, { again: ui.modalAgain }) : null,
     pileModal(model2, on)));
 }
 
@@ -172,6 +172,7 @@ function laneColumn(m, i, on) {
   const mine = ui.picker ? [] : srcs[`lane:${i}:creature`] ?? [];
   const canFloop = mine.some((a) => a.kind === "floop");
   const abilities = [...new Set(mine.filter((a) => a.kind === "activate").map((a) => a.index ?? 0))].sort();
+  const offers = new Set(mine.filter((a) => a.kind === "activate" && a.offer).map((a) => a.index ?? 0)); // "you may": lapse when you do anything else
   const canThaw = !ui.picker && !!srcs[`thaw:${i}`]; // a frozen Landscape I can clear by discarding a card
   return h("div", { class: "lane" },
     buildingStrip(m, opp, i, on),
@@ -181,7 +182,11 @@ function laneColumn(m, i, on) {
     h("div", { class: "tilewrap" },
       tile(m, me, i, on),
       (canFloop || abilities.length > 0 || canThaw) && h("div", { class: "tileacts" },
-        abilities.map((n) => h("button", { type: "button", class: "btn-purple floop", "aria-label": t("ability.use_named", { name: cardName(ctx, mc?.card) }), onclick: () => on.onAbility(i, "creature", n) }, t("ability.use"))),
+        abilities.map((n) => {
+          const name = cardName(ctx, mc?.card), offer = offers.has(n);
+          // An offer says it is one: it is gone as soon as the player does anything else (D8).
+          return h("button", { type: "button", class: "btn-purple floop", title: offer ? t("ability.offer_named", { name }) : null, "aria-label": t(offer ? "ability.offer_named" : "ability.use_named", { name }), onclick: () => on.onAbility(i, "creature", n) }, t(offer ? "ability.offer" : "ability.use"));
+        }),
         canFloop && h("button", { type: "button", class: "btn-purple floop", "aria-label": t("ability.floop_named", { name: cardName(ctx, mc?.card) }), onclick: () => on.onFloop(i, "creature") }, t("ability.floop")),
         canThaw && h("button", { type: "button", class: "btn-ice floop thaw", "aria-label": t("ability.thaw_label", { lane: i + 1 }), onclick: () => on.onThaw(i) }, t("ability.thaw")))),
     landName(ctx, me, i),
@@ -294,65 +299,6 @@ function buildingStrip(m, seat, i, on) {
  * gets a modal dialog over everything; nothing else can be done until it is
  * answered, so it has no way to be dismissed.
  */
-function choiceModal(m, on) {
-  const { ctx, me, myDecision, legal, ui, asked } = m;
-  const v = ctx.view;
-  const ch = v.choice;
-  if (!ch || ch.player !== me || !myDecision || v.over) return null;
-  if (asked?.surface === SURFACE.popup) return questionPopup(asked, on, { again: ui.modalAgain });
-  if (asked) return null; // on the bar
-  const by = cardName(ctx, ch.card);
-  const choose = legal.filter((a) => a.kind === "choose");
-  const cardButton = (inst, action) => {
-    const c = ctx.cards[inst.card];
-    return h("button", { type: "button", class: "modalopt cardopt", "aria-label": c?.name ?? t("noun.card"), onclick: () => on.onAction(action) },
-      cardEl(c ?? { id: inst.card, name: inst.card }), h("span", { class: "cap" }, c?.name ?? inst.card));
-  };
-  let title, text, body;
-  if (ch.kind === "redirect") {
-    const stay = choose.find((a) => !a.card);
-    title = t("modal.redirect_title", { name: by });
-    text = t("modal.redirect_text", { name: by });
-    body = h("div", {},
-      h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
-        const action = choose.find((a) => a.card === inst.uid);
-        return action && cardButton(inst, action);
-      })),
-      stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-red modalopt", onclick: () => on.onAction(stay) }, t("modal.redirect_same", { name: by }))));
-  } else if (ch.kind === "defend") {
-    const stay = choose.find((a) => !a.card);
-    const attacker = v.players[ch.move_side]?.lanes?.[ch.lane]?.creature;
-    title = t("modal.defend_title", { name: by });
-    text = t("modal.defend_text", { name: by, attacker: attacker ? cardName(ctx, attacker.card) : "?" });
-    body = h("div", {},
-      h("div", { class: "modalcards" }, (ch.revealed ?? []).map((inst) => {
-        const action = choose.find((a) => a.card === inst.uid);
-        return action && cardButton(inst, action);
-      })),
-      stay && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(stay) }, t("modal.defend_none"))));
-  } else if (ch.kind === "move") {
-    const theirs = movesToTheirSide(ch, v.you);
-    title = t("modal.move_title", { name: by });
-    text = t(theirs ? "modal.move_theirs" : "modal.move_mine", { name: by });
-    body = h("div", { class: "modalrow modalrow2" }, choose.map((a) =>
-      h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, t("modal.lane_n", { lane: (a.lane ?? 0) + 1 }))));
-  } else if (ch.kind === "target") {
-    const none = choose.find((a) => !a.targets?.[0]?.length);
-    title = t("modal.target_title", { name: by, label: ch.label ? labelText(ch.label) : t("modal.target_default") });
-    text = t(ch.optional ? "modal.target_optional" : "modal.target_text", { name: by });
-    body = h("div", {},
-      h("div", { class: "modalrow modalrow2" }, choose.filter((a) => a.targets?.[0]?.length).map((a) =>
-        h("button", { type: "button", class: "btn-purple modalopt", onclick: () => on.onAction(a) }, describeRef(ctx, a.targets[0][0])))),
-      none && h("div", { class: "modalrow" }, h("button", { type: "button", class: "btn-steel modalopt", onclick: () => on.onAction(none) }, t("modal.choose_nothing"))));
-  } else {
-    return null;
-  }
-  return h("div", { class: `modal-backdrop${ui.modalAgain ? " again" : ""}` },
-    h("div", { class: "modal parch", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-h" },
-      h("h2", { id: "modal-h" }, title),
-      h("p", {}, text),
-      body));
-}
 
 /**
  * The discard viewer, one scrollable dialog: opened on request, or by a choice that needs a card from a pile. A card

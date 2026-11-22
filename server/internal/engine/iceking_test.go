@@ -123,6 +123,9 @@ func TestFrozenFishMayFreezeAfterDamagingACreature(t *testing.T) {
 	g.State.Phase = PhaseFight
 	g.must(t, 0, attack(0))
 	ch := g.State.Choice
+	if ch != nil && ch.SkipLabel != "Don't freeze a Landscape" {
+		t.Errorf("skip label %q: choosing nothing should say what it does", ch.SkipLabel)
+	}
 	if ch == nil || ch.Kind != ChoiceTarget || !ch.Optional || len(ch.Targets) != 2 {
 		t.Fatalf("choice %+v", ch)
 	}

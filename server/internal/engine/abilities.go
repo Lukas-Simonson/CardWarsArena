@@ -252,6 +252,7 @@ func (g *Game) abilitiesOf(p PlayerID, probe Action, out []Action) []Action {
 			}
 		case card.KindActivate:
 			a.Kind, a.Index = ActActivate, activate
+			a.Offer = activate >= src.real
 			activate++
 		default:
 			continue

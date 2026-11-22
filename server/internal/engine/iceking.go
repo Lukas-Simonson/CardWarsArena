@@ -34,7 +34,7 @@ func (g *Game) askTrigger(e card.Effect, ctx effCtx) []Event {
 		uid = ctx.creature.UID
 	}
 	g.ask(Choice{Player: ctx.p, Kind: ChoiceTarget, Card: ctx.cardID(), Lane: ctx.at.Lane, SourceUID: uid, MoveSide: ctx.at.P,
-		Targets: cands, Optional: spec.Optional, Label: spec.Label, Do: e.Do, hasSrc: true})
+		Targets: cands, Optional: spec.Optional, Label: spec.Label, SkipLabel: spec.SkipLabel, Do: e.Do, hasSrc: true})
 	return nil
 }
 

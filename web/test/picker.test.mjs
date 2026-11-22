@@ -190,7 +190,7 @@ test("prompt: a labelled choice says what it is for", () => {
   const act = (heal, hurt) => ({ kind: "activate", lane: mine, targets: [heal, hurt], labels: ["Heal 1 damage from", "Deal 1 damage to"] });
   const picker = new ActionPicker([act([ref(mine)], []), act([], [ref(mine)])], ctx);
   const p = buildPrompt(ctx, true, `lane:${mine}:creature`, picker, false);
-  assert.match(p.text, /^Heal 1 damage from: choose a target for /);
+  assert.match(p.text, /^(Step \d of \d: )?Heal 1 damage from: choose a target for /);
 });
 
 test("a Hero's ability is its own source and is prompted by the Hero's name", () => {
@@ -252,7 +252,7 @@ test("Reclaim Landscape: skipping the Building never asks for a Lane, and the sk
   assert.deepEqual(o1.tokens, ["landscape:0:1"]);
   assert.equal(o1.skip_label, "Don't flip a Landscape");
   assert.equal(o1.optional, true);
-  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Flip: choose a Landscape for Corn Scepter (optional)");
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Step 1 of 3: Flip: choose a Landscape for Corn Scepter (optional)");
   assert.ok(p.skip());
   const o2 = p.options();
   assert.deepEqual(o2.tokens, ["building:0:0"]);
@@ -287,7 +287,7 @@ test("Reclaim Landscape: move only asks which Lane, then summarizes before it is
   const o = p.options();
   assert.deepEqual(o.tokens, ["lane:0:2", "lane:0:3"]);
   assert.equal(o.optional, false, "a Building to move needs somewhere to go");
-  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Move to: choose a lane for Corn Scepter");
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Step 2 of 2: Move to: choose a lane for Corn Scepter", "a card with several steps numbers them");
   assert.ok(p.pick("lane:0:3"));
   assert.equal(p.result(), null, "the flip was declined, so it is confirmed first");
   assert.match(buildPrompt(ctx, true, "hand:11", p, false).text, /^Don't flip a Landscape\. Move building \(your, lane 1\)\. Move to lane 4 \(your side\)\.$/);
@@ -384,7 +384,7 @@ test("a card that takes from either discard pile shows both piles, and says so",
   assert.deepEqual(o.tokens, ["discard_card:0:5", "discard_card:1:7", "discard_card:1:8"]);
   assert.deepEqual(discardSeats(o.tokens, null, 0), [0, 1]); // mine first
   assert.deepEqual(discardSeats(o.tokens, null, 1), [1, 0]);
-  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Remove from the game: choose a card from either discard pile for Corn Scepter");
+  assert.equal(buildPrompt(ctx, true, "hand:11", p, false).text, "Step 1 of 2: Remove from the game: choose a card from either discard pile for Corn Scepter");
   assert.ok(p.pick("discard_card:1:7"));
   assert.deepEqual(p.options().tokens, ["creature:0:0"]);
   assert.deepEqual(discardSeats(p.options().tokens, null, 0), []); // the viewer has nothing more to show: it closes

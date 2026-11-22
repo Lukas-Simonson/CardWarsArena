@@ -59,7 +59,9 @@ export function buildPrompt(ctx, myDecision, source, picker, awaitingKind) {
   }
   const label = picker.label();
   const optional = opts.optional ? "yes" : "no";
-  out.text = label ? t("prompt.step_labelled", { label: labelText(label), step: instruction(opts.tokens, true), name, optional }) : t("prompt.step", { step: instruction(opts.tokens), name, optional });
+  const { n, of } = picker.stepInfo();
+  const prefix = of > 1 ? t("prompt.step_n", { n, of }) : ""; // M1: a card with several steps numbers them
+  out.text = label ? t("prompt.step_labelled", { label: labelText(label), step: instruction(opts.tokens, true), name, optional, prefix }) : t("prompt.step", { step: instruction(opts.tokens), name, optional, prefix });
   if (opts.can_skip) out.skip = opts.skip_label;
   return out;
 }

@@ -335,3 +335,20 @@ func TestHeroesAreVisibleToBothSeats(t *testing.T) {
 		}
 	}
 }
+
+// Everything a client needs to word a choice has to be in the view: the numbers of an amount are of a unit, the damage
+// of move_damage goes to the Creature in Other, and an optional target says what choosing nothing does.
+func TestAChoiceCarriesEverythingItIsWordedFrom(t *testing.T) {
+	g := newGame(t, 1)
+	g.State.Choice = &engine.Choice{Player: 0, Kind: engine.ChoiceAmount, Card: "the-big-hen-house", Options: []int{1, 2}, Unit: "damage",
+		Lane: 1, Other: 3, Optional: true, Label: "Freeze", SkipLabel: "Don't freeze a Landscape"}
+	b, err := json.Marshal(Build(g, 0).Choice)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`"unit":"damage"`, `"other":3`, `"skip_label":"Don't freeze a Landscape"`, `"lane":1`, `"options":[1,2]`} {
+		if !strings.Contains(string(b), want) {
+			t.Errorf("%s is missing from %s", want, b)
+		}
+	}
+}
