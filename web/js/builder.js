@@ -17,8 +17,8 @@ import { errorText, apiError } from "./errors.js";
 import { labelText } from "./describe.js";
 
 // The colours of the Landscapes, as in the design: a tile colour and a darker diamond.
-const TILE = { cornfield: "#9cc43a", blue_plains: "#7aa6d6", useless_swamp: "#9b7bbf", sandy_lands: "#e8b04a", nice_lands: "#f08fbc", icy_lands: "#bfe8f2", rainbow: "#e9ddf6" };
-const DOT = { cornfield: "#5ea83a", blue_plains: "#3f8fd6", useless_swamp: "#7d5aa8", sandy_lands: "#e0a032", nice_lands: "#ea6fa6", icy_lands: "#6cc6e0", rainbow: "#ff6fae" };
+const TILE = { cornfield: "#9cc43a", blue_plains: "#7aa6d6", useless_swamp: "#9b7bbf", sandy_lands: "#e8b04a", nice_lands: "#f08fbc", icy_lands: "#bfe8f2", lava_flats: "#f2a27a", rainbow: "#e9ddf6" };
+const DOT = { cornfield: "#5ea83a", blue_plains: "#3f8fd6", useless_swamp: "#7d5aa8", sandy_lands: "#e0a032", nice_lands: "#ea6fa6", icy_lands: "#6cc6e0", lava_flats: "#e0562a", rainbow: "#ff6fae" };
 const TYPES = [["", "builder.type_all"], ["creature", "builder.type_creature"], ["spell", "builder.type_spell"], ["building", "builder.type_building"]];
 const CURVE_HEIGHT = 96;
 const kind = (c) => t(`type.${c.type}`);

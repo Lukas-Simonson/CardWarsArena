@@ -607,6 +607,22 @@
     "type" : "Spell"
   },
   {
+    "ability" : "Deal 3 damage to target Creature. If a Creature is destroyed this way, gain 1 action.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Broils Coils.png",
+    "name" : "Broils Coils",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "Target opponent may discard a card. If they do not, deal 2 damage to each of their Creatures.",
     "cost" : 1,
     "extras" : {
@@ -1091,6 +1107,22 @@
       "Princess Bubblegum Vs Lumpy Space Princess (PB)" : 2
     },
     "type" : "Creature"
+  },
+  {
+    "ability" : "When an opposing burning Creature in this Lane leaves play, burn that Creature's owner. (At the start of their turn, they take 1 damage for each burn token.)",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Cozy Kiln.png",
+    "name" : "Cozy Kiln",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Building"
   },
   {
     "ability" : "Rainbow Creatures you control have +1 ATK.",
@@ -1765,6 +1797,182 @@
     "type" : "Hero"
   },
   {
+    "ability" : "When Fire Dog enters play, you may deal damage to target Creature equal to the number of burn tokens on all Creatures.",
+    "attack" : 1,
+    "cost" : 0,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Fire Dog.png",
+    "name" : "Fire Dog",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Burn all opposing Creatures. (Limit: Once per game.)",
+    "extras" : {
+
+    },
+    "image" : "Flame Princess.png",
+    "name" : "Flame Princess",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Hero"
+  },
+  {
+    "ability" : "When Flameingo Blazeling damages a Creature, burn that Creature if it wasn't burning.",
+    "attack" : 1,
+    "cost" : 0,
+    "defense" : 6,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Blazeling.png",
+    "name" : "Flameingo Blazeling",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Remove a burn token from an opposing Creature >>> Deal 1 damage to target opponent.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Burnwarden.png",
+    "name" : "Flameingo Burnwarden",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Flameingo Captain damages an opponent, burn them. (At the start of their turn, they take 1 damage for each burn token.)",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 11,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Captain.png",
+    "name" : "Flameingo Captain",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "Flameingo Fireplume Chief costs 1 less for each burn token on Creatures. When Fireplume Chief damages a Creature, burn it.",
+    "attack" : 4,
+    "cost" : 4,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Fireplume Chief.png",
+    "name" : "Flameingo Fireplume Chief",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP >>> Burn each Creature in target Lane.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Flameweaver.png",
+    "name" : "Flameingo Flameweaver",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "The first time you burn a Creature each turn, draw a card.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 9,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Heat Eater.png",
+    "name" : "Flameingo Heat Eater",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Flameingo Hotshot attacks a burning Creature, you may deal 2 damage to another Creature. If that other Creature is not burning, burn it.",
+    "attack" : 2,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Hotshot.png",
+    "name" : "Flameingo Hotshot",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When Flameingo Ignisbeak attacks, if an opposing Creature in this Lane is burning, Flameingo Ignisbeak targets your opponent instead of the opposing Creature.",
+    "attack" : 3,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Flameingo Ignisbeak.png",
+    "name" : "Flameingo Ignisbeak",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Your Creature in this Lane has +1 ATK during your turn for each frozen Landscape.",
     "cost" : 2,
     "extras" : {
@@ -2053,6 +2261,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Furious Phoenix has +1 ATK for each burn token on Creatures.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 8,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Furious Phoenix.png",
+    "name" : "Furious Phoenix",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+1 ATK for each damage on it.",
     "attack" : 0,
     "cost" : 1,
@@ -2121,6 +2347,24 @@
     "quantity" : 1,
     "sets" : {
       "Flame Princess Vs Fern (Fern)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "",
+    "attack" : 4,
+    "cost" : 1,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Giant Red Salamander.png",
+    "name" : "Giant Red Salamander",
+    "notes" : "A walking furnace with an attitude.",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
     },
     "type" : "Creature"
   },
@@ -2365,6 +2609,24 @@
     "type" : "Spell"
   },
   {
+    "ability" : "When Hampire attacks, you heal HP equal to its ATK.",
+    "attack" : 3,
+    "cost" : 1,
+    "defense" : 1,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Hampire, Pig of the Night.png",
+    "name" : "Hampire, Pig of the Night",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "Put a Building from your discard pile into play.",
     "cost" : 2,
     "extras" : {
@@ -2395,6 +2657,24 @@
     "quantity" : 1,
     "sets" : {
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When you burn a Creature, put an attack token on Heat Leapers.",
+    "attack" : 2,
+    "cost" : 2,
+    "defense" : 10,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Heat Leapers.png",
+    "name" : "Heat Leapers",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
     },
     "type" : "Creature"
   },
@@ -2483,6 +2763,56 @@
     "quantity" : 2,
     "sets" : {
       "BMO Vs Lady Rainicorn (BMO)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "When you burn an opposing Creature, deal 1 additional damage to it.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Hot Huts.png",
+    "name" : "Hot Huts",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "Burn target Creature and then deal 1 additional damage to it.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Hot Shot.png",
+    "name" : "Hot Shot",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Pay 1 action >>> Draw 1 card and reveal it. Then, burn a Creature in Hot Wheel's Lane as many times as the cost of the revealed card.",
+    "attack" : 1,
+    "cost" : 2,
+    "defense" : 12,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Hot Wheel.png",
+    "name" : "Hot Wheel",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
     },
     "type" : "Creature"
   },
@@ -2837,6 +3167,24 @@
     "type" : "Creature"
   },
   {
+    "ability" : "The first time Kangaroo Cat damages an opponent, put an attack token on Kangaroo Cat.",
+    "attack" : 2,
+    "cost" : 0,
+    "defense" : 3,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Kangaroo Cat.png",
+    "name" : "Kangaroo Cat",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Creature"
+  },
+  {
     "ability" : "+1 ATK for each Flooped Creature you control.",
     "attack" : 1,
     "cost" : 1,
@@ -3163,6 +3511,22 @@
       "Princess Bubblegum Vs Lumpy Space Princess (LSP)" : 1
     },
     "type" : "Building"
+  },
+  {
+    "ability" : "Burn target Creature. Deal 2 damage to each opposing burning Creature.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Molten Potion.png",
+    "name" : "Molten Potion",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Spell"
   },
   {
     "ability" : "At the start of your turn, you may remove 1 non-damage token from a friendly Creature or a Landscape you control.",
@@ -3752,6 +4116,22 @@
     "type" : "Building"
   },
   {
+    "ability" : "FLOOP and remove a burn token from a Creature >>> Deal 3 damage to that Creature.",
+    "cost" : 1,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Pyrovent Fortress.png",
+    "name" : "Pyrovent Fortress",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
+    },
+    "type" : "Building"
+  },
+  {
     "ability" : "+2 ATK for each facedown Landscape in play.",
     "attack" : 1,
     "cost" : 1,
@@ -4196,6 +4576,40 @@
     "quantity" : 1,
     "sets" : {
       "Finn Vs Jake (Finn)" : 1
+    },
+    "type" : "Building"
+  },
+  {
+    "ability" : "When an opposing burning Creature leaves play, you may burn target Creature once for each burn token on the Creature that left play.",
+    "attack" : 1,
+    "cost" : 1,
+    "defense" : 4,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Scorchcrawler.png",
+    "name" : "Scorchcrawler",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Creature"
+  },
+  {
+    "ability" : "FLOOP and pay 1 action >>> Burn Target Creature in This Lane.",
+    "cost" : 0,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Scorchstone Gateway.png",
+    "name" : "Scorchstone Gateway",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
     },
     "type" : "Building"
   },
@@ -4904,6 +5318,22 @@
     "type" : "Creature"
   },
   {
+    "ability" : "Destroy target Creature and lose HP equal to its ATK.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "Rainbow",
+    "image" : "Titanbane Amulet.png",
+    "name" : "Titanbane Amulet",
+    "notes" : "",
+    "quantity" : 2,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 2
+    },
+    "type" : "Spell"
+  },
+  {
     "ability" : "Target Creature you control has +1 ATK this turn for every 5 cards in your discard pile.",
     "cost" : 1,
     "extras" : {
@@ -5144,6 +5574,22 @@
     "quantity" : 1,
     "sets" : {
       "Fionna Vs Cake (Cake)" : 1
+    },
+    "type" : "Spell"
+  },
+  {
+    "ability" : "Burn each opposing Creature once for each burn token they have on them.",
+    "cost" : 2,
+    "extras" : {
+
+    },
+    "faction" : "LavaFlats",
+    "image" : "Volcanic Vitality.png",
+    "name" : "Volcanic Vitality",
+    "notes" : "",
+    "quantity" : 1,
+    "sets" : {
+      "Flame Princess Vs Fern (FP)" : 1
     },
     "type" : "Spell"
   },

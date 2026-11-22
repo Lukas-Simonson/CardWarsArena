@@ -6,8 +6,8 @@ import { t, cardText } from "./i18n.js";
 import { problemTexts } from "./errors.js";
 
 // The colour of a deck's box and of its Landscape diamonds, as in the design's Lobby board.
-const BOX = { cornfield: "#5ea83a", blue_plains: "#3f7fc0", useless_swamp: "#6e4f98", sandy_lands: "#c98a1f", nice_lands: "#c85a8f", icy_lands: "#4aa3b8" };
-const DIAMOND = { cornfield: "#7cc74e", blue_plains: "#5aaee8", useless_swamp: "#9b7bbf", sandy_lands: "#f0b84a", nice_lands: "#f08fbc", icy_lands: "#9bdcec" };
+const BOX = { cornfield: "#5ea83a", blue_plains: "#3f7fc0", useless_swamp: "#6e4f98", sandy_lands: "#c98a1f", nice_lands: "#c85a8f", icy_lands: "#4aa3b8", lava_flats: "#d24a2a" };
+const DIAMOND = { cornfield: "#7cc74e", blue_plains: "#5aaee8", useless_swamp: "#9b7bbf", sandy_lands: "#f0b84a", nice_lands: "#f08fbc", icy_lands: "#9bdcec", lava_flats: "#ff8a4a" };
 const NEUTRAL = "#5e6b78";
 
 export const boxColour = (landscape) => BOX[landscape] ?? NEUTRAL;
@@ -19,10 +19,9 @@ export function landscapeTitle(lands) {
 }
 
 // The starter decks come in pairs, one set to a box: Finn and Jake, BMO and Lady, PB and LSP, Fionna and Cake.
-// Gunter and Lemongrab share a box, and so do Ice King and Marceline. Fern has the next box to itself for now, with
-// Flame Princess still to come.
+// Gunter and Lemongrab share a box, and so do Ice King and Marceline, and Fern and Flame Princess.
 // This is how they are laid out, by their Hero. Any deck not named here follows, in the order it came.
-const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake", "gunter", "lemongrab", "ice-king", "marceline", "fern"];
+const STARTER_ORDER = ["finn", "jake", "bmo", "lady-rainicorn", "princess-bubblegum", "lumpy-space-princess", "fionna", "cake", "gunter", "lemongrab", "ice-king", "marceline", "fern", "flame-princess"];
 
 /** The starter decks from GET /api/decks, in the order of the game's boxes. */
 export function inBoxOrder(presets) {

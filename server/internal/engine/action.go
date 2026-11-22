@@ -109,6 +109,7 @@ const (
 	EvReturn    EventKind = "return"    // a card came back from a discard pile to hand
 	EvDeckTop   EventKind = "deck_top"  // a card was put on top of a deck
 	EvActions   EventKind = "actions"   // Actions were gained
+	EvBurn      EventKind = "burn"      // a burn token went onto the Creature Card in Lane, or onto Player when Card is 0
 	EvFloop     EventKind = "floop"     // a card Flooped
 	EvActivate  EventKind = "activate"  // an activated ability was used
 	EvDiscard   EventKind = "discard"   // a card was discarded from hand

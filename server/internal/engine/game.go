@@ -45,6 +45,12 @@ type Game struct {
 	destroyed    int // how many Creatures the last destroy_creature op destroyed (Cute Overload)
 	// destroyedOwners are the owners of the Creatures the last destroy_creature op destroyed (Sacred Scythe).
 	destroyedOwners []PlayerID
+	// heroOnly makes the Fight about to be resolved hit the opposing player (Flameingo Ignisbeak).
+	heroOnly bool
+	// victim is the Creature a trigger is about, while it runs: the one damaged in a Fight, or burned.
+	victim *pos
+	// drawnCost is the cost of the card the last draw with reveal showed (Hot Wheel).
+	drawnCost int
 	// fromHand is set while a card played from its controller's hand is entering play (Valiant Armourdillo).
 	fromHand    bool
 	bouncedCost int // the cost of the Creatures the last bounce op returned (Quick Pick Me Up)
@@ -126,6 +132,7 @@ func (g *Game) Clone() *Game {
 		src := &g.State.Players[p]
 		dst := &c.State.Players[p]
 		dst.HeroFired = append([]int(nil), src.HeroFired...)
+		dst.HeroUsed = append([]int(nil), src.HeroUsed...)
 		dst.Deck = append([]Instance(nil), src.Deck...)
 		dst.Hand = append([]Instance(nil), src.Hand...)
 		dst.Discard = append([]Instance(nil), src.Discard...)
@@ -138,6 +145,7 @@ func (g *Game) Clone() *Game {
 				v.Under = append([]Instance(nil), cr.Under...)
 				v.Flipped = append([]Spot(nil), cr.Flipped...)
 				v.Gobbled = append([]Instance(nil), cr.Gobbled...)
+				v.Used = append([]int(nil), cr.Used...)
 				dst.Lanes[i].Creature = &v
 			}
 			if b := src.Lanes[i].Building; b != nil {
@@ -168,6 +176,11 @@ func (g *Game) Clone() *Game {
 		c.State.Queue[i].Targets = append([]TargetRef(nil), c.State.Queue[i].Targets...)
 		c.State.Queue[i].Options = append([]int(nil), c.State.Queue[i].Options...)
 	}
+	if g.State.Attacking != nil {
+		at := *g.State.Attacking
+		c.State.Attacking = &at
+	}
+	c.victim = nil
 	c.destroyedOwners = append([]PlayerID(nil), g.destroyedOwners...)
 	c.State.Played = append([]PlayedCard(nil), g.State.Played...)
 	c.State.RainbowHand = append([]int(nil), g.State.RainbowHand...)
@@ -235,6 +248,12 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 	}
 	// State-based rules hold after every action, not just after combat.
 	ev = append(ev, g.settle()...)
+	// The Fight phase ends once nothing is left to Fight. A decision that was waiting (burning a Creature that was
+	// the last one ready) may only have settled that now.
+	if g.State.Phase == PhaseFight && g.State.Choice == nil && g.State.Pending == nil && g.State.Attacking == nil && !g.hasAttacker(g.State.Active) {
+		ev = append(ev, g.endTurn(g.State.Active)...)
+		ev = append(ev, g.settle()...)
+	}
 	if g.State.Phase == PhaseMulligan && g.State.Players[0].Kept && g.State.Players[1].Kept {
 		ev = append(ev, g.startTurn(g.State.First)...)
 	}
@@ -329,6 +348,7 @@ func (g *Game) startTurn(p PlayerID) []Event {
 	}
 	ev := []Event{{Kind: EvTurnStart, Player: p}}
 	ev = append(ev, g.restoreLanes(p)...)
+	ev = append(ev, g.burnDamage(p)...)
 	for _, c := range g.draw(p, 1) {
 		ev = append(ev, Event{Kind: EvDraw, Player: p, Card: c.UID})
 	}

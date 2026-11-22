@@ -53,6 +53,8 @@ type Lane struct {
 // Player is one seat. Hand is only filled in for the viewer's own seat.
 type Player struct {
 	HP int `json:"hp"`
+	// Burn is how many burn tokens are on the player.
+	Burn int `json:"burn,omitempty"`
 	// Hero is the Hero card that came with the deck; its abilities appear in Legal with source "hero".
 	Hero      *engine.Instance  `json:"hero,omitempty"`
 	DeckCount int               `json:"deck_count"`
@@ -159,6 +161,7 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 		src := &st.Players[p]
 		pv := Player{
 			HP:         src.HP,
+			Burn:       src.Burn,
 			DeckCount:  len(src.Deck),
 			HandCount:  len(src.Hand),
 			Discard:    append([]engine.Instance{}, src.Discard...),
@@ -285,8 +288,13 @@ func preloadHints(st *engine.State, viewer engine.PlayerID) []string {
 // tokensOf lists the tokens on a Creature by kind ("attack"; burn tokens will join it), leaving out kinds it has none of.
 func tokensOf(c *engine.Creature) map[string]int {
 	var out map[string]int
-	if c.Tokens > 0 {
-		out = map[string]int{"attack": c.Tokens}
+	for kind, n := range map[string]int{"attack": c.Tokens, "burn": c.Burn} {
+		if n > 0 {
+			if out == nil {
+				out = map[string]int{}
+			}
+			out[kind] = n
+		}
 	}
 	return out
 }

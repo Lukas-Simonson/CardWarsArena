@@ -21,11 +21,12 @@ const (
 	NiceLands    Landscape = "nice_lands"
 	SandyLands   Landscape = "sandy_lands"
 	IcyLands     Landscape = "icy_lands"
+	LavaFlats    Landscape = "lava_flats"
 	Rainbow      Landscape = "rainbow"
 )
 
 // Landscapes lists the types a Landscape card can have.
-var Landscapes = []Landscape{Cornfield, BluePlains, UselessSwamp, NiceLands, SandyLands, IcyLands}
+var Landscapes = []Landscape{Cornfield, BluePlains, UselessSwamp, NiceLands, SandyLands, IcyLands, LavaFlats}
 
 // AbilityKind is the printed category of a card's ability, as recorded in the
 // source data. It is a hint, not authoritative; see Card.Effects.

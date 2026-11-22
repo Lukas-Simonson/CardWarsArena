@@ -318,7 +318,7 @@ a card that is not removed is not healed for. Blood Bath's and Bums Away!'s "tar
 being only one. Cards removed from the game stay out for good and show in the log. The Big Hen House heals you
 even when it has no Creature to hurt.
 
-All thirteen preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's, Ice King's, Marceline's and Fern's) are fully modelled.
+All fourteen preconstructed decks (Finn's, Jake's, BMO's, Lady's, PB's, LSP's, Cake's, Fionna's, Gunter's, Lemongrab's, Ice King's, Marceline's, Fern's and Flame Princess's) are fully modelled.
 
 - Spazzy Cola gives +1 ATK to the Creatures in play when it is played, not to ones that enter later this turn.
 - A "frozen Landscape" count (Icy Commando, Floating Ice Palace) counts the tokens on both sides of the board.
@@ -390,3 +390,36 @@ Rulings: "Free" is not "costs 0 Landscapes" (as in RULES.md), so Fern's free Cre
 Hurlers also heal damage dealt to the opposing player. Healing from Herbal Hurlers happens before a Creature is
 destroyed, so a Creature that deals as much as it takes survives. A Creature played for free from the deck (Gallant) is
 not counted as played this turn, and Valiant Armourdillo's rule needs a card played from the hand.
+
+## Burn tokens and Flame Princess's deck
+
+- **Burning.** Putting a burn token on a Creature or a player ("burning" it) deals 1 damage at once, and each token deals
+  1 more at the start of its controller's turn, before they draw (`Creature.Burn`, `Player.Burn`). A Creature is
+  *burning* while it has any. The tokens go when it leaves play (a Gobble stack keeps them). Nothing here removes a
+  player's burn tokens. Ops `burn` (a Creature from a `slot` or `all`, a Lane from a `lane` slot burns the Creatures on
+  both sides of it, or the players `who`; `amount` tokens, one at a time, default 1; `per_own` puts as many on each Creature
+  as it already has) and `remove_burn` (a token, or `amount`, from a Creature). `attack_hero` makes the Fight being started
+  hit the opposing player instead of the Creature across (Flameingo Ignisbeak).
+- **Counts** `burn_tokens` (on the Creatures of the scope: `any` for all of them), `attack` (the card's current ATK, or
+  the Creature in a `slot`: Titanbane Amulet), `drawn_cost` (the cost of the card the last `draw` with `reveal` showed) and
+  `left_burn` (the tokens on the burning Creature that last left play). **Selector** and **TargetSpec** `burning`.
+- **Triggers.** `you_burn` fires on everything its controller has in play when one of their effects burns a Creature, with
+  that Creature as the *victim*: op `victim: true` acts on it, and the Conds `victim_burning` and `victim_side` ask about it.
+  `deals_creature_damage` also sets the victim (the Creature that was damaged in the Fight), so Flameingo Blazeling burns it
+  if it was not burning. `foe_burning_leaves` fires on a Creature or Building when a burning Creature of its controller's
+  opponent leaves play (Scorchcrawler, Cozy Kiln). `attacks` may have a target slot, and the Fight waits for the answer.
+  A trigger's `if` is honoured (Hotshot and Ignisbeak ask or act only when the opposing Creature is burning, Cond
+  `lane_foe_burning`), and `once` limits a trigger to the first time while its card is in play (Kangaroo Cat) and a Hero's
+  activated ability to once a game (Flame Princess). `once_per_turn` works for Creatures and Buildings too.
+- **Op conditions** `if_not_burning` and `if_lethal` (the Creature in the slot is not burning, or is destroyed by the damage
+  it has: Broils Coils) join `if_damaged`. A `draw` with `reveal` shows the card to both players.
+- **Attacking.** A Fight now waits in `State.Attacking` while what the attack sets off is settled, so an `attacks` trigger can
+  ask a question, and Pied Piper's choice changes which Creature fights. The Fight phase also ends, after any action, once
+  the active player has nothing left that can Fight (a decision may have destroyed the last Creature ready to Fight).
+- **Activated abilities** with no Actions cost are allowed when the first op removes a burn token (Flameingo Burnwarden).
+
+Rulings: burning is damage from the card's controller, so Hot Huts' extra damage counts only for burn tokens put on by your
+own effects, not for burn damage at the start of a turn. "Damages a Creature" (Blazeling, Fireplume Chief) is damage in a
+Fight, whichever Creature dealt it. A Creature that is a Gobble stack keeps the burn tokens of everything gobbled. Flameweaver
+and Hot Wheel burn the Creature on either side of the Lane. Hot Wheel burns once per cost of the card, each a token and 1
+damage, so a cost 0 card burns nothing. Scorchcrawler burns for the burn tokens the Creature had when it left play.

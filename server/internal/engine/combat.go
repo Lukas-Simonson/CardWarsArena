@@ -69,6 +69,7 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	att := g.State.Players[p].Lanes[a.Lane].Creature
 	att.Status = Fought
 	ev := []Event{{Kind: EvAttack, Player: p, Card: att.UID, Lane: a.Lane}}
+	g.State.Attacking = &Attack{Player: p, Lane: a.Lane, From: a.Lane}
 	ctx := effCtx{p: p, at: pos{p, a.Lane}, hasSrc: true, creature: att}
 	if g.creatureAt(pos{p.Opp(), a.Lane}) == nil {
 		ev = append(ev, g.fireHeroFor(p, card.OnAttacksHero, att)...) // it will hit the opposing player
@@ -77,7 +78,22 @@ func (g *Game) doAttack(p PlayerID, a Action) []Event {
 	if g.State.Choice != nil {
 		return ev
 	}
-	return append(ev, g.startFight(p, a.Lane, a.Lane)...)
+	return append(ev, g.continueAttack()...)
+}
+
+// continueAttack goes on with the Fight that has been started once everything the attack set off is settled: a
+// decision it asked for is answered, or there was none.
+func (g *Game) continueAttack() []Event {
+	a := g.State.Attacking
+	if a == nil || g.State.Choice != nil {
+		return nil
+	}
+	g.State.Attacking = nil
+	g.heroOnly = a.Hero
+	if a.Hero {
+		return g.fight(a.Player, a.Lane, a.From)
+	}
+	return g.startFight(a.Player, a.Lane, a.From)
 }
 
 // fight resolves a Fight in lane between the Creature of p in fromLane, which
@@ -89,6 +105,10 @@ func (g *Game) fight(p PlayerID, lane, fromLane int) []Event {
 	att := g.creatureAt(from)
 	opp := p.Opp()
 	def := g.State.Players[opp].Lanes[lane].Creature
+	if g.heroOnly {
+		def = nil // it targets the opposing player instead (Flameingo Ignisbeak)
+		g.heroOnly = false
+	}
 	if def == nil {
 		// Nothing in the way: the Creature hits the opposing Hero.
 		if dmg := g.atk(from); dmg > 0 {
@@ -121,12 +141,15 @@ func (g *Game) fight(p PlayerID, lane, fromLane int) []Event {
 			at     pos
 			dealt  int
 			dealer *Creature
-		}{{from, toDef, att}, {defAt, toAtt, def}} {
+			victim pos
+		}{{from, toDef, att, defAt}, {defAt, toAtt, def, from}} {
 			if d.dealt > 0 {
 				g.heroDamage = d.dealt
 				ctx := effCtx{p: d.at.P, at: d.at, hasSrc: true, creature: d.dealer}
 				ev = append(ev, g.fire(card.OnDealsDamage, ctx, g.effectsOf(d.dealer), nil)...)
-				ev = append(ev, g.fire(card.OnDealsCreatureDamage, ctx, g.effectsOf(d.dealer), nil)...)
+				ev = append(ev, g.withVictim(d.victim, func() []Event {
+					return g.fire(card.OnDealsCreatureDamage, ctx, g.effectsOf(d.dealer), nil)
+				})...)
 				ev = append(ev, g.lifesteal(d.at, d.dealt)...)
 			}
 		}

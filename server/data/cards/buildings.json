@@ -210,6 +210,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Charming%20City.webp"
   },
   {
+    "id": "cozy-kiln",
+    "name": "Cozy Kiln",
+    "type": "building",
+    "landscape": "rainbow",
+    "cost": 1,
+    "text": "When an opposing burning Creature in this Lane leaves play, burn that Creature's owner. (At the start of their turn, they take 1 damage for each burn token.)",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Cozy%20Kiln.webp"
+  },
+  {
     "id": "crystal-palace",
     "name": "Crystal Palace",
     "type": "building",
@@ -288,6 +304,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Funeral%20Home.webp"
+  },
+  {
+    "id": "hot-huts",
+    "name": "Hot Huts",
+    "type": "building",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "text": "When you burn an opposing Creature, deal 1 additional damage to it.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Hot%20Huts.webp"
   },
   {
     "id": "ice-olation-cell",
@@ -467,6 +499,22 @@
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pyramidia.webp"
   },
   {
+    "id": "pyrovent-fortress",
+    "name": "Pyrovent Fortress",
+    "type": "building",
+    "landscape": "lava_flats",
+    "cost": 1,
+    "text": "FLOOP and remove a burn token from a Creature \u003e\u003e\u003e Deal 3 damage to that Creature.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 1
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Pyrovent%20Fortress.webp"
+  },
+  {
     "id": "resonant-spellhold",
     "name": "Resonant Spellhold",
     "type": "building",
@@ -513,6 +561,22 @@
       }
     ],
     "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Schoolhouse.webp"
+  },
+  {
+    "id": "scorchstone-gateway",
+    "name": "Scorchstone Gateway",
+    "type": "building",
+    "landscape": "lava_flats",
+    "cost": 0,
+    "text": "FLOOP and pay 1 action \u003e\u003e\u003e Burn Target Creature in This Lane.",
+    "printings": [
+      {
+        "deck": "FP's Deck",
+        "set": "Flame Princess Vs Fern",
+        "copies": 2
+      }
+    ],
+    "image_url": "https://lukas-simonson.github.io/image-repo/card_wars/Scorchstone%20Gateway.webp"
   },
   {
     "id": "silo-of-freedom",

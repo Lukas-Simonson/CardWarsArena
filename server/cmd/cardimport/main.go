@@ -113,6 +113,7 @@ var factions = map[string]card.Landscape{
 	"sandylands":   card.SandyLands,
 	"sandyland":    card.SandyLands,
 	"icylands":     card.IcyLands,
+	"lavaflats":    card.LavaFlats,
 	"rainbow":      card.Rainbow,
 }
 

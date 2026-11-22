@@ -90,6 +90,10 @@ type Creature struct {
 	// Gobbled are the Gobble Creatures it replaced, underneath it: it has their ATK and DEF as well as its own, and
 	// they go wherever it goes when it leaves play.
 	Gobbled []Instance `json:"gobbled,omitempty"`
+	// Burn is the number of burn tokens on it: it is "burning" while it has any. Used lists the triggers that fire
+	// only once while it is in play and have (Kangaroo Cat).
+	Burn int   `json:"burn,omitempty"`
+	Used []int `json:"used,omitempty"`
 	// Rage means that if it defeats a Creature in a Fight this turn, its controller draws a card (Ragepop Totem).
 	Rage bool `json:"rage,omitempty"`
 }
@@ -148,6 +152,10 @@ type Player struct {
 	// triggers and limited abilities it has used this turn, by effect index.
 	Hero      Instance `json:"hero"`
 	HeroFired []int    `json:"hero_fired,omitempty"`
+	// HeroUsed lists the Hero abilities that may be used once a game and have been (Flame Princess).
+	HeroUsed []int `json:"hero_used,omitempty"`
+	// Burn is the number of burn tokens on the player: that many damage at the start of each of their turns.
+	Burn int `json:"burn,omitempty"`
 }
 
 // State is the complete, serializable game state.
@@ -181,6 +189,10 @@ type State struct {
 	// Returned counts the Creatures each player returned to their hand this
 	// turn, from play or from their discard pile (Lady Rainicorn).
 	Returned [2]int `json:"returned,omitempty"`
+	// Attacking is the Fight that has been started and is waiting for what the attack set off to be settled.
+	Attacking *Attack `json:"attacking,omitempty"`
+	// LeftBurn is how many burn tokens the burning Creature that last left play had (Scorchcrawler).
+	LeftBurn int `json:"left_burn,omitempty"`
 	// Lifesteal[p] means that when p's Creatures deal damage this turn, they heal that much (Herbal Hurlers).
 	Lifesteal [2]bool `json:"lifesteal,omitempty"`
 	// FreeCost, when FreeCostSet, is the cost of the next Creature the active player plays that is free this turn
@@ -288,4 +300,14 @@ type Choice struct {
 type Offer struct {
 	Targets []card.TargetSpec `json:"targets,omitempty"`
 	Then    []card.Op         `json:"then,omitempty"`
+}
+
+// Attack is a Fight begun by the Creature of Player in Lane, before its damage is dealt. From is the Lane of the
+// Creature that fights (Pied Piper changes it), and Hero means it hits the opposing player instead of the Creature
+// across (Flameingo Ignisbeak).
+type Attack struct {
+	Player PlayerID `json:"player"`
+	Lane   int      `json:"lane"`
+	From   int      `json:"from"`
+	Hero   bool     `json:"hero,omitempty"`
 }

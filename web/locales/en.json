@@ -347,6 +347,7 @@
  "landscape.blue_plains": "Blue Plains",
  "landscape.cornfield": "Cornfield",
  "landscape.icy_lands": "Icy Lands",
+ "landscape.lava_flats": "Lava Flats",
  "landscape.nice_lands": "Nice Lands",
  "landscape.rainbow": "Rainbow",
  "landscape.sandy_lands": "Sandy Lands",
@@ -629,5 +630,15 @@
  "label.remove_the_frozen_token_from": "Remove the frozen token from",
  "label.return_to_your_hand": "Return to your hand",
  "token.attack": "{n, plural, one {# attack token} other {# attack tokens}}",
- "token.burn": "{n, plural, one {# burn token} other {# burn tokens}}"
+ "token.burn": "{n, plural, one {# burn token} other {# burn tokens}}",
+ "event.burn_card": "{card} gets a burn token",
+ "event.burn_player": "{who} gets a burn token",
+ "label.deal_3_damage_to": "Deal 3 damage to",
+ "label.deal_damage_to": "Deal damage to",
+ "label.don_t_deal_damage": "Don't deal damage",
+ "label.remove_a_burn_token_from": "Remove a burn token from",
+ "label.burn_each_creature_in": "Burn each Creature in",
+ "label.deal_2_damage_to": "Deal 2 damage to",
+ "label.burn": "Burn",
+ "label.don_t_burn_a_creature": "Don't burn a Creature"
 }

@@ -18,11 +18,25 @@ func (g *Game) fire(on string, ctx effCtx, effects []card.Effect, given [][]Targ
 		if e.Kind != card.KindTrigger || e.On != on {
 			continue
 		}
-		if e.OncePerTurn && ctx.building != nil {
-			if slices.Contains(ctx.building.Fired, i) {
-				continue
+		if e.If != nil && !g.cond(*e.If, ctx.source()) {
+			continue
+		}
+		if e.OncePerTurn || e.Once {
+			var used *[]int
+			switch {
+			case ctx.building != nil:
+				used = &ctx.building.Fired
+			case ctx.creature != nil && e.Once:
+				used = &ctx.creature.Used
+			case ctx.creature != nil:
+				used = &ctx.creature.Fired
 			}
-			ctx.building.Fired = append(ctx.building.Fired, i)
+			if used != nil {
+				if slices.Contains(*used, i) {
+					continue
+				}
+				*used = append(*used, i)
+			}
 		}
 		if len(e.Targets) > 0 && on != card.OnEnterPlay && given == nil {
 			ev = append(ev, g.askTrigger(e, ctx)...) // the controller chooses when it fires

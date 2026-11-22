@@ -15,7 +15,7 @@ import { t, has } from "./i18n.js";
 export const LANDSCAPE_NAMES = new Proxy({}, { get: (_, l) => (typeof l === "string" && has(`landscape.${l}`) ? t(`landscape.${l}`) : undefined) });
 
 /** The Landscape types in the order the server numbers them (a "landscape" choice's `card` is 1 + the index). */
-export const LANDSCAPE_ORDER = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands"];
+export const LANDSCAPE_ORDER = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands", "lava_flats"];
 
 export const landscapeName = (l) => (l && has(`landscape.${l}`) ? t(`landscape.${l}`) : l ?? "");
 
@@ -198,6 +198,7 @@ export function describeEvent(ctx, e) {
     case "move": return t("event.move", p);
     case "remove": return t("event.remove", p);
     case "under": return t("event.under", p);
+    case "burn": return t(e.card ? "event.burn_card" : "event.burn_player", p);
     case "retype": return t("event.retype", { ...p, type: landscapeName(LANDSCAPE_ORDER[(e.amount ?? 1) - 1]) });
     case "flip": return t("event.flip", p);
     case "freeze": return t("event.freeze", p);

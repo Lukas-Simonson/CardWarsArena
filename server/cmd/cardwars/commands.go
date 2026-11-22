@@ -300,7 +300,7 @@ func parseLandscape(tok string) (card.Landscape, bool) {
 		ls     card.Landscape
 	}{
 		{"corn", card.Cornfield}, {"blue", card.BluePlains}, {"swamp", card.UselessSwamp}, {"useless", card.UselessSwamp},
-		{"nice", card.NiceLands}, {"sandy", card.SandyLands}, {"icy", card.IcyLands},
+		{"nice", card.NiceLands}, {"sandy", card.SandyLands}, {"icy", card.IcyLands}, {"lava", card.LavaFlats},
 	} {
 		if strings.HasPrefix(t, c.prefix) {
 			return c.ls, true

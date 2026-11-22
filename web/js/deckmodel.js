@@ -11,7 +11,7 @@ export const MIN_CARDS = 40;
 export const MAX_COPIES = 3;
 export const MAX_CARDS = 120;
 export const LANES = 4;
-export const LANDSCAPES = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands"];
+export const LANDSCAPES = ["cornfield", "blue_plains", "useless_swamp", "nice_lands", "sandy_lands", "icy_lands", "lava_flats"];
 
 export const emptyDeck = () => ({ id: null, name: "", hero: "", counts: {}, landscapes: null });
 

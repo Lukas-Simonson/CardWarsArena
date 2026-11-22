@@ -154,7 +154,7 @@ them: `choose_hero`, `deck_too_small` (`n`, `min`), `choose_landscapes_rainbow`,
 A player:
 
 ```jsonc
-{ "hp": 25, "deck_count": 35, "hand_count": 5,
+{ "hp": 25, "burn": 0, "deck_count": 35, "hand_count": 5,
   "hero": {"uid":2,"card":"finn","owner":0},         // the deck's Hero, public; its abilities are in `legal`
   "hand": [{"uid":3,"card":"the-pig","owner":0}],   // ONLY your own seat
   "discard": [ … ],                                  // public, both seats
@@ -166,7 +166,7 @@ A player:
                              "protected":false,"stolen":false,"silenced":false,"lent":"","changed_lanes":false,
                              "types":["rainbow"],            // only when its Landscape types are not its card's own
                              "under":[ {"uid":12,"card":"fancy-zebracorn","owner":0} ] },  // only with cards under it (Carmel Camel)
-                             "tokens":{"attack":2}, "gobbled":[ {"uid":14,"card":"adored-cobnoblin","owner":0} ] },  // tokens on it by kind (only "attack" so far), and the Gobble Creatures it replaced
+                             "tokens":{"attack":2,"burn":1}, "gobbled":[ {"uid":14,"card":"adored-cobnoblin","owner":0} ] },  // tokens on it by kind ("attack", "burn"), and the Gobble Creatures it replaced
                "building": { "uid":8,"card":"blood-fortress","owner":0,"status":"ready" },
                "extra": [ { "uid":9,"card":"farmhouse","owner":0,"status":"ready" } ] } ] }  // 4 lanes; extra only with Burly Lumberjack
 ```
@@ -250,7 +250,7 @@ same action). An opponent's `draw` has neither.
 Kinds: `mulligan`, `keep_hand`, `turn_start`, `draw`, `play`, `replace`,
 `attack`, `damage`, `hp_loss`, `heal` (a Creature healed `amount`), `hp_gain` (a player healed `amount`), `die`, `game_over`, `move`, `flip`, `ready`,
 `bounce`, `destroy`, `return`, `deck_top`, `actions`, `floop`, `activate`,
-`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`, or underneath the Creature that replaced it when it has Gobble) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
+`discard`, `steal`, `abilities`, `reveal` (a card in hand was shown), `remove` (the card `card`, owned by `player`, was removed from the game), `freeze` and `thaw` (a Landscape, `player` and `lane`, got or lost its frozen token), `burn` (a burn token went onto the Creature `card` in `lane`, or onto the player `player` when `card` is 0), `under` (the Creature `card`, owned by `player`, went underneath the Camel in `lane`, or underneath the Creature that replaced it when it has Gobble) and `retype` (a Landscape, `player` and `lane`, changed type: `amount` is 1 + its index in the list under the `landscape` choice). Events are for
 animation and the game log only: the view is always authoritative.
 
 ## Running
@@ -270,7 +270,7 @@ A saved deck is `{id, name, hero, cards, landscapes, landscapes_chosen, created,
 `cards` has one id per copy, the way the game takes a deck. `landscapes` are the four Landscapes it is played
 with, one for each Lane in order (`[]` when the cards do not say), and `landscapes_chosen` says whether the
 player picked them. To choose, send `landscapes` with exactly four of `cornfield`, `blue_plains`,
-`useless_swamp`, `nice_lands`, `sandy_lands`, `icy_lands`; leave it out (or send `[]`) to let the cards decide,
+`useless_swamp`, `nice_lands`, `sandy_lands`, `icy_lands`, `lava_flats`; leave it out (or send `[]`) to let the cards decide,
 as the starter decks do. A card whose Landscape is not among the four can be hard or impossible to play (it
 needs as many face-up Landscapes of its type as it costs), but that does not stop the deck being played; the
 client warns about it. Saving accepts work in progress: only a deck that makes no sense is refused

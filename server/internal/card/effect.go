@@ -20,6 +20,9 @@ type Effect struct {
 	Watch *Watch `json:"watch,omitempty"`
 	// trigger: fire at most once each turn (Wall of Sand).
 	OncePerTurn bool `json:"once_per_turn,omitempty"`
+	// Once limits a trigger to the first time it fires while its card is in play (Kangaroo Cat), and a Hero's
+	// activated ability to once per game (Flame Princess).
+	Once bool `json:"once,omitempty"`
 
 	// floop, activate: only usable while this holds. play_condition: the card
 	// may only be played while this holds.
@@ -121,6 +124,12 @@ const (
 	// OnLaneCreatureLeaves fires on a Building when its controller's Creature in its Lane leaves play, however
 	// it does (Ascension Silo).
 	OnLaneCreatureLeaves = "lane_creature_leaves"
+	// OnYouBurn fires on everything its controller has in play when one of their effects burns a Creature
+	// (Heat Eater, Heat Leapers, Hot Huts).
+	OnYouBurn = "you_burn"
+	// OnFoeBurningLeaves fires on a Creature or Building when a burning Creature of its controller's opponent
+	// leaves play; Count "left_burn" is how many burn tokens it had (Scorchcrawler, Cozy Kiln).
+	OnFoeBurningLeaves = "foe_burning_leaves"
 )
 
 // Restrictions (Effect.Restrict).
@@ -209,6 +218,7 @@ type Selector struct {
 	WithBuilding bool      `json:"with_building,omitempty"` // only Creatures in a Lane where their controller has a Building
 	FaceDown     *bool     `json:"face_down,omitempty"`     // only Creatures on a face-down (or face-up) Landscape
 	Frozen       *bool     `json:"frozen,omitempty"`        // only Creatures on a frozen (or unfrozen) Landscape
+	Burning      *bool     `json:"burning,omitempty"`       // only burning (or not burning) Creatures
 }
 
 // Range bounds a number; an unset end is open.
@@ -259,6 +269,12 @@ type Cond struct {
 	PlayedCreatureCost *Range `json:"played_creature_cost,omitempty"`
 	// FromHand is whether the card was played from its controller's hand, not from a deck or the other player's hand.
 	FromHand *bool `json:"from_hand,omitempty"`
+	// VictimBurning and VictimSide are about the Creature a trigger is about: the one just damaged in a Fight, or
+	// just burned (VictimSide is "you" or "opponent", from the card's controller's point of view).
+	VictimBurning *bool  `json:"victim_burning,omitempty"`
+	VictimSide    string `json:"victim_side,omitempty"`
+	// LaneFoeBurning: the opposing Creature in the card's Lane is burning (Flameingo Ignisbeak).
+	LaneFoeBurning *bool `json:"lane_foe_burning,omitempty"`
 }
 
 // PlayedCond bounds how many cards of a Landscape type you played this turn.
@@ -293,6 +309,7 @@ type TargetSpec struct {
 	Damaged      bool      `json:"damaged,omitempty"`   // creatures: only ones with damage on them
 	Owned        bool      `json:"owned,omitempty"`     // creatures: only ones the player owns, wherever they are (Drop Zone)
 	Tokens       bool      `json:"tokens,omitempty"`    // creatures: only ones with attack tokens on them
+	Burning      bool      `json:"burning,omitempty"`   // creatures: only burning ones (with burn tokens on them)
 	NotSelf      bool      `json:"not_self,omitempty"`  // creatures: not the card itself ("another Creature")
 	// CostBelow, on a discard_card, limits it to cards that cost less than the Creature that entered play
 	// ("entering"; Resonant Spellhold).
@@ -357,6 +374,16 @@ type Op struct {
 	Attacker bool `json:"attacker,omitempty"`
 	// IfDamaged runs the op only when the Creature chosen in that slot still has damage on it (Champion's Emblem).
 	IfDamaged *int `json:"if_damaged,omitempty"`
+	// IfNotBurning runs it only if the Creature chosen in that slot is not burning; IfLethal only if the damage on
+	// it has destroyed it (Broils Coils).
+	IfNotBurning *int `json:"if_not_burning,omitempty"`
+	IfLethal     *int `json:"if_lethal,omitempty"`
+	// Victim acts on the Creature the trigger is about (the one that was damaged or burned).
+	Victim bool `json:"victim,omitempty"`
+	// PerOwn makes burn put as many tokens on each Creature as it already has, times amount (Volcanic Vitality).
+	PerOwn bool `json:"per_own,omitempty"`
+	// Reveal, on draw, shows the card drawn; Count "drawn_cost" is then its cost (Hot Wheel).
+	Reveal bool `json:"reveal,omitempty"`
 	// Cost, on discard_cost, is the cost of the card each player must discard (0), and on may_discard the least
 	// cost of the card that may be discarded; unset, any card will do.
 	Cost *int `json:"cost,omitempty"`
@@ -397,7 +424,7 @@ var validOps = map[string]struct{ slots int }{
 	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
 	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
 	"freeze": {0}, "thaw": {0}, "move_self": {0}, "retype_landscape": {0},
-	"add_tokens": {0}, "remove_tokens": {1}, "move_tokens": {2}, "lifesteal": {0}, "rage": {1}, "free_next_creature": {0},
+	"add_tokens": {0}, "burn": {0}, "remove_burn": {1}, "attack_hero": {0}, "remove_tokens": {1}, "move_tokens": {2}, "lifesteal": {0}, "rage": {1}, "free_next_creature": {0},
 	"discard_random": {0}, "discard_cost": {0}, "may_discard": {0}, "move_all_damage": {1}, "remove_card": {1},
 }
 
@@ -449,7 +476,7 @@ func (e *Effect) Validate(t Type) error {
 			if t != Building {
 				return fmt.Errorf("landscape_frozen triggers belong to buildings")
 			}
-		case OnDealsCreatureDamage, OnOpponentDiscards, OnDefeats:
+		case OnDealsCreatureDamage, OnOpponentDiscards, OnDefeats, OnYouBurn, OnFoeBurningLeaves:
 		case OnLaneCreatureLeaves:
 			if t != Building {
 				return fmt.Errorf("lane_creature_leaves triggers belong to buildings")
@@ -464,15 +491,16 @@ func (e *Effect) Validate(t Type) error {
 		if t != Creature && t != Building && t != Hero {
 			return fmt.Errorf("triggers belong to creatures, buildings and heroes")
 		}
-		if len(e.Targets) > 0 && e.On != OnEnterPlay && e.On != OnLandscapeFrozen && e.On != OnDealsCreatureDamage && e.On != OnCreatureEnters {
-			return fmt.Errorf("only enter_play, creature_enters, landscape_frozen and deals_creature_damage triggers can have targets")
+		if len(e.Targets) > 0 && e.On != OnEnterPlay && e.On != OnLandscapeFrozen && e.On != OnDealsCreatureDamage && e.On != OnCreatureEnters &&
+			e.On != OnAttacks && e.On != OnFoeBurningLeaves {
+			return fmt.Errorf("only enter_play, creature_enters, attacks, foe_burning_leaves, landscape_frozen and deals_creature_damage triggers can have targets")
 		}
 	case KindFloop:
 		if t != Creature && t != Building {
 			return fmt.Errorf("floop belongs to creatures and buildings")
 		}
 	case KindActivate:
-		free := len(e.Do) > 0 && ((e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce" || e.Do[0].Do == "thaw")) || e.Do[0].Do == "discard")
+		free := len(e.Do) > 0 && ((e.Do[0].Self && (e.Do[0].Do == "destroy_creature" || e.Do[0].Do == "bounce" || e.Do[0].Do == "thaw")) || e.Do[0].Do == "discard" || e.Do[0].Do == "remove_burn")
 		if e.Cost < 1 && !free && t != Hero {
 			return fmt.Errorf("activate needs a cost of at least 1 Action, or to remove or discard something first")
 		}
@@ -569,8 +597,10 @@ func validateOps(ops []Op, specs []TargetSpec) error {
 				return fmt.Errorf("op %d (%s): count slot %d out of range", i, op.Do, *per.Slot)
 			}
 		}
-		if op.IfDamaged != nil && (*op.IfDamaged < 0 || *op.IfDamaged >= len(specs)) {
-			return fmt.Errorf("op %d (%s): if_damaged slot %d out of range", i, op.Do, *op.IfDamaged)
+		for name, s := range map[string]*int{"if_damaged": op.IfDamaged, "if_not_burning": op.IfNotBurning, "if_lethal": op.IfLethal} {
+			if s != nil && (*s < 0 || *s >= len(specs)) {
+				return fmt.Errorf("op %d (%s): %s slot %d out of range", i, op.Do, name, *s)
+			}
 		}
 		if op.Until != "" && (op.Until != "your_next_turn" || op.Do != "flip_landscape") {
 			return fmt.Errorf("op %d (%s): until is your_next_turn, on flip_landscape", i, op.Do)
@@ -628,7 +658,7 @@ func (v Value) validate() error {
 		"discard", "empty_lanes", "entered_this_turn", "entered_adjacent", "base_attack", "milled_cost",
 		"milled_spells", "damage", "damage_dealt", "buildings", "played_titled", "drawn_this_turn",
 		"frozen_landscapes", "exhausted_creatures", "destroyed", "face_down_landscapes", "entered_lane",
-		"bounced_cost", "under", "removed_cost":
+		"bounced_cost", "under", "removed_cost", "burn_tokens", "attack", "drawn_cost", "left_burn":
 		return nil
 	}
 	return fmt.Errorf("unknown count %q", v.Per.Of)

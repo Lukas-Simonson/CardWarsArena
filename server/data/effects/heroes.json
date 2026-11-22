@@ -7,6 +7,10 @@
     {"kind": "trigger", "on": "building_played",
      "do": [{"do": "heal_creature", "all": {"rel": "your", "with_building": true}, "amount": {"n": 2}}]}
   ],
+  "flame-princess": [
+    {"kind": "activate", "once": true,
+     "do": [{"do": "burn", "all": {"rel": "opposing"}}]}
+  ],
   "fern": [
     {"kind": "trigger", "on": "replaces", "once_per_turn": true,
      "do": [{"do": "free_next_creature", "cost": 1}]}
