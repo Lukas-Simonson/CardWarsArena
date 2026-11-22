@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS } from "../js/anim.js";
+import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS, NUMBER_STAGGER, spreadNumbers } from "../js/anim.js";
 import { view, cards } from "./fixtures.mjs";
 
 const next = (mutate) => { const v = structuredClone(view()); mutate(v); return v; };
@@ -40,7 +40,7 @@ test("a Fight: lunge first, then the blow lands", () => {
   const events = [{ kind: "attack", player: 0, card: 20 }, { kind: "hp_loss", player: 1, amount: 4 }];
   const fx = plan(view(), after, events, ctx);
   assert.deepEqual(fx.find((f) => f.t === "lunge"), { t: "lunge", seat: 0, lane: 0, up: true });
-  assert.deepEqual(fx.find((f) => f.t === "hp"), { t: "hp", seat: 1, amount: 4, delay: HIT_DELAY });
+  assert.deepEqual(fx.find((f) => f.t === "hp"), { t: "hp", seat: 1, amount: 4, delay: HIT_DELAY, dx: 0, dy: 0, rot: 0 }, "a number alone on its target is where it always was");
   assert.equal(fx.find((f) => f.t === "hpbar").from, 88, "the bar slides down from where it was");
   assert.deepEqual(fx.find((f) => f.t === "settle"), { t: "settle", seat: 0, lane: 0, from: "rotate(0deg) scale(1)", to: "rotate(90deg) scale(0.7)", delay: LUNGE_MS }, "turns sideways only after its lunge");
 
@@ -178,4 +178,50 @@ test("burning at the start of a turn is not an action: a turn that only burns is
   assert.equal(bareTurnChange({ events: ev }), true);
   assert.equal(startOfTurn(ev).length, 2);
   assert.equal(startOfTurn([{ kind: "damage" }, { kind: "turn_start" }]).length, 0, "damage before the turn starts is the last action's");
+});
+
+// Floating numbers that start together on one target must not sit on each other.
+const num = (over) => ({ t: "hit", seat: 1, lane: 0, amount: 1, delay: 0, ...over });
+
+test("two hits at once on one Creature get different places and starts, each a little after the last", () => {
+  const fx = [num({}), num({}), num({})];
+  spreadNumbers(fx);
+  const spots = fx.map((f) => `${f.dx},${f.dy},${f.rot}`);
+  assert.equal(new Set(spots).size, 3, "three different places");
+  assert.deepEqual(fx.map((f) => f.delay), [0, NUMBER_STAGGER, 2 * NUMBER_STAGGER]);
+  assert.deepEqual([fx[0].dx, fx[0].dy, fx[0].rot], [0, 0, 0], "the first is where it always was");
+  assert.ok(fx.every((f) => Math.abs(f.dx) <= 60), "all stay on the card");
+});
+
+test("numbers on different targets, or far apart in time, are left alone", () => {
+  const fx = [num({}), num({ lane: 1 }), num({ seat: 0 }), num({ delay: 2000 })];
+  spreadNumbers(fx);
+  assert.ok(fx.every((f) => f.dx === 0 && f.rot === 0 && f.delay === (f.delay >= 2000 ? 2000 : 0)));
+});
+
+test("heal and damage on one Creature sit apart: heal to the left, damage to the right", () => {
+  const fx = [num({ t: "hit" }), num({ t: "heal" })];
+  spreadNumbers(fx);
+  const [hit, heal] = fx;
+  assert.ok(heal.dx < 0 && hit.dx > 0, `heal ${heal.dx}, damage ${hit.dx}`);
+  // a player's go above and below, away from the avatar they sit beside
+  const p = [num({ t: "hp" }), num({ t: "hpgain" })];
+  spreadNumbers(p);
+  assert.ok(p[1].dy < 0 && p[0].dy > 0 && p.every((f) => f.dx >= 0), "heal above, damage below, never towards the avatar");
+});
+
+test("the burn step is spread on its own, apart from the Fight's numbers", () => {
+  const fx = [num({ delay: 260 }), num({ delay: 0, late: true }), num({ delay: 0, late: true })];
+  spreadNumbers(fx);
+  assert.equal(fx[0].dx, 0, "the Fight's hit is not moved by the burn that comes after the banner");
+  assert.notEqual(fx[1].dx, fx[2].dx);
+});
+
+test("plan() gives the numbers of one update their places, and the same update the same places", () => {
+  const events = [{ kind: "damage", player: 1, card: 30, lane: 0, amount: 1 }, { kind: "damage", player: 1, card: 30, lane: 0, amount: 1 }, { kind: "heal", player: 1, card: 30, lane: 0, amount: 2 }];
+  const after = next((v) => { v.players[1].lanes[0].creature.damage = 1; });
+  const a = plan(view(), after, events, ctx).filter((f) => f.t === "hit" || f.t === "heal");
+  const b = plan(view(), after, events, ctx).filter((f) => f.t === "hit" || f.t === "heal");
+  assert.deepEqual(a, b);
+  assert.equal(new Set(a.map((f) => `${f.dx},${f.dy}`)).size, 3);
 });
