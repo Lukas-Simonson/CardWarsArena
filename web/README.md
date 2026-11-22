@@ -42,6 +42,10 @@ You act on the cards themselves; there is no list of actions.
 
 ## Layout
 
+**Before you add or change how a card asks the player something**, read [`docs/interactions.md`](docs/interactions.md): where
+a question is asked (the board or a pop-up), what every question shows, the words and button colours to use, and a
+checklist. [`docs/interaction-audit.md`](docs/interaction-audit.md) lists every interaction against it.
+
 ```
 index.html       home screen markup and the #builder and #game mount points
 css/style.css    materials (wood, felt, steel, parchment), buttons, card frames
@@ -64,6 +68,7 @@ js/i18n.js       t(key, params), the message format, locale choice, pseudo-local
 js/errors.js     server error codes -> messages
 locales/         message catalogues: en.json (the source) and index.json (the locales offered)
 tools/           the checks on the catalogues (npm run i18n)
+docs/            how the interface works: interactions.md (the guide to card interactions) and interaction-audit.md
 test/            node --test unit tests, fixtures, and a smoke test
 serve.mjs        tiny static server for development
 ```
