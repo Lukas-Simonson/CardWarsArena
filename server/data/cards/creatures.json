@@ -1579,6 +1579,7 @@
     "attack": 3,
     "defense": 14,
     "text": "When an opposing Creature attacks, you may choose to have it attack Genteel Armourdillo instead.",
+    "feat": "whump",
     "printings": [
       {
         "deck": "Fern's Deck",
