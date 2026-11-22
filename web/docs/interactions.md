@@ -210,9 +210,11 @@ For orientation; this is also where a rule is enforced.
 | The legal actions become clicks | `web/js/picker.js` | `ActionPicker` turns the server's legal actions into tokens (`lane:2:creature`, `discard_card:1:42`, `creature:0:1\|mode:0`), remembers the selection, and says what to ask next. Pure; tested in `web/test/picker.test.mjs`. |
 | What the prompt bar says | `web/js/prompt.js` | `buildPrompt` words the guidance, Skip, Cancel and Confirm from the picker. Pure. |
 | Words for actions and cards | `web/js/describe.js` | `describeAction`, `summaryText`, `slotFilled`, `describeRef`: the sentences. |
-| The board and its prompt bar | `web/js/render.js` | The battlefield, the hand, the prompt bar (`promptBar`), and **`choiceModal`**: today one hand-built pop-up for each kind of engine choice (phase 2 moves most of them into the bar and replaces the rest with one shared card pop-up). |
+| The question | `web/js/question.js` | **The shared question model** (source, sentence, options, skip, cancel, confirm, surface), `ROLE_CLASS` (the one place a button role gets its class), `CHOICE_SURFACE` (which surface each engine choice kind uses; a kind not listed is still a hand-built pop-up), and `fromPrompt` / `fromChoice`, which make a question from the board prompt or an engine choice. Pure; tested in `web/test/question.test.mjs`. |
+| Drawing a question | `web/js/questionui.js` | `questionBar` (the bar above the hand) and `questionPopup` (a pop-up of cards): the same parts in the same order, 44 px buttons, one spacing variable. |
+| The board and its prompt bar | `web/js/render.js` | The battlefield, the hand, `promptBar` (draws the board prompt or a short choice through `questionBar`), and **`choiceModal`**: the hand-built pop-ups for the engine choice kinds that have not moved onto the shared question yet (see `CHOICE_SURFACE` and the audit). |
 | The pile viewer | `web/js/render.js` (`pileModal`) | Both discard piles when the card may take from either. |
-| Button and modal styles | `web/css/style.css` | `btn-*`, `.modal*`, `.chip`. |
+| Button and modal styles | `web/css/style.css` | `btn-*`, `.modal*`, `.chip`, and the shared question (`.qbar`, `.qopts`, `.qsource`, `.qopt`, `--btn-gap`). |
 | The strings | `web/locales/en.json` | Every sentence; checked by `npm run i18n`. |
 | The engine's questions | `server/internal/engine/choice.go`, `server/docs/effects.md` | The choice kinds, and how a card's effect becomes a question (targets, `group`, `optional`, `requires`, `skip_label`, `together`). |
 | The wire format | `server/docs/protocol.md` | The `choice` in the view and the legal actions that answer it. |
