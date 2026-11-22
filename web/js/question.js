@@ -17,7 +17,9 @@
 //
 // `act` says what pressing does; run() turns it into a call on the handlers `on` that main.js gives the renderer.
 import { t } from "./i18n.js";
-import { cardName, landscapeName, LANDSCAPE_ORDER } from "./describe.js";
+import { cardName, landscapeName, labelText, movesToTheirSide, LANDSCAPE_ORDER } from "./describe.js";
+import { instruction } from "./prompt.js";
+import { tokenOfRef } from "./picker.js";
 
 /** The button class for each role (B1-B5). The one place that says what a colour means. */
 export const ROLE_CLASS = { choice: "btn-purple", commit: "btn-green", neutral: "btn-steel", danger: "btn-red", special: "btn-ice" };
@@ -25,10 +27,9 @@ export const ROLE_CLASS = { choice: "btn-purple", commit: "btn-green", neutral: 
 export const SURFACE = { bar: "bar", popup: "popup" };
 
 /**
- * Where each kind of engine choice is asked once it is on the shared question. A kind that is not here is still a
- * hand-built pop-up in render.js's choiceModal and is listed in the audit with the step that moves it (2b to 2d).
- * A new kind must be added here, with a reason from the guide: W3 for a short decision, W4 only for cards that are not
- * on the table.
+ * Where each kind of engine choice is asked. Every kind is here: render.js draws a choice from its question, and has no
+ * pop-up of its own. A new kind must be added here, with a reason from the guide: W1 for a board object, W2 for a hand
+ * card, W3 for a short decision, W4 only for cards that are not on the table.
  */
 export const CHOICE_SURFACE = {
   amount: SURFACE.bar, reveal: SURFACE.popup,
@@ -39,6 +40,8 @@ export const CHOICE_SURFACE = {
   move_damage: SURFACE.bar, camel: SURFACE.bar, landscape: SURFACE.bar, search: SURFACE.popup,
   // A Lane is a board object: it is a click on the board, with the sentence on the bar (W1).
   place: SURFACE.bar,
+  // The rest are board objects too (W1): a Creature, a Landscape, a target. Nothing is a pop-up that could be a click.
+  redirect: SURFACE.bar, defend: SURFACE.bar, move: SURFACE.bar, target: SURFACE.bar,
 };
 
 /** Do what an option's `act` says, with the handlers `on`. */
@@ -111,12 +114,45 @@ export function fromChoice(ctx, choice, legal, mine) {
       return {
         ...base, subject: building ? ctx.cards?.[building.card] ?? { id: building.card, name: building.card } : null,
         text: t("question.place", { name: building ? cardName(ctx, building.card) : "" }),
-        options: [], boardPicks: Object.fromEntries(answers.filter((a) => a.lane != null).map((a) => [`place:${a.lane}`, act(a)])),
+        options: [], boardPicks: Object.fromEntries(answers.map((a) => [`place:${a.lane ?? 0}`, act(a)])), // every answer is a lane; the server leaves lane 0 out
+      };
+    }
+    case "redirect": // Pied Piper: a Flooped Creature of yours fights in the attacker's place (W1: click it)
+    case "defend": { // Genteel and Gracious Armourdillo: a Creature of yours takes the Fight (W1: click it)
+      const me = ctx.view.you, mine = ctx.view.players[me].lanes;
+      const attacker = choice.kind === "redirect" ? mine[choice.lane ?? 0]?.creature : ctx.view.players[choice.move_side ?? 0]?.lanes?.[choice.other ?? choice.lane ?? 0]?.creature;
+      const picks = answers.filter((a) => a.card).flatMap((a) => {
+        const lane = mine.findIndex((l) => l.creature?.uid === a.card);
+        return lane < 0 ? [] : [[`creature:${me}:${lane}`, act(a)]];
+      });
+      return {
+        ...base, boardPicks: Object.fromEntries(picks), options: [],
+        text: t(choice.kind === "redirect" ? "question.redirect" : "question.defend", { name, attacker: attacker ? cardName(ctx, attacker.card) : "?" }),
+        skip: noCard ? { label: t(choice.kind === "redirect" ? "question.redirect_skip" : "question.defend_skip"), act: act(noCard) } : null,
+      };
+    }
+    case "move": { // a Creature moves to an empty Landscape, maybe on the other side (W1: click the Landscape)
+      const side = choice.move_side ?? 0;
+      return {
+        ...base, options: [],
+        text: t(movesToTheirSide(choice, ctx.view.you) ? "question.move_theirs" : "question.move_mine", { name }),
+        boardPicks: Object.fromEntries(answers.map((a) => [`landscape:${side}:${a.lane ?? 0}`, act(a)])), // every answer is a lane; the server leaves lane 0 out
+      };
+    }
+    case "target": { // a trigger's target: the legal ones are clicked on the board, and the card words what choosing none does
+      const picks = answers.filter((a) => a.targets?.[0]?.length).map((a) => [tokenOfRef(a.targets[0][0]), act(a)]);
+      const none = answers.find((a) => !a.targets?.[0]?.length);
+      const label = choice.label ? labelText(choice.label) : "";
+      const step = instruction(picks.map(([token]) => token), true), optional = choice.optional ? "yes" : "no";
+      return {
+        ...base, options: [], boardPicks: Object.fromEntries(picks),
+        text: label ? t("prompt.step_labelled", { label, step, name, optional, prefix: "" }) : t("prompt.step", { step, name, optional, prefix: "" }),
+        skip: none ? { label: choice.skip_label ? labelText(choice.skip_label) : t("skip.none"), act: act(none) } : null,
       };
     }
     case "move_damage": { // Friendship Bracelet: how much damage to move between two of your Creatures, with the result of each
       const mine = ctx.view.players[ctx.view.you].lanes;
-      const from = mine[choice.lane]?.creature, to = mine[choice.other]?.creature;
+      const from = mine[choice.lane ?? 0]?.creature, to = mine[choice.other ?? 0]?.creature; // a lane 0 is left out of the choice
       const [a, b] = [from, to].map((c) => (c ? cardName(ctx, c.card) : "?"));
       return {
         ...base, text: t("question.move_damage", { from: a, to: b }),

@@ -285,6 +285,8 @@ type Choice struct {
 	Targets  []TargetRef `json:"targets,omitempty"`
 	Optional bool        `json:"optional,omitempty"`
 	Label    string      `json:"label,omitempty"`
+	// SkipLabel is the slot's skip_label: what choosing nothing does, in the card's words (an optional target).
+	SkipLabel string `json:"skip_label,omitempty"`
 	// Do is what happens once the choice is made (target), or once the Creature has moved (move). The engine
 	// keeps it to itself: players see only the card that asks.
 	Do []card.Op `json:"-"`

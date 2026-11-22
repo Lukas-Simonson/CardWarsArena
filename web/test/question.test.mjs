@@ -61,7 +61,7 @@ test("a choice that is not mine, is over, or is not on the shared question yet a
   const choice = { kind: "amount", card: "cool-dog", player: 0, options: [1, 2] };
   assert.equal(fromChoice(ctx, choice, [], false), null);
   assert.equal(fromChoice({ ...ctx, view: { ...ctx.view, over: true } }, choice, [], true), null);
-  assert.equal(fromChoice(ctx, { kind: "redirect", card: "cool-dog" }, [], true), null, "still a hand-built pop-up (audit: 2d)");
+  assert.equal(fromChoice(ctx, { kind: "mystery", card: "cool-dog" }, [], true), null, "a kind that is not placed asks nothing");
   assert.equal(fromChoice(ctx, null, [], true), null);
 });
 
@@ -161,7 +161,7 @@ test("the mulligan is two buttons on the bar: Keep (commit) and Mulligan (a plai
 });
 
 test("every choice kind on the bar or the pop-up is listed, so a new one has to be placed", () => {
-  assert.deepEqual(Object.keys(CHOICE_SURFACE).sort(), ["amount", "camel", "discard", "landscape", "move_damage", "place", "ransom", "rebound", "reveal", "search", "upkeep"]);
+  assert.deepEqual(Object.keys(CHOICE_SURFACE).sort(), ["amount", "camel", "defend", "discard", "landscape", "move", "move_damage", "place", "ransom", "rebound", "redirect", "reveal", "search", "target", "upkeep"]);
 });
 
 // A Lane is a board object (W1): Deforestation's second step is a click on the board, with the sentence on the bar.
@@ -175,4 +175,68 @@ test("choosing the Lane for a searched Building is a click on the board, one pic
   assert.deepEqual(q.options, [], "nothing to press: the lanes are the answer");
   assert.deepEqual(Object.keys(q.boardPicks), ["place:0", "place:1", "place:2", "place:3"]);
   assert.deepEqual(q.boardPicks["place:2"], { type: "action", action: legal[2] });
+});
+
+// Board objects are clicks on the board (W1): the four kinds that used to be pop-ups.
+test("only the two kinds that show cards off the table are pop-ups; everything else is the bar", () => {
+  assert.deepEqual(Object.entries(CHOICE_SURFACE).filter(([, s]) => s === "popup").map(([k]) => k).sort(), ["reveal", "search"]);
+});
+
+test("Pied Piper's redirect is a click on a Flooped Creature of yours, with a plain skip (not red)", () => {
+  // the fixture's seat 0 has The Pig in lane 0 (uid 20) and Uni-Knight in lane 2 (uid 22)
+  const legal = [{ kind: "choose", card: 22 }, { kind: "choose" }];
+  const q = fromChoice(ctx, { kind: "redirect", card: "the-pig", lane: 0, revealed: [{ uid: 22, card: "uni-knight", owner: 0 }] }, legal, true);
+  assert.equal(q.surface, "bar");
+  assert.deepEqual(Object.keys(q.boardPicks), ["creature:0:2"]);
+  assert.deepEqual(q.options, [], "no red button");
+  assert.equal(q.skip.label, "Don't redirect the attack");
+  assert.match(q.text, /The Pig attacks/);
+});
+
+test("an Armourdillo that may take a Fight is a click on it, and the attacker is named even from lane 0", () => {
+  const legal = [{ kind: "choose", card: 22 }, { kind: "choose" }];
+  // a lane 0 and a seat 0 are left out of the choice by the server (they are zero)
+  const q = fromChoice({ ...ctx, view: { ...ctx.view, you: 1, players: [ctx.view.players[0], { ...ctx.view.players[1], lanes: ctx.view.players[1].lanes.map((l, i) => i === 2 ? { ...l, creature: { uid: 22, card: "cool-dog" } } : l) }] } },
+    { kind: "defend", card: "cool-dog", player: 1, lane: 0, revealed: [{ uid: 22, card: "cool-dog", owner: 1 }] }, legal, true);
+  assert.deepEqual(Object.keys(q.boardPicks), ["creature:1:2"]);
+  assert.match(q.text, /The Pig attacks/, "the attacker is seat 0's lane 0, though the choice leaves both out");
+  assert.equal(q.skip.label, "Don't take the Fight");
+});
+
+test("a move is a click on the empty Landscape, on whichever side it may go", () => {
+  const legal = [{ kind: "choose", lane: 1 }, { kind: "choose", lane: 3 }];
+  const mine = fromChoice(ctx, { kind: "move", card: "cool-dog", lanes: [1, 3], move_side: 0 }, legal, true);
+  assert.deepEqual(Object.keys(mine.boardPicks), ["landscape:0:1", "landscape:0:3"]);
+  assert.match(mine.text, /of yours/);
+  const theirs = fromChoice(ctx, { kind: "move", card: "cool-dog", lanes: [1], move_side: 1 }, legal.slice(0, 1), true);
+  assert.deepEqual(Object.keys(theirs.boardPicks), ["landscape:1:1"]);
+  assert.match(theirs.text, /opponent's side/);
+});
+
+test("a trigger's target is clicked on the board, worded as the board prompt is, and skipped in the card's words", () => {
+  const ref = (kind, player, lane) => ({ kind, player, lane });
+  const legal = [{ kind: "choose", targets: [[ref("landscape", 1, 0)]] }, { kind: "choose", targets: [[ref("landscape", 0, 2)]] }, { kind: "choose" }];
+  const q = fromChoice(ctx, { kind: "target", card: "cool-dog", optional: true, label: "Freeze", skip_label: "Don't freeze a Landscape" }, legal, true);
+  assert.deepEqual(Object.keys(q.boardPicks).sort(), ["landscape:0:2", "landscape:1:0"]);
+  assert.match(q.text, /^Freeze: choose a Landscape for Cool Dog \(optional\)$/);
+  assert.equal(q.skip.label, "Don't freeze a Landscape");
+  const bare = fromChoice(ctx, { kind: "target", card: "cool-dog", optional: true }, legal, true);
+  assert.equal(bare.skip.label, "Skip", "no label of its own: the fallback");
+  assert.equal(fromChoice(ctx, { kind: "target", card: "cool-dog" }, legal.slice(0, 2), true).skip, null, "required: nothing to skip");
+});
+
+test("a pile card is a board pick too, so the pile viewer opens for it", () => {
+  const legal = [{ kind: "choose", targets: [[{ kind: "discard_card", player: 0, card: 13 }]] }];
+  const q = fromChoice(ctx, { kind: "target", card: "cool-dog", optional: true }, legal, true);
+  assert.deepEqual(Object.keys(q.boardPicks), ["discard_card:0:13"]);
+});
+
+// The server leaves out what is zero, so the choice of lane 0 is a choose with no lane at all.
+test("lane 0 is a choice too, though the server sends it with no lane", () => {
+  const legal = [{ kind: "choose" }, { kind: "choose", lane: 2 }, { kind: "choose", lane: 3 }]; // lanes 0, 2 and 3
+  const move = fromChoice(ctx, { kind: "move", card: "cool-dog", lanes: [0, 2, 3], move_side: 1 }, legal, true);
+  assert.deepEqual(Object.keys(move.boardPicks).sort(), ["landscape:1:0", "landscape:1:2", "landscape:1:3"]);
+  assert.deepEqual(move.boardPicks["landscape:1:0"], { type: "action", action: legal[0] });
+  const place = fromChoice(ctx, { kind: "place", card: "cool-dog", lanes: [0, 1, 2, 3], revealed: [{ uid: 5, card: "blood-fortress", owner: 0 }] }, [{ kind: "choose" }, ...[1, 2, 3].map((lane) => ({ kind: "choose", lane }))], true);
+  assert.deepEqual(Object.keys(place.boardPicks).sort(), ["place:0", "place:1", "place:2", "place:3"]);
 });

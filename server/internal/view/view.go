@@ -78,18 +78,24 @@ type Choice struct {
 	Card     string            `json:"card"`   // the card that asks
 	Count    int               `json:"count,omitempty"`
 	Revealed []engine.Instance `json:"revealed,omitempty"`
-	// move: the Creature in Lane (on the deciding player's side) may go to any of Lanes on seat MoveSide.
+	// move: the Creature in Lane (on the deciding player's side) may go to any of Lanes on seat MoveSide. move_damage:
+	// the damage leaves the Creature in Lane and goes to the one in Other.
 	Lane     int   `json:"lane,omitempty"`
+	Other    int   `json:"other,omitempty"`
 	Lanes    []int `json:"lanes,omitempty"`
 	MoveSide int   `json:"move_side,omitempty"`
 	// target: what may be chosen, and whether the player may choose nothing.
 	Targets  []engine.TargetRef `json:"targets,omitempty"`
 	Optional bool               `json:"optional,omitempty"`
 	Label    string             `json:"label,omitempty"`
-	// discard: only cards of cost OnlyCost; ransom: only cards of at least MinCost; amount: pick from Options.
-	OnlyCost *int  `json:"only_cost,omitempty"`
-	MinCost  *int  `json:"min_cost,omitempty"`
-	Options  []int `json:"options,omitempty"`
+	// SkipLabel is what choosing nothing does, in the card's words ("Don't freeze a Landscape"), when it has some.
+	SkipLabel string `json:"skip_label,omitempty"`
+	// discard: only cards of cost OnlyCost; ransom: only cards of at least MinCost; amount: pick from Options, which
+	// are numbers of Unit ("damage" or "heal").
+	OnlyCost *int   `json:"only_cost,omitempty"`
+	MinCost  *int   `json:"min_cost,omitempty"`
+	Options  []int  `json:"options,omitempty"`
+	Unit     string `json:"unit,omitempty"`
 }
 
 // View is a complete picture of the game for one viewer.
@@ -150,9 +156,9 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 	}
 	if ch := st.Choice; ch != nil {
 		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...),
-			Lane: ch.Lane, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
-			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label,
-			OnlyCost: ch.OnlyCost, MinCost: ch.MinCost, Options: append([]int(nil), ch.Options...)}
+			Lane: ch.Lane, Other: ch.Other, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
+			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label, SkipLabel: ch.SkipLabel,
+			OnlyCost: ch.OnlyCost, MinCost: ch.MinCost, Options: append([]int(nil), ch.Options...), Unit: ch.Unit}
 		if (ch.Kind == engine.ChoiceSearch || ch.Kind == engine.ChoicePlace) && ch.Player != viewer {
 			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
 		}

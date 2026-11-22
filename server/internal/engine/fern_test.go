@@ -562,6 +562,9 @@ func TestMossglenRetreatOffersToRemoveATokenOrAFrozenToken(t *testing.T) {
 	for _, a := range g.LegalActions(0) {
 		if a.Kind == ActActivate && a.Lane == 1 && a.Source == "building" {
 			offers++
+			if !a.Offer {
+				t.Errorf("an offer is not marked as one: %v", a)
+			}
 		}
 	}
 	if offers != 2 {

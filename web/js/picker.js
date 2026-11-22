@@ -199,6 +199,22 @@ export class ActionPicker {
     });
   }
 
+  /**
+   * Which step this is, and how many there are, for "Step 2 of 3". Only slots with something to click count, so a step
+   * that cannot apply is not counted, and the total shrinks when a skipped step takes a later one with it.
+   */
+  stepInfo() {
+    const live = this.consistent();
+    const longest = Math.max(0, ...live.map((a) => this.slots.get(a).length));
+    let of = 0, n = 0;
+    for (let i = 0; i < longest; i++) {
+      if (!live.some((a) => (this.slots.get(a)[i] ?? []).length > 0)) continue;
+      of++;
+      if (i <= this.done.length) n = of;
+    }
+    return { n: Math.max(n, 1), of };
+  }
+
   /** What the slot being filled is for, as the server labelled it ("" if it did not). */
   label() {
     const i = this.done.length;
