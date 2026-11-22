@@ -15,8 +15,9 @@ the fixes come from: each deviation has an ID (D1, D2...) and the phase of the
 
 - **117** card interactions choose something (targets chosen up front or by a trigger), in **44** different shapes.
   The board-click flow handles all of them except the five cards whose trigger asks mid-effect (see D6).
-- **14** kinds of mid-effect engine choice, each a hand-built branch of `choiceModal` (#88 counted thirteen; `defend`
-  was added since).
+- **14** kinds of mid-effect engine choice, each a hand-built pop-up in `choiceModal` (#88 counted thirteen; `defend` was
+  added since). **By the guide only 2 of the 14 should be pop-ups** (`reveal` and `search`, which show cards that are not
+  on the table). Four are board clicks, four are a click on your hand, and four are buttons in the bar (see section 1).
 - **Buttons** in `render.js`: purple 13, steel 13, red 5, green 4, ice 1, with no stated rule until
   [the guide](interactions.md#button-roles).
 - **Skips and declines** are worded seven ways ("Leave it", "Let it go", "Choose nothing", "Take it instead", "{name}
@@ -25,25 +26,25 @@ the fixes come from: each deviation has an ID (D1, D2...) and the phase of the
 
 ## 1. The engine's mid-effect choices (`choiceModal`)
 
-Each row is one branch of `choiceModal` in `web/js/render.js`. "Guide" says whether it follows the rules; the codes are
-those of [the guide](interactions.md).
+Each row is one hand-built pop-up in `web/js/render.js`. "Should be" is where [the guide](interactions.md#where-a-question-is-asked)
+puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those of the guide.
 
-| Kind | What it asks | Shown today as | Follows the guide? | Fixed in |
-|---|---|---|---|---|
-| `discard` | Pick N cards from your hand to discard | Pop-up: your hand as cards; title "Discard {n}" | W2 ok. **A1**: only the name of the asking card in the sentence (D1). No skip (correct: required). | 2b |
-| `ransom` | Discard a card of at least a cost, **or** take the effect | Pop-up: hand cards + red "Take it" | W2 ok; B4 ok (it costs the player). **V6/A5**: "Take it" does not say what is taken ("Take 5 damage") (D3). **A1** (D1). | 2b / 2c |
-| `upkeep` | Discard N cards, **or** destroy the asking Creature | Pop-up: hand cards + red "Destroy {name}" | W2 ok; B4 ok. **A1** (D1). | 2b |
-| `rebound` | Discard a card to return the Creature, **or** not | Pop-up: hand cards + steel "Leave it" | W2 ok. **V1**: "Leave it" is a retired word, should be "Don't return {name}" (D2). **A1** (D1). | 2b |
-| `reveal` | Pick one of the revealed cards (the rest are discarded) | Pop-up: the cards | W2 ok. **A1** (D1). No skip (correct). | 2b |
-| `search` | Pick a Building from the deck | Pop-up: the cards | W2 ok. **A1** (D1). | 2b |
-| `redirect` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | Pop-up: cards + red "{name} fights" | **W1**: it picks a Creature on the board and should be a board click (D4). **B4**: red is used for "stay put", not a cost (D5). **V1** (D2). | 2d |
-| `defend` | Pick a Creature of yours to take an attack, **or** let it go on | Pop-up: cards + steel "Let it fight where it is going" | **W1** (D4). **V1**: should be "Don't take the Fight" (D2). | 2d |
-| `move_damage` | Pick how much damage to move between two Creatures | Pop-up: number buttons | W2 ok. **A5**: the buttons are bare numbers and do not say between which Creatures or the result (D3). | 2c |
-| `move` | Pick the empty Landscape a Creature moves to | Pop-up: "Lane 1".."Lane 4" buttons | **W1**: it picks a Landscape on the board and should be a board click (D4). **A3**: "Lane n" does not say what is there. | 2d |
-| `camel` | Put the leaving Creature under your Camel, **or** let it go | Pop-up: the card + purple "Put it under {name}" + steel "Let it go" | W2 ok. **V1**: "Let it go" is retired, "Don't put it under {name}" (D2). | 2c |
-| `landscape` | Pick the Landscape type your Lane becomes | Pop-up: type buttons | W2 ok. **A1**: no card shown (D1). | 2c |
-| `target` | Pick what a trigger acts on (a Creature, Landscape or pile card), optionally | Pop-up: one button per target ("Lane 2 Creature..."), steel "Choose nothing" | **W1**: it picks board objects and should be a board click (D4). **V1**: "Choose nothing" is retired, the card's `skip_label` should be used (D2). | 2d |
-| `amount` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | Pop-up: number buttons | W2 ok. **A5**: bare numbers; "1 damage" / "2 damage" and the heal that follows (D3). | 2c |
+| Kind | What it asks | Shown today as | Should be | What else is wrong | Fixed in |
+|---|---|---|---|---|---|
+| `discard` | Pick N cards from your hand to discard | Pop-up: your hand as cards | **W2**: click the hand; the bar says "Discard 2 cards" and counts down | A1: no card shown (D1) | 2b |
+| `ransom` | Discard a card of at least a cost, **or** take the effect | Pop-up: hand cards + red "Take it" | **W2 + W3**: click the hand, or the red button in the bar | A5: "Take it" does not say what is taken, "Take 5 damage" (D3) | 2b |
+| `upkeep` | Discard N cards, **or** destroy the asking Creature | Pop-up: hand cards + red "Destroy {name}" | **W2 + W3**: click the hand, or the red button in the bar | A1 | 2b |
+| `rebound` | Discard a card to return the Creature, **or** not | Pop-up: hand cards + steel "Leave it" | **W2 + W3**: click the hand, or "Don't return {name}" in the bar | V1: "Leave it" is retired (D2) | 2b |
+| `reveal` | Pick one of the revealed cards (the rest are discarded) | Pop-up: the cards | **W4**: stays a pop-up (the cards are not on the table) | A1 | 2b |
+| `search` | Pick a Building from the deck | Pop-up: the cards | **W4**: stays a pop-up | A1 | 2b |
+| `redirect` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | Pop-up: cards + red "{name} fights" | **W1**: click the Creature on the board; "Don't redirect" in the bar | B4: red is used for "stay put", not a cost (D5); V1 (D2) | 2d |
+| `defend` | Pick a Creature of yours to take an attack, **or** let it go on | Pop-up: cards + steel "Let it fight where it is going" | **W1**: click the Creature on the board; "Don't take the Fight" in the bar | V1 (D2) | 2d |
+| `move_damage` | Pick how much damage to move between two Creatures | Pop-up: number buttons | **W3**: buttons in the bar ("Move 2 damage from A to B"), or a stepper when there are many | A5: the buttons are bare numbers and do not say between which Creatures or the result (D3) | 2c |
+| `move` | Pick the empty Landscape a Creature moves to | Pop-up: "Lane 1".."Lane 4" buttons | **W1**: click the Landscape on the board | A3: "Lane n" does not say what is there | 2d |
+| `camel` | Put the leaving Creature under your Camel, **or** let it go | Pop-up: the card + purple "Put it under {name}" + steel "Let it go" | **W3**: two buttons in the bar, with the leaving card shown at the start of the line | V1: "Let it go" is retired, "Don't put it under {name}" (D2) | 2c |
+| `landscape` | Pick the Landscape type your Lane becomes | Pop-up: type buttons | **W3**: the types as buttons in the bar (seven, wrapping) | A1: no card shown (D1) | 2c |
+| `target` | Pick what a trigger acts on (a Creature, Landscape or pile card), optionally | Pop-up: one button per target ("Lane 2 Creature...") + steel "Choose nothing" | **W1**: click the target on the board (a pile card: the pile viewer, W7) | V1: the card's `skip_label` should be used (D2) | 2d |
+| `amount` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | Pop-up: number buttons | **W3**: buttons in the bar: "1 damage", "2 damage" | A5: bare numbers (D3) | 2c |
 
 Which cards ask each kind (from the card data):
 
@@ -123,7 +124,7 @@ of these, except the rows marked pop-up, which the engine asks mid-effect (D6).
 
 | Place | What it asks | Where | Follows the guide? | Fixed in |
 |---|---|---|---|---|
-| **Mulligan** | Keep this hand, or mulligan (once) | Buttons in an overlay: green "Keep", red "Mulligan" | B2 ok for Keep. **B4**: a mulligan is not irreversible or costly in the guide's sense; it is a choice (D5). No source card (nothing asks). | 2c |
+| **Mulligan** | Keep this hand, or mulligan (once) | Buttons in an overlay over the board | **W3**: two buttons, so the bar (D12). B2 ok for Keep. **B4**: a mulligan is a choice, not a cost or the attack, so not red (D5). | 2c |
 | **End of main phase** | Fight (end the turn's actions) | Red "Fight!" in the hand bar | B4 ok (it cannot be taken back). | n/a |
 | **End turn** | Nothing left to Fight | Green "End turn" | B2 ok. | n/a |
 | **Play a card from your hand** | The lane and targets, then Confirm | Prompt bar: guidance, Skip, Cancel, Confirm | W4 ok. **V1**: Skip is labelled "None" or "Done" where the card has no `skip_label` (D2). **M1**: steps are not numbered (D7). | 2d |
@@ -145,27 +146,34 @@ Each is a candidate for a small issue, in the phase that fixes it.
 
 | ID | Rule | The problem | Where | Phase |
 |---|---|---|---|---|
-| **D1** | A1 | A pop-up shows the name of the card that asked as text, never the card | `choiceModal`: every branch | 2a (the shared question dialog shows it) |
+| **D1** | A1 | A pop-up shows the name of the card that asked as text, never the card | `choiceModal`: every branch | 2a (the shared question shows it, in the bar and in the pop-up) |
 | **D2** | V1 | Skip and decline words: "None", "Choose nothing", "Leave it", "Let it go", "{name} fights", "Let it fight where it is going", "Take it instead" | `choiceModal`, `prompt.js`, `locales/en.json` | 2c |
 | **D3** | A5 | Options that are bare numbers or verbs and do not say their result ("1", "Take it") | `amount`, `move_damage`, `ransom` | 2c |
 | **D4** | W1 | Board objects chosen in a pop-up instead of on the board | `redirect`, `defend`, `move`, `target` | 2d |
-| **D5** | B4 | Red means "stay put" (`redirect`) and "mulligan" where the guide reserves it for a cost or an attack | `redirect`, the mulligan overlay | 2c |
-| **D6** | W1/W3 | Five cards ask mid-effect, by a trigger, where a board click would fit (Crystal Palace, Flameingo Hotshot, Frozen Fish, Resonant Spellhold, Scorchcrawler) | the `target` choice | 2d |
+| **D5** | B4 | Red means "stay put" (`redirect`) and "mulligan" where the guide reserves it for a cost or the attack | `redirect`, the mulligan overlay | 2c |
+| **D6** | W1 | Five cards ask mid-effect, by a trigger, where a board click fits (Crystal Palace, Flameingo Hotshot, Frozen Fish, Resonant Spellhold, Scorchcrawler) | the `target` choice | 2d |
 | **D7** | M1 | Steps of a multi-step card are not numbered or named | the prompt bar | 2d |
 | **D8** | F | An offer (`may`) lapses when the player does something else, and nothing says so | the card's ability buttons | 2d |
 | **D9** | B5 | Thaw is the only `btn-ice` and has its own flow | the Landscape's thaw button | 2d |
 | **D10** | V5/B3 | "Close" is green in the practice dialog and steel in the pile viewer | `main.js`, `render.js` | 2c |
 | **D11** | B7 | Spacing differs between pop-ups (`.modalrow` and `.modalrow2`, per-pop-up margins) | `style.css` | 2a |
+| **D12** | W3 | Short decisions asked in a pop-up instead of the bar: `amount`, `move_damage`, `camel`, `landscape`, and the mulligan | `choiceModal`, `overlay` | 2c |
+| **D13** | W2 | Cards from your hand chosen in a pop-up that hides the table: `discard`, `ransom`, `upkeep`, `rebound` | `choiceModal` | 2b |
 
 Already filed and folded into the phases: **#79** (Reclaim Landscape's chained skips, done), **#85** (Blood
-Transfusion's piles, done), **#87** (The Big Hen House's pop-up has no card context and touching buttons: D1, D11),
+Transfusion's piles, done), **#87** (The Big Hen House's pop-up has no card context and touching buttons: D1, D11, D12),
 **#84** (deck editing, done).
 
 ## 5. Not decided yet
 
 Left for the phase that needs it (each is a note on its issue before work starts):
 
-- Which choice kinds show a result on their options (A5): the audit suggests `amount`, `move_damage`, `ransom` and the
-  `target` choices, as their results are known to the client. (#108)
-- Whether the mulligan's "Mulligan" button keeps the danger role (D5) or becomes a plain choice. (#108)
-- How a mid-effect board choice is shown when the board is mostly hidden by the opponent's turn banner. (#108, 2d)
+- **How the bar shows progress on a multi-card pick** ("Discard 2 cards", then "1 more"), and how a pick is undone in the
+  hand before it is final (2b).
+- **What the bar looks like with the source card at its start on a phone**, where the bar is narrow (2a). The risk the
+  guide accepts: a bar with several buttons wraps to two lines.
+- **Which choice kinds show a result on their options** (A5): the audit suggests `amount`, `move_damage`, `ransom` and
+  the board `target` choices, as their results are known to the client. (2c)
+- **Whether the mulligan keeps its overlay** because the player needs to see the hand (D12), or moves to the bar with the
+  hand shown as it is. (2c)
+- **How a mid-effect board choice is shown while the opponent's turn banner is on screen.** (2d)
