@@ -165,7 +165,7 @@ func (g *Game) ownedCount(p PlayerID) int {
 		tally(pe.Card)
 	}
 	for _, ch := range append(append([]Choice{}, g.State.Queue...), ptrVal(g.State.Choice)...) {
-		if ch.Kind != ChoiceReveal && ch.Kind != ChoiceCamel {
+		if ch.Kind != ChoiceReveal && ch.Kind != ChoiceCamel && ch.Kind != ChoicePlace {
 			continue // other choices list cards that sit in a deck or on the board
 		}
 		for _, in := range ch.Revealed {

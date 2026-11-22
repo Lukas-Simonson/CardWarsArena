@@ -221,7 +221,8 @@ every other action is refused (`illegal_action`) until they answer.
 | `discard` | discard `count` cards from your hand (Abraca Amadeus, Bone Wand, Mace Stump); with `only_cost`, only a card of that cost (Fly Swatter) | `choose` with `card` = the hand uid; repeat while `choice.count` remains |
 | `upkeep` | discard `count` cards from your hand, or destroy the card that asks (Steakchop) | `choose` with `card` = a hand uid, or `choose` with no `card` to destroy it. After the first discard it becomes a `discard` choice |
 | `reveal` | the top cards of your deck, `revealed`, are shown to both seats: pick one to put on the bottom, the rest are discarded (Ogre Gas) | `choose` with `card` = the revealed uid |
-| `search` | the Buildings in your deck, `revealed` (only the decider is sent them): pick one to put into play, then the deck is shuffled (Deforestation) | `choose` with `card` = the revealed uid |
+| `search` | the Buildings in your deck, `revealed` (only the decider is sent them): pick one to take (Deforestation); a `place` choice follows | `choose` with `card` = the revealed uid |
+| `place` | the Building just taken from the deck is `revealed[0]` (only the decider is sent it); pick the Lane to put it into play in, `lanes`. The deck is shuffled | `choose` with `lane` |
 | `rebound` | discard a card from your hand to return the card that asks from your discard pile to your hand (Impossible Possum) | `choose` with `card` = a hand uid, or `choose` with no `card` to leave it |
 | `redirect` | the Creature that attacked may be replaced by one of your Flooped Creatures, `revealed` (Pied Piper); the Fight waits for the answer | `choose` with `card` = the Flooped Creature's uid, or `choose` with no `card` to fight with the attacker |
 | `move_damage` | move damage between two of your Creatures; `count` is the most you may move (Friendship Bracelet) | `choose` with `card` = how much, 1 to `count` |

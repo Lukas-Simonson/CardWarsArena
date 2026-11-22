@@ -221,6 +221,9 @@ const (
 	ChoiceUpkeep  = "upkeep"  // discard cards, or (Card 0) destroy the Creature that asks (Steakchop)
 	// search: pick a Building out of your deck to put into play (Deforestation)
 	ChoiceSearch = "search"
+	// place: pick the Lane to put the Building just chosen into play in (Deforestation, after search). The Building is
+	// Revealed[0], out of the deck until it is placed; Lanes are the Lanes that may take it.
+	ChoicePlace = "place"
 	// rebound: discard a card to return the Creature that asks to your hand, or (Card 0) not (Impossible Possum)
 	ChoiceRebound = "rebound"
 	// redirect: pick the Flooped Creature that fights instead, or (Card 0) the one that attacked (Pied Piper)

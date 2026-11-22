@@ -421,7 +421,7 @@ var validOps = map[string]struct{ slots int }{
 	"borrow_creature": {2}, "ogre_gas": {0}, "discard_choice": {0}, "may": {0},
 	"heal_creature": {0}, "heal_hero": {0}, "swap_creatures": {1}, "protect": {0},
 	"no_combat_damage": {0}, "discount_replace": {0}, "upkeep": {0},
-	"exhaust": {1}, "play_building": {2}, "search_building": {1}, "move_damage": {2},
+	"exhaust": {1}, "play_building": {2}, "search_building": {0}, "move_damage": {2},
 	"make_rainbow": {0}, "rainbow_hand": {1}, "rebound": {0}, "redirect_attack": {0},
 	"freeze": {0}, "thaw": {0}, "move_self": {0}, "retype_landscape": {0},
 	"add_tokens": {0}, "burn": {0}, "remove_burn": {1}, "attack_hero": {0}, "remove_tokens": {1}, "move_tokens": {2}, "lifesteal": {0}, "rage": {1}, "free_next_creature": {0},

@@ -334,7 +334,6 @@
  "label.move_all_damage_to": "Move all damage to",
  "label.move_to": "Move to",
  "label.put_into_play": "Put into play",
- "label.put_it_in": "Put it in",
  "label.put_on_top_of_your_deck": "Put on top of your deck",
  "label.remove_from_the_game": "Remove from the game",
  "label.remove_the_token_from": "Remove the token from",
@@ -639,7 +638,7 @@
  "question.destroy": "Destroy {name}",
  "question.leave_it": "Don't return {name}",
  "question.amount_n": "{unit, select, damage {{n} damage} heal {Heal {n}} other {{n}}}",
- "question.search": "Choose a Building from your deck to put into play. Your deck is shuffled afterwards.",
+ "question.search": "Choose a Building from your deck. You choose its lane next, and your deck is shuffled afterwards.",
  "question.move_damage": "Move how much damage from {from} to {to}?",
  "question.move_n": "Move {n}",
  "question.move_result": "{from} {a1} → {a2}, {to} {b1} → {b2}",
@@ -653,5 +652,6 @@
  "label.don_t_put_a_card_on_your_deck": "Don't put a card on your deck",
  "label.don_t_ready_a_creature": "Don't ready a Creature",
  "label.don_t_remove_a_token": "Don't remove a token",
- "label.don_t_return_a_creature": "Don't return a Creature"
+ "label.don_t_return_a_creature": "Don't return a Creature",
+ "question.place": "Choose the lane to put {name} into play in: click one of your lanes."
 }

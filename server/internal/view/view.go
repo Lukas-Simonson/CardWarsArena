@@ -153,7 +153,7 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 			Lane: ch.Lane, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
 			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label,
 			OnlyCost: ch.OnlyCost, MinCost: ch.MinCost, Options: append([]int(nil), ch.Options...)}
-		if ch.Kind == engine.ChoiceSearch && ch.Player != viewer {
+		if (ch.Kind == engine.ChoiceSearch || ch.Kind == engine.ChoicePlace) && ch.Player != viewer {
 			v.Choice.Revealed = nil // what is in a deck is not for the other player to see
 		}
 	}

@@ -171,15 +171,7 @@
    "kind": "spell",
    "do": [
     {
-     "do": "search_building",
-     "slot": 0
-    }
-   ],
-   "targets": [
-    {
-     "what": "lane",
-     "side": "you",
-     "label": "Put it in"
+     "do": "search_building"
     }
    ]
   }

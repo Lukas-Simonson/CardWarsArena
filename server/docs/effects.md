@@ -79,7 +79,7 @@ created with `AllowUnimplemented`.
   (the card itself and slot), `protect` (Cave of Solitude), `no_combat_damage` (Falling Star),
   `discount_replace` (Pyramidia), `upkeep` (Steakchop), `exhaust` (Ready Creatures become
   Flooped), `play_building` (a Building from a discard pile into a Lane), `search_building`
-  (Deforestation), `move_damage` (Friendship Bracelet), `make_rainbow` (until end of turn),
+  (Deforestation: pick the Building, then, as a second `place` choice, the Lane), `move_damage` (Friendship Bracelet), `make_rainbow` (until end of turn),
   `rainbow_hand` (a card in hand is Rainbow until end of turn), `rebound` (Impossible Possum) and
   `redirect_attack` (Pied Piper), `freeze` (put a frozen token on the Landscapes named by `slot`, or the card's own
   with `self`; `both` also freezes the one opposite), `thaw` (take the token off the card's own Landscape) and

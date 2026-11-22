@@ -106,7 +106,7 @@ func (g *Game) checkInvariants(total [2]int) error {
 		}
 	}
 	for _, ch := range append(append([]Choice{}, st.Queue...), ptrVal(st.Choice)...) {
-		if ch.Kind != ChoiceReveal && ch.Kind != ChoiceCamel {
+		if ch.Kind != ChoiceReveal && ch.Kind != ChoiceCamel && ch.Kind != ChoicePlace {
 			continue // other choices list cards that sit in a deck or on the board
 		}
 		for _, in := range ch.Revealed {

@@ -15,7 +15,7 @@ the fixes come from: each deviation has an ID (D1, D2...) and the phase of the
 
 - **117** card interactions choose something (targets chosen up front or by a trigger), in **44** different shapes.
   The board-click flow handles all of them except the five cards whose trigger asks mid-effect (see D6).
-- **14** kinds of mid-effect engine choice, each a hand-built pop-up in `choiceModal` (#88 counted thirteen; `defend` was
+- **15** kinds of mid-effect engine choice (14 when this was first written; `place` was added when Deforestation was changed to pick the card first and the Lane second), each a hand-built pop-up in `choiceModal` (#88 counted thirteen; `defend` was
   added since). **By the guide only 2 of the 14 should be pop-ups** (as of step 2c: `amount`, `discard`, `ransom`, `upkeep`, `rebound`, `move_damage`, `camel` and `landscape` are on the bar and `reveal` and `search` on the shared card pop-up; the mulligan is on the bar too; what is left is the four board choices, 2d) (`reveal` and `search`, which show cards that are not
   on the table). Four are board clicks, four are a click on your hand, and four are buttons in the bar (see section 1).
 - **Buttons** in `render.js`: purple 13, steel 13, red 5, green 4, ice 1, with no stated rule until
@@ -36,7 +36,8 @@ puts it (W1 board, W2 your hand, W3 the bar, W4 a pop-up). The codes are those o
 | `upkeep` | Discard N cards, **or** destroy the asking Creature | **Done (2b):** the bar (sentence + red "Destroy {name}"); click the hand | **W2 + W3** | none | 2b, done |
 | `rebound` | Discard a card to return the Creature, **or** not | **Done (2b):** the bar (sentence + steel "Leave it"); click the hand | **W2 + W3** | V1 (D2): now "Don't return {name}" | 2b and 2c, done |
 | `reveal` | Pick one of the revealed cards (the rest are discarded) | **Done (2a):** the shared card pop-up, with the asking card as its head | **W4**: stays a pop-up (the cards are not on the table) | none | 2a, done |
-| `search` | Pick a Building from the deck | **Done (2c):** the shared card pop-up | **W4** | none | 2c, done |
+| `search` | Pick a Building from the deck | **Done (2c):** the shared card pop-up | **W4**; the Lane is chosen next, as `place` | none | 2c, done |
+| `place` | Pick the Lane for the Building just chosen (Deforestation) | **Added after 2c:** a click on your board (the Lanes glow), with the sentence on the bar and the Building shown | **W1** | none | done: the Lane used to be chosen *before* the card, as a target of the spell |
 | `redirect` | Pick a Flooped Creature of yours to fight instead, **or** let the attacker fight | Pop-up: cards + red "{name} fights" | **W1**: click the Creature on the board; "Don't redirect" in the bar | B4: red is used for "stay put", not a cost (D5); V1 (D2) | 2d |
 | `defend` | Pick a Creature of yours to take an attack, **or** let it go on | Pop-up: cards + steel "Let it fight where it is going" | **W1**: click the Creature on the board; "Don't take the Fight" in the bar | V1 (D2) | 2d |
 | `move_damage` | Pick how much damage to move between two Creatures | **Done (2c):** the bar: "Move how much damage from A to B?", one button per amount, each showing both Creatures' damage after | **W3** | none | 2c, done |
@@ -55,15 +56,16 @@ Which cards ask each kind (from the card data):
 | `upkeep` | Steakchop |
 | `rebound` | Impossible Possum |
 | `reveal` | Ogre Gas |
-| `search` | Pick a Building from the deck | **Done (2c):** the shared card pop-up | **W4** | none | 2c, done |
+| `search` | Deforestation |
+| `place` | Deforestation |
 | `redirect` | Pied Piper |
 | `defend` | Genteel Armourdillo, Gracious Armourdillo |
-| `move_damage` | Pick how much damage to move between two Creatures | **Done (2c):** the bar: "Move how much damage from A to B?", one button per amount, each showing both Creatures' damage after | **W3** | none | 2c, done |
+| `move_damage` | Friendship Bracelet |
 | `move` | Boarder Collie, Drained Cleric, Tired Wombat, Woadic Ring Leader |
-| `camel` | Put the leaving Creature under your Camel, **or** let it go | **Done (2c):** the bar: the Camel and the leaving card shown, "Put it under {name}" and "Don't put it under {name}" | **W3** | none | 2c, done |
-| `landscape` | Pick the Landscape type your Lane becomes | **Done (2c):** the types as buttons in the bar | **W3** | none | 2c, done |
+| `camel` | Carmel Camel |
+| `landscape` | Silo of Freedom |
 | `target` | Crystal Palace, Flameingo Hotshot, Frozen Fish, Resonant Spellhold, Scorchcrawler |
-| `amount` | Pick one of the numbers (The Big Hen House: 1 or 2 damage) | **Done (2a, 2c):** the bar; the engine sends a `unit`, so the buttons say "1 damage", "2 damage" | **W3** | none | 2c, done |
+| `amount` | The Big Hen House |
 | `play_pending` | Gallant Armourdillo, Silo of Truth |
 | `offer (may)` | Apple Pieclops, Grand Mummy, Mossglen Retreat, Ms. Mummy, Sandmagus |
 
