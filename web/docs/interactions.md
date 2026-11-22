@@ -203,7 +203,8 @@ Copy this into the pull request (it is in the pull request template).
 - [ ] **Does a dependent step only come after its step?** (M3), and are steps that cannot apply skipped with a reason (M2)?
 - [ ] **Can the player see what they need?** Piles (I2), the target and its result (I1).
 - [ ] **Does it work with the keyboard, a screen reader, and at 375 px?** (X1-X4)
-- [ ] **Is it in the gallery, and is there a test?** *(from phase 4; until then, test the pure part: the picker, the prompt text.)*
+- [ ] **Is it in the gallery, and is there a test?** A mid-effect question has a scenario in `web/gallery/data.js` (`npm test` fails
+      without one); look at it at `/gallery/` (also at phone width). Test the pure part: the picker, the prompt text.
 - [ ] **If it is a new mid-effect question,** did it follow [Adding a question](../../server/docs/effects.md#adding-a-question) (engine kind, `describeChoice`, catalogue sentence, test) and need no client code?
 - [ ] **Is the audit up to date?** If this adds or changes an interaction, update [the audit](interaction-audit.md).
 
@@ -223,4 +224,5 @@ For orientation; this is also where a rule is enforced.
 | Button and modal styles | `web/css/style.css` | `btn-*`, `.modal*`, `.chip`, and the shared question (`.qbar`, `.qopts`, `.qsource`, `.qopt`, `--btn-gap`). |
 | The strings | `web/locales/en.json` | Every sentence; checked by `npm run i18n`. |
 | The engine's questions | `server/internal/engine/choice.go`, `server/docs/effects.md` | How a card's effect becomes a question, and [how to add a question](../../server/docs/effects.md#adding-a-question) (no client code needed) (targets, `group`, `optional`, `requires`, `skip_label`, `together`). |
+| The gallery | `web/gallery/` | Every question the engine can ask, in the states that stress its layout, drawn by `questionBar` / `questionPopup`. `test/gallery.test.mjs` fails for an engine kind with no scenario, a question without its parts (source card, sentence, worded options), or a pop-up built outside the shared components. Run `node serve.mjs` in `web/` and open `/gallery/`. |
 | The wire format | `server/docs/protocol.md` | The `question` in the view and the `choose` actions that answer it. |

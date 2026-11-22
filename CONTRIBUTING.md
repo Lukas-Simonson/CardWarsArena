@@ -98,7 +98,9 @@ the code; `npm test` fails on text that looks hard-coded. When a server change a
   and steel, Luckiest Guy and Patrick Hand), so match what is there.
 - **Card interactions:** how a card asks the player something (a board click or a pop-up, the wording, the button
   colours) is decided in [`web/docs/interactions.md`](web/docs/interactions.md). Follow its checklist when a card adds or
-  changes a question, and update [the audit](web/docs/interaction-audit.md).
+  changes a question, and update [the audit](web/docs/interaction-audit.md). A new mid-effect question also needs a scenario in the
+  [gallery](web/gallery/data.js) (`npm test` fails without it); see "Adding a question" in
+  [`server/docs/effects.md`](server/docs/effects.md).
 
 ### Card data
 
