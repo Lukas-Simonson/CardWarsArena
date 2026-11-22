@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Question gallery</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Patrick+Hand&display=swap">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body { padding: 16px; }
+  .gtools { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .gitem { margin: 0 0 24px; }
+  h1, body > p, label, .gitem > h2, .gitem > p { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.7); }
+  .gitem h2 { font-size: 1.1rem; margin: 0 0 2px; }
+  .gitem .gnote { margin: 0 0 8px; opacity: .85; }
+  .gframe { position: relative; max-width: 960px; }
+  body.phone .gframe { max-width: 375px; }
+  /* a pop-up is fixed to the window in the game; here it sits in its frame */
+  .gframe .modal-backdrop { position: static; animation: none; min-height: 240px; }
+  .gboard { margin: 8px 0 0; font-size: .85rem; opacity: .85; }
+</style>
+</head>
+<body class="wood">
+<h1>Question gallery</h1>
+<p>Every question the engine can ask, in the states that stress its layout. Drawn by the same code as the game
+(<code>question.js</code>, <code>questionui.js</code>). A new question must be added to <code>gallery/data.js</code>.</p>
+<div class="gtools"><label><input type="checkbox" id="phone"> Phone width (375 px)</label></div>
+<div id="gallery"></div>
+<script type="module" src="gallery.js"></script>
+</body>
+</html>

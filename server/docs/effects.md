@@ -230,10 +230,13 @@ one:
    (`describeOps` does it for a ransom's effect).
 4. **Add the sentence** to `web/locales/en.json` under the key you used (and `result.*` for results). `npm run i18n`
    fails on a key the engine sends that the catalogue does not have, and on one nobody sends.
-5. **Test it.** Add a row to the table in `question_test.go` (its answer surface, the number of options, whether it has a
+5. **Add it to the gallery** (`web/gallery/data.js`): a scenario with the question as the server sends it, and one for each state
+   that stresses it (with and without a skip, one option and many, a long name). `npm test` fails for an engine kind with no
+   entry. Open it with `node web/serve.mjs` at `/gallery/`.
+6. **Test it.** Add a row to the table in `question_test.go` (its answer surface, the number of options, whether it has a
    skip), and answer it through the real option ids as `TestLegalAnswersAreOnlyTheirOptions` (`view_test.go`) does. Nothing needs adding in
    `web/js`: `fromQuestion` sorts the options by their `ref`, `card` or `label`.
-6. **Update the docs:** the key's row in the table in `protocol.md`, and the row in `web/docs/interaction-audit.md`.
+7. **Update the docs:** the key's row in the table in `protocol.md`, and the row in `web/docs/interaction-audit.md`.
 
 Worked example, Impossible Possum (`rebound`): its trigger calls `g.ask(Choice{..., Kind: ChoiceRebound, ...})`
 (`effects.go`); `validateChoice` accepts a hand card or none; `doChoice` discards the card and returns the Creature, or leaves it;
