@@ -597,6 +597,8 @@
  "question.ransom": "{min, plural, =0 {Click a card in your hand to discard it, or take what the card says.} other {Click a card of cost # or more in your hand to discard it, or take what the card says.}}",
  "question.upkeep": "Click {n, plural, one {# card} other {# cards}} in your hand to discard, or destroy {name}.",
  "question.rebound": "Click a card in your hand to discard it and return {name} to your hand, or leave it in the discard pile.",
+ "result.damage_hero": "Take {n} damage",
+ "result.damage_creatures": "Each of your Creatures takes {n} damage",
  "question.take_it": "Take {name}'s effect",
  "question.destroy": "Destroy {name}",
  "question.leave_it": "Don't return {name}",

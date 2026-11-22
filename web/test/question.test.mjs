@@ -131,3 +131,13 @@ test("the mulligan is two buttons on the bar: Keep (commit) and Mulligan (a plai
   assert.equal(fromMulligan(ctx, legal, true), null, "outside the mulligan");
   assert.equal(fromMulligan({ ...ctx, view: v }, legal, false), null, "not mine to answer");
 });
+
+test("a ransom's take-it button shows what comes", () => {
+  const ctx = { view: { you: 0, over: false }, cards: {} };
+  const q = { player: 0, card: "blood-bath", text: { key: "question.ransom", params: { min: 2 } }, answer: "hand",
+    options: [{ id: 0, ref: { kind: "hand_card", player: 0, card: 7 } },
+      { id: 1, label: { key: "question.take_it" }, role: "danger", result: { key: "result.damage_hero", params: { n: 5 } } }] };
+  const out = fromQuestion(ctx, q, true);
+  assert.equal(out.options[0].role, "danger");
+  assert.equal(out.options[0].result, "Take 5 damage");
+});

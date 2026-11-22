@@ -94,7 +94,7 @@ func (g *Game) describeChoice(ch *Choice) (Question, []Action) {
 				option(Action{Kind: ActChoose, Card: in.UID}, handCard(in.UID))
 			}
 		}
-		option(Action{Kind: ActChoose}, Option{Label: key("question.take_it"), Role: "danger"}) // take what comes instead
+		option(Action{Kind: ActChoose}, Option{Label: key("question.take_it"), Role: "danger", Result: describeOps(ch.Do)}) // take what comes instead
 	case ChoiceUpkeep:
 		q.Text, q.Answer = *key("question.upkeep", "n", ch.Count), AnswerHand
 		for _, in := range g.State.Players[p].Hand {
@@ -252,4 +252,22 @@ func (g *Game) resolveOption(p PlayerID, a Action) (Action, error) {
 		return a, ErrBadTarget
 	}
 	return answers[*a.Option], nil
+}
+
+// describeOps says what a list of ops does to the player who is asked, for the ones a card commonly threatens them
+// with (damage to their Hero, or to all their Creatures): a message to put on an option as its Result. Any other op, or
+// a list of several, is not described (nil) and the option says only its label. It reads the ops as a ransom's
+// "else", which happen to the opponent of the card's controller, who is the one asked.
+func describeOps(ops []card.Op) *Msg {
+	if len(ops) != 1 || ops[0].Amount == nil || ops[0].Amount.Per != nil || ops[0].Amount.N <= 0 {
+		return nil
+	}
+	op := ops[0]
+	switch {
+	case op.Do == "damage_hero" && op.Who == "opponent":
+		return key("result.damage_hero", "n", op.Amount.N)
+	case op.Do == "damage_creature" && op.All != nil && op.All.Rel == "opposing":
+		return key("result.damage_creatures", "n", op.Amount.N)
+	}
+	return nil
 }

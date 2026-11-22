@@ -175,7 +175,7 @@ Left for the phase that needs it (each is a note on its issue before work starts
 - ~~How the bar shows progress on a multi-card pick, and how a pick is undone in the hand~~ (decided in 2b: the sentence counts down, "Discard 2 cards" then "Discard 1 card"; a click answers at once, since a mid-effect choice cannot be cancelled, F3).
 - **What the bar looks like with the source card at its start on a phone**, where the bar is narrow (2a). The risk the
   guide accepts: a bar with several buttons wraps to two lines.
-- ~~Which choice kinds show a result on their options~~ (decided in 2c: `amount` and `move_damage`, where the client knows it; `ransom` waits for the server to describe its effect, phase 3).
+- ~~Which choice kinds show a result on their options~~ (decided in 2c: `amount` and `move_damage`, where the client knows it; `ransom` waits for the server to describe its effect, phase 3; done in 3c for damage to the Hero or to all the player's Creatures, the two effects its cards use).
 - ~~Whether the mulligan keeps its overlay~~ (decided in 2c: it moved to the bar; the hand is on screen below it).
 - ~~How a mid-effect board choice is shown while the opponent's turn banner is on screen~~ (a choice is only asked of the player who decides, on the board and bar; the turn banner is an animation that does not block clicks, as for any other board prompt).
 - **Phase 3:** the server describing every question generically, and what `ransom` and the other effects do (the "Take 5 damage" of A5). (#109)

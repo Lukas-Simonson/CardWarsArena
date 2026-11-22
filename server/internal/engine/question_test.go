@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"cardwars/internal/card"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -203,5 +204,23 @@ func TestEveryKindOfChoiceIsDescribed(t *testing.T) {
 		if b, err := json.Marshal(q); err != nil || strings.Contains(string(b), "null") {
 			t.Errorf("%s: the question should marshal with no nulls: %s %v", c.name, b, err)
 		}
+	}
+}
+
+func TestDescribeOpsSaysWhatARansomThreatens(t *testing.T) {
+	five := &card.Value{N: 5}
+	two := &card.Value{N: 2}
+	hero := describeOps([]card.Op{{Do: "damage_hero", Who: "opponent", Amount: five}})
+	if hero == nil || hero.Key != "result.damage_hero" || hero.Params["n"] != 5 {
+		t.Errorf("hero: %+v", hero)
+	}
+	all := describeOps([]card.Op{{Do: "damage_creature", All: &card.Selector{Rel: "opposing"}, Amount: two}})
+	if all == nil || all.Key != "result.damage_creatures" || all.Params["n"] != 2 {
+		t.Errorf("creatures: %+v", all)
+	}
+	// anything else is left undescribed rather than guessed at
+	if describeOps([]card.Op{{Do: "draw", Amount: two}}) != nil || describeOps(nil) != nil ||
+		describeOps([]card.Op{{Do: "damage_hero", Who: "opponent", Amount: five}, {Do: "draw", Amount: two}}) != nil {
+		t.Error("an op that is not described got a result")
 	}
 }
