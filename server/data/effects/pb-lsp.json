@@ -461,6 +461,7 @@
      "what": "discard_card",
      "side": "you",
      "optional": true,
+     "skip_label": "Don't put a card on your deck",
      "label": "Put on top of your deck"
     }
    ],

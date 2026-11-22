@@ -503,7 +503,8 @@
         {
           "what": "creature",
           "in_lane": true,
-          "optional": true
+          "optional": true,
+          "skip_label": "Don't return a Creature"
         }
       ],
       "do": [
@@ -523,7 +524,8 @@
           "what": "creature",
           "side": "you",
           "flooped": true,
-          "optional": true
+          "optional": true,
+          "skip_label": "Don't ready a Creature"
         }
       ],
       "do": [

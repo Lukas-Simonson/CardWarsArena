@@ -292,6 +292,8 @@ type Choice struct {
 	hasSrc  bool
 	MinCost *int  `json:"min_cost,omitempty"`
 	Options []int `json:"options,omitempty"`
+	// Unit, on an amount choice, says what the number is of ("damage" or "heal"), so the options can say what they do.
+	Unit string `json:"unit,omitempty"`
 }
 
 // Offer is an optional ability a trigger has put on a Creature ("you may",

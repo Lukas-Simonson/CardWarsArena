@@ -109,7 +109,8 @@
      "what": "landscape",
      "label": "Freeze",
      "in_lane": true,
-     "optional": true
+     "optional": true,
+     "skip_label": "Don't freeze a Landscape"
     }
    ],
    "do": [

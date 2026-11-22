@@ -339,7 +339,8 @@
        "what": "creature",
        "side": "you",
        "landscape": "sandy_lands",
-       "optional": true
+       "optional": true,
+       "skip_label": "Don't give a Creature +1 DEF"
       }
      ],
      "then": [

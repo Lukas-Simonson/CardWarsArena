@@ -624,7 +624,8 @@
      "what": "creature",
      "side": "any",
      "flooped": true,
-     "optional": true
+     "optional": true,
+     "skip_label": "Don't deal damage"
     }
    ]
   }

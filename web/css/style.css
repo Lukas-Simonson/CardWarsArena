@@ -514,11 +514,12 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .qsource .card { width: 100%; }
 button.qsource { appearance: none; background: none; border: 0; padding: 0; cursor: pointer; border-radius: 4px; }
 button.qsource:focus-visible { outline: 3px solid #ffe07a; outline-offset: 2px; }
-.qline { display: flex; align-items: center; gap: var(--btn-gap); flex: 1 1 18ch; min-width: 0; justify-content: center; }
+.qline { display: flex; align-items: center; gap: var(--btn-gap); flex: 1 1 18ch; min-width: 0; justify-content: flex-start; text-align: left; }
 .qtext { min-width: 0; }
+.qbar.solo .qline { justify-content: center; text-align: center; } /* no buttons: the sentence is centred */
 .qopts { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--btn-gap); }
 .qopt { min-height: 44px; min-width: 44px; }
-.qresult { display: block; font-size: .7em; opacity: .85; }
+.qresult { display: block; font-family: var(--hand-font); font-size: 14px; text-transform: none; letter-spacing: 0; opacity: .9; }
 .qhead { display: flex; align-items: center; gap: var(--btn-gap); }
 .qhead .qsource { width: 56px; }
 .qpopup .modalrow { gap: var(--btn-gap); flex-wrap: wrap; }
