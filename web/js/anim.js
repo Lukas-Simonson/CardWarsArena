@@ -29,6 +29,42 @@ export function startOfTurn(events = []) {
   return at < 0 ? [] : events.slice(at + 1).filter((e) => START_OF_TURN.has(e.kind));
 }
 
+// Floating numbers: those that start together on the same Creature or player are spread, so each can be read.
+export const NUMBER_STAGGER = 100; // each starts this much after the one before it
+const NUMBER_WINDOW = 500;         // numbers this close in time are on screen together
+const NUMBER_KIND = { hit: "damage", hp: "damage", heal: "heal", hpgain: "heal" };
+
+/**
+ * Give the numbers that would overlap different places (dx, dy, rot, in px and degrees) and, a little, different
+ * start times. Nothing is random, so the same update always looks the same. A Creature's numbers fan out sideways;
+ * a player's go up and down beside the shield. Heal and damage on one target sit apart (heal left or up, damage right
+ * or down). A number alone on its target is where it always was.
+ */
+export function spreadNumbers(fx) {
+  const groups = new Map();
+  for (const f of fx) {
+    if (!NUMBER_KIND[f.t] || !f.amount) continue;
+    const key = `${f.late ? "late" : "now"}:${f.t === "hit" || f.t === "heal" ? `c${f.seat}:${f.lane}` : `p${f.seat}`}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(f);
+  }
+  for (const list of groups.values()) {
+    const mixed = list.some((f) => NUMBER_KIND[f.t] === "heal") && list.some((f) => NUMBER_KIND[f.t] === "damage");
+    const player = list[0].t === "hp" || list[0].t === "hpgain";
+    const at = list.map((f) => f.delay);
+    list.forEach((f, i) => {
+      // how many of its own kind are showing already (heal and damage are kept apart by side instead)
+      const k = Math.min(at.slice(0, i).filter((d, j) => at[i] - d < NUMBER_WINDOW && (!mixed || NUMBER_KIND[list[j].t] === NUMBER_KIND[f.t])).length, 4);
+      const side = NUMBER_KIND[f.t] === "heal" ? -1 : 1;
+      const fan = k === 0 ? 0 : (k % 2 ? 1 : -1) * Math.ceil(k / 2);
+      f.dx = player ? k * 16 : fan * 26 + (mixed ? side * 20 : 0);
+      f.dy = player ? fan * 26 + (mixed ? side * 20 : 0) : k % 3 ? -5 * (k % 3) : 0;
+      f.rot = k === 0 ? 0 : (k % 2 ? 6 : -6);
+      f.delay = at[i] + k * NUMBER_STAGGER;
+    });
+  }
+}
+
 /** How long the start-of-turn events take, from the moment the banner is over. */
 function startOfTurnMs(late) {
   if (!late.length) return 0;
@@ -108,24 +144,26 @@ export function plan(prev, view, events = [], ctx = {}) {
     if (net) fx.push({ t: "hpbar", seat, from: pct(mid), to: pct(p.hp), delay: 0, late: true });
   });
 
+  // What the new turn starts with (burning), all at once, from the end of the banner (the time is added below).
+  for (const e of lateEvents) {
+    const burn = e.cause === "burn";
+    switch (e.kind) {
+      case "damage": fx.push({ t: "hit", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay: 0, burn, late: true }); break;
+      case "hp_loss": fx.push({ t: "hp", seat: e.player, amount: e.amount, delay: 0, burn, late: true }); break;
+      case "heal": fx.push({ t: "heal", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay: 0, late: true }); break;
+      case "hp_gain": fx.push({ t: "hpgain", seat: e.player, amount: e.amount, delay: 0, late: true }); break;
+    }
+  }
+  spreadNumbers(fx); // numbers that start together on one target must not sit on each other
+
   // Whatever the turn's last action did plays out, then a pause, then the turn
   // changes (banner and the new turn's draws).
   const body = fx.reduce((m, f) => (f.refresh || f.late ? m : Math.max(m, END[f.t]?.(f) ?? 0)), 0);
   const shift = newTurn && body > 0 ? body + TURN_PAUSE_MS : 0;
   for (const f of fx) if (f.t === "turn" || f.refresh) f.delay = shift;
 
-  // Then, once the banner is over, what the new turn starts with (burning), all at once.
+  // Then, once the banner is over, what the new turn starts with.
   const startAt = shift + BANNER_MS;
-  for (const e of lateEvents) {
-    const delay = 0; // from the end of the banner (added below)
-    const burn = e.cause === "burn";
-    switch (e.kind) {
-      case "damage": fx.push({ t: "hit", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay, burn, late: true }); break;
-      case "hp_loss": fx.push({ t: "hp", seat: e.player, amount: e.amount, delay, burn, late: true }); break;
-      case "heal": fx.push({ t: "heal", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay, late: true }); break;
-      case "hp_gain": fx.push({ t: "hpgain", seat: e.player, amount: e.amount, delay, late: true }); break;
-    }
-  }
   for (const f of fx) if (f.late) f.delay += startAt;
 
   const hadHand = new Set((prev.players[me].hand ?? []).map((c) => c.uid));
@@ -156,8 +194,8 @@ export function paceFor(events = [], cards = {}) {
 
 /** A generous estimate of how long the effects of these event kinds take (the turn change excluded). */
 function bodyOf(kinds) {
-  if (kinds.has("attack")) return 1200;
-  if (kinds.has("die") || kinds.has("damage") || kinds.has("destroy")) return 1000;
+  if (kinds.has("attack")) return 1450;
+  if (kinds.has("die") || kinds.has("damage") || kinds.has("destroy")) return 1250;
   if (kinds.has("play") || kinds.has("floop") || kinds.has("activate") || kinds.has("bounce") || kinds.has("move") || kinds.has("ready")) return 500;
   return 0;
 }
@@ -218,9 +256,52 @@ function showCasts(casts, ctx, felt) {
   });
 }
 
+/**
+ * The frames of a floating number: it rises, from where spreadNumbers placed it (dx, dy), tilted a little. A
+ * Creature's number is centred on its tile, a player's sits beside the shield.
+ */
+function floatFrames(f, side, parent) {
+  const dx = clampX(f.dx ?? 0, side, parent);
+  const x = side ? `${dx}px` : `calc(-50% + ${dx}px)`, y = (n) => `${(f.dy ?? 0) + n}px`;
+  const rot = `rotate(${f.rot ?? 0}deg)`;
+  const lift = side ? [10, 44] : [12, 52];
+  return [
+    { opacity: 0, transform: `translate(${x}, ${y(0)}) scale(.5) ${rot}` },
+    { opacity: 1, transform: `translate(${x}, ${y(-lift[0])}) scale(1.2) ${rot}`, offset: 0.25 },
+    { opacity: 0, transform: `translate(${x}, ${y(-lift[1])}) scale(1) ${rot}` },
+  ];
+}
+
+/** A Creature's number stays on its tile, however narrow the tile is (on a phone): the sideways spread is limited to its width. */
+function clampX(dx, side, parent) {
+  if (side || !parent?.offsetWidth) return dx;
+  const room = Math.max(8, parent.offsetWidth / 2 - 16);
+  return Math.max(-room, Math.min(room, dx));
+}
+
+/** With reduced motion the numbers do not move: each stays where it was placed for a moment, after its delay. */
+function staticNumbers(root, fx) {
+  for (const f of fx) {
+    if (!NUMBER_KIND[f.t] || !f.amount) continue;
+    const side = f.t === "hp" || f.t === "hpgain";
+    const parent = side ? root.querySelector(`.shield[data-seat="${f.seat}"]`) : root.querySelector(`.tile[data-seat="${f.seat}"][data-lane="${f.lane}"]`);
+    if (!parent) continue;
+    const heal = NUMBER_KIND[f.t] === "heal";
+    const el = Object.assign(document.createElement("em"), { className: `fx-float${side ? " side" : ""}${heal ? " heal" : ""}${f.burn ? " burn" : ""}`, textContent: `${heal ? "+" : "-"}${f.amount}` });
+    el.style.transform = `translate(${side ? "0px" : "-50%"}, 0)`;
+    el.style.marginInlineStart = `${clampX(f.dx ?? 0, side, parent)}px`;
+    el.style.marginTop = `${f.dy ?? 0}px`;
+    el.style.opacity = "0";
+    parent.append(el);
+    setTimeout(() => { el.style.opacity = "1"; }, f.delay ?? 0);
+    setTimeout(() => el.remove(), (f.delay ?? 0) + 1400);
+  }
+}
+
 /** Play the effects on the freshly rendered scene in `root`. */
 export function applyEffects(root, fx, ctx) {
   showCasts(fx.filter((f) => f.t === "cast"), ctx, root.querySelector(".felt"));
+  if (reduced()) staticNumbers(root, fx);
   if (!fx.length || reduced()) return;
   const q = (sel) => root.querySelector(sel);
   const tile = (seat, lane) => q(`.tile[data-seat="${seat}"][data-lane="${lane}"]`);
@@ -262,23 +343,23 @@ export function applyEffects(root, fx, ctx) {
       case "hit": {
         const t = tile(f.seat, f.lane);
         play(t?.querySelector(".card"), [{ transform: "none", filter: "none" }, { transform: "translateX(-7px) rotate(-3deg)", filter: f.burn ? "brightness(1.4) sepia(1) saturate(5) hue-rotate(-15deg)" : "brightness(1.9) saturate(2)", offset: 0.2 }, { transform: "translateX(7px) rotate(3deg)", offset: 0.45 }, { transform: "translateX(-4px)", offset: 0.7 }, { transform: "none", filter: "none" }], { duration: 420, delay: f.delay });
-        if (t && f.amount) spawn(t, text(f.burn ? "fx-float burn" : "fx-float", `-${f.amount}`), [{ opacity: 0, transform: "translate(-50%, 0) scale(.5)" }, { opacity: 1, transform: "translate(-50%, -12px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(-50%, -52px) scale(1)" }], { duration: 900, delay: f.delay });
+        if (t && f.amount) spawn(t, text(f.burn ? "fx-float burn" : "fx-float", `-${f.amount}`), floatFrames(f, false, t), { duration: 900, delay: f.delay });
         break;
       }
       case "heal": {
         const t = tile(f.seat, f.lane);
-        if (t && f.amount) spawn(t, text("fx-float heal", `+${f.amount}`), [{ opacity: 0, transform: "translate(-50%, 0) scale(.5)" }, { opacity: 1, transform: "translate(-50%, -12px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(-50%, -52px) scale(1)" }], { duration: 900, delay: f.delay });
+        if (t && f.amount) spawn(t, text("fx-float heal", `+${f.amount}`), floatFrames(f, false, t), { duration: 900, delay: f.delay });
         break;
       }
       case "hpgain": {
         const shield = q(`.shield[data-seat="${f.seat}"]`);
-        if (shield && f.amount) spawn(shield, text("fx-float side heal", `+${f.amount}`), [{ opacity: 0, transform: "translate(0, 0) scale(.5)" }, { opacity: 1, transform: "translate(0, -10px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(0, -44px) scale(1)" }], { duration: 1000, delay: f.delay });
+        if (shield && f.amount) spawn(shield, text("fx-float side heal", `+${f.amount}`), floatFrames(f, true), { duration: 1000, delay: f.delay });
         break;
       }
       case "hp": {
         const shield = q(`.shield[data-seat="${f.seat}"]`);
         play(shield, [{ transform: "none", filter: "none" }, { transform: "translateX(-6px) rotate(-6deg)", filter: f.burn ? "brightness(1.4) sepia(1) saturate(5) hue-rotate(-15deg)" : "brightness(1.6) hue-rotate(-30deg)", offset: 0.25 }, { transform: "translateX(6px) rotate(6deg)", offset: 0.5 }, { transform: "none", filter: "none" }], { duration: 480, delay: f.delay });
-        if (shield && f.amount) spawn(shield, text(f.burn ? "fx-float side burn" : "fx-float side", `-${f.amount}`), [{ opacity: 0, transform: "translate(0, 0) scale(.5)" }, { opacity: 1, transform: "translate(0, -10px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(0, -44px) scale(1)" }], { duration: 1000, delay: f.delay });
+        if (shield && f.amount) spawn(shield, text(f.burn ? "fx-float side burn" : "fx-float side", `-${f.amount}`), floatFrames(f, true), { duration: 1000, delay: f.delay });
         break;
       }
       case "hpbar":
