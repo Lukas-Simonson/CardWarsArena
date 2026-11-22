@@ -242,6 +242,61 @@ legal plays. The server still *accepts* any legal choice, so a client may
 construct such a play from the same shape; a server-side "list all targets"
 query is planned.
 
+### Questions
+
+Every open choice is also described as a `question` in the view (beside `choice`, which is read until clients move to
+`question`; the kind-specific fields of `choice` and the old answers are removed in a later step). A client needs no code
+for each kind of choice: it draws a question.
+
+```jsonc
+"question": {
+  "player": 0,                                   // who must answer
+  "card": "frozen-fish",                         // the card that asked: always shown
+  "subject": { "uid": 31, "card": "the-pig", "owner": 0 },   // a second card it is about, if any
+  "text": { "key": "question.target", "params": { "label": "Freeze", "optional": true, "what": "landscape" } },
+  "answer": "board",                             // where it is answered, see below
+  "options": [
+    { "id": 0, "ref": { "kind": "landscape", "player": 1, "lane": 0 } },
+    { "id": 1, "ref": { "kind": "landscape", "player": 0, "lane": 2 } } ],
+  "skip": { "id": 2, "label": { "text": "Don't freeze a Landscape" } },    // the answer that declines, or absent
+  "left": 2 }                                    // a multi-card pick: how many more are wanted
+```
+
+- **`text` and every `label` are words, not English:** a message `key` with `params`, which the client words from its
+  catalogue (so translations work, as for error codes). A label can instead carry `text`, an English label that a card's
+  data owns ("Don't freeze a Landscape"); the client looks it up in the catalogue (`label.*`) and shows it as written if
+  it is not there. A parameter whose name ends in `_card` is a card id, worded as that card's name; the source card's name
+  is always available as `name` and the subject's as `subject`.
+- **`answer`** says where the question is answered, as the interaction guide's W1 to W4: `board` (click the options' `ref`:
+  a `creature`, `landscape`, `lane` or `discard_card` with `player` and `lane` or `card`), `hand` (click the options' `ref` of
+  kind `hand_card`; an option with a `label` instead is a button), `cards` (a pop-up of the options' `card`s, which are not
+  on the table), or `buttons` (press the options' `label`).
+- **An option** has an `id`, one of `ref`, `card` or `label`, a `role` (`danger` when it costs the player something), and a
+  `result` (a message saying what it does, where that is known: moving damage says both Creatures' damage after).
+- **Answering is always `{ "kind": "choose", "option": id }`**, with the `id` of an option or of the `skip`. Each legal `choose`
+  also carries the old fields (`card`, `lane`, `targets`), which are still accepted, with its `option`; legal answers are in
+  option order.
+- **Hidden information:** only the player who must answer is sent the options, the subject and `left`; the other player's
+  `question` says who asks and what (`player`, `card`, `text`, `answer`), with an empty `options`.
+
+The message keys and their parameters (the sentences are in `web/locales/en.json`):
+
+| `text.key` | Params | Asked by (kind) |
+|---|---|---|
+| `question.discard` | `n` | discard cards from your hand (`discard`; `left` is `n`) |
+| `question.ransom` | `min` | discard a card or take the effect (`ransom`) |
+| `question.upkeep` | `n` | discard cards or destroy the card (`upkeep`) |
+| `question.rebound` | | discard a card to return it (`rebound`) |
+| `question.reveal`, `question.search` | | pick a revealed card, or one from the deck (`cards`) |
+| `question.place` | | the Lane for the Building just taken (`place`; the subject is the Building) |
+| `question.redirect`, `question.defend` | | a Creature to fight instead, or to take the Fight (`defend`'s subject is the attacker) |
+| `question.move_damage` | `from_card`, `to_card` | how much damage to move; each option has a `result` |
+| `question.move_mine`, `question.move_theirs` | | the empty Landscape to move to, on your side or your opponent's |
+| `question.camel` | | put the leaving Creature (the subject) under a Camel, or not |
+| `question.landscape` | `lane` | the Landscape type a Lane becomes; options are labelled `landscape.<type>` |
+| `question.target` | `label`, `optional`, `what` | a trigger's target (`what` is the first option's kind) |
+| `question.amount` | `options` | how much; options are labelled `question.amount_n` with `n` and `unit` |
+
 ## Events
 
 `events[]` entries are `{ "kind", "player", "card"?, "card_id"?, "lane"?, "amount"?, "cause"? }`. `cause` is `"burn"` on the `damage` and `hp_loss` events of the damage burning does at the start of a turn (they follow that turn's `turn_start`).

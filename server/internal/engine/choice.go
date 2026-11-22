@@ -240,85 +240,19 @@ func (g *Game) doChoice(p PlayerID, a Action) []Event {
 	return append(ev, g.continueAttack()...)
 }
 
-// choiceActions lists every way p can answer the open Choice.
+// choiceActions lists every way p can answer the open Choice. They are the answers behind the Question's options, so
+// each carries the Option that names it.
 func (g *Game) choiceActions(p PlayerID) []Action {
 	ch := g.State.Choice
 	if ch == nil || ch.Player != p {
 		return nil
 	}
-	var out []Action
-	switch ch.Kind {
-	case ChoiceDiscard:
-		for _, in := range g.State.Players[p].Hand {
-			if ch.OnlyCost == nil || g.handCost(in) == *ch.OnlyCost {
-				out = append(out, Action{Kind: ActChoose, Card: in.UID})
-			}
-		}
-	case ChoiceRansom:
-		for _, in := range g.State.Players[p].Hand {
-			if g.handCost(in) >= *ch.MinCost {
-				out = append(out, Action{Kind: ActChoose, Card: in.UID})
-			}
-		}
-		out = append(out, Action{Kind: ActChoose}) // take what comes instead
-	case ChoiceAmount:
-		for _, n := range ch.Options {
-			out = append(out, Action{Kind: ActChoose, Card: n})
-		}
-	case ChoiceUpkeep:
-		for _, in := range g.State.Players[p].Hand {
-			out = append(out, Action{Kind: ActChoose, Card: in.UID})
-		}
-		out = append(out, Action{Kind: ActChoose}) // destroy it instead
-	case ChoiceReveal, ChoiceSearch:
-		for _, in := range ch.Revealed {
-			out = append(out, Action{Kind: ActChoose, Card: in.UID})
-		}
-	case ChoicePlace:
-		for _, lane := range ch.Lanes {
-			out = append(out, Action{Kind: ActChoose, Lane: lane})
-		}
-	case ChoiceRebound:
-		for _, in := range g.State.Players[p].Hand {
-			out = append(out, Action{Kind: ActChoose, Card: in.UID})
-		}
-		out = append(out, Action{Kind: ActChoose}) // keep it in the discard pile
-	case ChoiceRedirect:
-		for _, in := range ch.Revealed {
-			out = append(out, Action{Kind: ActChoose, Card: in.UID})
-		}
-		out = append(out, Action{Kind: ActChoose}) // the Creature that attacked fights
-	case ChoiceDefend:
-		for _, in := range ch.Revealed {
-			out = append(out, Action{Kind: ActChoose, Card: in.UID})
-		}
-		out = append(out, Action{Kind: ActChoose}) // it fights where it was going to
-	case ChoiceMoveDamage:
-		for n := 1; n <= ch.Count; n++ {
-			out = append(out, Action{Kind: ActChoose, Card: n})
-		}
-	case ChoiceMove:
-		for _, lane := range ch.Lanes {
-			out = append(out, Action{Kind: ActChoose, Lane: lane})
-		}
-	case ChoiceCamel:
-		for _, lane := range ch.Lanes {
-			if cm := g.State.Players[p].Lanes[lane].Creature; cm != nil {
-				out = append(out, Action{Kind: ActChoose, Card: cm.UID})
-			}
-		}
-		out = append(out, Action{Kind: ActChoose}) // let it go
-	case ChoiceLandscape:
-		for i := range card.Landscapes {
-			out = append(out, Action{Kind: ActChoose, Card: i + 1})
-		}
-	case ChoiceTarget:
-		for _, r := range ch.Targets {
-			out = append(out, Action{Kind: ActChoose, Targets: [][]TargetRef{{r}}})
-		}
-		if ch.Optional {
-			out = append(out, Action{Kind: ActChoose}) // choose nothing
-		}
+	_, answers := g.describeChoice(ch)
+	out := make([]Action, len(answers))
+	for i, a := range answers {
+		id := i
+		a.Option = &id
+		out[i] = a
 	}
 	return out
 }

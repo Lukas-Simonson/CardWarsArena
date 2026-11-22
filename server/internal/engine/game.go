@@ -219,6 +219,7 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 	if err := g.Validate(p, a); err != nil {
 		return nil, err
 	}
+	a, _ = g.resolveOption(p, a) // validated above
 	if !g.usesOffer(p, a) {
 		g.clearOffers() // anything else the player does lets the offers pass
 	}
@@ -262,6 +263,10 @@ func (g *Game) Apply(p PlayerID, a Action) ([]Event, error) {
 
 // Validate reports why p may not perform a, or nil if it is legal right now.
 func (g *Game) Validate(p PlayerID, a Action) error {
+	a, err := g.resolveOption(p, a)
+	if err != nil {
+		return err
+	}
 	st := &g.State
 	if st.Phase == PhaseOver {
 		return ErrGameOver
