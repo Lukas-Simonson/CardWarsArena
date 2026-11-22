@@ -18,10 +18,9 @@ export const STAGE_MS = CAST_MS - 150; // ...and what it did is shown as the car
 export const TURN_PAUSE_MS = 1000; // rest after the last action before the turn changes
 export const BANNER_MS = 1300;
 const AFTER_CAST_MS = 1300;     // time for the damage and a death that follow it
-export const TICK_GAP = 220;    // between the start-of-turn ticks (burning), left to right
 
 // What happens at the start of a new turn (burning, heals, a death it causes) comes after the turn banner, as its own
-// step, not with the Fight that ended the previous turn.
+// step, not with the Fight that ended the previous turn. It all happens at once, as other effects on several cards do.
 const START_OF_TURN = new Set(["damage", "hp_loss", "heal", "hp_gain", "die"]);
 
 /** The events of the update that belong to the start of the new turn: those after its turn_start. */
@@ -33,8 +32,7 @@ export function startOfTurn(events = []) {
 /** How long the start-of-turn events take, from the moment the banner is over. */
 function startOfTurnMs(late) {
   if (!late.length) return 0;
-  const ticks = late.filter((e) => e.kind !== "die").length;
-  return Math.max(0, ticks - 1) * TICK_GAP + (late.some((e) => e.kind === "die") ? DIE_DELAY + 560 : 900);
+  return late.some((e) => e.kind === "die") ? DIE_DELAY + 560 : 900;
 }
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
@@ -66,11 +64,6 @@ export function plan(prev, view, events = [], ctx = {}) {
   const lateEvents = startOfTurn(events), late = new Set(lateEvents);
   const diedUids = new Set(events.filter((e) => e.kind === "die" && !late.has(e)).map((e) => e.card));
   const newTurn = events.some((e) => e.kind === "turn_start");
-  // Each tick of the new turn (a Creature burning, a player burning) starts a little after the one before it.
-  const tickAt = new Map(); // "uid" or "hp:seat" -> when, from the end of the banner
-  let ticks = 0;
-  for (const e of lateEvents) if (e.kind !== "die") tickAt.set(e.kind === "damage" || e.kind === "heal" ? e.card : `hp:${e.player}`, ticks++ * TICK_GAP);
-  const lastTick = Math.max(0, ticks - 1) * TICK_GAP;
   const diedLate = new Set(lateEvents.filter((e) => e.kind === "die").map((e) => e.card));
   const cBefore = index(prev, "creature"), cAfter = index(view, "creature");
   for (const [uid, a] of cAfter) {
@@ -86,7 +79,7 @@ export function plan(prev, view, events = [], ctx = {}) {
   }
   for (const [uid, b] of cBefore) {
     if (cAfter.has(uid)) continue;
-    if (diedLate.has(uid)) fx.push({ t: "ghost", seat: b.seat, lane: b.lane, card: b.thing.card, status: b.thing.status, delay: (tickAt.get(uid) ?? lastTick) + DIE_DELAY, late: true });
+    if (diedLate.has(uid)) fx.push({ t: "ghost", seat: b.seat, lane: b.lane, card: b.thing.card, status: b.thing.status, delay: DIE_DELAY, late: true });
     else fx.push({ t: "ghost", seat: b.seat, lane: b.lane, card: b.thing.card, status: b.thing.status, delay: diedUids.has(uid) ? DIE_DELAY : 0 });
   }
 
@@ -112,7 +105,7 @@ export function plan(prev, view, events = [], ctx = {}) {
     const net = lateEvents.reduce((n, e) => n + (e.player !== seat ? 0 : e.kind === "hp_loss" ? e.amount : e.kind === "hp_gain" ? -e.amount : 0), 0);
     const mid = net ? p.hp + net : p.hp;
     if (mid !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), to: pct(mid), delay: fought ? HIT_DELAY : 0 });
-    if (net) fx.push({ t: "hpbar", seat, from: pct(mid), to: pct(p.hp), delay: tickAt.get(`hp:${seat}`) ?? lastTick, late: true });
+    if (net) fx.push({ t: "hpbar", seat, from: pct(mid), to: pct(p.hp), delay: 0, late: true });
   });
 
   // Whatever the turn's last action did plays out, then a pause, then the turn
@@ -121,10 +114,10 @@ export function plan(prev, view, events = [], ctx = {}) {
   const shift = newTurn && body > 0 ? body + TURN_PAUSE_MS : 0;
   for (const f of fx) if (f.t === "turn" || f.refresh) f.delay = shift;
 
-  // Then, once the banner is over, what the new turn starts with: burning ticks one after another.
+  // Then, once the banner is over, what the new turn starts with (burning), all at once.
   const startAt = shift + BANNER_MS;
   for (const e of lateEvents) {
-    const delay = (tickAt.get(e.kind === "damage" || e.kind === "heal" ? e.card : `hp:${e.player}`) ?? 0);
+    const delay = 0; // from the end of the banner (added below)
     const burn = e.cause === "burn";
     switch (e.kind) {
       case "damage": fx.push({ t: "hit", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay, burn, late: true }); break;

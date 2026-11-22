@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS, TICK_GAP } from "../js/anim.js";
+import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS } from "../js/anim.js";
 import { view, cards } from "./fixtures.mjs";
 
 const next = (mutate) => { const v = structuredClone(view()); mutate(v); return v; };
@@ -128,7 +128,7 @@ test("two spells in one update are both planned, in order", () => {
 });
 
 // Burning ticks at the start of the new turn: it is shown after the Fight that ended the last turn, and after the banner.
-test("burn damage plays after the final attack and the turn banner, one tick after another", () => {
+test("burn damage plays after the final attack and the turn banner, all at once", () => {
   const after = next((v) => {
     v.players[1].hp = 21; v.players[0].hp = 23;
     v.players[0].lanes[0].creature.status = "fought";
@@ -147,14 +147,14 @@ test("burn damage plays after the final attack and the turn banner, one tick aft
   assert.equal(ticks.length, 3);
   assert.ok(ticks.every((f) => f.delay >= turn.delay + BANNER_MS), "every tick waits for the banner");
   assert.ok(ticks.every((f) => f.delay > attackHit.delay + 900), "and for the attack's damage to be over");
-  assert.deepEqual(ticks.map((f) => f.delay - ticks[0].delay), [0, TICK_GAP, 2 * TICK_GAP], "one after another, in the order they came");
+  assert.equal(new Set(ticks.map((f) => f.delay)).size, 1, "all at once, like other effects on several cards");
   assert.equal(fx.filter((f) => f.t === "hit").length, 2);
   // the bar for the player who burns moves in its own step, after the banner
   const bars = fx.filter((f) => f.t === "hpbar" && f.seat === 0);
   assert.equal(bars.length, 1);
   assert.ok(bars[0].late && bars[0].delay >= turn.delay + BANNER_MS);
   // the turn's pace leaves room for all of it
-  assert.ok(paceFor(events, cards) >= ticks[2].delay + 900, "the next update waits for the last tick");
+  assert.ok(paceFor(events, cards) >= ticks[0].delay + 900, "the next update waits for the burn");
 });
 
 test("burn damage with no attack still waits for the banner, and a death waits for its tick", () => {
