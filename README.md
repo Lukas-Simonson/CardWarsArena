@@ -66,7 +66,7 @@ The other flags (`-addr`, `-data`, `-origins`, `-bot-delay`, `-dev`) are describ
 
 ### Statistics
 
-The server counts a few shared totals for the whole site, served by `GET /api/stats`: games started,
+The server counts a few shared totals for the whole site, served by `GET /api/stats` (its shape is in [`server/docs/protocol.md`](server/docs/protocol.md#statistics)): games started,
 completed and abandoned (and against the bot or a person), who won against the bot, cards played by type (and how often each
 card), Floops, Fights, damage dealt, Creatures destroyed, Hero abilities used, and games started and won per starter deck.
 They are counted from the game engine's own events, so a player cannot change them.
