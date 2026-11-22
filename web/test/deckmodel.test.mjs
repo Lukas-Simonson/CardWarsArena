@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, landscapeTypes, landscapeRow, costCurve, problems, mix, heroes, pool, changed,
-  landscapesOf, chooseLandscape, autoLandscapes, unplayable, whyUnplayable, deckState, saveRequest,
+  buckets, bucketOf, landscapesOf, chooseLandscape, autoLandscapes, unplayable, whyUnplayable, deckState, saveRequest,
   MAX_COPIES, MAX_CARDS,
 } from "../js/deckmodel.js";
 
@@ -236,4 +236,50 @@ test("Save replaces a saved deck, while a new deck and Save as copy make new one
   const fresh = fromCards(["pup"], { name: "New" });
   assert.deepEqual(saveRequest(fresh, null, false, copyName), { method: "POST", id: null, name: "New", copy: false });
   assert.deepEqual(saveRequest(fresh, null, true, copyName), { method: "POST", id: null, name: "New", copy: false });
+});
+
+// Cost, ATK and DEF filters.
+const stat = {
+  a: { id: "a", name: "A", type: "creature", cost: 0, attack: 1, defense: 3, modeled: true },
+  b: { id: "b", name: "B", type: "creature", cost: 1, attack: 4, defense: 6, modeled: true },
+  c: { id: "c", name: "C", type: "creature", cost: 3, attack: 0, defense: 12, modeled: true },
+  d: { id: "d", name: "D", type: "spell", cost: 1, modeled: true },
+  e: { id: "e", name: "E", type: "building", cost: 6, modeled: true },
+  f: { id: "f", name: "F", type: "spell", modeled: true },
+};
+const ids = (o) => pool(stat, o).map((c) => c.id);
+const range = (min, max = min) => ({ min, max, key: `${min}-${max}` });
+
+test("buckets: one for each value up to the cap, then one 'or more', from what the cards have", () => {
+  assert.deepEqual(buckets([0, 1, 2, 3, 6]).map((b) => b.key), ["0-0", "1-1", "2-2", "3-3", "4+"]);
+  assert.equal(buckets([0, 1, 6]).at(-1).max, Infinity);
+  assert.deepEqual(buckets([0, 2]).map((b) => b.key), ["0-0", "1-1", "2-2"]); // nothing dearer: no "or more"
+  assert.deepEqual(buckets([0, 3, 16], { step: 3, cap: 9 }).map((b) => b.key), ["0-2", "3-5", "6-8", "9+"]);
+  assert.deepEqual(buckets([]).map((b) => b.key), ["0-0"]); // an empty pool still offers 0
+  assert.deepEqual(buckets([undefined, null, 2]).map((b) => b.key), ["0-0", "1-1", "2-2"]); // cards with no number are ignored
+  assert.equal(bucketOf(buckets([0, 1, 6]), 5).key, "4+");
+});
+
+test("cost: one, several (their union), and none meaning any; a card with no cost needs none chosen", () => {
+  assert.deepEqual(ids({ cost: [range(0)] }), ["a"]);
+  assert.deepEqual(ids({ cost: [range(0), range(1)] }), ["a", "b", "d"]);
+  assert.deepEqual(ids({ cost: [{ min: 4, max: Infinity, key: "4+" }] }), ["e"]);
+  assert.deepEqual(ids({}), ["a", "b", "c", "d", "e", "f"]);
+  assert.deepEqual(ids({ cost: [] }), ["a", "b", "c", "d", "e", "f"]);
+});
+
+test("ATK and DEF: ranges that leave Creatures only", () => {
+  assert.deepEqual(ids({ atk: [range(0, 1)] }), ["a", "c"]);
+  assert.deepEqual(ids({ atk: [range(4, Infinity)] }), ["b"]);
+  assert.deepEqual(ids({ def: [range(9, Infinity)] }), ["c"]);
+  assert.deepEqual(ids({ def: [range(0, 2), range(6, 8)] }), ["b"]);
+  assert.deepEqual(ids({ atk: [range(0, 6)] }), ["a", "b", "c"]); // no Spell or Building, though they have no ATK
+});
+
+test("cost, ATK and DEF combine with each other and with the other filters", () => {
+  assert.deepEqual(ids({ cost: [range(0), range(1)], atk: [range(1, 4)] }), ["a", "b"]);
+  assert.deepEqual(ids({ cost: [range(1)], type: "spell" }), ["d"]);
+  assert.deepEqual(ids({ cost: [range(1)], text: "b" }), ["b"]);
+  assert.deepEqual(ids({ atk: [range(0, 6)], type: "spell" }), []); // asking for Creature numbers among Spells
+  assert.deepEqual(ids({ cost: [range(0), range(1)], members: "in", counts: { b: 1, d: 2 } }), ["b", "d"]);
 });

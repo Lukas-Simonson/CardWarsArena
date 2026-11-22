@@ -162,8 +162,11 @@ export const heroes = (cards) => Object.values(cards).filter((c) => c.type === "
  * a search of the name and rules text, a type and a Landscape, in alphabetical order.
  * `members` narrows by a deck's cards: "in" keeps the cards that deck has, "out" those it does not, judged
  * by `counts` (card id -> copies; the deck being built). `from` is another deck's counts: only its cards stay.
+ * `cost`, `atk` and `def` are lists of buckets (see `buckets`): a card stays when its number is in any of them, and
+ * none chosen means any. Only Creatures have ATK and DEF, so choosing one leaves Creatures only; a card with no cost
+ * is left out once a cost is chosen.
  */
-export function pool(cards, { text = "", type = "", landscape = "", members = "", counts = {}, from = null } = {}) {
+export function pool(cards, { text = "", type = "", landscape = "", members = "", counts = {}, from = null, cost = [], atk = [], def = [] } = {}) {
   const q = text.trim().toLocaleLowerCase(locale());
   return Object.values(cards)
     .filter((c) => c.type !== "hero" && c.modeled)
@@ -172,6 +175,7 @@ export function pool(cards, { text = "", type = "", landscape = "", members = ""
     .filter((c) => !from || (from[c.id] ?? 0) > 0)
     .filter((c) => !type || c.type === type)
     .filter((c) => !landscape || c.landscape === landscape)
+    .filter((c) => inBuckets(c.cost, cost) && inBuckets(c.attack, atk) && inBuckets(c.defense, def))
     .filter((c) => !q || c.name.toLocaleLowerCase(locale()).includes(q) || (c.name_en ?? "").toLocaleLowerCase(locale()).includes(q) || (c.text ?? "").toLocaleLowerCase(locale()).includes(q))
     .sort((a, b) => a.name.localeCompare(b.name, locale()));
 }
@@ -199,3 +203,30 @@ export function saveRequest(deck, saved, asCopy, copyName) {
   const name = copy && deck.name === saved?.name ? copyName(deck.name) : deck.name;
   return copy || !deck.id ? { method: "POST", id: null, name, copy } : { method: "PUT", id: deck.id, name, copy };
 }
+
+/** Is the number in any of the buckets? No buckets chosen means anything, even no number at all. */
+function inBuckets(n, list) {
+  return !list.length || (n != null && list.some((b) => n >= b.min && n <= b.max));
+}
+
+/**
+ * The groups a number's filter offers, from what the cards have: one for each value up to `cap`, then one "cap or more"
+ * (`max` is Infinity), so a card dearer than any yet needs no new code. `step` groups values ("0-2, 3-5"). Fewer
+ * values than `cap` give just those. Each is { min, max, key } and `key` names it for a chip.
+ */
+export function buckets(values, { step = 1, cap = 4 } = {}) {
+  const top = Math.max(0, ...values.filter((v) => Number.isFinite(v)));
+  const out = [];
+  for (let min = 0; min <= top; min += step) {
+    if (min >= cap) {
+      out.push({ min, max: Infinity, key: `${min}+` });
+      break;
+    }
+    const max = min + step - 1;
+    out.push({ min, max, key: `${min}-${max}` });
+  }
+  return out;
+}
+
+/** The bucket a value falls in (for the cost curve's bars), or null. */
+export const bucketOf = (list, n) => list.find((b) => n >= b.min && n <= b.max) ?? null;

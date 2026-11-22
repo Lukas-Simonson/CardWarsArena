@@ -479,7 +479,7 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .curve, .curvelabels { display: grid; gap: 14px; }
 .curve { align-items: end; height: 130px; }
 .curvelabels { text-align: center; font-size: 15px; }
-.barcol { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; font-size: 17px; }
+.barcol { appearance: none; background: none; border: 0; padding: 0; color: inherit; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; font-size: 17px; }
 .curvebar { width: 100%; min-height: 4px; box-sizing: border-box; background: linear-gradient(90deg, #9b6ad6, #6a3aa6); border: 2.5px solid #1f1033; border-radius: 8px 8px 3px 3px; box-shadow: inset 0 3px 0 rgba(255,255,255,.3); }
 .cardlist { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .cardlist li { display: flex; align-items: center; gap: 10px; border-bottom: 2px dashed #cbb37a; padding-bottom: 6px; }
@@ -501,3 +501,7 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .pburn { position: relative; width: 30px; height: 30px; flex: 0 0 auto; display: inline-grid; place-items: center; }
 .pburn img { width: 100%; height: 100%; border-radius: 6px; display: block; box-shadow: 0 2px 0 #1f1a12; }
 .pburn b { position: absolute; inset-inline-end: -7px; bottom: -4px; box-sizing: border-box; min-width: 17px; height: 17px; padding: 3px 3px 0; border: 2px solid #1f1a12; border-radius: 999px; background: var(--paper); font: 12px/1 var(--big-font); text-align: center; color: #1f1a12; }
+.barcol[aria-pressed="true"] .curvebar { background: linear-gradient(90deg, #ffe07a, #f0b928); }
+.barcol:focus-visible { outline: 3px solid #ffe07a; outline-offset: 2px; border-radius: 8px; }
+.bmorefilters summary { cursor: pointer; font-family: var(--hand-font); font-size: 18px; min-height: 44px; display: flex; align-items: center; }
+.bmorefilters[open] { display: flex; flex-direction: column; gap: 10px; }
