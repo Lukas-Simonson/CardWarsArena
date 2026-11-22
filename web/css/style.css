@@ -516,6 +516,7 @@ button.qsource { appearance: none; background: none; border: 0; padding: 0; curs
 button.qsource:focus-visible { outline: 3px solid #ffe07a; outline-offset: 2px; }
 .qline { display: flex; align-items: center; gap: var(--btn-gap); flex: 1 1 18ch; min-width: 0; justify-content: flex-start; text-align: left; }
 .qtext { min-width: 0; }
+.qbar.solo .qline { justify-content: center; text-align: center; } /* no buttons: the sentence is centred */
 .qopts { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--btn-gap); }
 .qopt { min-height: 44px; min-width: 44px; }
 .qresult { display: block; font-family: var(--hand-font); font-size: 14px; text-transform: none; letter-spacing: 0; opacity: .9; }

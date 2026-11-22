@@ -35,7 +35,7 @@ export function questionBar(q, on, { you = false } = {}) {
     q.confirm && optionButton(q.confirm, "commit", on),
   ].filter(Boolean);
   // The card and the sentence stay together; the buttons wrap as a group beside or under them.
-  return h("div", { role: "status", class: `well prompt qbar ${you ? "you" : ""}` },
+  return h("div", { role: "status", class: `well prompt qbar${you ? " you" : ""}${buttons.length ? "" : " solo"}` },
     h("div", { class: "qline" }, q.source && sourceChip(q.source, on), q.subject && sourceChip({ card: q.subject, name: q.subject.name }, on), h("span", { class: "qtext" }, q.text)),
     buttons.length > 0 && h("div", { class: "qopts" }, buttons));
 }
