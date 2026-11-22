@@ -18,6 +18,24 @@ export const STAGE_MS = CAST_MS - 150; // ...and what it did is shown as the car
 export const TURN_PAUSE_MS = 1000; // rest after the last action before the turn changes
 export const BANNER_MS = 1300;
 const AFTER_CAST_MS = 1300;     // time for the damage and a death that follow it
+export const TICK_GAP = 220;    // between the start-of-turn ticks (burning), left to right
+
+// What happens at the start of a new turn (burning, heals, a death it causes) comes after the turn banner, as its own
+// step, not with the Fight that ended the previous turn.
+const START_OF_TURN = new Set(["damage", "hp_loss", "heal", "hp_gain", "die"]);
+
+/** The events of the update that belong to the start of the new turn: those after its turn_start. */
+export function startOfTurn(events = []) {
+  const at = events.findIndex((e) => e.kind === "turn_start");
+  return at < 0 ? [] : events.slice(at + 1).filter((e) => START_OF_TURN.has(e.kind));
+}
+
+/** How long the start-of-turn events take, from the moment the banner is over. */
+function startOfTurnMs(late) {
+  if (!late.length) return 0;
+  const ticks = late.filter((e) => e.kind !== "die").length;
+  return Math.max(0, ticks - 1) * TICK_GAP + (late.some((e) => e.kind === "die") ? DIE_DELAY + 560 : 900);
+}
 
 /** The transform the renderer gives a Creature in each status (see .tile .at). */
 const STATUS_XF = { ready: "rotate(0deg) scale(1)", flooped: "rotate(-90deg) scale(0.7)", fought: "rotate(90deg) scale(0.7)" };
@@ -45,8 +63,15 @@ export function plan(prev, view, events = [], ctx = {}) {
   const fx = [];
   const me = view.you;
 
-  const diedUids = new Set(events.filter((e) => e.kind === "die").map((e) => e.card));
+  const lateEvents = startOfTurn(events), late = new Set(lateEvents);
+  const diedUids = new Set(events.filter((e) => e.kind === "die" && !late.has(e)).map((e) => e.card));
   const newTurn = events.some((e) => e.kind === "turn_start");
+  // Each tick of the new turn (a Creature burning, a player burning) starts a little after the one before it.
+  const tickAt = new Map(); // "uid" or "hp:seat" -> when, from the end of the banner
+  let ticks = 0;
+  for (const e of lateEvents) if (e.kind !== "die") tickAt.set(e.kind === "damage" || e.kind === "heal" ? e.card : `hp:${e.player}`, ticks++ * TICK_GAP);
+  const lastTick = Math.max(0, ticks - 1) * TICK_GAP;
+  const diedLate = new Set(lateEvents.filter((e) => e.kind === "die").map((e) => e.card));
   const cBefore = index(prev, "creature"), cAfter = index(view, "creature");
   for (const [uid, a] of cAfter) {
     const b = cBefore.get(uid);
@@ -61,7 +86,8 @@ export function plan(prev, view, events = [], ctx = {}) {
   }
   for (const [uid, b] of cBefore) {
     if (cAfter.has(uid)) continue;
-    fx.push({ t: "ghost", seat: b.seat, lane: b.lane, card: b.thing.card, status: b.thing.status, delay: diedUids.has(uid) ? DIE_DELAY : 0 });
+    if (diedLate.has(uid)) fx.push({ t: "ghost", seat: b.seat, lane: b.lane, card: b.thing.card, status: b.thing.status, delay: (tickAt.get(uid) ?? lastTick) + DIE_DELAY, late: true });
+    else fx.push({ t: "ghost", seat: b.seat, lane: b.lane, card: b.thing.card, status: b.thing.status, delay: diedUids.has(uid) ? DIE_DELAY : 0 });
   }
 
   const bBefore = index(prev, "building"), bAfter = index(view, "building");
@@ -69,6 +95,7 @@ export function plan(prev, view, events = [], ctx = {}) {
 
   const fought = events.some((e) => e.kind === "attack");
   for (const e of events) {
+    if (late.has(e)) continue; // shown after the turn banner, below
     switch (e.kind) {
       case "attack": fx.push({ t: "lunge", seat: e.player, lane: e.lane ?? 0, up: e.player === me }); break;
       case "damage": fx.push({ t: "hit", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay: fought ? HIT_DELAY : 0 }); break;
@@ -81,14 +108,32 @@ export function plan(prev, view, events = [], ctx = {}) {
   }
 
   view.players.forEach((p, seat) => {
-    if (p.hp !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), to: pct(p.hp), delay: fought ? HIT_DELAY : 0 });
+    // HP lost at the start of the new turn (burning) moves the bar in its own step, after the Fight's.
+    const net = lateEvents.reduce((n, e) => n + (e.player !== seat ? 0 : e.kind === "hp_loss" ? e.amount : e.kind === "hp_gain" ? -e.amount : 0), 0);
+    const mid = net ? p.hp + net : p.hp;
+    if (mid !== prev.players[seat].hp) fx.push({ t: "hpbar", seat, from: pct(prev.players[seat].hp), to: pct(mid), delay: fought ? HIT_DELAY : 0 });
+    if (net) fx.push({ t: "hpbar", seat, from: pct(mid), to: pct(p.hp), delay: tickAt.get(`hp:${seat}`) ?? lastTick, late: true });
   });
 
   // Whatever the turn's last action did plays out, then a pause, then the turn
   // changes (banner and the new turn's draws).
-  const body = fx.reduce((m, f) => (f.refresh ? m : Math.max(m, END[f.t]?.(f) ?? 0)), 0);
+  const body = fx.reduce((m, f) => (f.refresh || f.late ? m : Math.max(m, END[f.t]?.(f) ?? 0)), 0);
   const shift = newTurn && body > 0 ? body + TURN_PAUSE_MS : 0;
   for (const f of fx) if (f.t === "turn" || f.refresh) f.delay = shift;
+
+  // Then, once the banner is over, what the new turn starts with: burning ticks one after another.
+  const startAt = shift + BANNER_MS;
+  for (const e of lateEvents) {
+    const delay = (tickAt.get(e.kind === "damage" || e.kind === "heal" ? e.card : `hp:${e.player}`) ?? 0);
+    const burn = e.cause === "burn";
+    switch (e.kind) {
+      case "damage": fx.push({ t: "hit", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay, burn, late: true }); break;
+      case "hp_loss": fx.push({ t: "hp", seat: e.player, amount: e.amount, delay, burn, late: true }); break;
+      case "heal": fx.push({ t: "heal", seat: e.player, lane: e.lane ?? 0, amount: e.amount, delay, late: true }); break;
+      case "hp_gain": fx.push({ t: "hpgain", seat: e.player, amount: e.amount, delay, late: true }); break;
+    }
+  }
+  for (const f of fx) if (f.late) f.delay += startAt;
 
   const hadHand = new Set((prev.players[me].hand ?? []).map((c) => c.uid));
   (view.players[me].hand ?? []).filter((c) => !hadHand.has(c.uid)).forEach((c, i) => fx.push({ t: "deal", uid: c.uid, delay: i * 120 + shift }));
@@ -101,12 +146,13 @@ export function plan(prev, view, events = [], ctx = {}) {
  * motion above can finish and the player can see what happened.
  */
 export function paceFor(events = [], cards = {}) {
-  const kinds = new Set(events.map((e) => e.kind));
+  const lateEvents = startOfTurn(events), after = startOfTurnMs(lateEvents);
+  const kinds = new Set(events.filter((e) => !lateEvents.includes(e)).map((e) => e.kind));
   const spell = events.some((e) => e.kind === "play" && cards[e.card_id]?.type === "spell");
   if (kinds.has("turn_start")) {
     // the last action plays out, a pause, then the turn banner
     const body = bodyOf(kinds);
-    return (spell ? STAGE_MS : 0) + body + (body > 0 ? TURN_PAUSE_MS : 0) + BANNER_MS + 100;
+    return (spell ? STAGE_MS : 0) + body + (body > 0 ? TURN_PAUSE_MS : 0) + BANNER_MS + after + 100;
   }
   if (spell) return STAGE_MS + AFTER_CAST_MS;
   if (kinds.has("attack") || kinds.has("die")) return 1400;
@@ -145,7 +191,8 @@ const pct = (hp) => Math.max(0, Math.min(100, Math.round((hp / MAX_HP) * 100)));
 // by a bare "end turn"): the pause before it has to come from the pacer. When the
 // update also holds an action (the last Fight), plan() puts the pause after it.
 export const bareTurnChange = (msg) => {
-  const ev = msg.events ?? [];
+  const lateEvents = startOfTurn(msg.events);
+  const ev = (msg.events ?? []).filter((e) => !lateEvents.includes(e)); // what burning does at the start of the turn is not an action
   return ev.some((e) => e.kind === "turn_start") && !ev.some((e) => !["turn_start", "draw", "actions", "ready"].includes(e.kind));
 };
 
@@ -221,8 +268,8 @@ export function applyEffects(root, fx, ctx) {
       }
       case "hit": {
         const t = tile(f.seat, f.lane);
-        play(t?.querySelector(".card"), [{ transform: "none", filter: "none" }, { transform: "translateX(-7px) rotate(-3deg)", filter: "brightness(1.9) saturate(2)", offset: 0.2 }, { transform: "translateX(7px) rotate(3deg)", offset: 0.45 }, { transform: "translateX(-4px)", offset: 0.7 }, { transform: "none", filter: "none" }], { duration: 420, delay: f.delay });
-        if (t && f.amount) spawn(t, text("fx-float", `-${f.amount}`), [{ opacity: 0, transform: "translate(-50%, 0) scale(.5)" }, { opacity: 1, transform: "translate(-50%, -12px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(-50%, -52px) scale(1)" }], { duration: 900, delay: f.delay });
+        play(t?.querySelector(".card"), [{ transform: "none", filter: "none" }, { transform: "translateX(-7px) rotate(-3deg)", filter: f.burn ? "brightness(1.4) sepia(1) saturate(5) hue-rotate(-15deg)" : "brightness(1.9) saturate(2)", offset: 0.2 }, { transform: "translateX(7px) rotate(3deg)", offset: 0.45 }, { transform: "translateX(-4px)", offset: 0.7 }, { transform: "none", filter: "none" }], { duration: 420, delay: f.delay });
+        if (t && f.amount) spawn(t, text(f.burn ? "fx-float burn" : "fx-float", `-${f.amount}`), [{ opacity: 0, transform: "translate(-50%, 0) scale(.5)" }, { opacity: 1, transform: "translate(-50%, -12px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(-50%, -52px) scale(1)" }], { duration: 900, delay: f.delay });
         break;
       }
       case "heal": {
@@ -237,8 +284,8 @@ export function applyEffects(root, fx, ctx) {
       }
       case "hp": {
         const shield = q(`.shield[data-seat="${f.seat}"]`);
-        play(shield, [{ transform: "none", filter: "none" }, { transform: "translateX(-6px) rotate(-6deg)", filter: "brightness(1.6) hue-rotate(-30deg)", offset: 0.25 }, { transform: "translateX(6px) rotate(6deg)", offset: 0.5 }, { transform: "none", filter: "none" }], { duration: 480, delay: f.delay });
-        if (shield && f.amount) spawn(shield, text("fx-float side", `-${f.amount}`), [{ opacity: 0, transform: "translate(0, 0) scale(.5)" }, { opacity: 1, transform: "translate(0, -10px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(0, -44px) scale(1)" }], { duration: 1000, delay: f.delay });
+        play(shield, [{ transform: "none", filter: "none" }, { transform: "translateX(-6px) rotate(-6deg)", filter: f.burn ? "brightness(1.4) sepia(1) saturate(5) hue-rotate(-15deg)" : "brightness(1.6) hue-rotate(-30deg)", offset: 0.25 }, { transform: "translateX(6px) rotate(6deg)", offset: 0.5 }, { transform: "none", filter: "none" }], { duration: 480, delay: f.delay });
+        if (shield && f.amount) spawn(shield, text(f.burn ? "fx-float side burn" : "fx-float side", `-${f.amount}`), [{ opacity: 0, transform: "translate(0, 0) scale(.5)" }, { opacity: 1, transform: "translate(0, -10px) scale(1.2)", offset: 0.25 }, { opacity: 0, transform: "translate(0, -44px) scale(1)" }], { duration: 1000, delay: f.delay });
         break;
       }
       case "hpbar":

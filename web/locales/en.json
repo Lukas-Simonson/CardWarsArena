@@ -646,5 +646,7 @@
  "builder.bucket_plus": "{n}+",
  "builder.bucket_range": "{a}–{b}",
  "builder.curve_filter": "Show the cards that cost {cost}",
- "builder.curve_filter_count": "Cost {cost}: {n, plural, one {# card} other {# cards}} in this deck. Show the cards that cost {cost}"
+ "builder.curve_filter_count": "Cost {cost}: {n, plural, one {# card} other {# cards}} in this deck. Show the cards that cost {cost}",
+ "event.damage_burn": "{card} takes {amount} damage from burning",
+ "event.hp_loss_burn": "{who} loses {amount} HP from burning"
 }

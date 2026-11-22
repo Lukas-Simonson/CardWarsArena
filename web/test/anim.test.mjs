@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS } from "../js/anim.js";
+import { plan, paceFor, castCaption, HIT_DELAY, DIE_DELAY, LUNGE_MS, CAST_MS, TURN_PAUSE_MS, BANNER_MS, TICK_GAP } from "../js/anim.js";
 import { view, cards } from "./fixtures.mjs";
 
 const next = (mutate) => { const v = structuredClone(view()); mutate(v); return v; };
@@ -125,4 +125,57 @@ test("a spell the opponent casts is planned and announced with who cast it, just
 test("two spells in one update are both planned, in order", () => {
   const events = [{ kind: "play", player: 1, card: 31, card_id: "corn-scepter" }, { kind: "play", player: 1, card: 32, card_id: "corn-scepter" }];
   assert.equal(plan(view(), view(), events, ctx).filter((f) => f.t === "cast").length, 2);
+});
+
+// Burning ticks at the start of the new turn: it is shown after the Fight that ended the last turn, and after the banner.
+test("burn damage plays after the final attack and the turn banner, one tick after another", () => {
+  const after = next((v) => {
+    v.players[1].hp = 21; v.players[0].hp = 23;
+    v.players[0].lanes[0].creature.status = "fought";
+  });
+  const events = [
+    { kind: "attack", player: 0, card: 20, lane: 0 }, { kind: "hp_loss", player: 1, amount: 4 },
+    { kind: "turn_start", player: 1 },
+    { kind: "damage", player: 1, card: 30, lane: 2, amount: 2, cause: "burn" },
+    { kind: "damage", player: 1, card: 31, lane: 3, amount: 1, cause: "burn" },
+    { kind: "hp_loss", player: 0, amount: 2, cause: "burn" },
+  ];
+  const fx = plan(view(), after, events, ctx);
+  const turn = fx.find((f) => f.t === "turn");
+  const attackHit = fx.find((f) => f.t === "hp" && !f.burn);
+  const ticks = fx.filter((f) => f.burn);
+  assert.equal(ticks.length, 3);
+  assert.ok(ticks.every((f) => f.delay >= turn.delay + BANNER_MS), "every tick waits for the banner");
+  assert.ok(ticks.every((f) => f.delay > attackHit.delay + 900), "and for the attack's damage to be over");
+  assert.deepEqual(ticks.map((f) => f.delay - ticks[0].delay), [0, TICK_GAP, 2 * TICK_GAP], "one after another, in the order they came");
+  assert.equal(fx.filter((f) => f.t === "hit").length, 2);
+  // the bar for the player who burns moves in its own step, after the banner
+  const bars = fx.filter((f) => f.t === "hpbar" && f.seat === 0);
+  assert.equal(bars.length, 1);
+  assert.ok(bars[0].late && bars[0].delay >= turn.delay + BANNER_MS);
+  // the turn's pace leaves room for all of it
+  assert.ok(paceFor(events, cards) >= ticks[2].delay + 900, "the next update waits for the last tick");
+});
+
+test("burn damage with no attack still waits for the banner, and a death waits for its tick", () => {
+  const after = next((v) => { v.players[1].lanes[0].creature = null; });
+  const events = [
+    { kind: "turn_start", player: 1 },
+    { kind: "damage", player: 1, card: 30, lane: 0, amount: 3, cause: "burn" },
+    { kind: "die", player: 1, card: 30, lane: 0 },
+  ];
+  const fx = plan(view(), after, events, ctx);
+  const turn = fx.find((f) => f.t === "turn"), hit = fx.find((f) => f.t === "hit"), ghost = fx.find((f) => f.t === "ghost");
+  assert.equal(turn.delay, 0);
+  assert.ok(hit.delay >= BANNER_MS && hit.burn);
+  assert.equal(ghost.delay, hit.delay + DIE_DELAY, "it falls after the burn that destroyed it");
+  assert.ok(paceFor(events, cards) >= ghost.delay + 560);
+});
+
+test("burning at the start of a turn is not an action: a turn that only burns is still a bare turn change", async () => {
+  const { bareTurnChange, startOfTurn } = await import("../js/anim.js");
+  const ev = [{ kind: "turn_start" }, { kind: "damage", cause: "burn" }, { kind: "hp_loss", cause: "burn" }, { kind: "draw" }];
+  assert.equal(bareTurnChange({ events: ev }), true);
+  assert.equal(startOfTurn(ev).length, 2);
+  assert.equal(startOfTurn([{ kind: "damage" }, { kind: "turn_start" }]).length, 0, "damage before the turn starts is the last action's");
 });

@@ -98,6 +98,8 @@ test("events", () => {
   assert.equal(e("play", { card: 20 }), "Finn plays The Pig");
   assert.equal(e("attack", { card: 20, lane: 1 }), "Finn fights with The Pig (lane 2)");
   assert.equal(e("damage", { card: 30, amount: 3 }), "Cool Dog takes 3 damage");
+  assert.equal(e("damage", { card: 30, amount: 2, cause: "burn" }), "Cool Dog takes 2 damage from burning");
+  assert.equal(e("hp_loss", { player: 1, amount: 2, cause: "burn" }), "Jake loses 2 HP from burning");
   assert.equal(e("hp_loss", { player: 1, amount: 4 }), "Jake loses 4 HP");
   assert.equal(e("game_over", { player: 1 }), "*** Jake wins! ***");
   assert.equal(e("move", { card: 20, lane: 3 }), "The Pig moves to lane 4");
