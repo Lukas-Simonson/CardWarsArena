@@ -204,6 +204,7 @@ Copy this into the pull request (it is in the pull request template).
 - [ ] **Can the player see what they need?** Piles (I2), the target and its result (I1).
 - [ ] **Does it work with the keyboard, a screen reader, and at 375 px?** (X1-X4)
 - [ ] **Is it in the gallery, and is there a test?** *(from phase 4; until then, test the pure part: the picker, the prompt text.)*
+- [ ] **If it is a new mid-effect question,** did it follow [Adding a question](../../server/docs/effects.md#adding-a-question) (engine kind, `describeChoice`, catalogue sentence, test) and need no client code?
 - [ ] **Is the audit up to date?** If this adds or changes an interaction, update [the audit](interaction-audit.md).
 
 ## Where the code lives
@@ -221,5 +222,5 @@ For orientation; this is also where a rule is enforced.
 | The pile viewer | `web/js/render.js` (`pileModal`) | Both discard piles when the card may take from either. |
 | Button and modal styles | `web/css/style.css` | `btn-*`, `.modal*`, `.chip`, and the shared question (`.qbar`, `.qopts`, `.qsource`, `.qopt`, `--btn-gap`). |
 | The strings | `web/locales/en.json` | Every sentence; checked by `npm run i18n`. |
-| The engine's questions | `server/internal/engine/choice.go`, `server/docs/effects.md` | How a card's effect becomes a question (targets, `group`, `optional`, `requires`, `skip_label`, `together`). |
+| The engine's questions | `server/internal/engine/choice.go`, `server/docs/effects.md` | How a card's effect becomes a question, and [how to add a question](../../server/docs/effects.md#adding-a-question) (no client code needed) (targets, `group`, `optional`, `requires`, `skip_label`, `together`). |
 | The wire format | `server/docs/protocol.md` | The `question` in the view and the `choose` actions that answer it. |
