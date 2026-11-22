@@ -277,12 +277,12 @@ what grows with the game (per bot, per deck, per card) lists only what has happe
     "floops": 903, "fights": 1500, "hero_abilities": 210
   },
   "combat": { "damage_dealt": 21000, "creatures_destroyed": 2300 },   // damage to Creatures and to players
-  "decks": { "finn": { "started": 40, "won": 14 }, "custom": { "started": 22, "won": 10 } }   // by the starter deck's Hero
+  "decks": { "finn": { "started": 40, "won": 14 }, "custom": { "started": 22, "won": 10 } },   // by the starter deck's Hero
+  "cards": { "played": { "corn-dog": 87, "blue-candy": 64 } }   // how often each card was played, by id
 }
 ```
 
-`?detail=cards` adds `"cards": { "played": { "corn-dog": 87, "blue-candy": 64 } }`, how often each card was played by id.
-It grows with the card pool, so it is left out unless asked for. The database keeps the counters under flat names such as
+`cards` grows with the card pool, so it lists only the cards that have been played. The database keeps the counters under flat names such as
 `cards_played.creature`; the answer is built from them in `internal/stats/report.go`, which is also the one place a new stat
 is added to the grouping (after its counter name in `events.go`).
 

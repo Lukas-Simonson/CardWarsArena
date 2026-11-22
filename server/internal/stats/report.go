@@ -44,8 +44,8 @@ type Report struct {
 	// Decks are by the starter deck's Hero, or "custom" for everything players built.
 	Decks map[string]DeckResult `json:"decks"`
 
-	// Cards is only there when asked for (?detail=cards): it grows with the card pool.
-	Cards *CardDetail `json:"cards,omitempty"`
+	// Cards grows with the card pool: only cards that have been played are listed.
+	Cards CardDetail `json:"cards"`
 }
 
 // Split is a count in all and by kind of game.
@@ -66,16 +66,14 @@ type CardDetail struct {
 	Played map[string]int64 `json:"played"` // by card id
 }
 
-// BuildReport groups the counters into a Report. withCards adds the per-card counts.
-func BuildReport(totals map[string]int64, kept, withCards bool) Report {
+// BuildReport groups the counters into a Report.
+func BuildReport(totals map[string]int64, kept bool) Report {
 	var r Report
 	r.V, r.Kept = Version, kept
 	r.Results.BotWins.ByBot = map[string]int64{}
 	r.Plays.Cards.ByType = map[string]int64{"creature": 0, "spell": 0, "building": 0}
 	r.Decks = map[string]DeckResult{}
-	if withCards {
-		r.Cards = &CardDetail{Played: map[string]int64{}}
-	}
+	r.Cards.Played = map[string]int64{}
 	for name, n := range totals {
 		base, rest, _ := strings.Cut(name, ".")
 		switch base {
@@ -97,9 +95,7 @@ func BuildReport(totals map[string]int64, kept, withCards bool) Report {
 			r.Plays.Cards.ByType[rest] = n
 			r.Plays.Cards.Total += n
 		case CardPlayed:
-			if r.Cards != nil {
-				r.Cards.Played[rest] = n
-			}
+			r.Cards.Played[rest] = n
 		case Floops:
 			r.Plays.Floops = n
 		case Fights:

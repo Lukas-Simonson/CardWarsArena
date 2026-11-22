@@ -141,17 +141,8 @@ func TestStatsEndpointAndNothingPersonalInIt(t *testing.T) {
 	if res.StatusCode != 200 || json.NewDecoder(res.Body).Decode(&got) != nil || got.V != stats.Version || got.Games.Completed.Total != 1 || got.Games.Completed.Bot != 1 || got.Kept {
 		t.Fatalf("GET /api/stats: %d %+v", res.StatusCode, got)
 	}
-	if got.Cards != nil {
-		t.Error("the per-card counts came without ?detail=cards")
-	}
-	res2, err := http.Get(h.ts.URL + "/api/stats?detail=cards")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer res2.Body.Close()
-	var detailed stats.Report
-	if json.NewDecoder(res2.Body).Decode(&detailed) != nil || detailed.Cards == nil || len(detailed.Cards.Played) == 0 {
-		t.Errorf("?detail=cards: %+v", detailed.Cards)
+	if len(got.Cards.Played) == 0 {
+		t.Error("no per-card counts in the answer")
 	}
 	// every name is a kind of thing counted, never a person, a room or a game
 	for k := range c.Totals() {

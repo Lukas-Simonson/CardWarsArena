@@ -14,7 +14,7 @@ func TestReportGroupsTheCountersAndKeepsTheTotalsFixed(t *testing.T) {
 		"cards_played.creature": 10, "cards_played.spell": 4, "card_played.corn-dog": 3, "card_played.hot-shot": 1,
 		"floops": 7, "fights": 8, "damage_dealt": 90, "creatures_destroyed": 12, "hero_abilities": 2,
 		"deck_started.finn": 3, "deck_won.finn": 2, "deck_started.custom": 1,
-	}, true, false)
+	}, true)
 	if r.V != Version || !r.Kept {
 		t.Errorf("v %d kept %v", r.V, r.Kept)
 	}
@@ -33,29 +33,19 @@ func TestReportGroupsTheCountersAndKeepsTheTotalsFixed(t *testing.T) {
 	if r.Decks["finn"] != (DeckResult{3, 2}) || r.Decks["custom"] != (DeckResult{1, 0}) {
 		t.Errorf("decks %+v", r.Decks)
 	}
-	if r.Cards != nil {
-		t.Error("the per-card counts came without being asked for")
+	if r.Cards.Played["corn-dog"] != 3 || r.Cards.Played["hot-shot"] != 1 || len(r.Cards.Played) != 2 {
+		t.Errorf("cards %+v", r.Cards)
 	}
 }
 
 func TestAnEmptyReportHasItsWholeShape(t *testing.T) {
-	b, _ := json.Marshal(BuildReport(nil, false, false))
+	b, _ := json.Marshal(BuildReport(nil, false))
 	for _, want := range []string{`"v":2`, `"started":{"total":0,"bot":0,"person":0}`, `"by_bot":{}`, `"by_type":{"building":0,"creature":0,"spell":0}`, `"decks":{}`, `"damage_dealt":0`} {
 		if !strings.Contains(string(b), want) {
 			t.Errorf("%s is missing from %s", want, b)
 		}
 	}
-	if strings.Contains(string(b), `"cards":{"played"`) {
-		t.Errorf("per-card counts without being asked: %s", b)
-	}
-}
-
-func TestPerCardCountsComeWithDetail(t *testing.T) {
-	r := BuildReport(map[string]int64{"card_played.corn-dog": 3, "cards_played.creature": 3}, false, true)
-	if r.Cards == nil || r.Cards.Played["corn-dog"] != 3 {
-		t.Errorf("cards %+v", r.Cards)
-	}
-	if empty := BuildReport(nil, false, true); empty.Cards == nil || empty.Cards.Played == nil {
-		t.Error("asked for the per-card counts, got none even empty")
+	if !strings.Contains(string(b), `"cards":{"played":{}}`) {
+		t.Errorf("an empty list of cards is missing from %s", b)
 	}
 }
