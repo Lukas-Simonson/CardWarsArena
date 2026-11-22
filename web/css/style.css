@@ -125,8 +125,6 @@ button:not(:disabled).btn-red:active, button:not(:disabled).btn-green:active { t
 .steps li { display: flex; align-items: center; gap: 10px; border: 2px dashed #b89a5c; border-radius: 10px; padding: 8px 10px; font-size: 18px; line-height: 1.15; }
 .stepno { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c39cf0 0 16%, #7d48bd 46%, #48207c 100%); border: 2.5px solid #1f1033; color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--big-font); font-size: 17px; padding-top: 3px; }
 .disclaimer { text-align: center; font-size: 16px; line-height: 1.4; padding: 10px 16px; align-self: center; max-width: 720px; }
-.sitestats { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; margin: 8px 0 0; font-size: 16px; opacity: .85; }
-.sitestats b { font-weight: 700; }
 .disclaimer .aidisclosure { margin: 8px 0 0; }
 .disclaimer a { color: inherit; text-decoration: underline; }
 .feedback { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-top: 8px; }

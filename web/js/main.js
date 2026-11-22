@@ -15,7 +15,6 @@ import { createBuilder } from "./builder.js";
 import { h } from "./dom.js";
 import { APP_NAME } from "./brand.js";
 import { feedbackLinks } from "./feedback.js";
-import { summary, short } from "./sitestats.js";
 import { gameLogText, logFileName } from "./gamelog.js";
 import { cardName } from "./describe.js";
 import { fillAvatar } from "./avatar.js";
@@ -488,18 +487,6 @@ function fillFeedback(answer) {
   $("feedback").replaceChildren(...links.map((l) => h("a", { href: l.url, target: "_blank", rel: "noopener" }, l.label)));
 }
 
-/** The shared totals line in the footer: shown only when the server gives some (stats off or unreachable: nothing). */
-function fillStats(answer) {
-  const list = summary(answer);
-  const el = $("sitestats");
-  el.hidden = !list.length;
-  el.title = list.length && !answer.kept ? t("stats.not_kept") : "";
-  el.replaceChildren(...list.flatMap((s, i) => [
-    i > 0 && h("span", { "aria-hidden": "true" }, "·"),
-    h("span", { class: "stat" }, h("b", {}, short(s.n, locale())), " ", t(`stats.${s.key}`, { n: s.n })),
-  ]).filter(Boolean));
-}
-
 /** The kinds of bot the server offers (an older server without /api/bots keeps the plain "Random"). The Heuristic bot is the default. */
 function fillBots({ default: first, bots }) {
   const sel = $("bot");
@@ -517,7 +504,6 @@ async function loadCatalog() {
     const [c, d, b] = await Promise.all([fetch(`${server}/api/cards?lang=${encodeURIComponent(locale())}`), fetch(`${server}/api/decks?lang=${encodeURIComponent(locale())}`), fetch(`${server}/api/bots`).catch(() => null)]);
     if (!c.ok || !d.ok) throw new Error(`HTTP ${c.status}/${d.status}`);
     if (b?.ok) fillBots(await b.json());
-    fillStats(await fetch(`${server}/api/stats`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
     fillFeedback(await fetch(`${server}/api/feedback`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
     cards = Object.fromEntries((await c.json()).map((x) => [x.id, localizedCard(x)]));
     fillDecks(await d.json());

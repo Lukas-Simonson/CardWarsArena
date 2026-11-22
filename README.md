@@ -60,13 +60,13 @@ Both images are configured through environment variables, so they run on any hos
 | `CARDWARS_DISCORD_CLIENT_ID`, `CARDWARS_DISCORD_CLIENT_SECRET` | | The app's credentials at Discord. A provider without both is not offered. |
 | `CARDWARS_GITHUB_CLIENT_ID`, `CARDWARS_GITHUB_CLIENT_SECRET` | | The same for GitHub. |
 | `CARDWARS_FEEDBACK` | `-feedback` | `1` shows links to this project's bug, card-problem and feature forms and its GitHub repository under the home screen. Off by default, so a server of your own does not send reports to this project. |
-| `CARDWARS_STATS` | `-stats` | On by default; `0` turns off the shared totals behind `GET /api/stats` and the home screen's counter line. See [Statistics](#statistics). |
+| `CARDWARS_STATS` | `-stats` | On by default; `0` turns off the shared totals behind `GET /api/stats`. See [Statistics](#statistics). |
 
 The other flags (`-addr`, `-data`, `-origins`, `-bot-delay`, `-dev`) are described in [`server/docs/protocol.md`](server/docs/protocol.md).
 
 ### Statistics
 
-The server counts a few shared totals for the whole site, for the line of numbers on the home screen: games started,
+The server counts a few shared totals for the whole site, served by `GET /api/stats`: games started,
 completed and abandoned (and against the bot or a person), who won against the bot, cards played by type (and how often each
 card), Floops, Fights, damage dealt, Creatures destroyed, Hero abilities used, and games started and won per starter deck.
 They are counted from the game engine's own events, so a player cannot change them.
