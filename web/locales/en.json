@@ -649,5 +649,6 @@
  "event.hp_loss_burn": "{who} loses {amount} HP from burning",
  "question.amount": "Choose how much ({options, list}).",
  "question.reveal": "These are the top cards of your deck. Choose one to put on the bottom; the rest are discarded.",
- "question.asked_by": "Asked by {name}"
+ "question.asked_by": "Asked by {name}",
+ "question.read_card": "Read {name} in Card up close"
 }

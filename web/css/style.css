@@ -512,6 +512,8 @@ dialog.deckdialog::backdrop { background: rgba(10, 18, 28, .78); }
 .qbar { gap: var(--btn-gap); }
 .qsource { flex: 0 0 auto; width: 48px; display: inline-block; line-height: 0; }
 .qsource .card { width: 100%; }
+button.qsource { appearance: none; background: none; border: 0; padding: 0; cursor: pointer; border-radius: 4px; }
+button.qsource:focus-visible { outline: 3px solid #ffe07a; outline-offset: 2px; }
 .qline { display: flex; align-items: center; gap: var(--btn-gap); flex: 1 1 18ch; min-width: 0; justify-content: center; }
 .qtext { min-width: 0; }
 .qopts { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--btn-gap); }

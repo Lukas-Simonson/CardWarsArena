@@ -6,8 +6,19 @@ import { cardEl } from "./card.js";
 import { t } from "./i18n.js";
 import { ROLE_CLASS, run } from "./question.js";
 
-/** The card that asked, small, for the start of the bar or the head of a pop-up (A1). */
-const sourceChip = (source) => h("span", { class: "qsource", role: "img", "aria-label": t("question.asked_by", { name: source.name }), title: source.name }, cardEl(source.card));
+/**
+ * The card that asked, small, for the start of the bar or the head of a pop-up (A1). On the bar, hovering or focusing it
+ * shows the card in "Card up close" so it can be read, and pressing it does the same (the pop-up covers that panel, so
+ * there it is only a picture).
+ */
+function sourceChip(source, on) {
+  const id = source.card?.id;
+  if (!on?.onInspect || !id) return h("span", { class: "qsource", role: "img", "aria-label": t("question.asked_by", { name: source.name }), title: source.name }, cardEl(source.card));
+  return h("button", {
+    type: "button", class: "qsource", "aria-label": t("question.read_card", { name: source.name }), title: source.name,
+    onclick: () => on.onInspect(id), onmouseenter: () => on.onInspect(id, true), onfocus: () => on.onInspect(id, true),
+  }, cardEl(source.card));
+}
 
 /** One button for an option, a skip, a Cancel or a Confirm. */
 function optionButton(opt, role, on, extra = "") {
@@ -25,7 +36,7 @@ export function questionBar(q, on, { you = false } = {}) {
   ].filter(Boolean);
   // The card and the sentence stay together; the buttons wrap as a group beside or under them.
   return h("div", { role: "status", class: `well prompt qbar ${you ? "you" : ""}` },
-    h("div", { class: "qline" }, q.source && sourceChip(q.source), h("span", { class: "qtext" }, q.text)),
+    h("div", { class: "qline" }, q.source && sourceChip(q.source, on), h("span", { class: "qtext" }, q.text)),
     buttons.length > 0 && h("div", { class: "qopts" }, buttons));
 }
 
@@ -40,7 +51,7 @@ export function questionPopup(q, on, { again = false } = {}) {
   const row = [...buttons.map((o) => optionButton(o, "choice", on, " modalopt")), q.skip && optionButton(q.skip, "neutral", on, " modalopt")].filter(Boolean);
   return h("div", { class: `modal-backdrop${again ? " again" : ""}` },
     h("div", { class: "modal parch qpopup", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-h" },
-      h("header", { class: "qhead" }, q.source && sourceChip(q.source), h("h2", { id: "modal-h" }, q.source?.name ?? "")),
+      h("header", { class: "qhead" }, q.source && sourceChip(q.source, null), h("h2", { id: "modal-h" }, q.source?.name ?? "")),
       h("p", {}, q.text),
       cards.length > 0 && h("div", { class: "modalcards" }, cards.map(cardButton)),
       row.length > 0 && h("div", { class: "modalrow modalrow2" }, row)));
