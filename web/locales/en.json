@@ -635,5 +635,16 @@
  "label.burn_each_creature_in": "Burn each Creature in",
  "label.deal_2_damage_to": "Deal 2 damage to",
  "label.burn": "Burn",
- "label.don_t_burn_a_creature": "Don't burn a Creature"
+ "label.don_t_burn_a_creature": "Don't burn a Creature",
+ "builder.filter_cost": "Cost",
+ "builder.filter_atk": "ATK",
+ "builder.filter_def": "DEF",
+ "builder.any_value": "Any",
+ "builder.more_filters": "More filters",
+ "builder.more_filters_on": "More filters ({n} on)",
+ "builder.creatures_only": "ATK and DEF only apply to Creatures, so only Creatures are shown.",
+ "builder.bucket_plus": "{n}+",
+ "builder.bucket_range": "{a}–{b}",
+ "builder.curve_filter": "Show the cards that cost {cost}",
+ "builder.curve_filter_count": "Cost {cost}: {n, plural, one {# card} other {# cards}} in this deck. Show the cards that cost {cost}"
 }

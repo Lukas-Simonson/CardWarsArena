@@ -9,7 +9,7 @@ import { cardEl } from "./card.js";
 import { landscapeName } from "./describe.js";
 import {
   emptyDeck, fromCards, toCards, total, copies, whyNot, add, remove, problems, landscapesOf, chooseLandscape, autoLandscapes,
-  unplayable, whyUnplayable, costCurve, heroes, pool, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
+  unplayable, whyUnplayable, costCurve, heroes, pool, buckets, bucketOf, changed, LANDSCAPES, LANES, MIN_CARDS, MAX_COPIES,
 } from "./deckmodel.js";
 import { formatDeck, importDeck, fileName, FORMATS } from "./decktext.js";
 import { t, locale, cardText } from "./i18n.js";
@@ -42,7 +42,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
   let deck = emptyDeck();
   let saved = null; // the deck as last saved; null for one not saved yet
   let origin = null; // the name of the starter deck this unsaved deck is a copy of, if it is one
-  let filters = { text: "", type: "", landscape: "", members: "", from: "" }; // members: "", "in" or "out" of this deck; from: another deck's value
+  let filters = { text: "", type: "", landscape: "", members: "", from: "", cost: [], atk: [], def: [] }; // members: "", "in" or "out" of this deck; from: another deck's value
   let busy = false;
   let note = { error: false, text: "" };
 
@@ -252,6 +252,16 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
     ui.typeChips = h("div", { role: "group", "aria-label": t("builder.filter_type"), class: "chips" });
     ui.memberChips = h("div", { role: "group", "aria-label": t("builder.filter_deck"), class: "chips" });
     ui.from = h("select", { id: "bfrom", class: "well", onchange: () => { filters = { ...filters, from: ui.from.value }; paintPool(); } });
+    ui.costChips = h("div", { role: "group", "aria-label": t("builder.filter_cost"), class: "chips" });
+    ui.atkChips = h("div", { role: "group", "aria-label": t("builder.filter_atk"), class: "chips" });
+    ui.defChips = h("div", { role: "group", "aria-label": t("builder.filter_def"), class: "chips" });
+    ui.statNote = h("p", { class: "ink small", role: "status" });
+    ui.more = h("details", { class: "bmorefilters" },
+      h("summary", {}),
+      h("div", { class: "field" }, h("span", { class: "ink lead" }, t("builder.filter_cost")), ui.costChips),
+      h("div", { class: "field" }, h("span", { class: "ink lead" }, t("builder.filter_atk")), ui.atkChips),
+      h("div", { class: "field" }, h("span", { class: "ink lead" }, t("builder.filter_def")), ui.defChips),
+      ui.statNote);
     ui.fromClear = h("button", { type: "button", class: "btn-steel small", onclick: () => { ui.from.value = ""; filters = { ...filters, from: "" }; paintPool(); } }, t("builder.clear"));
     ui.fromRow = h("div", { class: "field fromrow" }, h("label", { for: "bfrom", class: "ink" }, t("builder.cards_from")), h("div", { class: "fromsel" }, ui.from, ui.fromClear));
     ui.grid = h("div", { class: "cardgrid" });
@@ -297,7 +307,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
             h("div", { class: "bfilterhead" },
               h("h2", { id: "bcards-h", class: "h" }, t("builder.your_cards")),
               field("bsearch", t("builder.search"), ui.search)),
-            ui.landChips, ui.typeChips, ui.memberChips, ui.fromRow, ui.poolCount),
+            ui.landChips, ui.typeChips, ui.memberChips, ui.more, ui.fromRow, ui.poolCount),
           h("div", { class: "felt bfelt" }, ui.grid)),
         h("aside", { class: "bright", "aria-labelledby": "bdeck-h" },
           h("section", { class: "steel bdeck" },
@@ -322,6 +332,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
 
     ui.hero.append(h("option", { value: "" }, t("builder.choose_hero")), ...heroes(cards()).map((c) => h("option", { value: c.id }, c.name)));
     paintChips();
+    paintStats();
   }
 
   /** "New deck", the player's decks, then the starters to copy. */
@@ -354,11 +365,68 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
   function paintChips() {
     const lands = [...new Set(pool(cards()).map((c) => c.landscape).filter(Boolean))].sort((a, b) => landscapeName(a).localeCompare(landscapeName(b), locale()));
     const pickLand = (v) => () => { filters = { ...filters, landscape: v }; paintChips(); paintPool(); };
-    const pickType = (v) => () => { filters = { ...filters, type: v }; paintChips(); paintPool(); };
+    // ATK and DEF only apply to Creatures, so choosing another kind of card lets them go.
+    const pickType = (v) => () => { filters = { ...filters, type: v, ...(v && v !== "creature" ? { atk: [], def: [] } : {}) }; paintChips(); paintStats(); paintPool(); };
     ui.landChips.replaceChildren(
       chip(t("builder.all_cards"), filters.landscape === "", pickLand(""), "#f4e6bf"),
       ...lands.map((l) => chip(landscapeName(l), filters.landscape === l, pickLand(l), DOT[l])));
     ui.typeChips.replaceChildren(...TYPES.map(([v, l]) => chip(t(l), filters.type === v, pickType(v))));
+  }
+
+  /** How many cards of each cost. A bar is a button: it shows the cards of that cost in the pool (again to undo). */
+  function paintCurve() {
+    const cs = cards();
+    const curve = costCurve(deck, cs), top = Math.max(1, ...curve.map((b) => b.count));
+    const groups = statBuckets().cost;
+    ui.curve.style.gridTemplateColumns = ui.curveLabels.style.gridTemplateColumns = `repeat(${curve.length}, minmax(0, 1fr))`;
+    ui.curve.replaceChildren(...curve.map((b) => {
+      const group = bucketOf(groups, b.cost);
+      const on = !!group && filters.cost.length === 1 && filters.cost[0].key === group.key;
+      return h("button", {
+        type: "button", class: "barcol", "aria-pressed": on ? "true" : "false", title: t("builder.curve_filter", { cost: b.cost }),
+        "aria-label": t("builder.curve_filter_count", { cost: b.cost, n: b.count }),
+        onclick: () => { filters = { ...filters, cost: on || !group ? [] : [group] }; paintStats(); paintPool(); },
+      }, h("span", {}, b.count), h("div", { class: "curvebar", style: `height:${Math.round((b.count / top) * CURVE_HEIGHT)}px` }));
+    }));
+    ui.curveLabels.replaceChildren(...curve.map((b) => h("span", {}, t("detail.cost", { cost: b.cost }))));
+  }
+
+  /** The numbers the pool's Creatures and cards have, for the cost, ATK and DEF chips: the groups come from the catalogue. */
+  function statBuckets() {
+    const list = pool(cards());
+    const creatures = list.filter((c) => c.type === "creature");
+    return {
+      cost: buckets(list.map((c) => c.cost), { step: 1, cap: 4 }),
+      atk: buckets(creatures.map((c) => c.attack), { step: 1, cap: 4 }),
+      def: buckets(creatures.map((c) => c.defense), { step: 3, cap: 9 }),
+    };
+  }
+
+  const bucketLabel = (b) => (b.max === Infinity ? t("builder.bucket_plus", { n: b.min }) : b.min === b.max ? String(b.min) : t("builder.bucket_range", { a: b.min, b: b.max }));
+
+  /** Cost, ATK and DEF: chips that toggle, none pressed meaning any. ATK and DEF also leave Creatures only. */
+  function paintStats() {
+    const all = statBuckets();
+    const pressed = (kind, b) => filters[kind].some((x) => x.key === b.key);
+    const toggle = (kind, b) => () => {
+      const next = pressed(kind, b) ? filters[kind].filter((x) => x.key !== b.key) : [...filters[kind], b];
+      // Only Creatures have ATK and DEF: asking for one shows Creatures, and says so.
+      filters = { ...filters, [kind]: next, ...(kind !== "cost" && next.length && filters.type !== "creature" ? { type: "creature" } : {}) };
+      paintChips();
+      paintStats();
+      paintPool();
+    };
+    const row = (kind, el) => el.replaceChildren(
+      chip(t("builder.any_value"), filters[kind].length === 0, () => { filters = { ...filters, [kind]: [] }; paintStats(); paintPool(); }),
+      ...all[kind].map((b) => chip(bucketLabel(b), pressed(kind, b), toggle(kind, b))));
+    row("cost", ui.costChips);
+    row("atk", ui.atkChips);
+    row("def", ui.defChips);
+    const active = [filters.cost, filters.atk, filters.def].filter((f) => f.length).length;
+    ui.more.querySelector("summary").textContent = active ? t("builder.more_filters_on", { n: active }) : t("builder.more_filters");
+    if (active) ui.more.open = true;
+    ui.statNote.textContent = filters.atk.length || filters.def.length ? t("builder.creatures_only") : "";
+    paintCurve();
   }
 
   /** "All / In deck (n) / Not in deck": n is how many different cards this deck has. */
@@ -452,11 +520,7 @@ export function createBuilder({ root, server, cards, starters, onClose, onSaved,
     ui.note.textContent = note.text;
     ui.note.className = "note" + (note.error ? " bad" : "");
 
-    // How many cards of each cost.
-    const curve = costCurve(deck, cs), top = Math.max(1, ...curve.map((b) => b.count));
-    ui.curve.style.gridTemplateColumns = ui.curveLabels.style.gridTemplateColumns = `repeat(${curve.length}, minmax(0, 1fr))`;
-    ui.curve.replaceChildren(...curve.map((b) => h("div", { class: "barcol" }, h("span", {}, b.count), h("div", { class: "curvebar", style: `height:${Math.round((b.count / top) * CURVE_HEIGHT)}px` }))));
-    ui.curveLabels.replaceChildren(...curve.map((b) => h("span", {}, t("detail.cost", { cost: b.cost }))));
+    paintCurve();
 
     // The deck as a list.
     const ids = Object.keys(deck.counts).sort((a, b) => (cs[a]?.cost ?? 0) - (cs[b]?.cost ?? 0) || (cs[a]?.name ?? a).localeCompare(cs[b]?.name ?? b));
