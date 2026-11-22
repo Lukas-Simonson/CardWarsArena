@@ -28,6 +28,9 @@ type Action struct {
 	Kind ActionKind `json:"kind"`
 	Card int        `json:"card,omitempty"` // Instance.UID
 	Lane int        `json:"lane,omitempty"`
+	// Option answers a Question: the ID of the option chosen. The other fields of a choose are what the engine takes;
+	// an Option is turned into them (see Game.resolveOption). Legal answers carry both.
+	Option *int `json:"option,omitempty"`
 	// Source is "creature" (default) or "building": which card in Lane a
 	// floop or activate action refers to. Index picks among a card's
 	// activated abilities.

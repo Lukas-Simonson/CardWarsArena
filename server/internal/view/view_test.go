@@ -352,3 +352,29 @@ func TestAChoiceCarriesEverythingItIsWordedFrom(t *testing.T) {
 		}
 	}
 }
+
+// The decider is sent the question with its options; the other player is told who asks and what, and no more.
+func TestTheQuestionIsForTheDecider(t *testing.T) {
+	g := newGame(t, 1)
+	g.State.Choice = &engine.Choice{Player: 0, Kind: engine.ChoiceAmount, Card: "the-big-hen-house", Options: []int{1, 2}, Unit: "damage"}
+	mine, theirs := Build(g, 0), Build(g, 1)
+	if mine.Question == nil || len(mine.Question.Options) != 2 || mine.Question.Text.Key != "question.amount" || mine.Question.Answer != engine.AnswerButtons {
+		t.Fatalf("the decider's question: %+v", mine.Question)
+	}
+	if theirs.Question == nil || len(theirs.Question.Options) != 0 || theirs.Question.Skip != nil || theirs.Question.Card != "the-big-hen-house" {
+		t.Errorf("the other player's question: %+v", theirs.Question)
+	}
+	b, _ := json.Marshal(theirs.Question)
+	if strings.Contains(string(b), `"options":null`) {
+		t.Errorf("options should be an empty list, not null: %s", b)
+	}
+	// every legal answer names the option it stands for
+	for i, a := range mine.Legal {
+		if a.Option == nil || *a.Option != i {
+			t.Errorf("legal %d: %+v", i, a)
+		}
+	}
+	if (Build(newGame(t, 1), 0)).Question != nil {
+		t.Error("a question with no choice open")
+	}
+}

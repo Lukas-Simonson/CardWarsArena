@@ -113,6 +113,10 @@ type View struct {
 	Players        [2]Player        `json:"players"` // indexed by seat
 	Pending        *engine.Instance `json:"pending,omitempty"`
 	Choice         *Choice          `json:"choice,omitempty"`
+	// Question is the open choice described in generic terms (see engine.Question): who asked, the words as a key
+	// and parameters, where it is answered and the options. The player who must answer gets the options; the other
+	// player sees only who asks and what. It is sent beside Choice until clients stop reading Choice.
+	Question *engine.Question `json:"question,omitempty"`
 	// Preload names cards whose art the client may fetch ahead of time: the
 	// opponent's hand and the viewer's next draws, mixed together and sorted so
 	// nothing says which is which. See docs/protocol.md for what this gives away.
@@ -155,6 +159,11 @@ func Build(g *engine.Game, viewer engine.PlayerID) View {
 		v.Pending = &in
 	}
 	if ch := st.Choice; ch != nil {
+		q, _ := g.DescribeChoice()
+		if q != nil && ch.Player != viewer {
+			q.Options, q.Skip, q.Subject, q.Left = []engine.Option{}, nil, nil, 0 // what is in a decision is for the decider
+		}
+		v.Question = q
 		v.Choice = &Choice{Player: int(ch.Player), Kind: ch.Kind, Card: ch.Card, Count: ch.Count, Revealed: append([]engine.Instance(nil), ch.Revealed...),
 			Lane: ch.Lane, Other: ch.Other, Lanes: append([]int(nil), ch.Lanes...), MoveSide: int(ch.MoveSide),
 			Targets: append([]engine.TargetRef(nil), ch.Targets...), Optional: ch.Optional, Label: ch.Label, SkipLabel: ch.SkipLabel,
