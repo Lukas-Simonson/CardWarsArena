@@ -1,0 +1,29 @@
+/* Layout only: the look (wood, parchment, wells, fonts) is the game's own css/style.css. */
+main { max-width: 1000px; margin: 0 auto; padding: 16px 20px 56px; }
+header { margin-bottom: 16px; }
+h1.h { font-family: var(--big-font); font-size: 40px; color: var(--gold); }
+header .muted { margin: 4px 0 0; font-size: 16px; color: #fff3d6; text-shadow: 0 2px 0 var(--ink); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat { padding: 10px 14px; text-align: center; }
+.stat b { display: block; font-family: var(--big-font); font-weight: 400; font-size: 32px; line-height: 1.15; color: var(--gold); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 0 3px 0 var(--ink); font-variant-numeric: tabular-nums; }
+.stat span { color: #d6e2ec; font-size: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 16px; }
+section { padding: 12px 18px 14px; color: var(--parch-ink); }
+.grid section { margin: 0; }
+#root { display: flex; flex-direction: column; gap: 16px; } /* the gap between the blocks, whatever margins a material sets */
+#root > .tiles, #root > .grid { margin-bottom: 0; }
+h2 { margin: 0 0 8px; font-family: var(--big-font); font-weight: 400; font-size: 22px; letter-spacing: .5px; color: var(--parch-ink); }
+.row { display: grid; grid-template-columns: minmax(80px, 150px) 1fr auto; gap: 10px; align-items: center; margin: 7px 0; font-size: 17px; }
+.row .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 18px; background: #1c3045; border: 2.5px solid #0e1822; border-radius: 999px; overflow: hidden; display: flex; box-shadow: inset 0 3px 6px rgba(0,0,0,.5); }
+.fill { height: 100%; background: linear-gradient(180deg, #7aaed6 0 50%, #3f6a8f 50% 100%); }
+.fill.b { background: linear-gradient(180deg, #f2584a 0 50%, #d2352b 50% 100%); }
+.fill.good { background: linear-gradient(180deg, #7dd24c 0 50%, #4fa62c 50% 100%); }
+.num { font-variant-numeric: tabular-nums; text-align: right; min-width: 3.5em; }
+.split { display: flex; gap: 14px; font-size: 15px; margin-top: 6px; flex-wrap: wrap; }
+.split i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; border: 2px solid #0e1822; background: #3f6a8f; vertical-align: -1px; }
+.split i.b { background: #d2352b; }
+.hint { margin: 0 0 8px; font-size: 16px; color: #6b5a3a; }
+.empty { margin: 4px 0; color: #6b5a3a; }
+section.error h2 { color: #8a1c12; }
+@media (max-width: 480px) { .row { grid-template-columns: 90px 1fr auto; } h1.h { font-size: 32px; } }
