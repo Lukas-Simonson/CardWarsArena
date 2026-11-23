@@ -12,10 +12,13 @@ export function topCards(played, names = {}, limit = Infinity) {
   return ranked(played).slice(0, limit).map(([id, n]) => ({ id, name: names[id] ?? id, n }));
 }
 
+/** A deck bucket as a name: the starter deck's Hero ("lady-rainicorn" is "Lady Rainicorn"), or every deck players built. */
+export const deckName = (hero) => (hero === "custom" ? "Player-built decks" : hero.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" "));
+
 /** The decks by how often they were played, each with its win rate. */
 export function deckRows(decks = {}) {
   return Object.entries(decks)
-    .map(([hero, d]) => ({ hero, started: d.started, won: d.won, rate: pct(d.won, d.started) }))
+    .map(([hero, d]) => ({ hero, name: deckName(hero), started: d.started, won: d.won, rate: pct(d.won, d.started) }))
     .sort((a, b) => b.started - a.started || a.hero.localeCompare(b.hero));
 }
 

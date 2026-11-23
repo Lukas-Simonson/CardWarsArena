@@ -57,10 +57,12 @@ function draw(report) {
     h("div", { class: "grid" },
       section("Cards played by type", s.byType.some((r) => r[1]) ? s.byType.map(([k, v]) => bar(k, v, typeMax, { note: `${n(v)} (${pct(v, s.cardsPlayed) ?? 0}%)` })) : empty("Nothing played yet.")),
       section("Actions", s.actions.map(([k, v]) => bar(words(k), v, actMax)))),
-    section("Decks (by the starter deck's Hero)",
+    section("How often each deck wins",
+      h("p", { class: "hint" }, "Every game a deck was played in. The green part of each bar is the share it won; the numbers are games won / games played (win rate). Starter decks are named for their Hero."),
       s.decks.length === 0 ? empty("No decks played yet.") : s.decks.map((d) =>
-        bar(d.hero, d.won, d.started, { cls: "good", note: `${n(d.won)} / ${n(d.started)}${d.rate == null ? "" : ` (${d.rate}%)`}` }))),
+        bar(d.name, d.won, d.started, { cls: "good", note: `${n(d.won)} / ${n(d.started)}${d.rate == null ? "" : ` (${d.rate}%)`}` }))),
     section(showAll ? "All cards played" : `Most played cards (top ${TOP})`,
+      h("p", { class: "hint" }, "How many times each card was played, across all games."),
       cards.length === 0 ? empty("No cards played yet.") : cards.map((c) => bar(c.name, c.n, cardMax)),
       Object.keys(report.cards.played).length > TOP && h("button", { type: "button", class: "btn-steel small", onclick: () => { showAll = !showAll; draw(last); } }, showAll ? `Show the top ${TOP}` : `Show all ${Object.keys(report.cards.played).length}`)));
 }

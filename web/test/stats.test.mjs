@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pct, ranked, topCards, deckRows, summarize } from "../stats/model.mjs";
+import { pct, ranked, topCards, deckRows, deckName, summarize } from "../stats/model.mjs";
 
 const report = {
   v: 2, kept: true,
@@ -49,4 +49,11 @@ test("a server that has counted nothing still summarizes", () => {
   assert.equal(s.completion, null);
   assert.equal(s.vsBot.playerRate, null);
   assert.deepEqual(s.decks, []);
+});
+
+test("a deck is named for its Hero, and custom decks say what they are", () => {
+  assert.equal(deckName("lady-rainicorn"), "Lady Rainicorn");
+  assert.equal(deckName("finn"), "Finn");
+  assert.equal(deckName("custom"), "Player-built decks");
+  assert.equal(deckRows(report.decks)[0].name, "Player-built decks");
 });
