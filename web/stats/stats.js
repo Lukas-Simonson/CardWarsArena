@@ -18,7 +18,7 @@ function bar(label, value, max, { cls = "", note = "" } = {}) {
     h("div", { class: "track", role: "img", "aria-label": `${label}: ${n(value)}` }, h("div", { class: `fill ${cls}`, style: `width:${max > 0 ? (value / max) * 100 : 0}%` })),
     h("span", { class: "num" }, note || n(value)));
 }
-const tile = (value, label) => h("div", { class: "tile" }, h("b", {}, value), h("span", {}, label));
+const stat = (value, label) => h("div", { class: "well stat" }, h("b", {}, value), h("span", {}, label));
 const empty = (text) => h("p", { class: "empty" }, text);
 
 /** Two counts (bot and person) as one stacked bar. */
@@ -33,7 +33,7 @@ function stacked(title, split) {
 
 function draw(report) {
   const s = summarize(report);
-  const section = (title, ...kids) => h("section", {}, h("h2", {}, title), ...kids);
+  const section = (title, ...kids) => h("section", { class: "parch" }, h("h2", {}, title), ...kids);
   const maxOf = (rows) => Math.max(0, ...rows.map((r) => r[1] ?? r.n ?? 0));
 
   const cards = topCards(report.cards.played, names, showAll ? Infinity : TOP);
@@ -42,9 +42,9 @@ function draw(report) {
 
   root.replaceChildren(
     h("div", { class: "tiles" },
-      tile(n(s.started), "games started"), tile(n(s.completed), "games completed"), tile(n(s.abandoned), "abandoned"),
-      tile(s.completion == null ? "–" : `${s.completion}%`, "reach a winner"), tile(n(s.cardsPlayed), "cards played"),
-      tile(n(s.damage), "damage dealt"), tile(n(s.destroyed), "Creatures destroyed")),
+      stat(n(s.started), "games started"), stat(n(s.completed), "games completed"), stat(n(s.abandoned), "abandoned"),
+      stat(s.completion == null ? "–" : `${s.completion}%`, "reach a winner"), stat(n(s.cardsPlayed), "cards played"),
+      stat(n(s.damage), "damage dealt"), stat(n(s.destroyed), "Creatures destroyed")),
     h("div", { class: "grid" },
       section("Games",
         stacked("Started", s.kinds.started), stacked("Completed", s.kinds.completed),
@@ -62,7 +62,7 @@ function draw(report) {
         bar(d.hero, d.won, d.started, { cls: "good", note: `${n(d.won)} / ${n(d.started)}${d.rate == null ? "" : ` (${d.rate}%)`}` }))),
     section(showAll ? "All cards played" : `Most played cards (top ${TOP})`,
       cards.length === 0 ? empty("No cards played yet.") : cards.map((c) => bar(c.name, c.n, cardMax)),
-      Object.keys(report.cards.played).length > TOP && h("button", { type: "button", onclick: () => { showAll = !showAll; draw(last); } }, showAll ? `Show the top ${TOP}` : `Show all ${Object.keys(report.cards.played).length}`)));
+      Object.keys(report.cards.played).length > TOP && h("button", { type: "button", class: "btn-steel small", onclick: () => { showAll = !showAll; draw(last); } }, showAll ? `Show the top ${TOP}` : `Show all ${Object.keys(report.cards.played).length}`)));
 }
 
 async function load() {
@@ -75,7 +75,7 @@ async function load() {
     draw(last);
     meta.textContent = `Updated ${new Date().toLocaleTimeString()}. ${last.kept ? "Totals are kept across restarts." : "Totals start again at zero on a restart (no database)."} Not linked from the game.`;
   } catch (err) {
-    if (!last) root.replaceChildren(h("section", { class: "error" }, h("h2", {}, "No statistics"), h("p", {}, err.message)));
+    if (!last) root.replaceChildren(h("section", { class: "parch error" }, h("h2", {}, "No statistics"), h("p", {}, err.message)));
     meta.textContent = last ? `Could not refresh (${err.message}); showing the last numbers.` : "";
   }
 }
