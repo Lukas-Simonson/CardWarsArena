@@ -8,5 +8,8 @@
 	@game path /ws /api/* /healthz
 	reverse_proxy @game {$CARDWARS_UPSTREAM:server:8080}
 
+	# The statistics page is not linked from the game; /stats opens it.
+	redir /stats /stats/ 308
+
 	file_server
 }

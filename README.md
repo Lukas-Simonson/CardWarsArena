@@ -71,6 +71,8 @@ completed and abandoned (and against the bot or a person), who won against the b
 card), Floops, Fights, damage dealt, Creatures destroyed, Hero abilities used, and games started and won per starter deck.
 They are counted from the game engine's own events, so a player cannot change them.
 
+The totals can be read as a page at **`/stats`** on the web client (tiles and bars, refreshed every 30 seconds). It is not linked from the game and is marked `noindex`; it is not a secret, since `GET /api/stats` is public, so it only keeps the page out of the way. Its code is in `web/stats/`, and `node serve.mjs` in `web/` serves it for development (it needs `/api` on the same origin, as the Caddy image provides).
+
 What is **not** recorded: anything about a person. A counter is a name and a number. Nothing is tied to an account, a name,
 an address, a cookie or a room, signed-in players and guests count the same, no game is stored, and a deck a player built
 counts only as one "custom" bucket, never by its cards or owner. Games on a development server (`-dev`) are not counted.

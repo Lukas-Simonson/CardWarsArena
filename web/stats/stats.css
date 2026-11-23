@@ -1,0 +1,29 @@
+:root { --bg: #f5f1e6; --card: #fffdf7; --ink: #25303b; --muted: #6a7480; --line: #ddd5c0; --a: #3a6ea5; --b: #d9822b; --good: #4c9a5f; --bar: #e8e1cc; }
+@media (prefers-color-scheme: dark) { :root { --bg: #161c23; --card: #1f2730; --ink: #e8ecf0; --muted: #98a3ae; --line: #33404d; --a: #6aa3dc; --b: #e9a255; --good: #6cc083; --bar: #2b3641; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { margin: 0; font-size: 1.8rem; }
+h2 { margin: 0 0 12px; font-size: 1.05rem; }
+.muted { color: var(--muted); margin: 4px 0 0; font-size: .9rem; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
+.tile, section { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.tile b { display: block; font-size: 1.7rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.tile span { color: var(--muted); font-size: .85rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 12px; }
+section { margin-bottom: 12px; }
+.grid section { margin: 0; }
+.row { display: grid; grid-template-columns: minmax(80px, 150px) 1fr auto; gap: 10px; align-items: center; margin: 6px 0; font-size: .92rem; }
+.row .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 14px; background: var(--bar); border-radius: 7px; overflow: hidden; display: flex; }
+.fill { height: 100%; background: var(--a); }
+.fill.b { background: var(--b); }
+.fill.good { background: var(--good); }
+.num { font-variant-numeric: tabular-nums; text-align: right; min-width: 3.5em; }
+.split { display: flex; gap: 14px; font-size: .85rem; color: var(--muted); margin-top: 4px; flex-wrap: wrap; }
+.split i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; background: var(--a); }
+.split i.b { background: var(--b); }
+button { font: inherit; color: var(--ink); background: var(--bar); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; margin-top: 8px; }
+.empty { color: var(--muted); }
+.error { border-color: #c44; }
+@media (max-width: 480px) { .row { grid-template-columns: 90px 1fr auto; } }
