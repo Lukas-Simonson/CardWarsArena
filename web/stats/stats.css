@@ -10,7 +10,8 @@ header .muted { margin: 4px 0 0; font-size: 16px; color: #fff3d6; text-shadow: 0
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 16px; }
 section { padding: 12px 18px 14px; color: var(--parch-ink); }
 .grid section { margin: 0; }
-main > section { margin-bottom: 16px; }
+#root { display: flex; flex-direction: column; gap: 16px; } /* the gap between the blocks, whatever margins a material sets */
+#root > .tiles, #root > .grid { margin-bottom: 0; }
 h2 { margin: 0 0 8px; font-family: var(--big-font); font-weight: 400; font-size: 22px; letter-spacing: .5px; color: var(--parch-ink); }
 .row { display: grid; grid-template-columns: minmax(80px, 150px) 1fr auto; gap: 10px; align-items: center; margin: 7px 0; font-size: 17px; }
 .row .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
